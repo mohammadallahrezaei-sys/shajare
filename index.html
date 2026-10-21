@@ -588,11 +588,16 @@ function opts(filter,sel,self,withNew,q){
   const arr=Object.entries(pendingItems()).filter(([id,r])=>id!==self&&(!filter||filter(r.p))&&(!nq||id===sel||nn(pickLabel(id,r)).includes(nq))).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa'));
   return (withNew?`<option value="__new" ${sel==='__new'?'selected':''}>✍️ در فهرست نیست؛ نامش را می‌نویسم</option>`:'')+`<option value="" ${sel?'':'selected'}>— نامشخص —</option>`+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')+((nq&&!arr.length)?'<option value="" disabled>نتیجه‌ای پیدا نشد؛ گزینهٔ «در فهرست نیست» را بزنید</option>':'');
 }
+function yearOpts(sel){
+  const hi=Math.max(nowYear,sel||0), lo=Math.min(1250,sel||1250); let o='';
+  for(let y=hi;y>=lo;y--) o+=`<option value="${y}" ${sel===y?'selected':''}>${fa(y)}</option>`;
+  return o;
+}
 function dateW(p,v){
   v=v||{};
   return `<div class="dw"><select id="${p}_d" aria-label="روز"><option value="">روز</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${v.d===i+1?'selected':''}>${fa(i+1)}</option>`).join('')}</select>
   <select id="${p}_m" aria-label="ماه"><option value="">ماه</option>${MONTHS.map((n,i)=>`<option value="${i+1}" ${v.m===i+1?'selected':''}>${n}</option>`).join('')}</select>
-  <input type="text" id="${p}_y" inputmode="numeric" placeholder="سال، مثلاً ۱۳۶۰" value="${v.y?fa(v.y):''}" aria-label="سال"></div>`;
+  <select id="${p}_y" aria-label="سال"><option value="">سال</option>${yearOpts(v.y)}</select></div>`;
 }
 function readDate(p){
   let y=parseInt(norm($('#'+p+'_y').value),10)||0, m=parseInt($('#'+p+'_m').value,10)||0, d=parseInt($('#'+p+'_d').value,10)||0;
@@ -909,7 +914,7 @@ function drawArt(T,imgs){
   // legend: one dot per main branch
   if(brs.length){
     c.font='600 22px Vazirmatn, Tahoma, sans-serif'; let lx=W-140; const ly=H-72;
-    for(const b of brs){ const t='شاخهٔ '+(P[b.k.id].first||''), tw=c.measureText(t).width, wid=tw+46; if(lx-wid<140){ c.fillStyle='#5A726B'; c.fillText('…',lx-10,ly); break; }
+    for(const b of brs){ const t='شاخهٔ '+full(P[b.k.id]), tw=c.measureText(t).width, wid=tw+46; if(lx-wid<140){ c.fillStyle='#5A726B'; c.fillText('…',lx-10,ly); break; }
       c.fillStyle=bcol(b.k,0); c.beginPath(); c.arc(lx-10,ly,10,0,7); c.fill(); c.fillStyle='#3d4f49'; c.fillText(t,lx-30-tw/2,ly); lx-=wid+22; }
   }
   // decorative frame
