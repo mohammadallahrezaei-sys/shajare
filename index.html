@@ -362,7 +362,7 @@ function buildTree(){
   cands.sort((a,b)=>(P[a].gender==='m'?0:1)-(P[b].gender==='m'?0:1)||byBirth(a,b));
   const used=new Set(), rootSpec=[];
   cands.forEach(r=>{ if(used.has(r)) return; used.add(r); const extra=[]; partners[r].forEach(q=>{ if(cands.includes(q)&&!used.has(q)){used.add(q);extra.push(q);} }); rootSpec.push({id:r,extra}); });
-  const vis=new Set(), shown=new Set(), nodes=[], gen={};
+  const vis=new Set(), shown=new Set(), gen={}; let nodes=[];
   function mk(id,extra,depth){
     if(vis.has(id)) return null; vis.add(id); shown.add(id);
     const sp=new Set(extra||[]); partners[id].forEach(q=>sp.add(q)); sp.delete(id);
@@ -373,7 +373,21 @@ function buildTree(){
     const set=new Set([id,...spouses]); n.kids.forEach(k=>k.set.forEach(x=>set.add(x)));
     n.set=set; n.size=set.size; return n;
   }
-  const roots=rootSpec.map(r=>mk(r.id,r.extra,1)).filter(Boolean);
+  let roots=rootSpec.map(r=>mk(r.id,r.extra,1)).filter(Boolean);
+  /* خانوادهٔ همسر (پدر و مادر و خواهر و برادر همسر) شاخهٔ جدا نمی‌سازد؛ درخت اصلی همان است که بزرگ‌تر است */
+  if(roots.length>1){
+    const lc={}; ids.forEach(i=>{ const k=nn(P[i].last); if(k) lc[k]=(lc[k]||0)+1; });
+    const FAM=nn('الله‌رضایی'), topLast=lc[FAM]?FAM:(Object.keys(lc).sort((x,y)=>lc[y]-lc[x])[0]||'');
+    const score=n=>{ let c=0,t=0; const w=m=>{ t++; if(nn(P[m.id].last)===topLast) c++; m.kids.forEach(w); }; w(n); return c*1000+t; };
+    const main=roots.reduce((a,b)=>score(b)>score(a)?b:a,roots[0]), drop=new Set();
+    roots.forEach(r=>{ if(r!==main&&[...r.set].some(x=>main.set.has(x))) drop.add(r); });
+    if(drop.size){
+      const gone=new Set(), walk=n=>{ gone.add(n); n.kids.forEach(walk); }; drop.forEach(walk);
+      nodes=nodes.filter(n=>!gone.has(n));
+      drop.forEach(r=>r.set.forEach(x=>{ if(!main.set.has(x)) shown.delete(x); }));
+      roots=roots.filter(r=>!drop.has(r));
+    }
+  }
   const unplaced=ids.filter(i=>!shown.has(i)).sort(byBirth);
   const couples=new Set(); ids.forEach(i=>partners[i].forEach(q=>couples.add([i,q].sort().join('|'))));
   S.T={P,virt:E.virt,roots,nodes,unplaced,gen,couples:couples.size,pst};
@@ -456,7 +470,7 @@ function viewTree(){
   if(S.mode==='art') body=`<div class="art-box" id="artBox"><div class="wait">در حال کشیدن درخت…</div></div>`;
   else if(S.mode==='chart') body=`<div class="chart-box" id="chartBox"><div id="zoomer" style="zoom:${S.zoom}">${T.roots.map(r=>`<div class="tree-root org"><ul>${chartNode(r)}</ul></div>`).join('')}</div></div>`;
   else body=`<div class="outline">${T.roots.map(r=>`<div class="tree-root">${outNode(r,0)}</div>`).join('')}</div>`;
-  const un=T.unplaced.length?`<div class="card"><h3>افراد بدون جایگاه در درخت</h3><p class="muted small">برای این افراد پدر یا مادر مشخص نشده یا پیوندشان ناقص است. با «پیشنهاد ویرایش» پدر یا مادر را مشخص کنید.</p><div class="row" style="gap:6px">${T.unplaced.map(i=>tile(i,false)).join('')}</div></div>`:'';
+  const un=T.unplaced.length?`<div class="card"><h3>افراد بدون جایگاه در درخت</h3><p class="muted small">این‌ها یا پدر و مادرشان مشخص نیست، یا از خانوادهٔ همسرِ یکی از اعضا هستند (پدر، مادر و خواهر و برادر همسر) که در درخت اصلی نمی‌آیند. با کلیک روی هر نفر، پرونده‌اش را می‌بینید.</p><div class="row" style="gap:6px">${T.unplaced.map(i=>tile(i,false)).join('')}</div></div>`:'';
   const modeBtn=(m,l)=>`<button class="btn ${S.mode===m?'':'ghost'} sm" data-act="mode" data-m="${m}">${l}</button>`;
   return `<div class="stack">
    <div class="bar">
