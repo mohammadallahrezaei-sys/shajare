@@ -265,6 +265,7 @@ details.hl .hb{padding:0 16px 14px;line-height:1.9}
   #pform .dw{grid-template-columns:1fr 1.5fr 1.3fr}
   #pform .dw input{font-size:16px;padding:11px 8px;min-height:44px;text-align:center}
 }
+.credit{margin:18px 0 6px;text-align:center;font-size:.85rem;color:var(--muted)}
 </style>
 
 <div class="wrap" id="root"></div>
@@ -588,7 +589,7 @@ function viewHelp(){
      <li>اگر فردی از قبل ثبت شده، دوباره ثبتش نکنید. برنامه با نام و سال تولد مشابه به شما هشدار می‌دهد.</li>
      <li>عکس را رو به دوربین و واضح انتخاب کنید. بعد از انتخاب، آن را در قاب ۳×۴ تنظیم می‌کنید.</li>
      <li>اگر ثبت انجام نشد، اینترنت را بررسی کنید و دوباره بزنید. اگر باز هم نشد، یک‌بار خارج و دوباره وارد شوید.</li></ul>`)}
-  </div>`;
+  <p class="muted small" style="text-align:center;margin:4px 0 0">طراح برنامه: محمد الله‌رضایی</p></div>`;
 }
 
 /* ---------- stats ---------- */
@@ -1159,12 +1160,12 @@ function render(){
        :(!S.authed?`<label class="f"><span>رمز خانواده</span><input type="password" id="l_code" required autocomplete="off"></label>`:'')}
      ${S.loginErr?`<div class="note bad">${esc(S.loginErr)}</div>`:''}
      <button class="btn big" type="submit">ورود</button></form>
-     <button class="link" type="button" data-act="toggleadmin" style="align-self:flex-start">${S.adminLogin?'ورود اعضای خانواده':'ورود مدیر'}</button></div>`;
+     <button class="link" type="button" data-act="toggleadmin" style="align-self:flex-start">${S.adminLogin?'ورود اعضای خانواده':'ورود مدیر'}</button><p class="credit">طراح و سازنده: محمد الله‌رضایی</p></div>`;
     return;
   }
   root.innerHTML=`<header class="top"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">شجره‌نامه خانوادگی</div></div></div>
     <div class="who"><span>${esc(fullName())}</span>${S.isAdmin?'<span class="pill adm">مدیر</span>':''}<button class="link" data-act="logout" title="خروج و بازگشت به صفحه ورود">خروج</button></div></header>
-    <nav class="nav" id="nav"></nav>${S.dbError?`<div class="note bad" style="margin-bottom:12px">ارتباط با پایگاه داده برقرار نیست (${esc(S.dbError)}). صفحه را دوباره باز کنید.</div>`:''}<main id="view"></main>`;
+    <nav class="nav" id="nav"></nav>${S.dbError?`<div class="note bad" style="margin-bottom:12px">ارتباط با پایگاه داده برقرار نیست (${esc(S.dbError)}). صفحه را دوباره باز کنید.</div>`:''}<main id="view"></main><p class="credit">طراح و سازنده: محمد الله‌رضایی</p>`;
   renderNav(); renderView();
 }
 function renderNav(){
