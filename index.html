@@ -244,6 +244,27 @@ details.more[open]>summary{margin-bottom:8px}
   #pform .navrow{position:sticky;bottom:0;background:var(--surface);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));margin:0 -12px -12px;padding-inline:12px;border-top:1px solid var(--line);z-index:5}
   #pform .navrow .btn{flex:1 1 0;padding:12px 8px;font-size:1rem}
 }
+
+details.hl{padding:0}
+details.hl>summary{cursor:pointer;padding:14px 16px;font-weight:700;display:flex;gap:10px;align-items:center;list-style:none}
+details.hl>summary::-webkit-details-marker{display:none}
+details.hl>summary::after{content:"▾";margin-inline-start:auto;color:var(--muted)}
+details.hl[open]>summary::after{content:"▴"}
+details.hl .hi{font-size:1.2rem}
+details.hl .hb{padding:0 16px 14px;line-height:1.9}
+.hl-list{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+.hl-p{margin:0}
+
+.fsec{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.fsec>h4{margin:0;display:flex;gap:8px;align-items:center;font-size:1.05rem}
+.fsec .sn{background:var(--primary);color:var(--on-primary);border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem}
+.err-field{outline:2px solid var(--bad);outline-offset:1px;border-radius:8px}
+.dw{grid-template-columns:1fr 1.5fr 1.3fr}
+#bWrap input,#pform .dw input{min-width:0}
+@media (max-width:600px){
+  #pform .dw{grid-template-columns:1fr 1.5fr 1.3fr}
+  #pform .dw input{font-size:16px;padding:11px 8px;min-height:44px;text-align:center}
+}
 </style>
 
 <div class="wrap" id="root"></div>
@@ -518,6 +539,58 @@ function viewTree(){
   </div>`;
 }
 
+/* ---------- help ---------- */
+function viewHelp(){
+  const sec=(ic,t,body)=>`<details class="card hl" ${t.startsWith('شروع')?'open':''}><summary><span class="hi">${ic}</span>${t}</summary><div class="hb">${body}</div></details>`;
+  return `<div class="stack">
+   <div class="card"><h3 style="margin:0 0 6px">راهنمای کوتاه</h3>
+   <p class="muted" style="margin:0">این برنامه شجره‌نامهٔ مشترک خانواده است. هر عضو می‌تواند خودش و بستگانش را اضافه کند و همه آن را ببینند.</p>
+   <div class="row" style="margin-top:10px"><button class="btn" data-act="tab" data-tab="add">ثبت یک نفر</button></div></div>
+
+   ${sec('🚀','شروع سریع (۳ قدم)',`<ol class="hl-list">
+     <li>روی «ثبت اطلاعات» بزنید و <b>خودتان</b> را ثبت کنید. فرم یک صفحهٔ پایین‌رونده است؛ از بالا به پایین پر کنید و آخرش دکمهٔ ارسال را بزنید.</li>
+     <li>سپس پدر و مادرتان را ثبت کنید. ترتیب مهم نیست؛ می‌توانید اول خودتان، بعد پدر، بعد پدربزرگ را ثبت کنید.</li>
+     <li>اگر پدر یا مادر هنوز در فهرست نیست، گزینهٔ «در فهرست نیست» را بزنید و نامش را بنویسید. بعداً که او را ثبت کنید، خودکار به شما وصل می‌شود.</li></ol>`)}
+
+   ${sec('✍️','فرم ثبت؛ چه چیزی لازم است',`<ul class="hl-list">
+     <li><b>الزامی (ستاره‌دار):</b> نام، نام خانوادگی، جنسیت، تاریخ تولد، پدر، مادر و وضعیت تأهل. اگر متأهل هستید همسر هم الزامی است.</li>
+     <li><b>تاریخ تولد:</b> سال را ۴ رقمی بنویسید (مثلاً ۱۳۶۵)، ماه و روز را انتخاب کنید. اگر دقیق نمی‌دانید، حدودی بنویسید و بعداً اصلاحش کنید.</li>
+     <li><b>پدر و مادر:</b> از فهرست انتخاب کنید یا «در فهرست نیست» را بزنید و نام بنویسید. اگر واقعاً نامش را کسی نمی‌داند، «نام او را نمی‌دانم» هست، ولی بهتر است از بزرگ‌ترها بپرسید.</li>
+     <li><b>همسر:</b> تا چهار همسر با وضعیت فعلی، جدا شده یا درگذشته. اگر مجرد هستید این بخش نمی‌آید.</li>
+     <li><b>عکس:</b> سخت‌گیرانه اجباری نیست ولی لطفاً حتماً یک عکس واضح و رو به دوربین بارگذاری کنید. اگر نگذارید، قبل از ارسال یک‌بار یادآوری می‌شود.</li>
+     <li>اگر چیزی کم باشد، برنامه همان‌جا را قرمز می‌کند و به آن می‌برد.</li></ul>`)}
+
+   ${sec('✏️','اصلاح اطلاعات (مثلاً تاریخ تولد)',`<p class="hl-p">اگر چیزی را حدودی نوشتید یا اشتباه شد، روی نام فرد در شجره‌نامه بزنید و «اصلاح اطلاعات» را انتخاب کنید. تاریخ‌ها و بقیهٔ اطلاعات را درست کنید و ارسال بزنید. بعد از تأیید مدیر اعمال می‌شود. وضعیت ارسالی‌های شما پایین صفحهٔ «ثبت اطلاعات» دیده می‌شود.</p>`)}
+
+   ${sec('🔗','وصل شدن آدم‌ها به هم',`<ul class="hl-list">
+     <li>اگر فردی را از فهرست انتخاب کنید، مستقیم به او وصل می‌شود.</li>
+     <li>اگر فقط نامش را بنویسید، برنامه او را در درخت با کادر خط‌چین نشان می‌دهد. وقتی بعداً خودش ثبت شود، با <b>نام و جنسیت</b> همان کادر پر می‌شود.</li>
+     <li>اگر دو نفر هم‌نام هستند، سال تولد را هم بنویسید تا اشتباه وصل نشوند.</li>
+     <li>فرزندان را می‌توانید فقط با نام در کادر «فرزندان» بنویسید؛ لازم نیست جدا ثبتشان کنید.</li></ul>`)}
+
+   ${sec('🌳','دیدن شجره‌نامه',`<ul class="hl-list">
+     <li><b>سه نما:</b> درخت تصویری، نمودار و فهرستی. روی موبایل نمای فهرستی راحت‌تر است.</li>
+     <li>کادر جستجو بالای صفحه برای پیدا کردن هر نفر است.</li>
+     <li>روی نام هر نفر بزنید تا اطلاعات، عکس، خاطره‌ها و نسبتش با شما را ببینید.</li>
+     <li>در نمای نمودار و درخت تصویری دکمه‌های + و − اندازه را تغییر می‌دهند.</li>
+     <li>دکمه‌های «تصویر (PNG)» و «PDF» درخت را برای چاپ یا ارسال ذخیره می‌کنند.</li></ul>`)}
+
+   ${sec('💬','خاطره، ویژگی و جمله',`<p class="hl-p">در «ثبت اطلاعات» برگهٔ «خاطره، ویژگی، جمله» را باز کنید، فرد را انتخاب کنید و بنویسید. متن با نام شما ثبت می‌شود و کنار نام آن فرد نمایش داده می‌شود. این بخش برای نگه داشتن یادگار بزرگ‌ترهاست.</p>`)}
+
+   ${sec('✅','تأیید مدیر',`<p class="hl-p">اطلاعاتی که اعضا می‌فرستند اول برای مدیر می‌رود و بعد از تأیید در شجره‌نامه دیده می‌شود. برای همین بلافاصله بعد از ثبت ظاهر نمی‌شود. اگر ارسال مستقیم انجام نشد، برنامه متنی می‌دهد که باید کپی کنید و برای مدیر بفرستید.</p>`)}
+
+   ${sec('🎂','خانه و آمار',`<ul class="hl-list">
+     <li><b>خانه:</b> تولدهای امروز و نزدیک و خلاصهٔ شجره‌نامه.</li>
+     <li><b>گزارش و آمار:</b> تعداد افراد، نسل‌ها، خانواده‌ها و نمودارهای ساده.</li></ul>`)}
+
+   ${sec('💡','نکته‌ها',`<ul class="hl-list">
+     <li>همه‌چیز غیر از نام، نام خانوادگی و جنسیت اختیاری است؛ هر چه می‌دانید بنویسید و بقیه را بعداً کامل کنید.</li>
+     <li>اگر فردی از قبل ثبت شده، دوباره ثبتش نکنید. برنامه با نام و سال تولد مشابه به شما هشدار می‌دهد.</li>
+     <li>عکس را رو به دوربین و واضح انتخاب کنید. بعد از انتخاب، آن را در قاب ۳×۴ تنظیم می‌کنید.</li>
+     <li>اگر ثبت انجام نشد، اینترنت را بررسی کنید و دوباره بزنید. اگر باز هم نشد، یک‌بار خارج و دوباره وارد شوید.</li></ul>`)}
+  </div>`;
+}
+
 /* ---------- stats ---------- */
 function computeStats(){
   const T=buildTree(), P=T.P, all=Object.values(P), real=Object.values(S.people);
@@ -605,7 +678,7 @@ function viewStats(){
 function opts(filter,sel,self,withNew,q){
   const nq=q?nn(q):'';
   const arr=Object.entries(pendingItems()).filter(([id,r])=>id!==self&&(!filter||filter(r.p))&&(!nq||id===sel||nn(pickLabel(id,r)).includes(nq))).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa'));
-  return (withNew?`<option value="__new" ${sel==='__new'?'selected':''}>✍️ در فهرست نیست (نام را می‌نویسم)</option>`:'')+`<option value="" ${sel?'':'selected'}>— نامشخص / بعداً —</option>`+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')+((nq&&!arr.length)?'<option value="" disabled>نتیجه‌ای پیدا نشد؛ گزینهٔ «در فهرست نیست» را بزنید</option>':'');
+  return (withNew?`<option value="__new" ${sel==='__new'?'selected':''}>✍️ در فهرست نیست (نام را می‌نویسم)</option>`:'')+(withNew==='unk'?`<option value="__unk" ${sel==='__unk'?'selected':''}>❔ نام او را نمی‌دانم</option>`:'')+`<option value="" ${sel?'':'selected'}>— انتخاب کنید —</option>`+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')+((nq&&!arr.length)?'<option value="" disabled>نتیجه‌ای پیدا نشد؛ گزینهٔ «در فهرست نیست» را بزنید</option>':'');
 }
 function yearOpts(sel){
   const hi=Math.max(nowYear,sel||0), lo=Math.min(1250,sel||1250); let o='';
@@ -616,7 +689,7 @@ function dateW(p,v){
   v=v||{};
   return `<div class="dw"><select id="${p}_d" aria-label="روز"><option value="">روز</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${v.d===i+1?'selected':''}>${fa(i+1)}</option>`).join('')}</select>
   <select id="${p}_m" aria-label="ماه"><option value="">ماه</option>${MONTHS.map((n,i)=>`<option value="${i+1}" ${v.m===i+1?'selected':''}>${n}</option>`).join('')}</select>
-  <select id="${p}_y" aria-label="سال"><option value="">سال</option>${yearOpts(v.y)}</select></div>`;
+  <input type="text" id="${p}_y" inputmode="numeric" maxlength="4" placeholder="سال (۱۳۶۵)" aria-label="سال" autocomplete="off" value="${v.y?fa(v.y):''}"></div>`;
 }
 function readDate(p){
   let y=parseInt(norm($('#'+p+'_y').value),10)||0, m=parseInt($('#'+p+'_m').value,10)||0, d=parseInt($('#'+p+'_d').value,10)||0;
@@ -626,12 +699,13 @@ function readDate(p){
 }
 function relBlock(key,label,filter,v){
   const id=v[key+'Id']||'', ref=v[key+'Ref']||{}, sel=id||(ref.name?'__new':'');
-  const many=Object.keys(pendingItems()).length>8;
+  const L=label.replace(/\s*\*$/,''), many=Object.keys(pendingItems()).length>8;
   const hasD=!!(ref.y||ref.m||ref.d);
-  return `<div class="rel wide">${many?`<input type="text" class="relq" id="r_${key}_q" data-relq="${key}" placeholder="🔍 جستجوی ${label}…" aria-label="جستجوی ${label}" autocomplete="off">`:''}<label class="f"><span>${label}</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,true)}</select></label>
+  return `<div class="rel wide">${many?`<input type="text" class="relq" id="r_${key}_q" data-relq="${key}" placeholder="🔍 جستجوی ${L}…" aria-label="جستجوی ${L}" autocomplete="off">`:''}<label class="f"><span>${label}</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,(key==='father'||key==='mother')?'unk':true)}</select></label>
+   <div id="r_${key}_unk" class="note warn" ${sel==='__unk'?'':'hidden'}>⚠️ لطفاً تا جای ممکن از بزرگ‌ترها بپرسید و نام ${L} را بنویسید. هر وقت نامش را فهمیدید از «اصلاح اطلاعات» اضافه‌اش کنید.</div>
    <div id="r_${key}_new" ${sel==='__new'?'':'hidden'} class="stack" style="gap:8px">
-     <label class="f"><span>نام و نام خانوادگی ${label}</span><input type="text" id="r_${key}_n" value="${esc(ref.name||'')}" placeholder="مثلاً: علی الله‌رضایی"></label>
-     <details class="more" ${hasD?'open':''}><summary>تاریخ تولد ${label} (اختیاری)</summary>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</details>
+     <label class="f"><span>نام و نام خانوادگی ${L}</span><input type="text" id="r_${key}_n" value="${esc(ref.name||'')}" placeholder="مثلاً: علی الله‌رضایی"></label>
+     <details class="more" ${hasD?'open':''}><summary>تاریخ تولد ${L} (اختیاری)</summary>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</details>
    </div></div>`;
 }
 function photoBlock(){
@@ -641,8 +715,6 @@ function photoBlock(){
       <span class="muted small" id="phMsg">${esc(S.photoMsg||'عکسی انتخاب کنید که چهره در آن واضح و رو به دوربین باشد. بعد از انتخاب، خودتان آن را در قاب ۳×۴ تنظیم می‌کنید تا همهٔ عکس‌ها یک‌شکل شوند.')}</span>
       ${S.photo?'<button type="button" class="btn ghost sm" data-act="rmphoto" style="align-self:flex-start">حذف عکس</button>':''}</div></div></div>`;
 }
-const STEP_T=['خود فرد','خانواده','اطلاعات بیشتر'];
-function stepperHTML(n){ return STEP_T.map((t,i)=>`<button type="button" data-act="pgo" data-n="${i+1}" ${i+1===n?'aria-current="step"':''}><span class="num">${fa(i+1)}</span><span>${t}</span></button>`).join(''); }
 function spouseRows(v){
   const list=spListOf(v), shown=Math.max(1,list.length);
   const rows=SP_KEYS.map((k,i)=>{
@@ -655,51 +727,52 @@ function spouseRows(v){
   return rows+`<button type="button" class="btn ghost" id="spAdd" data-act="spadd" ${shown>=SP_KEYS.length?'hidden':''}>➕ همسر دیگر</button>`;
 }
 function personForm(){
-  const okMsg=S.okMsg; S.okMsg=null; S.pstep=1;
+  const okMsg=S.okMsg; S.okMsg=null; S.noPhotoOk=false;
   const e=S.editId&&S.people[S.editId]?S.people[S.editId]:null, sub=S.isAdmin?S.editSub:null, v=sub?Object.assign({},e||{},sub.payload):(e||S.prefill||{});
-  const title=sub?'ویرایش پیشنهاد '+full(v)+' (پیش از تأیید)':e?(S.isAdmin?'ویرایش '+full(e):'پیشنهاد ویرایش '+full(e)):'افزودن یک نفر به خاندان';
-  return `<form id="pform" class="card stack" autocomplete="off">
-   <div class="row" style="justify-content:space-between"><h3>${esc(title)}</h3>${(e||sub)?'<button type="button" class="btn ghost sm" data-act="canceledit">انصراف از ویرایش</button>':''}</div>
+  const title=sub?'ویرایش پیشنهاد '+full(v)+' (پیش از تأیید)':e?(S.isAdmin?'ویرایش '+full(e):'اصلاح اطلاعات '+full(e)):'افزودن یک نفر به خاندان';
+  const isNew=!e&&!sub, hasSp=spListOf(v).length>0, spHidden=v.marital==='single'||(!v.marital&&!hasSp);
+  return `<form id="pform" class="card stack" autocomplete="off" novalidate>
+   <div class="row" style="justify-content:space-between"><h3>${esc(title)}</h3>${(e||sub)?'<button type="button" class="btn ghost sm" data-act="canceledit">انصراف</button>':''}</div>
    ${okMsg?`<div class="${okMsg.ok?'okbig':'note gift'}" role="status" id="okBox">${esc(okMsg.t)}</div>`:''}
-   <div class="stepper" id="stepper">${stepperHTML(1)}</div>
-   <div data-step="1" class="stack">
-   <p class="muted small" style="margin:0">فقط نام، نام خانوادگی و جنسیت لازم است.</p>
+   ${e&&!S.isAdmin?'<div class="note">اصلاح شما بعد از تأیید مدیر در شجره‌نامه اعمال می‌شود.</div>':''}
+
+   <section class="fsec" id="sec1"><h4><span class="sn">۱</span>مشخصات</h4>
    <div class="fields">
-    <label class="f"><span>نام *</span><input type="text" id="f_first" value="${esc(v.first||'')}"></label>
+    <label class="f"><span>نام *</span><input type="text" id="f_first" value="${esc(v.first||'')}" autocomplete="off"></label>
     <label class="f"><span>نام خانوادگی *</span><input type="text" id="f_last" value="${esc(v.last||'الله‌رضایی')}"></label>
-    <div class="f"><span>جنسیت *</span><div class="seg">
+    <div class="f"><span>جنسیت *</span><div class="seg" id="gSeg">
       <label><input type="radio" name="f_g" value="m" ${v.gender==='m'?'checked':''}><span>آقا</span></label>
       <label><input type="radio" name="f_g" value="f" ${v.gender==='f'?'checked':''}><span>خانم</span></label></div></div>
-    <details class="more wide" ${bd(v).y||bd(v).m||bd(v).d?'open':''}><summary>تاریخ تولد (اختیاری)</summary>${dateW('b',bd(v))}</details>
+    <div class="f wide" id="bWrap"><span>تاریخ تولد (شمسی) *</span>${dateW('b',bd(v))}
+      <span class="muted small">اگر تاریخ دقیق را نمی‌دانید، حدودی بنویسید. بعداً هر وقت دقیقش را فهمیدید از دکمهٔ «اصلاح اطلاعات» درستش کنید.</span></div>
     <label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="f_dead" ${v.dead?'checked':''}><span style="color:var(--ink)">درگذشته است</span></label>
     <div class="f wide" id="deathWrap" ${v.dead?'':'hidden'}><span>تاریخ درگذشت (اختیاری)</span>${dateW('d',{y:v.dY,m:v.dM,d:v.dD})}</div>
-   </div></div>
-   <div data-step="2" class="stack" hidden>
-   <p class="muted small" style="margin:0">همه‌چیز اختیاری است. اگر پدر یا مادر هنوز ثبت نشده، «در فهرست نیست» را بزنید و فقط نامش را بنویسید؛ بعداً که ثبت شد خودکار وصل می‌شود.</p>
+   </div></section>
+
+   <section class="fsec" id="sec2"><h4><span class="sn">۲</span>خانواده</h4>
+   <div class="note warn">⚠️ ثبت پدر، مادر و همسر الزامی است تا درخت درست ساخته شود. اگر هنوز در فهرست نیستند، «در فهرست نیست» را بزنید و نامشان را بنویسید؛ بعداً که ثبت شدند خودکار وصل می‌شوند.</div>
    <div class="fields">
-    ${relBlock('father','پدر',p=>p.gender==='m',v)}
-    ${relBlock('mother','مادر',p=>p.gender==='f',v)}
-    <div class="f wide"><span>وضعیت تأهل (اختیاری)</span><div class="seg">
-      <label><input type="radio" name="f_mar" value="" ${!v.marital?'checked':''}><span>نامشخص</span></label>
+    ${relBlock('father','پدر *',p=>p.gender==='m',v)}
+    ${relBlock('mother','مادر *',p=>p.gender==='f',v)}
+    <div class="f wide"><span>وضعیت تأهل *</span><div class="seg" id="marSeg">
       <label><input type="radio" name="f_mar" value="single" ${v.marital==='single'?'checked':''}><span>مجرد</span></label>
-      <label><input type="radio" name="f_mar" value="married" ${v.marital==='married'?'checked':''}><span>متأهل</span></label></div>
-      </div>
-    <div class="wide stack" id="spouseWrap" ${v.marital==='single'?'hidden':''}>${spouseRows(v)}</div>
+      <label><input type="radio" name="f_mar" value="married" ${v.marital==='married'||(!v.marital&&hasSp)?'checked':''}><span>متأهل یا همسر داشته</span></label></div></div>
+    <div class="wide stack" id="spouseWrap" ${spHidden?'hidden':''}>${spouseRows(v)}</div>
     <label class="f wide"><span>فرزندان (اختیاری؛ هر نام در یک خط)</span><textarea id="f_kids" style="min-height:70px" placeholder="مثلاً: علی الله‌رضایی">${esc(v.kidNames||'')}</textarea></label>
-   </div></div>
-   <div data-step="3" class="stack" hidden>
-   <p class="muted small" style="margin:0">این بخش هم اختیاری است؛ هر چه می‌دانید بنویسید.</p>
+   </div></section>
+
+   <section class="fsec" id="sec3"><h4><span class="sn">۳</span>عکس و اطلاعات بیشتر</h4>
+   <div class="note gift" id="photoNote">📷 بهتر است حتماً یک عکس واضح و رو به دوربین بارگذاری کنید.</div>
    <div class="fields">
     ${photoBlock()}
     <label class="f"><span>محل تولد</span><input type="text" id="f_bplace" value="${esc(v.birthPlace||v.place||'')}"></label>
     <label class="f"><span>محل سکونت</span><input type="text" id="f_resid" value="${esc(v.residence||'')}"></label>
     <label class="f"><span>شغل</span><input type="text" id="f_job" value="${esc(v.job||'')}"></label>
     <label class="f wide"><span>توضیح کوتاه (اختیاری)</span><input type="text" id="f_note" value="${esc(v.note||'')}"></label>
-   </div></div>
+   </div></section>
+
    <div id="dupMsg"></div>
-   <div class="navrow"><button type="button" class="btn ghost big" id="pBack" data-act="pback" hidden>قبلی</button>
-    <button type="button" class="btn big" id="pNext" data-act="pnext">بعدی</button>
-    <button class="btn big" type="submit" id="pSubmit" hidden>${S.isAdmin?'ثبت در شجره‌نامه':'ارسال برای تأیید مدیر'}</button></div>
+   <div class="navrow"><button class="btn big" type="submit" id="pSubmit">${S.isAdmin?'ثبت در شجره‌نامه':e?'ارسال اصلاح برای تأیید':'ارسال برای تأیید مدیر'}</button></div>
   </form>`;
 }
 const KINDS={memory:['خاطره','یک خاطرهٔ شاخص از او…'],trait:['ویژگی','مثلاً: بسیار مهمان‌نواز و خوش‌قول بود…'],quote:['جمله‌ای از او','جمله‌ای که زیاد می‌گفت یا درباره‌اش می‌گویند…']};
@@ -731,10 +804,11 @@ function mySubsHTML(){
 }
 function viewAdd(){
   return `<div class="stack"><div class="tabs2"><button data-act="addtab" data-t="person" aria-current="${S.addTab==='person'}">افزودن فرد</button><button data-act="addtab" data-t="memory" aria-current="${S.addTab==='memory'}">خاطره، ویژگی، جمله</button></div>
+  <div class="row" style="gap:8px"><span class="muted small">اولین بار است؟</span><button type="button" class="btn ghost sm" data-act="tab" data-tab="help">راهنمای ثبت</button></div>
   <div id="formArea">${S.addTab==='person'?personForm():memoryForm()}</div><div id="codeArea">${codeBox()}</div><div id="mySubs">${mySubsHTML()}</div></div>`;
 }
 const RELF={father:p=>p.gender==='m',mother:p=>p.gender==='f',spouse:null,spouse2:null,spouse3:null,spouse4:null}, RELF_KEYS=['father','mother','spouse','spouse2','spouse3','spouse4'];
-function refillRel(k){ const el=$('#r_'+k); if(!el) return; const v=el.value, qi=$('#r_'+k+'_q'); el.innerHTML=opts(RELF[k],v,S.editId,true,qi?qi.value:''); el.value=v; }
+function refillRel(k){ const el=$('#r_'+k); if(!el) return; const v=el.value, qi=$('#r_'+k+'_q'); el.innerHTML=opts(RELF[k],v,S.editId,(k==='father'||k==='mother')?'unk':true,qi?qi.value:''); el.value=v; }
 function refreshAdd(){
   const fill=(id,html)=>{const el=$(id); if(!el) return; const v=el.value; el.innerHTML=html; el.value=v;};
   if(S.addTab==='person'){
@@ -815,11 +889,12 @@ function personSheet(id){
   return `<button class="btn ghost sm x" data-act="close">بستن</button>
    <div class="sheet-head">${p.photo?`<img class="ph" src="${esc(p.photo)}" alt="">`:''}<div style="min-width:0"><h2>${esc(full(p))}</h2><div class="muted">${info.map(esc).join('، ')}</div></div></div>
    ${p.note?`<div class="note">${esc(p.note)}</div>`:''}
+   ${(!p.bY||!p.bM||!p.bD)?'<div class="note warn">تاریخ تولد کامل نیست. اگر می‌دانید، «اصلاح اطلاعات» را بزنید و درستش کنید.</div>':''}
    ${rows.length?`<div class="stack" style="gap:10px">${rows.map(r=>`<div class="row" style="gap:6px;align-items:baseline"><span class="muted small" style="min-width:84px">${r[0]}</span>${r[1].map(i=>r[0]==='همسر'?chip(i,stBadge(id,i,i)):chip(i)).join('')}</div>`).join('')}</div>`:'<p class="muted small" style="margin:0">پیوندی با اعضای دیگر ثبت نشده است.</p>'}
    <div class="stack" style="gap:12px"><h3>ویژگی‌ها، خاطرات و جمله‌ها</h3>
      ${mems.length?memGroup('trait','ویژگی‌ها')+memGroup('memory','خاطرات')+memGroup('quote','جمله‌ها'):'<p class="muted small" style="margin:0">هنوز چیزی ثبت نشده است.</p>'}</div>
    <div class="row"><button class="btn" data-act="addmem" data-id="${esc(id)}">نوشتن دربارهٔ او</button>
-     <button class="btn ghost" data-act="editp" data-id="${esc(id)}">${S.isAdmin?'ویرایش':'پیشنهاد ویرایش'}</button>
+     <button class="btn ghost" data-act="editp" data-id="${esc(id)}">${S.isAdmin?'ویرایش':'✏️ اصلاح اطلاعات'}</button>
      ${S.isAdmin?`<button class="btn danger" data-act="delp" data-id="${esc(id)}">${cf==='p'+id?'مطمئنم، حذف شود':'حذف فرد'}</button>`:''}</div>`;
 }
 function openModal(id){ S.modal=id; S.confirm=null; $('#sheet').innerHTML=personSheet(id); $('#modal').hidden=false; }
@@ -1069,7 +1144,7 @@ async function onPhotoPicked(file){
 
 /* ================= render ================= */
 const LOGO='<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 36V20M20 20C20 13 10 14 10 6M20 20C20 13 30 14 30 6M20 27C20 23 14 23 14 18M20 27C20 23 26 23 26 18"/><circle cx="10" cy="6" r="2.2" fill="var(--accent)" stroke="none"/><circle cx="30" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>';
-const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات']];
+const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['help','راهنما']];
 function render(){
   const root=$('#root');
   if(!S.ready){ root.innerHTML='<div class="loginbox card empty"><p class="muted" style="margin:0">در حال بارگذاری شجره‌نامه…</p></div>'; return; }
@@ -1100,7 +1175,7 @@ function renderNav(){
 }
 function renderView(){
   const v=$('#view'); if(!v) return;
-  const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,admin:viewAdmin}[S.tab]||viewHome;
+  const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,help:viewHelp,admin:viewAdmin}[S.tab]||viewHome;
   v.innerHTML=f();
   if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } }
 }
@@ -1130,26 +1205,47 @@ async function deliver(kind,payload,id,editOf){
 function showCode(){ const a=$('#codeArea'); if(a) a.innerHTML=codeBox(); }
 function readRel(key){
   const v=val('#r_'+key);
+  if(v==='__unk') return {id:'',ref:{name:'',y:0,m:0,d:0},unk:true};
   if(v==='__new'){ const dt=readDate('r_'+key); return {id:'',ref:{name:nn(val('#r_'+key+'_n'))?val('#r_'+key+'_n'):'',y:dt.y,m:dt.m,d:dt.d}}; }
   return {id:v,ref:{name:'',y:0,m:0,d:0}};
 }
 function readSpouses(){
   if((document.querySelector('input[name=f_mar]:checked')||{}).value==='single') return [];
   const out=[];
+  if(!(document.querySelector('input[name=f_mar]:checked')||{}).value) return [];
   SP_KEYS.forEach(k=>{ const row=$('#r_'+k); if(!row) return; const r=readRel(k); if(r.id||r.ref.name) out.push({id:r.id,ref:r.ref,st:val('#r_'+k+'_st')||'current'}); });
   return out;
 }
-function step2Ok(){ const dm=$('#dupMsg'); if(dm) dm.innerHTML=''; return true; }
-function step1Ok(){
+function validatePerson(){
+  document.querySelectorAll('#pform .err-field').forEach(x=>x.classList.remove('err-field'));
+  const errs=[], add=(id,msg)=>errs.push({id,msg});
   const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
-  if(!val('#f_first')||!val('#f_last')||!g){ const dm=$('#dupMsg'); if(dm) dm.innerHTML='<div class="errbig">لطفاً نام، نام خانوادگی و جنسیت را وارد کنید.</div>'; setStep(1); return false; }
-  const dm=$('#dupMsg'); if(dm) dm.innerHTML=''; return true;
-}
-function setStep(n){
-  S.pstep=n; document.querySelectorAll('#pform [data-step]').forEach(d=>{ d.hidden=(+d.dataset.step!==n); });
-  const st=$('#stepper'); if(st) st.innerHTML=stepperHTML(n);
-  const b=$('#pBack'), x=$('#pNext'), sb=$('#pSubmit'); if(b) b.hidden=(n===1); if(x) x.hidden=(n===3); if(sb) sb.hidden=(n!==3);
-  const f=$('#pform'); if(f) f.scrollIntoView({behavior:'smooth',block:'start'});
+  if(!val('#f_first')) add('f_first','نام را بنویسید.');
+  if(!val('#f_last')) add('f_last','نام خانوادگی را بنویسید.');
+  if(!g) add('gSeg','جنسیت را انتخاب کنید.');
+  const strict=!S.editId&&!S.editSub;
+  if(strict){
+    const b=readDate('b');
+    if(!b.y) add('b_y','سال تولد را ۴ رقمی بنویسید (مثلاً ۱۳۶۵).');
+    if(!b.m) add('b_m','ماه تولد را انتخاب کنید.');
+    if(!b.d) add('b_d','روز تولد را انتخاب کنید.');
+    [['father','پدر'],['mother','مادر']].forEach(([k,l])=>{
+      const x=val('#r_'+k);
+      if(!x) add('r_'+k,'«'+l+'» را از فهرست انتخاب کنید یا بنویسید.');
+      else if(x==='__new'&&!nn(val('#r_'+k+'_n'))) add('r_'+k+'_n','نام '+l+' را بنویسید.');
+    });
+    const mar=(document.querySelector('input[name=f_mar]:checked')||{}).value;
+    if(!mar) add('marSeg','وضعیت تأهل را مشخص کنید.');
+    else if(mar==='married'&&!readSpouses().length){
+      const x=val('#r_spouse'); add(x==='__new'?'r_spouse_n':'r_spouse','همسر را از فهرست انتخاب کنید یا نامش را بنویسید.');
+    }
+  }
+  const dm=$('#dupMsg');
+  if(!errs.length){ if(dm) dm.innerHTML=''; return true; }
+  errs.forEach(x=>{ const el=$('#'+x.id); if(el) el.classList.add('err-field'); });
+  if(dm) dm.innerHTML='<div class="errbig"><b>این موارد کامل نیست:</b><ul style="margin:6px 0 0;padding-inline-start:20px">'+errs.map(x=>'<li>'+esc(x.msg)+'</li>').join('')+'</ul></div>';
+  const first=$('#'+errs[0].id); if(first){ first.scrollIntoView({behavior:'smooth',block:'center'}); try{ if(first.focus) first.focus({preventScroll:true}); }catch(_){} }
+  return false;
 }
 function friendlyErr(e){
   const m=String((e&&e.message)||''), c=e&&e.code;
@@ -1160,8 +1256,7 @@ function friendlyErr(e){
   return 'مشکلی پیش آمد و ثبت انجام نشد. دوباره تلاش کنید.';
 }
 async function onPersonSubmit(){
-  if((S.pstep||1)<3){ if(S.pstep===1&&!step1Ok()) return; if(S.pstep===2&&!step2Ok()) return; setStep((S.pstep||1)+1); return; }
-  if(!step1Ok()||!step2Ok()) return;
+  if(!validatePerson()) return;
   const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
   const first=val('#f_first'), last=val('#f_last');
   if(!first||!last){ toast('نام و نام خانوادگی را بنویسید'); return; }
@@ -1172,6 +1267,7 @@ async function onPersonSubmit(){
     fatherId:fa_.id,fatherRef:fa_.ref,motherId:mo.id,motherRef:mo.ref,spouseId:sp0.id,spouseRef:sp0.ref,spouses:spl,marital:mar,
     kidNames:val('#f_kids'),place:'',birthPlace:val('#f_bplace'),residence:val('#f_resid'),job:val('#f_job'),note:val('#f_note')};
   if(S.photoDirty) payload.photo=S.photo;
+  if(!S.photo&&!S.noPhotoOk){ S.noPhotoOk=true; $('#dupMsg').innerHTML='<div class="note warn">📷 عکسی بارگذاری نکرده‌اید. عکس باعث می‌شود بستگان راحت‌تر شما را بشناسند. اگر الان عکس ندارید، دوباره دکمهٔ ارسال را بزنید تا بدون عکس ثبت شود (بعداً هم می‌توانید اضافه کنید).</div>'; const pn=$('#sec3'); if(pn) pn.scrollIntoView({behavior:'smooth',block:'start'}); return; }
   if(!S.editId&&!S.editSub&&!S.dup){
     const dup=Object.values(S.people).find(p=>p.first===first&&p.last===last&&(p.bY||0)===b.y);
     if(dup){ S.dup=true; $('#dupMsg').innerHTML='<div class="note warn">فردی با همین نام و سال تولد قبلاً ثبت شده است. اگر مطمئنید فرد دیگری است دوباره دکمه را بزنید.</div>'; return; }
@@ -1244,13 +1340,10 @@ document.addEventListener('click',async ev=>{
   if(a==='tab') gotoTab(el.dataset.tab);
   else if(a==='person'){ ev.preventDefault(); const r=$('#qres'); if(r) r.hidden=true; openModal(el.dataset.id); }
   else if(a==='close') closeModal();
-  else if(a==='pnext'){ if(S.pstep===1&&!step1Ok()) return; if(S.pstep===2&&!step2Ok()) return; setStep(Math.min(3,(S.pstep||1)+1)); }
   else if(a==='spadd'){ const rows=[...document.querySelectorAll('#spouseWrap .sprow')], nx=rows.find(r=>r.hidden); if(nx) nx.hidden=false; if(!rows.some(r=>r.hidden)) el.hidden=true; }
   else if(a==='sprm'){ const k=el.dataset.k, row=el.closest('.sprow'); const sl=$('#r_'+k); if(sl){ sl.value=''; const nw=$('#r_'+k+'_new'); if(nw) nw.hidden=true; } const qi=$('#r_'+k+'_q'); if(qi) qi.value=''; if(row) row.hidden=true; const ad=$('#spAdd'); if(ad) ad.hidden=false; }
   else if(a==='editsub'){ const it=findPending(el.dataset.k); if(it&&it.kind==='person'){ S.editSub=it; S.editId=it.editOf||null; S.prefill=null; resetPhoto((it.payload&&it.payload.photo)||''); S.addTab='person'; gotoTab('add'); } }
   else if(a==='editmem'){ const id=el.dataset.id, m=S.memories[id]; if(m){ const t=prompt('ویرایش متن',m.text||''); if(t&&t.trim()&&t.trim()!==m.text){ await S.db.doc('memories/'+id).update({text:t.trim()}); S.memories[id]=Object.assign({},m,{text:t.trim()}); toast('ذخیره شد'); if(S.modal) $('#sheet').innerHTML=personSheet(S.modal); } } }
-  else if(a==='pback') setStep(Math.max(1,(S.pstep||1)-1));
-  else if(a==='pgo'){ const n=+el.dataset.n; if(n>1&&!step1Ok()) return; if(n>2&&!step2Ok()) return; setStep(n); }
   else if(a==='logout'){
     lsSet('shj_me',''); lsSet('shj_sess','');
     SB.tok=null; SB.refresh=null; SB.email='';
@@ -1311,7 +1404,7 @@ document.addEventListener('change',ev=>{
   if(t.id==='f_dead'){ const w=$('#deathWrap'); if(w) w.hidden=!t.checked; }
   else if(t.name==='f_mar'){ const w=$('#spouseWrap'); if(w) w.hidden=(t.value==='single'); }
   else if(t.id==='famSort'){ S.famSort=t.value; $('#famList').innerHTML=famList(computeStats()); }
-  else if(t.dataset&&t.dataset.rel){ const b=$('#r_'+t.dataset.rel+'_new'); if(b) b.hidden=t.value!=='__new'; }
+  else if(t.dataset&&t.dataset.rel){ const b=$('#r_'+t.dataset.rel+'_new'); if(b) b.hidden=t.value!=='__new'; const u=$('#r_'+t.dataset.rel+'_unk'); if(u) u.hidden=t.value!=='__unk'; t.classList.remove('err-field'); }
   else if(t.id==='f_photo'){ onPhotoPicked(t.files&&t.files[0]); }
 });
 document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&S.modal) closeModal(); });
