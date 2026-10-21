@@ -870,7 +870,7 @@ function render(){
     return;
   }
   root.innerHTML=`<header class="top"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">شجره‌نامه خانوادگی</div></div></div>
-    <div class="who"><span>${esc(fullName())}</span>${S.isAdmin?'<span class="pill adm">مدیر</span>':''}<button class="link" data-act="logout">تغییر نام</button></div></header>
+    <div class="who"><span>${esc(fullName())}</span>${S.isAdmin?'<span class="pill adm">مدیر</span>':''}<button class="link" data-act="logout" title="خروج و بازگشت به صفحه ورود">خروج</button></div></header>
     <nav class="nav" id="nav"></nav>${S.dbError?`<div class="note bad" style="margin-bottom:12px">ارتباط با پایگاه داده برقرار نیست (${esc(S.dbError)}). صفحه را دوباره باز کنید.</div>`:''}<main id="view"></main>`;
   renderNav(); renderView();
 }
@@ -993,7 +993,13 @@ document.addEventListener('click',async ev=>{
   if(a==='tab') gotoTab(el.dataset.tab);
   else if(a==='person'){ ev.preventDefault(); const r=$('#qres'); if(r) r.hidden=true; openModal(el.dataset.id); }
   else if(a==='close') closeModal();
-  else if(a==='logout'){ lsSet('shj_me',''); S.me=null; S.loginErr=''; render(); }
+  else if(a==='logout'){
+    lsSet('shj_me',''); lsSet('shj_sess','');
+    SB.tok=null; SB.refresh=null; SB.email='';
+    S.me=null; S.authed=false; S.isAdmin=false; S.adminLogin=false; S.loginErr='';
+    S.subsOn=false; S.db=null; S.people={}; S.memories={}; S.subs={}; S.mySub=null; S.T=null;
+    render();
+  }
   else if(a==='toggleadmin'){ S.adminLogin=!S.adminLogin; S.loginErr=''; render(); }
   else if(a==='mode'){ S.mode=el.dataset.m; lsSet('shj_mode2',S.mode); renderView(); }
   else if(a==='zoom'){ S.zoom=Math.min(1.6,Math.max(.5,S.zoom+(+el.dataset.d))); const z=$('#zoomer'); if(z) z.style.zoom=S.zoom; }
