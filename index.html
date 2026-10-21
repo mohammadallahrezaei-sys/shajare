@@ -395,7 +395,7 @@ function viewHome(){
   return `<div class="stack">
   <section class="card hero">
     <h2>سلام ${esc(S.me.first)} جان</h2>
-    <p>اینجا شجره‌نامهٔ خاندان الله‌رضایی است. خودتان و پدر و مادر و همسر و فرزندانتان را ثبت کنید و اگر خاطره یا ویژگی از کسی به یاد دارید بنویسید. اطلاعات پس از تأیید مدیر در شجره‌نامه دیده می‌شود.</p>
+    <p>اینجا شجره‌نامهٔ خاندان الله‌رضایی است. خودتان و پدر و مادر و همسر و فرزندانتان را ثبت کنید و اگر خاطره یا ویژگی از کسی به یاد دارید بنویسید. اطلاعات بلافاصله در شجره‌نامه دیده می‌شود و مدیر در صورت نیاز می‌تواند آن را اصلاح کند.</p>
     <div class="row">
       <button class="btn big" data-act="tab" data-tab="tree">مشاهدهٔ شجره‌نامه</button>
       <button class="btn ghost big" data-act="addme">ثبت اطلاعات خودم</button>
@@ -575,7 +575,7 @@ function personForm(){
    </div>
    <p class="muted small" style="margin:0">اگر پدر، مادر، همسر یا فرزند هنوز در فهرست نیست لازم نیست اول او را ثبت کنید. نامش را بنویسید؛ هر وقت خودش یا کس دیگری او را با همین نام ثبت کند، پیوند خودکار برقرار می‌شود.</p>
    <div id="dupMsg"></div>
-   <div class="row"><button class="btn" type="submit">${S.isAdmin?'ثبت در شجره‌نامه':'ارسال برای تأیید مدیر'}</button></div>
+   <div class="row"><button class="btn" type="submit">ثبت در شجره‌نامه</button></div>
   </form>`;
 }
 const KINDS={memory:['خاطره','یک خاطرهٔ شاخص از او…'],trait:['ویژگی','مثلاً: بسیار مهمان‌نواز و خوش‌قول بود…'],quote:['جمله‌ای از او','جمله‌ای که زیاد می‌گفت یا درباره‌اش می‌گویند…']};
@@ -586,8 +586,8 @@ function memoryForm(){
    <label class="f"><span>دربارهٔ چه کسی؟ *</span><select id="m_person"><option value="">— انتخاب کنید —</option>${arr.map(([id,r])=>`<option value="${esc(id)}" ${id===S.memFor?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')}</select></label>
    <div class="f"><span>چه می‌نویسید؟</span><div class="seg">${Object.entries(KINDS).map(([k,[l]],i)=>`<label><input type="radio" name="m_kind" value="${k}" ${i===0?'checked':''}><span>${l}</span></label>`).join('')}</div></div>
    <label class="f"><span>متن *</span><textarea id="m_text" placeholder="${esc(KINDS.memory[1])}" required></textarea></label>
-   <p class="muted small" style="margin:0">با نام شما (${esc(fullName())}) ثبت می‌شود و بعد از تأیید مدیر کنار نام آن فرد دیده می‌شود.</p>
-   <div class="row"><button class="btn" type="submit">${S.isAdmin?'ثبت':'ارسال برای تأیید مدیر'}</button></div>
+   <p class="muted small" style="margin:0">با نام شما (${esc(fullName())}) ثبت می‌شود و بلافاصله کنار نام آن فرد دیده می‌شود.</p>
+   <div class="row"><button class="btn" type="submit">ثبت</button></div>
   </form>`;
 }
 function codeBox(){
@@ -933,18 +933,15 @@ async function onPersonSubmit(){
   S.dup=false;
   const btn=$('#pform button[type=submit]'); btn.disabled=true;
   try{
-    if(S.isAdmin){
-      const id=S.editId||newId('p'), ref=S.db.doc('people/'+id);
-      if(S.editId) await ref.update(payload); else await ref.set(Object.assign({createdBy:fullName(),createdAt:Date.now()},payload));
-      toast(S.editId?'تغییرات ذخیره شد':'در شجره‌نامه ثبت شد');
-    } else {
-      const r=await deliver('person',payload,newId('p'),S.editId||'');
-      toast(r==='sent'?'ارسال شد. بعد از تأیید مدیر در شجره‌نامه دیده می‌شود':'متن ارسال را کپی کنید و برای مدیر بفرستید');
-    }
-    S.editId=null; S.prefill=null; resetPhoto('');
-    const wasCode=!!S.code; $('#formArea').innerHTML=personForm(); if(wasCode) showCode(); else $('#codeArea').innerHTML='';
+    if(!S.db) throw {message:'اتصال به پایگاه داده برقرار نیست. دوباره وارد شوید'};
+    const id=S.editId||newId('p'), ref=S.db.doc('people/'+id);
+    if(S.editId) await ref.update(payload);
+    else await ref.set(Object.assign({createdBy:fullName(),createdAt:Date.now()},payload));
+    toast(S.editId?'تغییرات ذخیره شد':'در شجره‌نامه ثبت شد');
+    S.editId=null; S.prefill=null; resetPhoto(''); S.code=null;
+    $('#formArea').innerHTML=personForm(); $('#codeArea').innerHTML='';
     const ms=$('#mySubs'); if(ms) ms.innerHTML=mySubsHTML();
-  }catch(e){ toast('ثبت نشد. دوباره تلاش کنید'); const bb=$('#pform button[type=submit]'); if(bb) bb.disabled=false; }
+  }catch(e){ console.error(e); const msg=(e&&(e.message||e.code))||''; toast(msg?('ثبت نشد: '+String(msg).slice(0,120)):'ثبت نشد. دوباره تلاش کنید'); const bb=$('#pform button[type=submit]'); if(bb) bb.disabled=false; }
 }
 async function onMemorySubmit(){
   const pid=val('#m_person'), text=val('#m_text'), kind=(document.querySelector('input[name=m_kind]:checked')||{}).value||'memory';
@@ -953,11 +950,13 @@ async function onMemorySubmit(){
   const payload={personId:pid,text,kind,author:fullName()};
   const btn=$('#mform button[type=submit]'); btn.disabled=true;
   try{
-    if(S.isAdmin){ await S.db.doc('memories/'+newId('m')).set(Object.assign({at:Date.now()},payload)); toast('ثبت شد'); }
-    else{ const r=await deliver('memory',payload,newId('m'),''); toast(r==='sent'?'ارسال شد. بعد از تأیید مدیر نمایش داده می‌شود':'متن ارسال را کپی کنید و برای مدیر بفرستید'); }
-    S.memFor=''; const wasCode=!!S.code; $('#formArea').innerHTML=memoryForm(); if(wasCode) showCode(); else $('#codeArea').innerHTML='';
+    if(!S.db) throw {message:'اتصال به پایگاه داده برقرار نیست. دوباره وارد شوید'};
+    await S.db.doc('memories/'+newId('m')).set(Object.assign({at:Date.now()},payload));
+    toast('ثبت شد');
+    S.memFor=''; S.code=null;
+    $('#formArea').innerHTML=memoryForm(); $('#codeArea').innerHTML='';
     const ms=$('#mySubs'); if(ms) ms.innerHTML=mySubsHTML();
-  }catch(e){ toast('ثبت نشد. دوباره تلاش کنید'); const b2=$('#mform button[type=submit]'); if(b2) b2.disabled=false; }
+  }catch(e){ console.error(e); const msg=(e&&(e.message||e.code))||''; toast(msg?('ثبت نشد: '+String(msg).slice(0,120)):'ثبت نشد. دوباره تلاش کنید'); const b2=$('#mform button[type=submit]'); if(b2) b2.disabled=false; }
 }
 
 function findPending(k){ const [uid,id]=k.split('|'); return pendingList().find(x=>x.uid===uid&&x.id===id); }
@@ -1035,7 +1034,7 @@ document.addEventListener('submit',ev=>{
 });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
-  if(id==='f_dead'){ $('#deathWrap').hidden=!ev.target.checked; }
+  if(id==='f_dead'){ const w=$('#deathWrap'); if(w) w.hidden=!ev.target.checked; }
   else if(id==='f_first'||id==='f_last'){ S.dup=false; const d=$('#dupMsg'); if(d) d.innerHTML=''; }
   else if(ev.target.name==='m_kind'){ const t=$('#m_text'); if(t) t.placeholder=KINDS[ev.target.value][1]; }
   else if(id==='q'){
@@ -1088,8 +1087,7 @@ function mkDb(){
     async get(){ const r=await sbFetch('/rest/v1/shj_docs?select=data&path=eq.'+enc(path)); return snapDoc(path,r&&r[0]?r[0].data:null); },
     async set(d){
       const row={path,parent:parentOf(path),data:d,updated_at:new Date().toISOString()};
-      if(S.isAdmin) await sbFetch('/rest/v1/shj_docs?on_conflict=path',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
-      else await sbFetch('/rest/v1/shj_docs',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(row)});
+      await sbFetch('/rest/v1/shj_docs?on_conflict=path',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
       poke();
     },
     async update(d){ const cur=await this.get(); if(!cur.exists) throw {code:'invalid_argument'}; await this.set(dmerge(cur.data(),d)); },
