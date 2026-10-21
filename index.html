@@ -1155,7 +1155,7 @@ function render(){
      <p style="margin:0">${S.adminLogin?'ورود مدیر':'برای ورود نام و نام خانوادگی خود و رمز خانواده را بنویسید. رمز را در گروه خانوادگی اعلام کرده‌اند.'}</p>
      <form id="loginForm" class="stack" style="gap:12px"><label class="f"><span>نام</span><input type="text" id="l_first" required autocomplete="given-name" value="${esc(m.first)}"></label>
      <label class="f"><span>نام خانوادگی</span><input type="text" id="l_last" required autocomplete="family-name" value="${esc(m.last)}"></label>
-     ${S.adminLogin?`<label class="f"><span>ایمیل مدیر</span><input type="text" id="l_email" dir="ltr" required autocomplete="username"></label><label class="f"><span>رمز مدیر</span><input type="password" id="l_pass" dir="ltr" required autocomplete="current-password"></label>`
+     ${S.adminLogin?`<label class="f"><span>ایمیل مدیر</span><input type="text" id="l_email" dir="ltr" readonly value="${esc(CFG.adminEmail)}" autocomplete="username" style="opacity:.8"></label><label class="f"><span>رمز مدیر</span><input type="password" id="l_pass" dir="ltr" required autocomplete="current-password"></label>`
        :(!S.authed?`<label class="f"><span>رمز خانواده</span><input type="password" id="l_code" required autocomplete="off"></label>`:'')}
      ${S.loginErr?`<div class="note bad">${esc(S.loginErr)}</div>`:''}
      <button class="btn big" type="submit">ورود</button></form>
@@ -1485,7 +1485,7 @@ async function doLogin(){
   const btn=document.querySelector('#loginForm button[type=submit]'); if(btn) btn.disabled=true;
   try{
     if(S.adminLogin){
-      await sbAuth({email:$('#l_email').value.trim(),password:$('#l_pass').value},'password');
+      await sbAuth({email:CFG.adminEmail,password:$('#l_pass').value},'password');
       if(SB.email.toLowerCase()!==CFG.adminEmail.toLowerCase()){ SB.tok=null; SB.refresh=null; lsSet('shj_sess',''); S.authed=false; throw {message:'این حساب مدیر نیست'}; }
       S.isAdmin=true;
     } else if(!S.authed){
