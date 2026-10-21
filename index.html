@@ -53,6 +53,16 @@ h3{font-size:1.15rem}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+option[value="__new"]{font-weight:700;color:var(--accent)}
+.rel>label.f>select{border-color:var(--accent)}
+
+.crop-bg{position:fixed;inset:0;background:rgba(5,15,12,.75);z-index:80;display:flex;align-items:center;justify-content:center;padding:12px}
+.crop-box{background:var(--surface);color:var(--ink);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:center;width:min(360px,100%);max-height:100%;overflow:auto}
+.crop-view{position:relative;width:300px;height:400px;max-width:100%;touch-action:none;cursor:grab;border-radius:8px;overflow:hidden;background:#222;user-select:none}
+.crop-view canvas{width:100%;height:100%;display:block}
+.crop-oval{position:absolute;left:25%;top:17%;width:50%;height:50%;border:2px dashed rgba(255,255,255,.9);border-radius:50%;pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.crop-box input[type=range]{width:100%}
 .muted{color:var(--muted)}
 .small{font-size:.85rem}
 .num{font-variant-numeric:tabular-nums}
@@ -371,6 +381,7 @@ function pendingItems(){
   if(S.isAdmin){ pendingList().forEach(it=>{ if(it.kind==='person'&&!it.editOf&&!out[it.id]) out[it.id]={p:it.payload,pending:true}; }); }
   return out;
 }
+function placeInfo(p){ return [p.birthPlace?'متولد '+p.birthPlace:(p.place||''),p.residence?'ساکن '+p.residence:''].filter(Boolean).join('، '); }
 function pickLabel(id,rec){
   const p=rec.p; let s=full(p);
   if(p.bY) s+=' ('+fa(p.bY)+')';
@@ -395,7 +406,7 @@ function viewHome(){
   return `<div class="stack">
   <section class="card hero">
     <h2>سلام ${esc(S.me.first)} جان</h2>
-    <p>اینجا شجره‌نامهٔ خاندان الله‌رضایی است. خودتان و پدر و مادر و همسر و فرزندانتان را ثبت کنید و اگر خاطره یا ویژگی از کسی به یاد دارید بنویسید. اطلاعات بلافاصله در شجره‌نامه دیده می‌شود و مدیر در صورت نیاز می‌تواند آن را اصلاح کند.</p>
+    <p>اینجا شجره‌نامهٔ خاندان الله‌رضایی است. خودتان و پدر و مادر و همسر و فرزندانتان را ثبت کنید و اگر خاطره یا ویژگی از کسی به یاد دارید بنویسید. اطلاعات پس از تأیید مدیر در شجره‌نامه دیده می‌شود.</p>
     <div class="row">
       <button class="btn big" data-act="tab" data-tab="tree">مشاهدهٔ شجره‌نامه</button>
       <button class="btn ghost big" data-act="addme">ثبت اطلاعات خودم</button>
@@ -453,14 +464,14 @@ function computeStats(){
   const byAge=living.filter(p=>age(p)!=null).sort((a,b)=>age(b)-age(a));
   const lifespans=real.filter(p=>p.dead&&p.bY&&p.dY&&p.dY>=p.bY).map(p=>p.dY-p.bY);
   const months=Array(12).fill(0); real.forEach(p=>{ if(p.bM) months[p.bM-1]++; });
-  const top=k=>{ const c={}; real.forEach(p=>{ const v=nn(p[k]); if(v) c[v]=(c[v]||0)+1; }); return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5); };
+  const top=k=>{ const c={}; real.forEach(p=>{ const v=nn(typeof k==='function'?k(p):p[k]); if(v) c[v]=(c[v]||0)+1; }); return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5); };
   const pc=f=>real.length?Math.round(real.filter(f).length/real.length*100):0;
   const memCount={}; Object.values(S.memories).forEach(x=>{ memCount[x.personId]=(memCount[x.personId]||0)+1; });
   const mostMem=Object.entries(memCount).filter(([id])=>P[id]).sort((a,b)=>b[1]-a[1]).slice(0,3);
   return {total:all.length,m,f,dead,alive:all.length-dead,gens,fams,famCount:withKids.length,
     avg:withKids.length?withKids.reduce((s,x)=>s+x.kids,0)/withKids.length:0,mem:Object.keys(S.memories).length,
     virt:T.virt.size,couples:T.couples,groups,oldest:byAge[0],youngest:byAge[byAge.length-1],
-    lifespan:lifespans.length?lifespans.reduce((a,b)=>a+b,0)/lifespans.length:0,months,places:top('place'),jobs:top('job'),
+    lifespan:lifespans.length?lifespans.reduce((a,b)=>a+b,0)/lifespans.length:0,months,places:top(p=>p.residence||p.birthPlace||p.place),jobs:top('job'),
     comp:{birth:pc(p=>p.bY),date:pc(p=>p.bY&&p.bM&&p.bD),photo:pc(p=>p.photo),parents:pc(p=>p.fatherId||p.motherId||(p.fatherRef&&p.fatherRef.name)||(p.motherRef&&p.motherRef.name))},
     mostMem,realCount:real.length};
 }
@@ -506,7 +517,7 @@ function viewStats(){
     ${fact('مسن‌ترین عضو زنده',pname(st.oldest))}${fact('جوان‌ترین عضو',pname(st.youngest))}
     ${fact('میانگین عمر درگذشتگان',st.lifespan?fa(Math.round(st.lifespan))+' سال':'—')}${fact('میانگین فرزند هر خانواده',fa(st.avg.toFixed(1)))}
     ${fact('بیشترین یادگار نوشته‌شده',st.mostMem.length?st.mostMem.map(([id,c])=>esc(full(P[id]))+' ('+fa(c)+')').join('، '):'—')}
-    ${fact('شهرهای پرتکرار',st.places.length?st.places.map(([k,c])=>esc(k)+' ('+fa(c)+')').join('، '):'—')}
+    ${fact('شهرهای پرتکرار (محل سکونت)',st.places.length?st.places.map(([k,c])=>esc(k)+' ('+fa(c)+')').join('، '):'—')}
     ${fact('شغل‌های پرتکرار',st.jobs.length?st.jobs.map(([k,c])=>esc(k)+' ('+fa(c)+')').join('، '):'—')}</div></section>
   <section class="card"><h3>کامل بودن اطلاعات</h3><div class="bars" style="margin-top:12px">
     ${barRows([['سال تولد',st.comp.birth],['تاریخ کامل',st.comp.date],['عکس',st.comp.photo],['پدر یا مادر',st.comp.parents]].map(([l,c])=>[l,c]),100)}</div>
@@ -521,7 +532,7 @@ function viewStats(){
 /* ---------- add tab ---------- */
 function opts(filter,sel,self,withNew){
   const arr=Object.entries(pendingItems()).filter(([id,r])=>id!==self&&(!filter||filter(r.p))).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa'));
-  return '<option value="">— نامشخص —</option>'+(withNew?`<option value="__new" ${sel==='__new'?'selected':''}>در فهرست نیست؛ نامش را می‌نویسم</option>`:'')+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('');
+  return (withNew?`<option value="__new" ${sel==='__new'?'selected':''}>✍️ در فهرست نیست؛ نامش را می‌نویسم</option>`:'')+`<option value="" ${sel?'':'selected'}>— نامشخص —</option>`+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('');
 }
 function dateW(p,v){
   v=v||{};
@@ -547,7 +558,7 @@ function photoBlock(){
   return `<div class="f wide"><span>عکس (اختیاری)</span><div class="photo-row">
     ${S.photo?`<img class="ph" id="phPrev" src="${esc(S.photo)}" alt="">`:`<div class="ph" id="phPrev" style="display:flex;align-items:center;justify-content:center;color:var(--muted)">بدون عکس</div>`}
     <div class="stack" style="gap:8px;flex:1 1 220px"><input type="file" id="f_photo" accept="image/*" style="max-width:100%">
-      <span class="muted small" id="phMsg">${esc(S.photoMsg||'عکس چهره‌دار انتخاب کنید. خودکار به قاب استاندارد ۳×۴ با چهره در مرکز درمی‌آید تا همهٔ عکس‌ها یک‌شکل شوند.')}</span>
+      <span class="muted small" id="phMsg">${esc(S.photoMsg||'عکسی انتخاب کنید که چهره در آن واضح و رو به دوربین باشد. بعد از انتخاب، خودتان آن را در قاب ۳×۴ تنظیم می‌کنید تا همهٔ عکس‌ها یک‌شکل شوند.')}</span>
       ${S.photo?'<button type="button" class="btn ghost sm" data-act="rmphoto" style="align-self:flex-start">حذف عکس</button>':''}</div></div></div>`;
 }
 function personForm(){
@@ -569,13 +580,14 @@ function personForm(){
     ${relBlock('mother','مادر',p=>p.gender==='f',v)}
     ${relBlock('spouse','همسر',null,v)}
     <label class="f wide"><span>فرزندان (اختیاری؛ هر نام در یک خط)</span><textarea id="f_kids" style="min-height:70px" placeholder="مثلاً: علی الله‌رضایی">${esc(v.kidNames||'')}</textarea></label>
-    <label class="f"><span>محل تولد یا سکونت</span><input type="text" id="f_place" value="${esc(v.place||'')}"></label>
+    <label class="f"><span>محل تولد</span><input type="text" id="f_bplace" value="${esc(v.birthPlace||v.place||'')}"></label>
+    <label class="f"><span>محل سکونت</span><input type="text" id="f_resid" value="${esc(v.residence||'')}"></label>
     <label class="f"><span>شغل</span><input type="text" id="f_job" value="${esc(v.job||'')}"></label>
     <label class="f wide"><span>توضیح کوتاه (اختیاری)</span><input type="text" id="f_note" value="${esc(v.note||'')}"></label>
    </div>
    <p class="muted small" style="margin:0">اگر پدر، مادر، همسر یا فرزند هنوز در فهرست نیست لازم نیست اول او را ثبت کنید. نامش را بنویسید؛ هر وقت خودش یا کس دیگری او را با همین نام ثبت کند، پیوند خودکار برقرار می‌شود.</p>
    <div id="dupMsg"></div>
-   <div class="row"><button class="btn" type="submit">ثبت در شجره‌نامه</button></div>
+   <div class="row"><button class="btn" type="submit">${S.isAdmin?'ثبت در شجره‌نامه':'ارسال برای تأیید مدیر'}</button></div>
   </form>`;
 }
 const KINDS={memory:['خاطره','یک خاطرهٔ شاخص از او…'],trait:['ویژگی','مثلاً: بسیار مهمان‌نواز و خوش‌قول بود…'],quote:['جمله‌ای از او','جمله‌ای که زیاد می‌گفت یا درباره‌اش می‌گویند…']};
@@ -586,8 +598,8 @@ function memoryForm(){
    <label class="f"><span>دربارهٔ چه کسی؟ *</span><select id="m_person"><option value="">— انتخاب کنید —</option>${arr.map(([id,r])=>`<option value="${esc(id)}" ${id===S.memFor?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')}</select></label>
    <div class="f"><span>چه می‌نویسید؟</span><div class="seg">${Object.entries(KINDS).map(([k,[l]],i)=>`<label><input type="radio" name="m_kind" value="${k}" ${i===0?'checked':''}><span>${l}</span></label>`).join('')}</div></div>
    <label class="f"><span>متن *</span><textarea id="m_text" placeholder="${esc(KINDS.memory[1])}" required></textarea></label>
-   <p class="muted small" style="margin:0">با نام شما (${esc(fullName())}) ثبت می‌شود و بلافاصله کنار نام آن فرد دیده می‌شود.</p>
-   <div class="row"><button class="btn" type="submit">ثبت</button></div>
+   <p class="muted small" style="margin:0">با نام شما (${esc(fullName())}) ثبت می‌شود و بعد از تأیید مدیر کنار نام آن فرد دیده می‌شود.</p>
+   <div class="row"><button class="btn" type="submit">${S.isAdmin?'ثبت':'ارسال برای تأیید مدیر'}</button></div>
   </form>`;
 }
 function codeBox(){
@@ -633,7 +645,7 @@ function pendCard(it){
     const rn=(key,l)=>{ const nm=p[key+'Id']?nameOf(p[key+'Id']):(p[key+'Ref']&&p[key+'Ref'].name)||''; if(nm) rel.push(l+': '+nm); };
     rn('father','پدر'); rn('mother','مادر'); rn('spouse','همسر'); if(p.kidNames) rel.push('فرزندان: '+String(p.kidNames).split('\n').filter(Boolean).join('، '));
     body=`<div class="row" style="gap:10px;align-items:flex-start">${p.photo?`<img class="av" style="width:54px;height:72px;border-radius:8px" src="${esc(p.photo)}" alt="">`:''}<div><b>${it.editOf?'پیشنهاد ویرایش برای '+esc(nameOf(it.editOf))+' ← ':'فرد جدید: '}${esc(full(p))}</b>
-      <div class="muted small">${[gLabel(p.gender),dstr(p.bY,p.bM,p.bD)?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead?('درگذشته'+(p.dY?' '+dstr(p.dY,p.dM,p.dD):'')):'',p.place,p.job].filter(Boolean).map(esc).join('، ')}</div>
+      <div class="muted small">${[gLabel(p.gender),dstr(p.bY,p.bM,p.bD)?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead?('درگذشته'+(p.dY?' '+dstr(p.dY,p.dM,p.dD):'')):'',placeInfo(p),p.job].filter(Boolean).map(esc).join('، ')}</div>
       ${rel.length?`<div class="muted small">${rel.map(esc).join('، ')}</div>`:''}${p.note?`<div class="small">${esc(p.note)}</div>`:''}</div></div>`;
   } else {
     body=`<b>${KINDS[it.payload.kind||'memory'][0]} دربارهٔ ${esc(nameOf(it.payload.personId))}</b><div class="mem"><p>${esc(it.payload.text)}</p></div>`;
@@ -668,7 +680,7 @@ function personSheet(id){
   const rows=[['پدر',P[p.fatherId]?[p.fatherId]:[]],['مادر',P[p.motherId]?[p.motherId]:[]],['همسر',[...spouses]],['فرزندان',kids],['برادر و خواهر',sib]].filter(r=>r[1].length);
   const mems=Object.entries(S.memories).filter(([,m])=>m.personId===id).sort((a,b)=>(a[1].at||0)-(b[1].at||0));
   const a=ageNow(p);
-  const info=[gLabel(p.gender),p.dead?'درگذشته':'در قید حیات',dstr(p.bY,p.bM,p.bD)?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead&&dstr(p.dY,p.dM,p.dD)?'درگذشت '+dstr(p.dY,p.dM,p.dD):'',a!=null?(p.dead?fa(a)+' سال عمر کرد':fa(a)+' ساله'):'',p.place,p.job].filter(Boolean);
+  const info=[gLabel(p.gender),p.dead?'درگذشته':'در قید حیات',dstr(p.bY,p.bM,p.bD)?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead&&dstr(p.dY,p.dM,p.dD)?'درگذشت '+dstr(p.dY,p.dM,p.dD):'',a!=null?(p.dead?fa(a)+' سال عمر کرد':fa(a)+' ساله'):'',placeInfo(p),p.job].filter(Boolean);
   const cf=S.confirm;
   const memGroup=(k,title)=>{ const l=mems.filter(([,m])=>(m.kind||'memory')===k); if(!l.length) return ''; return `<div class="stack" style="gap:8px"><span class="kind">${title}</span>${l.map(([mid,m])=>`<div class="mem"><p>${esc(m.text)}</p><div class="row" style="justify-content:space-between"><span class="muted small">— ${esc(m.author||'')}</span>${S.isAdmin?`<button class="btn danger sm" data-act="delmem" data-id="${esc(mid)}">${cf==='m'+mid?'مطمئنم، حذف شود':'حذف'}</button>`:''}</div></div>`).join('')}</div>`; };
   return `<button class="btn ghost sm x" data-act="close">بستن</button>
@@ -812,14 +824,6 @@ async function standardPhoto(file){
   const s0=Math.min(1,1280/Math.max(iw,ih)), tw=Math.round(iw*s0), th=Math.round(ih*s0);
   const src=document.createElement('canvas'); src.width=tw; src.height=th; src.getContext('2d').drawImage(bmp,0,0,tw,th);
   let face=null, mode='center';
-  if(S.sample){
-    try{
-      const blob=await new Promise(r=>src.toBlob(r,'image/jpeg',.85));
-      const prompt='This is a photo of one person. Locate the main person\'s head (top of hair to bottom of chin, full width of the head). Reply with only JSON: {"found":true,"x":0.30,"y":0.15,"w":0.35,"h":0.40} where x,y are the top-left corner of the head box and w,h its size, all as fractions (0 to 1) of the image width and height. If no face is visible reply {"found":false}.';
-      const r=await S.sample.json(prompt,{images:blob,modelTier:'quick'});
-      if(r&&r.found&&r.w>0.03&&r.h>0.03&&r.x>=0&&r.y>=0&&r.x+r.w<=1.05&&r.y+r.h<=1.05){ face={x:r.x*tw,y:r.y*th,w:r.w*tw,h:r.h*th}; mode='ai'; }
-    }catch(e){ face=null; }
-  }
   if(!face&&'FaceDetector' in window){ try{ const fd=new window.FaceDetector({maxDetectedFaces:1}); const r=await fd.detect(src); if(r&&r[0]){ const b=r[0].boundingBox; face={x:b.x,y:b.y,w:b.width,h:b.height}; mode='ai'; } }catch(e){} }
   let fw,fh,fx,fy; // frame in source pixels (3:4)
   if(face){ fh=face.h/0.50; fw=fh*PW/PH; fx=face.x+face.w/2-fw/2; fy=face.y-0.17*fh; }
@@ -835,13 +839,61 @@ async function standardPhoto(file){
     if(hi-lo>40){ const sc=255/(hi-lo), mix=.6; for(let i=0;i<a.length;i+=4) for(let j=0;j<3;j++){ const v=(a[i+j]-lo)*sc; a[i+j]=Math.max(0,Math.min(255,a[i+j]*(1-mix)+v*mix)); } o.putImageData(d,0,0); } }catch(e){}
   return {data:out.toDataURL('image/jpeg',.78),mode};
 }
+
+function autoLevels(o){
+  try{ const d=o.getImageData(0,0,PW,PH), a=d.data, hist=new Uint32Array(256);
+    for(let i=0;i<a.length;i+=4) hist[Math.round(.299*a[i]+.587*a[i+1]+.114*a[i+2])]++;
+    const tot=PW*PH; let acc=0,lo=0,hi=255; for(let i=0;i<256;i++){ acc+=hist[i]; if(acc>tot*.01){lo=i;break;} } acc=0; for(let i=255;i>=0;i--){ acc+=hist[i]; if(acc>tot*.01){hi=i;break;} }
+    if(hi-lo>40){ const sc=255/(hi-lo), mix=.6; for(let i=0;i<a.length;i+=4) for(let j=0;j<3;j++){ const v=(a[i+j]-lo)*sc; a[i+j]=Math.max(0,Math.min(255,a[i+j]*(1-mix)+v*mix)); } o.putImageData(d,0,0); } }catch(e){}
+}
+/* manual 3:4 crop: drag to move, slider/wheel to zoom; face auto-placed when the browser supports FaceDetector */
+async function cropPhoto(file){
+  const bmp=await toBitmap(file), iw=bmp.width, ih=bmp.height;
+  const s0=Math.min(1,1600/Math.max(iw,ih)), tw=Math.round(iw*s0), th=Math.round(ih*s0);
+  const src=document.createElement('canvas'); src.width=tw; src.height=th; src.getContext('2d').drawImage(bmp,0,0,tw,th);
+  const VW=300, VH=400, base=Math.max(VW/tw,VH/th);
+  let z=1, ox=0, oy=0, face=null;
+  if('FaceDetector' in window){ try{ const r=await new window.FaceDetector({maxDetectedFaces:1}).detect(src); if(r&&r[0]){ const b=r[0].boundingBox; face={x:b.x,y:b.y,w:b.width,h:b.height}; } }catch(e){} }
+  const clamp=()=>{ const sc=base*z, mx=Math.max(0,(tw*sc-VW)/2), my=Math.max(0,(th*sc-VH)/2); ox=Math.max(-mx,Math.min(mx,ox)); oy=Math.max(-my,Math.min(my,oy)); };
+  if(face){ z=Math.max(1,Math.min(4,(0.5*VH/face.h)/base)); const sc=base*z; ox=-(face.x+face.w/2-tw/2)*sc; oy=0.17*VH-VH/2-(face.y-th/2)*sc; }
+  else { oy=Math.max(0,(th*base-VH)/2)*0.6; }
+  clamp();
+  return new Promise(resolve=>{
+    const bg=document.createElement('div'); bg.className='crop-bg';
+    bg.innerHTML=`<div class="crop-box" role="dialog" aria-modal="true"><div style="font-weight:700">تنظیم عکس</div>
+      <div class="muted small" style="text-align:center">عکس را با انگشت یا ماوس جابه‌جا کنید تا چهره داخل بیضی بیفتد. با لغزنده بزرگ‌نمایی کنید.</div>
+      <div class="crop-view" id="cv"><canvas width="${VW*2}" height="${VH*2}"></canvas><div class="crop-oval"></div></div>
+      <input type="range" id="cz" min="1" max="4" step="0.01" value="${z}" aria-label="بزرگ‌نمایی">
+      <div class="row"><button type="button" class="btn" id="cok">تأیید</button><button type="button" class="btn ghost" id="cno">انصراف</button></div></div>`;
+    document.body.appendChild(bg);
+    const view=bg.querySelector('#cv'), cv=view.querySelector('canvas'), c=cv.getContext('2d'), zr=bg.querySelector('#cz');
+    const draw=(ctx,k,w,h)=>{ const sc=base*z*k; ctx.fillStyle='#d6e0dc'; ctx.fillRect(0,0,w,h); ctx.drawImage(src,w/2+ox*k-tw*sc/2,h/2+oy*k-th*sc/2,tw*sc,th*sc); };
+    const paint=()=>draw(c,2,VW*2,VH*2);
+    paint();
+    const rect=()=>view.getBoundingClientRect();
+    let drag=null;
+    view.addEventListener('pointerdown',e=>{ drag={x:e.clientX,y:e.clientY,ox,oy}; view.setPointerCapture(e.pointerId); view.style.cursor='grabbing'; });
+    view.addEventListener('pointermove',e=>{ if(!drag) return; const f=VW/rect().width; ox=drag.ox+(e.clientX-drag.x)*f; oy=drag.oy+(e.clientY-drag.y)*f; clamp(); paint(); });
+    const up=()=>{ drag=null; view.style.cursor='grab'; };
+    view.addEventListener('pointerup',up); view.addEventListener('pointercancel',up);
+    view.addEventListener('wheel',e=>{ e.preventDefault(); z=Math.max(1,Math.min(4,z*(e.deltaY<0?1.06:.94))); zr.value=z; clamp(); paint(); },{passive:false});
+    zr.addEventListener('input',()=>{ z=parseFloat(zr.value)||1; clamp(); paint(); });
+    const done=v=>{ bg.remove(); resolve(v); };
+    bg.querySelector('#cno').onclick=()=>done(null);
+    bg.querySelector('#cok').onclick=()=>{
+      const out=document.createElement('canvas'); out.width=PW; out.height=PH; const o=out.getContext('2d');
+      draw(o,PW/VW,PW,PH); autoLevels(o); done(out.toDataURL('image/jpeg',.82));
+    };
+  });
+}
 async function onPhotoPicked(file){
   const msg=$('#phMsg'); if(!file) return;
   if(msg) msg.textContent='در حال تنظیم عکس…';
   try{
-    const r=await standardPhoto(file);
-    S.photo=r.data; S.photoDirty=true;
-    S.photoMsg=r.mode==='ai'?'چهره پیدا شد و عکس در قاب استاندارد قرار گرفت.':'عکس از وسط برش خورد. اگر چهره مرکز قاب نیست، عکسی نزدیک‌تر انتخاب کنید.';
+    const data=await cropPhoto(file);
+    if(!data){ S.photoMsg='انتخاب عکس لغو شد.'; const m3=$('#phMsg'); if(m3) m3.textContent=S.photoMsg; const fi=$('#f_photo'); if(fi) fi.value=''; return; }
+    S.photo=data; S.photoDirty=true;
+    S.photoMsg='عکس در قاب استاندارد ۳×۴ ذخیره شد. برای تنظیم دوباره، همان عکس را دوباره انتخاب کنید.';
   }catch(e){ S.photoMsg='این فایل به‌عنوان عکس خوانده نشد. فایل دیگری انتخاب کنید.'; }
   const fa2=$('#formArea'); if(!fa2) return;
   const prev=$('#phPrev'); if(prev&&S.photo){ const im=document.createElement('img'); im.className='ph'; im.id='phPrev'; im.src=S.photo; im.alt=''; prev.replaceWith(im); }
@@ -924,7 +976,7 @@ async function onPersonSubmit(){
   const fa_=readRel('father'), mo=readRel('mother'), sp=readRel('spouse');
   const payload={first,last,gender:g,bY:b.y,bM:b.m,bD:b.d,dead,dY:d.y,dM:d.m,dD:d.d,
     fatherId:fa_.id,fatherRef:fa_.ref,motherId:mo.id,motherRef:mo.ref,spouseId:sp.id,spouseRef:sp.ref,
-    kidNames:val('#f_kids'),place:val('#f_place'),job:val('#f_job'),note:val('#f_note')};
+    kidNames:val('#f_kids'),place:'',birthPlace:val('#f_bplace'),residence:val('#f_resid'),job:val('#f_job'),note:val('#f_note')};
   if(S.photoDirty) payload.photo=S.photo;
   if(!S.editId&&!S.dup){
     const dup=Object.values(S.people).find(p=>p.first===first&&p.last===last&&(p.bY||0)===b.y);
@@ -933,15 +985,18 @@ async function onPersonSubmit(){
   S.dup=false;
   const btn=$('#pform button[type=submit]'); btn.disabled=true;
   try{
-    if(!S.db) throw {message:'اتصال به پایگاه داده برقرار نیست. دوباره وارد شوید'};
-    const id=S.editId||newId('p'), ref=S.db.doc('people/'+id);
-    if(S.editId) await ref.update(payload);
-    else await ref.set(Object.assign({createdBy:fullName(),createdAt:Date.now()},payload));
-    toast(S.editId?'تغییرات ذخیره شد':'در شجره‌نامه ثبت شد');
-    S.editId=null; S.prefill=null; resetPhoto(''); S.code=null;
-    $('#formArea').innerHTML=personForm(); $('#codeArea').innerHTML='';
+    if(S.isAdmin){
+      const id=S.editId||newId('p'), ref=S.db.doc('people/'+id);
+      if(S.editId) await ref.update(payload); else await ref.set(Object.assign({createdBy:fullName(),createdAt:Date.now()},payload));
+      toast(S.editId?'تغییرات ذخیره شد':'در شجره‌نامه ثبت شد');
+    } else {
+      const r=await deliver('person',payload,newId('p'),S.editId||'');
+      toast(r==='sent'?'ارسال شد. بعد از تأیید مدیر در شجره‌نامه دیده می‌شود':'متن ارسال را کپی کنید و برای مدیر بفرستید');
+    }
+    S.editId=null; S.prefill=null; resetPhoto('');
+    const wasCode=!!S.code; $('#formArea').innerHTML=personForm(); if(wasCode) showCode(); else $('#codeArea').innerHTML='';
     const ms=$('#mySubs'); if(ms) ms.innerHTML=mySubsHTML();
-  }catch(e){ console.error(e); const msg=(e&&(e.message||e.code))||''; toast(msg?('ثبت نشد: '+String(msg).slice(0,120)):'ثبت نشد. دوباره تلاش کنید'); const bb=$('#pform button[type=submit]'); if(bb) bb.disabled=false; }
+  }catch(e){ console.error(e); const dm=$('#dupMsg'); if(dm) dm.innerHTML='<div class="note bad" dir="ltr" style="text-align:left;word-break:break-all">'+esc((e&&e.message)||JSON.stringify(e))+'</div>'; toast('ثبت نشد'+(e&&e.code?' ('+e.code+')':'')); const bb=$('#pform button[type=submit]'); if(bb) bb.disabled=false; }
 }
 async function onMemorySubmit(){
   const pid=val('#m_person'), text=val('#m_text'), kind=(document.querySelector('input[name=m_kind]:checked')||{}).value||'memory';
@@ -950,13 +1005,11 @@ async function onMemorySubmit(){
   const payload={personId:pid,text,kind,author:fullName()};
   const btn=$('#mform button[type=submit]'); btn.disabled=true;
   try{
-    if(!S.db) throw {message:'اتصال به پایگاه داده برقرار نیست. دوباره وارد شوید'};
-    await S.db.doc('memories/'+newId('m')).set(Object.assign({at:Date.now()},payload));
-    toast('ثبت شد');
-    S.memFor=''; S.code=null;
-    $('#formArea').innerHTML=memoryForm(); $('#codeArea').innerHTML='';
+    if(S.isAdmin){ await S.db.doc('memories/'+newId('m')).set(Object.assign({at:Date.now()},payload)); toast('ثبت شد'); }
+    else{ const r=await deliver('memory',payload,newId('m'),''); toast(r==='sent'?'ارسال شد. بعد از تأیید مدیر نمایش داده می‌شود':'متن ارسال را کپی کنید و برای مدیر بفرستید'); }
+    S.memFor=''; const wasCode=!!S.code; $('#formArea').innerHTML=memoryForm(); if(wasCode) showCode(); else $('#codeArea').innerHTML='';
     const ms=$('#mySubs'); if(ms) ms.innerHTML=mySubsHTML();
-  }catch(e){ console.error(e); const msg=(e&&(e.message||e.code))||''; toast(msg?('ثبت نشد: '+String(msg).slice(0,120)):'ثبت نشد. دوباره تلاش کنید'); const b2=$('#mform button[type=submit]'); if(b2) b2.disabled=false; }
+  }catch(e){ toast('ثبت نشد. دوباره تلاش کنید'); const b2=$('#mform button[type=submit]'); if(b2) b2.disabled=false; }
 }
 
 function findPending(k){ const [uid,id]=k.split('|'); return pendingList().find(x=>x.uid===uid&&x.id===id); }
@@ -1034,7 +1087,7 @@ document.addEventListener('submit',ev=>{
 });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
-  if(id==='f_dead'){ const w=$('#deathWrap'); if(w) w.hidden=!ev.target.checked; }
+  if(id==='f_dead'){ $('#deathWrap').hidden=!ev.target.checked; }
   else if(id==='f_first'||id==='f_last'){ S.dup=false; const d=$('#dupMsg'); if(d) d.innerHTML=''; }
   else if(ev.target.name==='m_kind'){ const t=$('#m_text'); if(t) t.placeholder=KINDS[ev.target.value][1]; }
   else if(id==='q'){
@@ -1087,7 +1140,11 @@ function mkDb(){
     async get(){ const r=await sbFetch('/rest/v1/shj_docs?select=data&path=eq.'+enc(path)); return snapDoc(path,r&&r[0]?r[0].data:null); },
     async set(d){
       const row={path,parent:parentOf(path),data:d,updated_at:new Date().toISOString()};
-      await sbFetch('/rest/v1/shj_docs?on_conflict=path',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
+      if(S.isAdmin){
+        const upd=await sbFetch('/rest/v1/shj_docs?path=eq.'+enc(path),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({data:d,updated_at:row.updated_at})});
+        if(!upd||!upd.length) await sbFetch('/rest/v1/shj_docs',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(row)});
+      }
+      else await sbFetch('/rest/v1/shj_docs',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(row)});
       poke();
     },
     async update(d){ const cur=await this.get(); if(!cur.exists) throw {code:'invalid_argument'}; await this.set(dmerge(cur.data(),d)); },
