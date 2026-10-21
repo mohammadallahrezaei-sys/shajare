@@ -225,6 +225,25 @@ textarea{min-height:110px;resize:vertical}
 .loginbox{max-width:440px;margin:8vh auto 0}
 textarea.code{direction:ltr;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;min-height:70px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* --- فرم فشرده و مناسب موبایل --- */
+details.more{border:1px dashed var(--line);border-radius:8px;padding:6px 10px}
+details.more>summary{cursor:pointer;font-size:.88rem;color:var(--muted);padding:4px 0;list-style:none}
+details.more>summary::before{content:"＋ "}
+details.more[open]>summary::before{content:"－ "}
+details.more[open]>summary{margin-bottom:8px}
+.rel{padding:0;border:0;gap:8px}
+#pform .sprow{padding:8px}
+@media (max-width:600px){
+  #pform{padding:12px;gap:12px}
+  #pform .fields{grid-template-columns:1fr;gap:10px}
+  #pform input[type=text],#pform select,#pform textarea{font-size:16px;padding:11px 10px;min-height:44px}
+  #pform .seg label{padding:11px 10px;min-height:44px}
+  #pform .dw{grid-template-columns:1fr 1.4fr 1.2fr}
+  .stepper button{flex-direction:row;justify-content:center;font-size:.8rem;padding:8px 2px;gap:4px}
+  #pform .navrow{position:sticky;bottom:0;background:var(--surface);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));margin:0 -12px -12px;padding-inline:12px;border-top:1px solid var(--line);z-index:5}
+  #pform .navrow .btn{flex:1 1 0;padding:12px 8px;font-size:1rem}
+}
 </style>
 
 <div class="wrap" id="root"></div>
@@ -586,7 +605,7 @@ function viewStats(){
 function opts(filter,sel,self,withNew,q){
   const nq=q?nn(q):'';
   const arr=Object.entries(pendingItems()).filter(([id,r])=>id!==self&&(!filter||filter(r.p))&&(!nq||id===sel||nn(pickLabel(id,r)).includes(nq))).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa'));
-  return (withNew?`<option value="__new" ${sel==='__new'?'selected':''}>✍️ در فهرست نیست؛ نامش را می‌نویسم</option>`:'')+`<option value="" ${sel?'':'selected'}>— نامشخص —</option>`+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')+((nq&&!arr.length)?'<option value="" disabled>نتیجه‌ای پیدا نشد؛ گزینهٔ «در فهرست نیست» را بزنید</option>':'');
+  return (withNew?`<option value="__new" ${sel==='__new'?'selected':''}>✍️ در فهرست نیست (نام را می‌نویسم)</option>`:'')+`<option value="" ${sel?'':'selected'}>— نامشخص / بعداً —</option>`+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')+((nq&&!arr.length)?'<option value="" disabled>نتیجه‌ای پیدا نشد؛ گزینهٔ «در فهرست نیست» را بزنید</option>':'');
 }
 function yearOpts(sel){
   const hi=Math.max(nowYear,sel||0), lo=Math.min(1250,sel||1250); let o='';
@@ -607,10 +626,12 @@ function readDate(p){
 }
 function relBlock(key,label,filter,v){
   const id=v[key+'Id']||'', ref=v[key+'Ref']||{}, sel=id||(ref.name?'__new':'');
-  return `<div class="rel wide"><input type="text" class="relq" id="r_${key}_q" data-relq="${key}" placeholder="🔍 جستجوی نام ${label} در فهرست…" aria-label="جستجوی ${label}" autocomplete="off"><label class="f"><span>${label}</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,true)}</select></label>
-   <div id="r_${key}_new" ${sel==='__new'?'':'hidden'}><div class="fields">
-     <label class="f"><span>نام و نام خانوادگی ${label}</span><input type="text" id="r_${key}_n" value="${esc(ref.name||'')}"></label>
-     <div class="f"><span>تاریخ تولد ${label} (هر چه می‌دانید)</span>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</div></div>
+  const many=Object.keys(pendingItems()).length>8;
+  const hasD=!!(ref.y||ref.m||ref.d);
+  return `<div class="rel wide">${many?`<input type="text" class="relq" id="r_${key}_q" data-relq="${key}" placeholder="🔍 جستجوی ${label}…" aria-label="جستجوی ${label}" autocomplete="off">`:''}<label class="f"><span>${label}</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,true)}</select></label>
+   <div id="r_${key}_new" ${sel==='__new'?'':'hidden'} class="stack" style="gap:8px">
+     <label class="f"><span>نام و نام خانوادگی ${label}</span><input type="text" id="r_${key}_n" value="${esc(ref.name||'')}" placeholder="مثلاً: علی الله‌رضایی"></label>
+     <details class="more" ${hasD?'open':''}><summary>تاریخ تولد ${label} (اختیاری)</summary>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</details>
    </div></div>`;
 }
 function photoBlock(){
@@ -631,7 +652,7 @@ function spouseRows(v){
       <div class="row"><label class="f" style="flex:1 1 220px"><span>وضعیت ${lab}</span><select id="r_${k}_st">${Object.entries(ST_L).map(([sv,sl])=>`<option value="${sv}" ${(x.st||'current')===sv?'selected':''}>${sl}</option>`).join('')}</select></label>
       ${i>0?`<button type="button" class="btn ghost sm" data-act="sprm" data-k="${k}">حذف این همسر</button>`:''}</div></div>`;
   }).join('');
-  return rows+`<button type="button" class="btn ghost" id="spAdd" data-act="spadd" ${shown>=SP_KEYS.length?'hidden':''}>➕ افزودن همسر دیگر (همسر قبلی یا بعدی)</button>`;
+  return rows+`<button type="button" class="btn ghost" id="spAdd" data-act="spadd" ${shown>=SP_KEYS.length?'hidden':''}>➕ همسر دیگر</button>`;
 }
 function personForm(){
   const okMsg=S.okMsg; S.okMsg=null; S.pstep=1;
@@ -642,27 +663,27 @@ function personForm(){
    ${okMsg?`<div class="${okMsg.ok?'okbig':'note gift'}" role="status" id="okBox">${esc(okMsg.t)}</div>`:''}
    <div class="stepper" id="stepper">${stepperHTML(1)}</div>
    <div data-step="1" class="stack">
-   <p class="muted small" style="margin:0">فقط نام، نام خانوادگی و جنسیت (دارای ستاره) اجباری است. بقیه را هر چه می‌دانید بنویسید.</p>
+   <p class="muted small" style="margin:0">فقط نام، نام خانوادگی و جنسیت لازم است.</p>
    <div class="fields">
     <label class="f"><span>نام *</span><input type="text" id="f_first" value="${esc(v.first||'')}"></label>
     <label class="f"><span>نام خانوادگی *</span><input type="text" id="f_last" value="${esc(v.last||'الله‌رضایی')}"></label>
     <div class="f"><span>جنسیت *</span><div class="seg">
       <label><input type="radio" name="f_g" value="m" ${v.gender==='m'?'checked':''}><span>آقا</span></label>
       <label><input type="radio" name="f_g" value="f" ${v.gender==='f'?'checked':''}><span>خانم</span></label></div></div>
-    <div class="f wide"><span>تاریخ تولد (اختیاری، شمسی؛ روز و ماه برای یادآوری تولد لازم است)</span>${dateW('b',bd(v))}</div>
+    <details class="more wide" ${bd(v).y||bd(v).m||bd(v).d?'open':''}><summary>تاریخ تولد (اختیاری)</summary>${dateW('b',bd(v))}</details>
     <label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="f_dead" ${v.dead?'checked':''}><span style="color:var(--ink)">درگذشته است</span></label>
-    <div class="f wide" id="deathWrap" ${v.dead?'':'hidden'}><span>تاریخ درگذشت</span>${dateW('d',{y:v.dY,m:v.dM,d:v.dD})}</div>
+    <div class="f wide" id="deathWrap" ${v.dead?'':'hidden'}><span>تاریخ درگذشت (اختیاری)</span>${dateW('d',{y:v.dY,m:v.dM,d:v.dD})}</div>
    </div></div>
    <div data-step="2" class="stack" hidden>
-   <p class="muted small" style="margin:0">درخت فقط یکی است: برای هر فرد جدید باید حداقل یکی از پدر، مادر یا همسر را از فهرست انتخاب کنید (با کادر جستجو پیدا کنید). بقیه اختیاری است و اگر در فهرست نبودند گزینهٔ اول («در فهرست نیست») را بزنید و نامشان را بنویسید.</p>
+   <p class="muted small" style="margin:0">همه‌چیز اختیاری است. اگر پدر یا مادر هنوز ثبت نشده، «در فهرست نیست» را بزنید و فقط نامش را بنویسید؛ بعداً که ثبت شد خودکار وصل می‌شود.</p>
    <div class="fields">
     ${relBlock('father','پدر',p=>p.gender==='m',v)}
     ${relBlock('mother','مادر',p=>p.gender==='f',v)}
-    <div class="f wide"><span>وضعیت تأهل</span><div class="seg">
+    <div class="f wide"><span>وضعیت تأهل (اختیاری)</span><div class="seg">
       <label><input type="radio" name="f_mar" value="" ${!v.marital?'checked':''}><span>نامشخص</span></label>
-      <label><input type="radio" name="f_mar" value="single" ${v.marital==='single'?'checked':''}><span>مجرد (همسر ندارد)</span></label>
-      <label><input type="radio" name="f_mar" value="married" ${v.marital==='married'?'checked':''}><span>متأهل یا همسر داشته</span></label></div>
-      <span class="muted small">اگر «مجرد» را بزنید بخش همسر برداشته می‌شود. اگر همسرش فوت کرده یا جدا شده، «متأهل» را بزنید و وضعیت همسر را انتخاب کنید.</span></div>
+      <label><input type="radio" name="f_mar" value="single" ${v.marital==='single'?'checked':''}><span>مجرد</span></label>
+      <label><input type="radio" name="f_mar" value="married" ${v.marital==='married'?'checked':''}><span>متأهل</span></label></div>
+      </div>
     <div class="wide stack" id="spouseWrap" ${v.marital==='single'?'hidden':''}>${spouseRows(v)}</div>
     <label class="f wide"><span>فرزندان (اختیاری؛ هر نام در یک خط)</span><textarea id="f_kids" style="min-height:70px" placeholder="مثلاً: علی الله‌رضایی">${esc(v.kidNames||'')}</textarea></label>
    </div></div>
@@ -1118,16 +1139,7 @@ function readSpouses(){
   SP_KEYS.forEach(k=>{ const row=$('#r_'+k); if(!row) return; const r=readRel(k); if(r.id||r.ref.name) out.push({id:r.id,ref:r.ref,st:val('#r_'+k+'_st')||'current'}); });
   return out;
 }
-function step2Ok(){
-  const dm=$('#dupMsg');
-  const need=!S.editId&&!S.editSub&&!(S.prefill&&S.prefill._v)&&Object.keys(S.people).length>0;
-  if(need){
-    const real=x=>x.id&&x.id!=='__new';
-    const ok=real(readRel('father'))||real(readRel('mother'))||readSpouses().some(real);
-    if(!ok){ if(dm) dm.innerHTML='<div class="errbig">درخت شجره‌نامه فقط یکی است. حداقل یکی از «پدر»، «مادر» یا «همسر» را از فهرست انتخاب کنید تا این فرد به درخت وصل شود. اگر پدر یا مادرش هنوز ثبت نشده، اول او را ثبت کنید.</div>'; setStep(2); return false; }
-  }
-  if(dm) dm.innerHTML=''; return true;
-}
+function step2Ok(){ const dm=$('#dupMsg'); if(dm) dm.innerHTML=''; return true; }
 function step1Ok(){
   const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
   if(!val('#f_first')||!val('#f_last')||!g){ const dm=$('#dupMsg'); if(dm) dm.innerHTML='<div class="errbig">لطفاً نام، نام خانوادگی و جنسیت را وارد کنید.</div>'; setStep(1); return false; }
