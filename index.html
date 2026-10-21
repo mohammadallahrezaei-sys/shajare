@@ -1,0 +1,1150 @@
+<title>شجره‌نامه خاندان الله‌رضایی</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Vazirmatn:wght@400;500;700&display=swap">
+<script>
+/* ===== تنظیمات اتصال: فقط این چهار مقدار را عوض کنید ===== */
+window.SHJ_CONFIG={
+  url:'PASTE_SUPABASE_URL',          https://gjwbezbwbwcnwbqjzjan.supabase.co
+  key:'PASTE_ANON_PUBLIC_KEY',       sb_publishable_Ah6RouWQd-tU8KgrHiOC1Q_4WTZd25O
+  familyEmail:'family@shajare.app', family@shajare.app
+  adminEmail:'PASTE_ADMIN_EMAIL'   m.allahrezaei@gmail.com
+};
+</script>
+<style>
+/* Layout: one calm column (max 1100px). Header with brand, pill nav, then one view at a time.
+   Tree is shown as an illustrated tree (roots, trunk, branches), a clean org chart, or a collapsible outline. */
+:root{
+  --bg:#F1F5F3;          /* cool green-grey ground */
+  --surface:#FFFFFF;     /* cards */
+  --surface2:#E7EEEB;    /* quiet fills */
+  --ink:#14302A;         /* cypress-black text */
+  --muted:#5A726B;       /* secondary text */
+  --line:#C5D3CE;        /* hairlines */
+  --primary:#1E5B50;     /* cypress green */
+  --on-primary:#FFFFFF;
+  --accent:#B8791A;      /* saffron, used sparingly */
+  --male:#3A7CA5;
+  --female:#B0527A;
+  --ok:#2E7D4F; --warn:#B26A00; --bad:#B3392F;
+  --font-display:'Aref Ruqaa','Vazirmatn',serif;
+  --font-body:'Vazirmatn',system-ui,'Segoe UI',Tahoma,sans-serif;
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1A17; --surface:#16251F; --surface2:#1E322B; --ink:#E4EFEA; --muted:#93AEA5; --line:#2E463D;
+    --primary:#58B8A3; --on-primary:#06201A; --accent:#E3AE4A; --male:#6FB0D6; --female:#E08BB0;
+    --ok:#5CC283; --warn:#E3A14A; --bad:#EE7B70; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1A17; --surface:#16251F; --surface2:#1E322B; --ink:#E4EFEA; --muted:#93AEA5; --line:#2E463D;
+  --primary:#58B8A3; --on-primary:#06201A; --accent:#E3AE4A; --male:#6FB0D6; --female:#E08BB0;
+  --ok:#5CC283; --warn:#E3A14A; --bad:#EE7B70; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{direction:rtl}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.75;
+  padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1100px;margin:0 auto}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;margin:0;text-wrap:balance;line-height:1.5}
+h2{font-size:1.5rem}
+h3{font-size:1.15rem}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.num{font-variant-numeric:tabular-nums}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:18px 8px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand svg{flex:none;color:var(--primary)}
+.brand-t{font-family:var(--font-display);font-size:1.6rem;line-height:1.3}
+.brand-s{color:var(--muted);font-size:.85rem}
+.who{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.9rem}
+.pill{display:inline-block;padding:0 10px;border-radius:99px;font-size:.78rem;line-height:1.8;background:var(--surface2);color:var(--muted)}
+.pill.adm{background:var(--accent);color:#1d1400}
+.link{background:none;border:0;padding:0;color:var(--primary);text-decoration:underline;font-size:.85rem}
+
+.nav{display:flex;gap:6px;overflow-x:auto;padding-block:8px 14px;scrollbar-width:thin}
+.nav button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 16px;display:flex;gap:6px;align-items:center}
+.nav button[aria-current="page"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.badge{background:var(--accent);color:#1d1400;border-radius:99px;font-size:.75rem;padding:0 7px;line-height:1.6}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.btn{border:1px solid var(--primary);background:var(--primary);color:var(--on-primary);border-radius:8px;padding:7px 18px;font-weight:500}
+.btn.ghost{background:transparent;color:var(--primary)}
+.btn.big{padding:12px 28px;font-size:1.1rem}
+.btn.danger{background:transparent;border-color:var(--bad);color:var(--bad)}
+.btn.sm{padding:3px 12px;font-size:.85rem}
+.btn:disabled{opacity:.55;cursor:default}
+label.f,div.f{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:.9rem}
+label.f>span,div.f>span{color:var(--muted)}
+input[type=text],input[type=password],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+textarea{min-height:110px;resize:vertical}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px}
+.fields .wide{grid-column:1/-1}
+.dw{display:grid;grid-template-columns:78px 1fr 1fr;gap:6px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg label{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px;display:flex;gap:8px;align-items:center;background:var(--bg);cursor:pointer;white-space:nowrap}
+.seg input:checked+span{font-weight:700}
+.rel{border:1px dashed var(--line);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:12px}
+.note{padding:10px 14px;border-radius:8px;background:var(--surface2);font-size:.9rem}
+.note.warn{border:1px solid var(--warn)}
+.note.bad{border:1px solid var(--bad)}
+.note.gift{border:1px solid var(--accent)}
+.hero{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.hero p{margin:0;max-width:60ch}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media (min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.kpi b{display:block;font-size:1.8rem;line-height:1.3;font-weight:700;color:var(--primary)}
+.kpi span{color:var(--muted);font-size:.85rem}
+.empty{text-align:center;padding:36px 16px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.status{font-size:.78rem;padding:0 9px;border-radius:99px;border:1px solid currentColor}
+.status.pending{color:var(--warn)} .status.approved{color:var(--ok)} .status.rejected{color:var(--bad)}
+.list{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.list li{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.list li:last-child{border:0;padding-bottom:0}
+.tabs2{display:flex;gap:6px}
+.tabs2 button{border:0;border-bottom:3px solid transparent;background:none;padding:6px 14px;color:var(--muted)}
+.tabs2 button[aria-current="true"]{border-color:var(--accent);color:var(--ink);font-weight:700}
+
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.search{position:relative;flex:1 1 220px;max-width:360px}
+.results{position:absolute;inset-inline:0;top:100%;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-top:4px;max-height:260px;overflow:auto}
+.results button{display:block;width:100%;text-align:start;border:0;background:none;padding:7px 12px}
+.results button:hover{background:var(--surface2)}
+
+.av{flex:none;width:34px;height:34px;border-radius:50%;object-fit:cover;background:var(--surface2);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:.9rem}
+.tile{border:1px solid var(--line);border-top:4px solid var(--muted);background:var(--surface);border-radius:8px;padding:4px 10px 4px 12px;display:inline-flex;align-items:center;gap:8px;text-align:start;line-height:1.45;min-width:100px}
+.tile .tt{display:flex;flex-direction:column}
+.tile.m{border-top-color:var(--male)} .tile.f{border-top-color:var(--female)}
+.tile b{font-weight:500;white-space:nowrap}
+.tile small{color:var(--muted);font-size:.75rem;white-space:nowrap}
+.tile.dead b{color:var(--muted)}
+.tile.sp{background:var(--surface2)}
+.tile.virt{border-style:dashed;background:transparent}
+.tile:hover{border-color:var(--primary)}
+.couple{display:inline-flex;gap:6px;align-items:stretch;position:relative}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:1px 12px;font-size:.88rem}
+.chip:hover{border-color:var(--primary)}
+
+.chart-box{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:24px 16px}
+.org{display:flex;justify-content:center;min-width:max-content}
+.org ul{display:flex;justify-content:center;padding:22px 0 0;margin:0;position:relative}
+.org li{list-style:none;text-align:center;position:relative;padding:22px 8px 0}
+.org>ul{padding-top:0}
+.org>ul>li{padding-top:0}
+.org li::before,.org li::after{content:"";position:absolute;top:0;height:22px;width:50%;border-top:2px solid var(--line)}
+.org li::before{right:50%}
+.org li::after{left:50%;border-left:2px solid var(--line)}
+.org li:first-child::after{border-top:0}
+.org li:last-child::before{border:0}
+.org li:only-child::before,.org li:only-child::after{display:none}
+.org li:only-child{padding-top:0}
+.org>ul>li::before,.org>ul>li::after{display:none}
+.org ul ul::before{content:"";position:absolute;top:0;left:50%;border-left:2px solid var(--line);height:22px}
+.org li>ul{padding-top:22px}
+
+.art-box{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff;min-height:200px}
+.art-box canvas{display:block;max-width:none}
+.art-box .wait{padding:60px 16px;text-align:center;color:#5A726B}
+
+.outline{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:14px 12px}
+.o-node>summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;list-style:none;cursor:pointer;padding:4px 0}
+.o-node>summary::-webkit-details-marker{display:none}
+.o-node>summary::before{content:"◂";color:var(--muted);transition:transform .15s;display:inline-block;width:14px}
+.o-node[open]>summary::before{transform:rotate(-90deg)}
+.o-leaf{padding:4px 0;padding-inline-start:22px;display:flex;gap:6px;flex-wrap:wrap}
+.o-kids{margin-inline-start:6px;padding-inline-start:14px;border-inline-start:2px solid var(--line)}
+.cnt{color:var(--muted);font-size:.8rem}
+.tree-root+.tree-root{margin-top:22px}
+
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:grid;grid-template-columns:84px 1fr 64px;gap:10px;align-items:center;font-size:.9rem}
+.bar-track{background:var(--surface2);border-radius:99px;height:14px;overflow:hidden}
+.bar-fill{height:100%;background:var(--primary);border-radius:99px}
+.bar-fill.m{background:var(--male)} .bar-fill.f{background:var(--female)} .bar-fill.a{background:var(--accent)}
+.fam{border-bottom:1px solid var(--line);padding:8px 0}
+.fam:last-child{border:0}
+.fam>summary{display:grid;grid-template-columns:1fr auto;gap:4px 12px;cursor:pointer;list-style:none}
+.fam>summary::-webkit-details-marker{display:none}
+.fam .t{font-weight:500}
+.fam .meta{color:var(--muted);font-size:.85rem;grid-column:1/-1}
+.fam .kids{padding-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.tbl-note{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.fact{background:var(--bg);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column}
+.fact span{color:var(--muted);font-size:.8rem}
+.bday{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.bday:last-child{border:0}
+.bday.today{color:var(--accent);font-weight:700}
+
+.ph{width:120px;height:160px;border-radius:10px;object-fit:cover;background:var(--surface2);border:1px solid var(--line)}
+.photo-row{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.sheet .ph{width:150px;height:200px}
+.sheet-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+
+.modal{position:fixed;inset:0;background:rgba(5,15,12,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal[hidden]{display:none!important}
+.sheet{background:var(--surface);color:var(--ink);width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:20px 20px max(20px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+@media (min-width:700px){.modal{align-items:center;padding:20px}.sheet{border-radius:16px}}
+.sheet .x{align-self:flex-start;margin-bottom:-6px}
+.mem{background:var(--bg);border-radius:8px;padding:10px 14px}
+.mem p{margin:0 0 4px;white-space:pre-wrap}
+.kind{font-size:.75rem;color:var(--accent);font-weight:700}
+.toast{position:fixed;inset-inline:0;bottom:max(18px,env(safe-area-inset-bottom,0px));margin:auto;width:fit-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:9px 20px;border-radius:99px;z-index:60;font-size:.92rem}
+.toast[hidden]{display:none!important}
+.loginbox{max-width:440px;margin:8vh auto 0}
+textarea.code{direction:ltr;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;min-height:70px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap" id="root"></div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const FA='۰۱۲۳۴۵۶۷۸۹';
+const fa=s=>String(s).replace(/\d/g,d=>FA[d]);
+const norm=s=>String(s==null?'':s).replace(/[۰-۹]/g,d=>FA.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+const nn=s=>norm(s).replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/[‌‏‎]/g,' ').replace(/\s+/g,' ').trim();
+const hash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36);};
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const newId=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const full=p=>p?((p.first||'')+' '+(p.last||'')).trim():'';
+const MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+
+/* ---- Jalali calendar ---- */
+const div=(a,b)=>~~(a/b), mod=(a,b)=>a-~~(a/b)*b;
+const BRK=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+function jalCal(jy){let gy=jy+621,leapJ=-14,jp=BRK[0],jm,jump,leap,leapG,march,n,i;
+  for(i=1;i<BRK.length;i++){jm=BRK[i];jump=jm-jp;if(jy<jm)break;leapJ=leapJ+div(jump,33)*8+div(mod(jump,33),4);jp=jm;}
+  n=jy-jp;leapJ=leapJ+div(n,33)*8+div(mod(n,33)+3,4);if(mod(jump,33)===4&&jump-n===4)leapJ+=1;
+  leapG=div(gy,4)-div((div(gy,100)+1)*3,4)-150;march=20+leapJ-leapG;
+  if(jump-n<6)n=n-jump+div(jump+4,33)*33;leap=mod(mod(n+1,33)-1,4);if(leap===-1)leap=4;return{leap,gy,march};}
+function g2d(gy,gm,gd){let d=div((gy+div(gm-8,6)+100100)*1461,4)+div(153*mod(gm+9,12)+2,5)+gd-34840408;d=d-div(div(gy+100100+div(gm-8,6),100)*3,4)+752;return d;}
+function j2d(jy,jm,jd){const r=jalCal(jy);return g2d(r.gy,3,r.march)+(jm-1)*31-div(jm,7)*(jm-7)+jd-1;}
+const monthLen=(jy,jm)=>jm<=6?31:jm<=11?30:(jalCal(jy).leap===0?30:29);
+const TODAY=(()=>{
+  let y=1405,m=1,d=1;
+  try{ const parts=new Intl.DateTimeFormat('en-US-u-ca-persian-nu-latn',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date());
+    const g=t=>+(parts.find(p=>p.type===t)||{}).value; if(g('year')>1300&&g('month')&&g('day')){y=g('year');m=g('month');d=g('day');} }catch(e){}
+  return {y,m,d,jdn:j2d(y,m,d)};
+})();
+const nowYear=TODAY.y;
+function daysToBirthday(m,d){ let y=TODAY.y, t=j2d(y,m,Math.min(d,monthLen(y,m))); if(t<TODAY.jdn){ y++; t=j2d(y,m,Math.min(d,monthLen(y,m))); } return t-TODAY.jdn; }
+function dstr(y,m,d){ const a=[]; if(d&&m){a.push(fa(d),MONTHS[m-1]);} else if(m){a.push(MONTHS[m-1]);} if(y) a.push(fa(y)); return a.join(' '); }
+const bd=p=>({y:p.bY||0,m:p.bM||0,d:p.bD||0});
+function ageNow(p){
+  if(!p.bY) return null;
+  const endY=p.dead?(p.dY||0):TODAY.y, endM=p.dead?(p.dM||0):TODAY.m, endD=p.dead?(p.dD||0):TODAY.d;
+  if(!endY) return null;
+  let a=endY-p.bY; if(p.bM&&p.bD&&endM&&endD&&(endM<p.bM||(endM===p.bM&&endD<p.bD))) a--;
+  return a>=0&&a<125?a:null;
+}
+
+const S={
+  db:null,user:null,sample:null,uid:null,isAdmin:false,gate:false,ready:false,dbError:null,
+  me:null,tab:'home',people:{},memories:{},subs:{},mySub:null,imported:[],
+  mode:lsGet('shj_mode2')||(window.innerWidth<760?'outline':'art'),
+  addTab:'person',editId:null,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
+  photo:'',photoDirty:false,photoMsg:'',prefill:null,T:null,artCanvas:null
+};
+const fullName=()=>S.me?(S.me.first+' '+S.me.last).trim():'';
+function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>{t.hidden=true},3800);}
+const gLabel=g=>g==='m'?'آقا':g==='f'?'خانم':'';
+
+/* ================= effective people (links by name) ================= */
+function effective(){
+  const R=S.people, P={}, virt=new Set();
+  Object.keys(R).forEach(id=>P[id]=Object.assign({},R[id]));
+  const byName={}; Object.keys(R).forEach(id=>{ const k=nn(full(R[id])); (byName[k]=byName[k]||[]).push(id); });
+  const split=n=>{ const t=norm(n).replace(/\s+/g,' ').split(' '); return t.length>1?{first:t.slice(0,-1).join(' '),last:t[t.length-1]}:{first:t[0]||'',last:''}; };
+  const ghost=(key,props)=>{ if(!P[key]){ P[key]=Object.assign({first:'',last:'',gender:'',bY:0,bM:0,bD:0,dead:false,virtual:true,fatherId:'',motherId:'',spouseId:'',photo:''},props); virt.add(key); } else { const g=P[key]; if(!g.bY&&props.bY){g.bY=props.bY;g.bM=props.bM||0;g.bD=props.bD||0;} } return key; };
+  function resolve(ref,gender,fromId){
+    if(!ref||!nn(ref.name)) return '';
+    const k=nn(ref.name), y=ref.y||0;
+    let c=(byName[k]||[]).filter(i=>i!==fromId&&(!gender||R[i].gender===gender)&&(!y||!R[i].bY||R[i].bY===y));
+    if(c.length>1&&y){ const e=c.filter(i=>R[i].bY===y); if(e.length===1) c=e; }
+    if(c.length===1) return c[0];
+    if(c.length>1) return '';
+    const s=split(ref.name);
+    return ghost('v_'+hash(k+'|'+(gender||'')+'|'+y),{first:s.first,last:s.last,gender:gender||'',bY:y,bM:ref.m||0,bD:ref.d||0});
+  }
+  const ids=Object.keys(R).sort();
+  ids.forEach(id=>{
+    const p=R[id], q=P[id], opp=p.gender==='m'?'f':p.gender==='f'?'m':'';
+    q.fatherId=R[p.fatherId]?p.fatherId:resolve(p.fatherRef,'m',id);
+    q.motherId=R[p.motherId]?p.motherId:resolve(p.motherRef,'f',id);
+    q.spouseId=R[p.spouseId]?p.spouseId:resolve(p.spouseRef,opp,id);
+  });
+  ids.forEach(id=>{
+    String(R[id].kidNames||'').split(/\n|،|,/).map(x=>x.trim()).filter(Boolean).forEach(line=>{
+      const k=nn(line);
+      const ex=Object.keys(P).some(c=>c!==id&&(P[c].fatherId===id||P[c].motherId===id)&&(nn(full(P[c]))===k||nn(P[c].first)===k));
+      if(ex) return;
+      const me=P[id], isF=me.gender==='f', sp=P[me.spouseId]?me.spouseId:'';
+      const f=isF?(sp&&P[sp].gender!=='f'?sp:''):id, m=isF?id:(sp&&P[sp].gender!=='m'?sp:'');
+      const s=split(line);
+      const vid=ghost('v_'+hash('kid|'+k+'|'+f+'|'+m),{first:s.first,last:s.last||me.last||'',gender:'',fatherId:f,motherId:m});
+      P[vid].fatherId=f; P[vid].motherId=m;
+    });
+  });
+  return {P,virt};
+}
+
+/* ================= tree model ================= */
+function buildTree(){
+  if(S.T) return S.T;
+  const E=effective(), P=E.P, ids=Object.keys(P);
+  const has=id=>!!(id&&P[id]);
+  const hasParents=id=>has(P[id].fatherId)||has(P[id].motherId);
+  const partners={}; ids.forEach(i=>partners[i]=new Set());
+  const link=(a,b)=>{ if(a&&b&&a!==b&&has(a)&&has(b)){partners[a].add(b);partners[b].add(a);} };
+  ids.forEach(i=>{ const p=P[i]; link(i,p.spouseId); if(has(p.fatherId)&&has(p.motherId)) link(p.fatherId,p.motherId); });
+  const marryIn={}; ids.forEach(i=>{ marryIn[i]=!hasParents(i)&&[...partners[i]].some(q=>hasParents(q)); });
+  const placeOf=i=>{ const p=P[i]; if(has(p.fatherId)&&!marryIn[p.fatherId]) return p.fatherId; if(has(p.motherId)&&!marryIn[p.motherId]) return p.motherId; return null; };
+  const kidsOf={}; ids.forEach(i=>{ const pl=placeOf(i); if(pl&&pl!==i) (kidsOf[pl]=kidsOf[pl]||[]).push(i); });
+  const byBirth=(a,b)=>{ const ya=P[a].bY,yb=P[b].bY; if(ya&&yb&&ya!==yb) return ya-yb; if(ya&&!yb) return -1; if(!ya&&yb) return 1; return (P[a].first||'').localeCompare(P[b].first||'','fa'); };
+  Object.values(kidsOf).forEach(a=>a.sort(byBirth));
+  const cands=ids.filter(i=>!marryIn[i]&&(!placeOf(i)||placeOf(i)===i));
+  cands.sort((a,b)=>(P[a].gender==='m'?0:1)-(P[b].gender==='m'?0:1)||byBirth(a,b));
+  const used=new Set(), rootSpec=[];
+  cands.forEach(r=>{ if(used.has(r)) return; used.add(r); const extra=[]; partners[r].forEach(q=>{ if(cands.includes(q)&&!used.has(q)){used.add(q);extra.push(q);} }); rootSpec.push({id:r,extra}); });
+  const vis=new Set(), shown=new Set(), nodes=[], gen={};
+  function mk(id,extra,depth){
+    if(vis.has(id)) return null; vis.add(id); shown.add(id);
+    const sp=new Set(extra||[]); partners[id].forEach(q=>sp.add(q)); sp.delete(id);
+    const spouses=[...sp].filter(q=>P[q]); spouses.forEach(q=>{ shown.add(q); if(gen[q]==null) gen[q]=depth; });
+    if(gen[id]==null) gen[id]=depth;
+    const n={id,spouses,kids:[],depth,size:0,set:null}; nodes.push(n);
+    n.kids=(kidsOf[id]||[]).map(c=>mk(c,null,depth+1)).filter(Boolean);
+    const set=new Set([id,...spouses]); n.kids.forEach(k=>k.set.forEach(x=>set.add(x)));
+    n.set=set; n.size=set.size; return n;
+  }
+  const roots=rootSpec.map(r=>mk(r.id,r.extra,1)).filter(Boolean);
+  const unplaced=ids.filter(i=>!shown.has(i)).sort(byBirth);
+  const couples=new Set(); ids.forEach(i=>partners[i].forEach(q=>couples.add([i,q].sort().join('|'))));
+  S.T={P,virt:E.virt,roots,nodes,unplaced,gen,couples:couples.size};
+  return S.T;
+}
+const EP=()=>buildTree().P;
+function nameOf(id){ if(!id) return ''; const p=EP()[id]; if(p) return full(p); const m=pendingItems()[id]; return m?full(m.p)+' (در انتظار)':''; }
+
+/* ================= pieces ================= */
+function avatar(p){ return p.photo?`<img class="av" src="${esc(p.photo)}" alt="">`:`<span class="av">${esc((p.first||'؟').trim()[0]||'؟')}</span>`; }
+function lifeLine(p){
+  const b=p.bY?fa(p.bY):'';
+  if(p.dead) return (b||'؟')+' – '+(p.dY?fa(p.dY):'؟');
+  return b;
+}
+function tile(id,sp){
+  const p=EP()[id]; if(!p) return '';
+  return `<button class="tile ${p.gender==='m'?'m':p.gender==='f'?'f':''} ${p.dead?'dead':''} ${sp?'sp':''} ${p.virtual?'virt':''}" data-act="person" data-id="${esc(id)}">${avatar(p)}<span class="tt"><b>${esc(full(p))}</b>${lifeLine(p)?`<small>${esc(lifeLine(p))}</small>`:(p.virtual?'<small>ثبت‌نشده</small>':'')}</span></button>`;
+}
+function couple(n){ return `<span class="couple">${tile(n.id,false)}${n.spouses.map(q=>tile(q,true)).join('')}</span>`; }
+function chartNode(n){ return `<li>${couple(n)}${n.kids.length?`<ul>${n.kids.map(chartNode).join('')}</ul>`:''}</li>`; }
+function outNode(n,d){
+  if(!n.kids.length) return `<div class="o-leaf">${couple(n)}</div>`;
+  return `<details class="o-node" ${d<1?'open':''}><summary>${couple(n)}<span class="cnt">${fa(n.size)} نفر</span></summary><div class="o-kids">${n.kids.map(k=>outNode(k,d+1)).join('')}</div></details>`;
+}
+
+/* pending items for pickers */
+function pendingItems(){
+  const out={};
+  Object.entries(S.people).forEach(([id,p])=>out[id]={p,pending:false});
+  const items=(S.mySub&&S.mySub.items)||{};
+  Object.entries(items).forEach(([id,it])=>{ if(it.kind==='person'&&it.status==='pending'&&!it.editOf&&!S.people[id]) out[id]={p:it.payload,pending:true}; });
+  if(S.isAdmin){ pendingList().forEach(it=>{ if(it.kind==='person'&&!it.editOf&&!out[it.id]) out[it.id]={p:it.payload,pending:true}; }); }
+  return out;
+}
+function pickLabel(id,rec){
+  const p=rec.p; let s=full(p);
+  if(p.bY) s+=' ('+fa(p.bY)+')';
+  const f=(S.people[p.fatherId]||(pendingItems()[p.fatherId]||{}).p)||(p.fatherRef&&p.fatherRef.name?{first:p.fatherRef.name}:null);
+  if(f) s+=' – فرزند '+(f.first||'');
+  if(rec.pending) s+=' ⏳';
+  return s;
+}
+
+/* ================= views ================= */
+function birthdaysList(limit){
+  const P=EP(), out=[];
+  Object.entries(P).forEach(([id,p])=>{ if(p.dead||!p.bM||!p.bD) return; out.push({id,p,days:daysToBirthday(p.bM,p.bD)}); });
+  return out.sort((a,b)=>a.days-b.days).filter(x=>x.days<=limit);
+}
+function whenText(d){ return d===0?'امروز':d===1?'فردا':fa(d)+' روز دیگر'; }
+
+function viewHome(){
+  const T=buildTree(), n=Object.keys(T.P).length, pend=S.isAdmin?pendingList().length:0;
+  const fam=T.nodes.filter(x=>x.kids.length).length, gens=T.nodes.reduce((m,x)=>Math.max(m,x.depth),0);
+  const bds=birthdaysList(7), today=bds.filter(b=>b.days===0);
+  return `<div class="stack">
+  <section class="card hero">
+    <h2>سلام ${esc(S.me.first)} جان</h2>
+    <p>اینجا شجره‌نامهٔ خاندان الله‌رضایی است. خودتان و پدر و مادر و همسر و فرزندانتان را ثبت کنید و اگر خاطره یا ویژگی از کسی به یاد دارید بنویسید. اطلاعات پس از تأیید مدیر در شجره‌نامه دیده می‌شود.</p>
+    <div class="row">
+      <button class="btn big" data-act="tab" data-tab="tree">مشاهدهٔ شجره‌نامه</button>
+      <button class="btn ghost big" data-act="addme">ثبت اطلاعات خودم</button>
+    </div>
+  </section>
+  ${today.length?`<section class="note gift"><b>امروز تولد ${today.map(b=>esc(full(b.p))).join(' و ')} است.</b> تبریک بگویید.</section>`:''}
+  ${n===0?`<section class="card empty"><h3>هنوز کسی در شجره‌نامه ثبت نشده است</h3><p class="muted" style="margin:0">${S.isAdmin?'از خودتان یا بزرگ‌ترین فرد خاندان شروع کنید. پدر و مادر را می‌توانید همان‌جا با نام بنویسید و بعدها خودکار پیوند می‌خورند.':'به محض اینکه اولین افراد ثبت شوند اینجا نمایش داده می‌شود. شما هم می‌توانید اطلاعات را بفرستید.'}</p><button class="btn" data-act="addnew">ثبت یک نفر</button></section>`
+  :`<section class="kpis"><div class="kpi"><b class="num">${fa(n)}</b><span>نفر در شجره‌نامه</span></div><div class="kpi"><b class="num">${fa(fam)}</b><span>خانواده</span></div><div class="kpi"><b class="num">${fa(gens)}</b><span>نسل</span></div><div class="kpi"><b class="num">${fa(Object.keys(S.memories).length)}</b><span>یادگار نوشته‌شده</span></div></section>`}
+  ${bds.filter(b=>b.days>0).length?`<section class="card"><h3>تولدهای این هفته</h3><div style="margin-top:8px">${bds.filter(b=>b.days>0).map(b=>`<div class="bday"><span>${esc(full(b.p))}</span><span class="muted">${esc(dstr(0,b.p.bM,b.p.bD))} – ${whenText(b.days)}</span></div>`).join('')}</div></section>`:''}
+  ${S.isAdmin&&pend?`<section class="note warn row" style="justify-content:space-between"><span>${fa(pend)} مورد منتظر تأیید شماست.</span><button class="btn sm" data-act="tab" data-tab="admin">بررسی</button></section>`:''}
+  </div>`;
+}
+
+function viewTree(){
+  const T=buildTree(), n=Object.keys(T.P).length;
+  if(!n) return `<div class="card empty"><h3>شجره‌نامه هنوز خالی است</h3><p class="muted" style="margin:0">اولین نفر را ثبت کنید تا درخت ساخته شود.</p><button class="btn" data-act="addnew">ثبت یک نفر</button></div>`;
+  let body='';
+  if(S.mode==='art') body=`<div class="art-box" id="artBox"><div class="wait">در حال کشیدن درخت…</div></div>`;
+  else if(S.mode==='chart') body=`<div class="chart-box" id="chartBox"><div id="zoomer" style="zoom:${S.zoom}">${T.roots.map(r=>`<div class="tree-root org"><ul>${chartNode(r)}</ul></div>`).join('')}</div></div>`;
+  else body=`<div class="outline">${T.roots.map(r=>`<div class="tree-root">${outNode(r,0)}</div>`).join('')}</div>`;
+  const un=T.unplaced.length?`<div class="card"><h3>افراد بدون جایگاه در درخت</h3><p class="muted small">برای این افراد پدر یا مادر مشخص نشده یا پیوندشان ناقص است. با «پیشنهاد ویرایش» پدر یا مادر را مشخص کنید.</p><div class="row" style="gap:6px">${T.unplaced.map(i=>tile(i,false)).join('')}</div></div>`:'';
+  const modeBtn=(m,l)=>`<button class="btn ${S.mode===m?'':'ghost'} sm" data-act="mode" data-m="${m}">${l}</button>`;
+  return `<div class="stack">
+   <div class="bar">
+     <div class="search"><input type="text" id="q" placeholder="جستجوی نام در شجره‌نامه…" value="${esc(S.q)}" autocomplete="off"><div class="results" id="qres" hidden></div></div>
+     <div class="row" style="gap:6px">${modeBtn('art','درخت تصویری')}${modeBtn('chart','نمودار')}${modeBtn('outline','فهرستی')}</div>
+   </div>
+   <div class="bar">
+     <div class="row" style="gap:6px">
+       ${S.mode==='chart'?`<button class="btn ghost sm" data-act="zoom" data-d="-0.15" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="zoom" data-d="0.15" aria-label="بزرگ‌نمایی">+</button>`:''}
+       ${S.mode==='art'?`<button class="btn ghost sm" data-act="artzoom" data-d="-0.25" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="artzoom" data-d="0.25" aria-label="بزرگ‌نمایی">+</button>`:''}
+     </div>
+     <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button></div>
+   </div>
+   ${body}${un}
+   <p class="muted small" style="margin:0">برای دیدن اطلاعات و یادگارهای هر نفر روی نام او بزنید. کادر خط‌چین یعنی آن فرد فقط به‌عنوان پدر، مادر، همسر یا فرزند نام برده شده و هنوز اطلاعاتش ثبت نشده است.</p>
+  </div>`;
+}
+
+/* ---------- stats ---------- */
+function computeStats(){
+  const T=buildTree(), P=T.P, all=Object.values(P), real=Object.values(S.people);
+  const m=all.filter(p=>p.gender==='m').length, f=all.filter(p=>p.gender==='f').length;
+  const dead=all.filter(p=>p.dead).length;
+  const gens={}; Object.entries(T.gen).forEach(([id,g])=>{ if(P[id]) gens[g]=(gens[g]||0)+1; });
+  const fams=T.nodes.filter(n=>n.kids.length||n.spouses.length).map(n=>{
+    const ks=n.kids.map(k=>P[k.id]);
+    return {n,title:full(P[n.id])+(n.spouses.length?' و '+n.spouses.map(q=>P[q].first||'').join(' و '):''),
+      kids:ks.length,sons:ks.filter(p=>p.gender==='m').length,daus:ks.filter(p=>p.gender==='f').length,size:n.size,depth:n.depth};
+  });
+  const withKids=fams.filter(x=>x.kids);
+  const living=real.filter(p=>!p.dead&&p.bY);
+  const age=p=>ageNow(p);
+  const groups=[['تا ۱۷ سال',0,17],['۱۸ تا ۳۴',18,34],['۳۵ تا ۴۹',35,49],['۵۰ تا ۶۴',50,64],['۶۵ به بالا',65,200]].map(([l,a,b])=>({l,c:living.filter(p=>{const x=age(p);return x!=null&&x>=a&&x<=b;}).length}));
+  const byAge=living.filter(p=>age(p)!=null).sort((a,b)=>age(b)-age(a));
+  const lifespans=real.filter(p=>p.dead&&p.bY&&p.dY&&p.dY>=p.bY).map(p=>p.dY-p.bY);
+  const months=Array(12).fill(0); real.forEach(p=>{ if(p.bM) months[p.bM-1]++; });
+  const top=k=>{ const c={}; real.forEach(p=>{ const v=nn(p[k]); if(v) c[v]=(c[v]||0)+1; }); return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5); };
+  const pc=f=>real.length?Math.round(real.filter(f).length/real.length*100):0;
+  const memCount={}; Object.values(S.memories).forEach(x=>{ memCount[x.personId]=(memCount[x.personId]||0)+1; });
+  const mostMem=Object.entries(memCount).filter(([id])=>P[id]).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  return {total:all.length,m,f,dead,alive:all.length-dead,gens,fams,famCount:withKids.length,
+    avg:withKids.length?withKids.reduce((s,x)=>s+x.kids,0)/withKids.length:0,mem:Object.keys(S.memories).length,
+    virt:T.virt.size,couples:T.couples,groups,oldest:byAge[0],youngest:byAge[byAge.length-1],
+    lifespan:lifespans.length?lifespans.reduce((a,b)=>a+b,0)/lifespans.length:0,months,places:top('place'),jobs:top('job'),
+    comp:{birth:pc(p=>p.bY),date:pc(p=>p.bY&&p.bM&&p.bD),photo:pc(p=>p.photo),parents:pc(p=>p.fatherId||p.motherId||(p.fatherRef&&p.fatherRef.name)||(p.motherRef&&p.motherRef.name))},
+    mostMem,realCount:real.length};
+}
+function famList(st){
+  let a=st.fams.filter(x=>!S.famQ||x.title.includes(S.famQ));
+  const key={members:x=>-x.size,kids:x=>-x.kids,gen:x=>x.depth*1000-x.size}[S.famSort];
+  a=a.slice().sort((x,y)=>key(x)-key(y));
+  if(!a.length) return '<p class="muted">خانواده‌ای پیدا نشد.</p>';
+  return a.map(x=>`<details class="fam"><summary><span class="t">خانوادهٔ ${esc(x.title)}</span><span class="num">${fa(x.size)} نفر در این شاخه</span>
+    <span class="meta">نسل ${fa(x.depth)} – ${x.kids?`${fa(x.kids)} فرزند (${fa(x.sons)} پسر، ${fa(x.daus)} دختر)`:'بدون فرزند ثبت‌شده'}</span></summary>
+    <div class="kids">${x.n.kids.length?x.n.kids.map(k=>tile(k.id,false)).join(''):'<span class="muted small">فرزندی ثبت نشده است.</span>'}</div></details>`).join('');
+}
+function barRows(rows,max,cls){ return rows.map(([l,c])=>`<div class="bar-row"><span>${esc(l)}</span><div class="bar-track"><div class="bar-fill ${cls||''}" style="width:${max?c/max*100:0}%"></div></div><span class="num">${fa(c)}</span></div>`).join(''); }
+function viewStats(){
+  const st=computeStats(), P=EP();
+  if(!st.total) return `<div class="card empty"><h3>آماری برای نمایش نیست</h3><p class="muted" style="margin:0">پس از ثبت اولین افراد، گزارش کلی و آمار هر خانواده اینجا دیده می‌شود.</p></div>`;
+  const gk=Object.keys(st.gens).map(Number).sort((a,b)=>a-b), maxG=Math.max(...Object.values(st.gens),1);
+  const bds=birthdaysList(60);
+  const fact=(l,v)=>`<div class="fact"><b>${v}</b><span>${l}</span></div>`;
+  const pname=p=>p?esc(full(p))+' ('+fa(ageNow(p))+' ساله)':'—';
+  return `<div class="stack">
+  <section class="kpis">
+    <div class="kpi"><b class="num">${fa(st.total)}</b><span>کل نفرات</span></div>
+    <div class="kpi"><b class="num">${fa(st.m)}</b><span>آقایان</span></div>
+    <div class="kpi"><b class="num">${fa(st.f)}</b><span>خانم‌ها</span></div>
+    <div class="kpi"><b class="num">${fa(st.alive)}</b><span>در قید حیات</span></div>
+    <div class="kpi"><b class="num">${fa(st.dead)}</b><span>درگذشته</span></div>
+    <div class="kpi"><b class="num">${fa(st.famCount)}</b><span>خانوادهٔ دارای فرزند</span></div>
+    <div class="kpi"><b class="num">${fa(st.couples)}</b><span>زوج</span></div>
+    <div class="kpi"><b class="num">${fa(gk.length)}</b><span>نسل</span></div>
+  </section>
+  ${st.virt?`<p class="muted small" style="margin:0">${fa(st.virt)} نفر از این تعداد فقط با نام (به‌عنوان پدر، مادر، همسر یا فرزند) ثبت شده‌اند و هنوز پرونده‌شان کامل نیست.</p>`:''}
+  <section class="card"><h3>تولدهای پیش رو</h3>
+    <div style="margin-top:8px">${bds.length?bds.slice(0,12).map(b=>`<div class="bday ${b.days===0?'today':''}"><span>${esc(full(b.p))}${b.p.bY?` <span class="muted small">(${fa(TODAY.y+(b.days>=0&&j2d(TODAY.y,b.p.bM,Math.min(b.p.bD,monthLen(TODAY.y,b.p.bM)))<TODAY.jdn?1:0)-b.p.bY)} ساله می‌شود)</span>`:''}</span><span>${esc(dstr(0,b.p.bM,b.p.bD))} – ${whenText(b.days)}</span></div>`).join(''):'<p class="muted" style="margin:0">تا ۶۰ روز آینده تولدی ثبت نشده است. با وارد کردن روز و ماه تولد، اینجا یادآوری می‌شود.</p>'}</div></section>
+  <div class="grid2">
+    <section class="card"><h3>تعداد نفرات هر نسل</h3><div class="bars" style="margin-top:12px">${barRows(gk.map(g=>['نسل '+fa(g),st.gens[g]]),maxG)}</div></section>
+    <section class="card"><h3>آقایان و خانم‌ها</h3><div class="bars" style="margin-top:12px">
+      ${barRows([['آقایان',st.m]],st.total,'m')}${barRows([['خانم‌ها',st.f]],st.total,'f')}${barRows([['در قید حیات',st.alive]],st.total)}</div></section>
+    <section class="card"><h3>گروه‌های سنی (زنده‌ها)</h3><div class="bars" style="margin-top:12px">${barRows(st.groups.map(g=>[g.l,g.c]),Math.max(...st.groups.map(g=>g.c),1),'a')}</div></section>
+    <section class="card"><h3>تولدها به تفکیک ماه</h3><div class="bars" style="margin-top:12px">${barRows(st.months.map((c,i)=>[MONTHS[i],c]),Math.max(...st.months,1))}</div></section>
+  </div>
+  <section class="card"><h3>نکته‌های خانوادگی</h3><div class="facts" style="margin-top:12px">
+    ${fact('مسن‌ترین عضو زنده',pname(st.oldest))}${fact('جوان‌ترین عضو',pname(st.youngest))}
+    ${fact('میانگین عمر درگذشتگان',st.lifespan?fa(Math.round(st.lifespan))+' سال':'—')}${fact('میانگین فرزند هر خانواده',fa(st.avg.toFixed(1)))}
+    ${fact('بیشترین یادگار نوشته‌شده',st.mostMem.length?st.mostMem.map(([id,c])=>esc(full(P[id]))+' ('+fa(c)+')').join('، '):'—')}
+    ${fact('شهرهای پرتکرار',st.places.length?st.places.map(([k,c])=>esc(k)+' ('+fa(c)+')').join('، '):'—')}
+    ${fact('شغل‌های پرتکرار',st.jobs.length?st.jobs.map(([k,c])=>esc(k)+' ('+fa(c)+')').join('، '):'—')}</div></section>
+  <section class="card"><h3>کامل بودن اطلاعات</h3><div class="bars" style="margin-top:12px">
+    ${barRows([['سال تولد',st.comp.birth],['تاریخ کامل',st.comp.date],['عکس',st.comp.photo],['پدر یا مادر',st.comp.parents]].map(([l,c])=>[l,c]),100)}</div>
+    <p class="muted small" style="margin:10px 0 0">درصد افراد ثبت‌شده که این اطلاعات را دارند. هر چه کامل‌تر باشد گزارش دقیق‌تر است.</p></section>
+  <section class="card"><h3>آمار هر خانواده</h3>
+    <div class="tbl-note" style="margin-top:10px"><input type="text" id="famQ" placeholder="جستجوی خانواده…" value="${esc(S.famQ)}" style="max-width:240px">
+      <select id="famSort" style="max-width:220px"><option value="members" ${S.famSort==='members'?'selected':''}>بیشترین اعضای شاخه</option><option value="kids" ${S.famSort==='kids'?'selected':''}>بیشترین فرزند</option><option value="gen" ${S.famSort==='gen'?'selected':''}>به ترتیب نسل</option></select></div>
+    <div id="famList">${famList(st)}</div></section>
+  </div>`;
+}
+
+/* ---------- add tab ---------- */
+function opts(filter,sel,self,withNew){
+  const arr=Object.entries(pendingItems()).filter(([id,r])=>id!==self&&(!filter||filter(r.p))).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa'));
+  return '<option value="">— نامشخص —</option>'+(withNew?`<option value="__new" ${sel==='__new'?'selected':''}>در فهرست نیست؛ نامش را می‌نویسم</option>`:'')+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('');
+}
+function dateW(p,v){
+  v=v||{};
+  return `<div class="dw"><select id="${p}_d" aria-label="روز"><option value="">روز</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${v.d===i+1?'selected':''}>${fa(i+1)}</option>`).join('')}</select>
+  <select id="${p}_m" aria-label="ماه"><option value="">ماه</option>${MONTHS.map((n,i)=>`<option value="${i+1}" ${v.m===i+1?'selected':''}>${n}</option>`).join('')}</select>
+  <input type="text" id="${p}_y" inputmode="numeric" placeholder="سال، مثلاً ۱۳۶۰" value="${v.y?fa(v.y):''}" aria-label="سال"></div>`;
+}
+function readDate(p){
+  let y=parseInt(norm($('#'+p+'_y').value),10)||0, m=parseInt($('#'+p+'_m').value,10)||0, d=parseInt($('#'+p+'_d').value,10)||0;
+  if(y&&(y<1200||y>nowYear)) y=0;
+  if(m&&d&&d>monthLen(y||1403,m)) d=monthLen(y||1403,m);
+  return {y,m,d};
+}
+function relBlock(key,label,filter,v){
+  const id=v[key+'Id']||'', ref=v[key+'Ref']||{}, sel=id||(ref.name?'__new':'');
+  return `<div class="rel wide"><label class="f"><span>${label}</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,true)}</select></label>
+   <div id="r_${key}_new" ${sel==='__new'?'':'hidden'}><div class="fields">
+     <label class="f"><span>نام و نام خانوادگی ${label}</span><input type="text" id="r_${key}_n" value="${esc(ref.name||'')}"></label>
+     <div class="f"><span>تاریخ تولد ${label} (هر چه می‌دانید)</span>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</div></div>
+   </div></div>`;
+}
+function photoBlock(){
+  return `<div class="f wide"><span>عکس (اختیاری)</span><div class="photo-row">
+    ${S.photo?`<img class="ph" id="phPrev" src="${esc(S.photo)}" alt="">`:`<div class="ph" id="phPrev" style="display:flex;align-items:center;justify-content:center;color:var(--muted)">بدون عکس</div>`}
+    <div class="stack" style="gap:8px;flex:1 1 220px"><input type="file" id="f_photo" accept="image/*" style="max-width:100%">
+      <span class="muted small" id="phMsg">${esc(S.photoMsg||'عکس چهره‌دار انتخاب کنید. خودکار به قاب استاندارد ۳×۴ با چهره در مرکز درمی‌آید تا همهٔ عکس‌ها یک‌شکل شوند.')}</span>
+      ${S.photo?'<button type="button" class="btn ghost sm" data-act="rmphoto" style="align-self:flex-start">حذف عکس</button>':''}</div></div></div>`;
+}
+function personForm(){
+  const e=S.editId&&S.people[S.editId]?S.people[S.editId]:null, v=e||S.prefill||{};
+  const title=e?(S.isAdmin?'ویرایش '+full(e):'پیشنهاد ویرایش '+full(e)):'افزودن یک نفر به خاندان';
+  return `<form id="pform" class="card stack" autocomplete="off">
+   <div class="row" style="justify-content:space-between"><h3>${esc(title)}</h3>${e?'<button type="button" class="btn ghost sm" data-act="canceledit">انصراف از ویرایش</button>':''}</div>
+   <div class="fields">
+    <label class="f"><span>نام *</span><input type="text" id="f_first" value="${esc(v.first||'')}" required></label>
+    <label class="f"><span>نام خانوادگی *</span><input type="text" id="f_last" value="${esc(v.last||'الله‌رضایی')}" required></label>
+    <div class="f"><span>جنسیت *</span><div class="seg">
+      <label><input type="radio" name="f_g" value="m" ${v.gender==='m'?'checked':''}><span>آقا</span></label>
+      <label><input type="radio" name="f_g" value="f" ${v.gender==='f'?'checked':''}><span>خانم</span></label></div></div>
+    <div class="f wide"><span>تاریخ تولد (شمسی؛ روز و ماه برای یادآوری تولد لازم است)</span>${dateW('b',bd(v))}</div>
+    <label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="f_dead" ${v.dead?'checked':''}><span style="color:var(--ink)">درگذشته است</span></label>
+    <div class="f wide" id="deathWrap" ${v.dead?'':'hidden'}><span>تاریخ درگذشت</span>${dateW('d',{y:v.dY,m:v.dM,d:v.dD})}</div>
+    ${photoBlock()}
+    ${relBlock('father','پدر',p=>p.gender==='m',v)}
+    ${relBlock('mother','مادر',p=>p.gender==='f',v)}
+    ${relBlock('spouse','همسر',null,v)}
+    <label class="f wide"><span>فرزندان (اختیاری؛ هر نام در یک خط)</span><textarea id="f_kids" style="min-height:70px" placeholder="مثلاً: علی الله‌رضایی">${esc(v.kidNames||'')}</textarea></label>
+    <label class="f"><span>محل تولد یا سکونت</span><input type="text" id="f_place" value="${esc(v.place||'')}"></label>
+    <label class="f"><span>شغل</span><input type="text" id="f_job" value="${esc(v.job||'')}"></label>
+    <label class="f wide"><span>توضیح کوتاه (اختیاری)</span><input type="text" id="f_note" value="${esc(v.note||'')}"></label>
+   </div>
+   <p class="muted small" style="margin:0">اگر پدر، مادر، همسر یا فرزند هنوز در فهرست نیست لازم نیست اول او را ثبت کنید. نامش را بنویسید؛ هر وقت خودش یا کس دیگری او را با همین نام ثبت کند، پیوند خودکار برقرار می‌شود.</p>
+   <div id="dupMsg"></div>
+   <div class="row"><button class="btn" type="submit">${S.isAdmin?'ثبت در شجره‌نامه':'ارسال برای تأیید مدیر'}</button></div>
+  </form>`;
+}
+const KINDS={memory:['خاطره','یک خاطرهٔ شاخص از او…'],trait:['ویژگی','مثلاً: بسیار مهمان‌نواز و خوش‌قول بود…'],quote:['جمله‌ای از او','جمله‌ای که زیاد می‌گفت یا درباره‌اش می‌گویند…']};
+function memoryForm(){
+  const arr=Object.entries(pendingItems()).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa'));
+  return `<form id="mform" class="card stack" autocomplete="off">
+   <h3>نوشتن دربارهٔ یک نفر</h3>
+   <label class="f"><span>دربارهٔ چه کسی؟ *</span><select id="m_person"><option value="">— انتخاب کنید —</option>${arr.map(([id,r])=>`<option value="${esc(id)}" ${id===S.memFor?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')}</select></label>
+   <div class="f"><span>چه می‌نویسید؟</span><div class="seg">${Object.entries(KINDS).map(([k,[l]],i)=>`<label><input type="radio" name="m_kind" value="${k}" ${i===0?'checked':''}><span>${l}</span></label>`).join('')}</div></div>
+   <label class="f"><span>متن *</span><textarea id="m_text" placeholder="${esc(KINDS.memory[1])}" required></textarea></label>
+   <p class="muted small" style="margin:0">با نام شما (${esc(fullName())}) ثبت می‌شود و بعد از تأیید مدیر کنار نام آن فرد دیده می‌شود.</p>
+   <div class="row"><button class="btn" type="submit">${S.isAdmin?'ثبت':'ارسال برای تأیید مدیر'}</button></div>
+  </form>`;
+}
+function codeBox(){
+  if(!S.code) return '';
+  return `<div class="card stack"><div class="note warn">ثبت مستقیم برای حساب شما ممکن نیست. متن زیر را کپی کنید و داخل گروه یا پیام خصوصی برای مدیر بفرستید تا او وارد کند.</div>
+   <textarea class="code" id="codeTxt" readonly>${esc(S.code)}</textarea>
+   <div class="row"><button class="btn" data-act="copycode">کپی متن</button><button class="btn ghost" data-act="closecode">بستن</button></div></div>`;
+}
+function stOf(id,it){ if(it.status==='pending'&&((it.kind==='person'&&!it.editOf&&S.people[id])||(it.kind==='memory'&&S.memories[id]))) return 'approved'; return it.status; }
+function mySubsHTML(){
+  const items=(S.mySub&&S.mySub.items)||{}, arr=Object.entries(items).sort((a,b)=>b[1].at-a[1].at);
+  if(!arr.length) return '';
+  const lab={pending:'ارسال شد، منتظر تأیید',approved:'تأیید شد',rejected:'رد شد'};
+  return `<section class="card"><h3>ارسالی‌های شما</h3><ul class="list" style="margin-top:10px">${arr.map(([id,it])=>{
+    const t=it.kind==='person'?(it.editOf?'ویرایش ':'')+'اطلاعات '+full(it.payload):(KINDS[it.payload.kind||'memory'][0])+' دربارهٔ '+nameOf(it.payload.personId);
+    return `<li><span>${esc(t)}</span><span class="status ${esc(stOf(id,it))}">${lab[stOf(id,it)]||''}</span></li>`;}).join('')}</ul></section>`;
+}
+function viewAdd(){
+  return `<div class="stack"><div class="tabs2"><button data-act="addtab" data-t="person" aria-current="${S.addTab==='person'}">افزودن فرد</button><button data-act="addtab" data-t="memory" aria-current="${S.addTab==='memory'}">خاطره، ویژگی، جمله</button></div>
+  <div id="formArea">${S.addTab==='person'?personForm():memoryForm()}</div><div id="codeArea">${codeBox()}</div><div id="mySubs">${mySubsHTML()}</div></div>`;
+}
+function refreshAdd(){
+  const fill=(id,html)=>{const el=$(id); if(!el) return; const v=el.value; el.innerHTML=html; el.value=v;};
+  if(S.addTab==='person'){
+    fill('#r_father',opts(p=>p.gender==='m','',S.editId,true)); fill('#r_mother',opts(p=>p.gender==='f','',S.editId,true)); fill('#r_spouse',opts(null,'',S.editId,true));
+  } else {
+    const el=$('#m_person'); if(el){ const v=el.value; const arr=Object.entries(pendingItems()).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa')); el.innerHTML='<option value="">— انتخاب کنید —</option>'+arr.map(([id,r])=>`<option value="${esc(id)}">${esc(pickLabel(id,r))}</option>`).join(''); el.value=v; }
+  }
+  const ms=$('#mySubs'); if(ms) ms.innerHTML=mySubsHTML();
+}
+
+/* ---------- admin ---------- */
+function pendingList(){
+  const out=[];
+  Object.entries(S.subs).forEach(([uid,d])=>Object.entries((d&&d.items)||{}).forEach(([id,it])=>{ if(it.status==='pending') out.push(Object.assign({uid,id},it)); }));
+  S.imported.forEach(it=>out.push(Object.assign({uid:'__import'},it)));
+  return out.sort((a,b)=>a.at-b.at);
+}
+function pendCard(it){
+  const k=it.uid+'|'+it.id; let body='';
+  if(it.kind==='person'){
+    const p=it.payload, rel=[];
+    const rn=(key,l)=>{ const nm=p[key+'Id']?nameOf(p[key+'Id']):(p[key+'Ref']&&p[key+'Ref'].name)||''; if(nm) rel.push(l+': '+nm); };
+    rn('father','پدر'); rn('mother','مادر'); rn('spouse','همسر'); if(p.kidNames) rel.push('فرزندان: '+String(p.kidNames).split('\n').filter(Boolean).join('، '));
+    body=`<div class="row" style="gap:10px;align-items:flex-start">${p.photo?`<img class="av" style="width:54px;height:72px;border-radius:8px" src="${esc(p.photo)}" alt="">`:''}<div><b>${it.editOf?'پیشنهاد ویرایش برای '+esc(nameOf(it.editOf))+' ← ':'فرد جدید: '}${esc(full(p))}</b>
+      <div class="muted small">${[gLabel(p.gender),dstr(p.bY,p.bM,p.bD)?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead?('درگذشته'+(p.dY?' '+dstr(p.dY,p.dM,p.dD):'')):'',p.place,p.job].filter(Boolean).map(esc).join('، ')}</div>
+      ${rel.length?`<div class="muted small">${rel.map(esc).join('، ')}</div>`:''}${p.note?`<div class="small">${esc(p.note)}</div>`:''}</div></div>`;
+  } else {
+    body=`<b>${KINDS[it.payload.kind||'memory'][0]} دربارهٔ ${esc(nameOf(it.payload.personId))}</b><div class="mem"><p>${esc(it.payload.text)}</p></div>`;
+  }
+  return `<li style="align-items:flex-start"><div class="stack" style="gap:6px;flex:1 1 280px;min-width:0">${body}<span class="muted small">از طرف ${esc(it.by||'ناشناس')} – ${new Date(it.at).toLocaleDateString('fa-IR')}${it.uid==='__import'?' – وارد شده از متن':''}</span></div>
+   <div class="row" style="gap:6px"><button class="btn sm" data-act="approve" data-k="${esc(k)}">تأیید</button><button class="btn danger sm" data-act="reject" data-k="${esc(k)}">رد</button></div></li>`;
+}
+function viewAdmin(){
+  if(!S.isAdmin) return '<div class="note bad">این بخش فقط برای مدیر است.</div>';
+  const pl=pendingList();
+  return `<div class="stack">
+   <section class="card"><div class="row" style="justify-content:space-between"><h3>منتظر تأیید (${fa(pl.length)})</h3>${pl.length>1?'<button class="btn sm" data-act="approveall">تأیید همه</button>':''}</div>
+     ${pl.length?`<ul class="list" style="margin-top:12px">${pl.map(pendCard).join('')}</ul>`:'<p class="muted" style="margin-bottom:0">موردی در انتظار نیست.</p>'}</section>
+   <section class="card stack"><h3>وارد کردن از متن</h3><p class="muted small" style="margin:0">اگر کسی نتوانست مستقیم ثبت کند و متن رمزدار فرستاد، اینجا بچسبانید. هر متن در یک خط باشد. موارد وارد شده به فهرست بالا می‌روند و پس از تأیید شما ثبت می‌شوند.</p>
+     <textarea class="code" id="impTxt" placeholder="SHJ1:…"></textarea><div class="row"><button class="btn ghost" data-act="import">افزودن به فهرست تأیید</button></div></section>
+   <section class="card stack"><h3>پشتیبان‌گیری</h3><p class="muted small" style="margin:0">یک فایل از همهٔ افراد و یادگارهای تأییدشده ذخیره می‌کند.</p><div class="row"><button class="btn ghost" data-act="backup">ذخیرهٔ فایل پشتیبان</button></div></section>
+  </div>`;
+}
+
+/* ---------- person sheet ---------- */
+function personSheet(id){
+  const P=EP(), p=P[id]; if(!p) return '<p>این فرد پیدا نشد.</p><button class="btn" data-act="close">بستن</button>';
+  if(p.virtual){
+    return `<button class="btn ghost sm x" data-act="close">بستن</button><div><h2>${esc(full(p))}</h2><div class="muted">${[gLabel(p.gender),p.bY?dstr(p.bY,p.bM,p.bD):''].filter(Boolean).map(esc).join('، ')}</div></div>
+    <div class="note">این نام فقط توسط یکی از اعضا به‌عنوان پدر، مادر، همسر یا فرزند نوشته شده و پرونده‌اش هنوز ثبت نشده است. اگر او را می‌شناسید اطلاعاتش را کامل کنید.</div>
+    <div class="row"><button class="btn" data-act="fillvirt" data-id="${esc(id)}">ثبت اطلاعات ${esc(p.first)}</button></div>`;
+  }
+  const chip=i=>P[i]?`<button class="chip" data-act="person" data-id="${esc(i)}">${esc(full(P[i]))}</button>`:'';
+  const kids=Object.keys(P).filter(i=>P[i].fatherId===id||P[i].motherId===id);
+  const sib=Object.keys(P).filter(i=>i!==id&&((p.fatherId&&P[i].fatherId===p.fatherId)||(p.motherId&&P[i].motherId===p.motherId)));
+  const spouses=new Set(); if(P[p.spouseId]) spouses.add(p.spouseId); Object.keys(P).forEach(i=>{ if(P[i].spouseId===id) spouses.add(i); }); kids.forEach(k=>{ const o=P[k].fatherId===id?P[k].motherId:P[k].fatherId; if(P[o]) spouses.add(o); });
+  const rows=[['پدر',P[p.fatherId]?[p.fatherId]:[]],['مادر',P[p.motherId]?[p.motherId]:[]],['همسر',[...spouses]],['فرزندان',kids],['برادر و خواهر',sib]].filter(r=>r[1].length);
+  const mems=Object.entries(S.memories).filter(([,m])=>m.personId===id).sort((a,b)=>(a[1].at||0)-(b[1].at||0));
+  const a=ageNow(p);
+  const info=[gLabel(p.gender),p.dead?'درگذشته':'در قید حیات',dstr(p.bY,p.bM,p.bD)?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead&&dstr(p.dY,p.dM,p.dD)?'درگذشت '+dstr(p.dY,p.dM,p.dD):'',a!=null?(p.dead?fa(a)+' سال عمر کرد':fa(a)+' ساله'):'',p.place,p.job].filter(Boolean);
+  const cf=S.confirm;
+  const memGroup=(k,title)=>{ const l=mems.filter(([,m])=>(m.kind||'memory')===k); if(!l.length) return ''; return `<div class="stack" style="gap:8px"><span class="kind">${title}</span>${l.map(([mid,m])=>`<div class="mem"><p>${esc(m.text)}</p><div class="row" style="justify-content:space-between"><span class="muted small">— ${esc(m.author||'')}</span>${S.isAdmin?`<button class="btn danger sm" data-act="delmem" data-id="${esc(mid)}">${cf==='m'+mid?'مطمئنم، حذف شود':'حذف'}</button>`:''}</div></div>`).join('')}</div>`; };
+  return `<button class="btn ghost sm x" data-act="close">بستن</button>
+   <div class="sheet-head">${p.photo?`<img class="ph" src="${esc(p.photo)}" alt="">`:''}<div style="min-width:0"><h2>${esc(full(p))}</h2><div class="muted">${info.map(esc).join('، ')}</div></div></div>
+   ${p.note?`<div class="note">${esc(p.note)}</div>`:''}
+   ${rows.length?`<div class="stack" style="gap:10px">${rows.map(r=>`<div class="row" style="gap:6px;align-items:baseline"><span class="muted small" style="min-width:84px">${r[0]}</span>${r[1].map(chip).join('')}</div>`).join('')}</div>`:'<p class="muted small" style="margin:0">پیوندی با اعضای دیگر ثبت نشده است.</p>'}
+   <div class="stack" style="gap:12px"><h3>ویژگی‌ها، خاطرات و جمله‌ها</h3>
+     ${mems.length?memGroup('trait','ویژگی‌ها')+memGroup('memory','خاطرات')+memGroup('quote','جمله‌ها'):'<p class="muted small" style="margin:0">هنوز چیزی ثبت نشده است.</p>'}</div>
+   <div class="row"><button class="btn" data-act="addmem" data-id="${esc(id)}">نوشتن دربارهٔ او</button>
+     <button class="btn ghost" data-act="editp" data-id="${esc(id)}">${S.isAdmin?'ویرایش':'پیشنهاد ویرایش'}</button>
+     ${S.isAdmin?`<button class="btn danger" data-act="delp" data-id="${esc(id)}">${cf==='p'+id?'مطمئنم، حذف شود':'حذف فرد'}</button>`:''}</div>`;
+}
+function openModal(id){ S.modal=id; S.confirm=null; $('#sheet').innerHTML=personSheet(id); $('#modal').hidden=false; }
+function closeModal(){ S.modal=null; S.confirm=null; $('#modal').hidden=true; }
+
+/* ================= illustrated tree (canvas) ================= */
+const imgCache=new Map();
+function loadImg(src){
+  if(imgCache.has(src)) return imgCache.get(src);
+  const pr=new Promise(res=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>res(null); i.src=src; });
+  imgCache.set(src,pr); return pr;
+}
+function drawArt(T,imgs){
+  const P=T.P, R=46, GAP=280, CW=2*R+46, MARGIN=140, TRUNK=230, ROOTS=150, TOP=330;
+  let maxD=1; T.nodes.forEach(n=>{ if(n.depth>maxD) maxD=n.depth; });
+  const lay=n=>{ n.cw=(1+n.spouses.length)*CW; n.kids.forEach(lay); n.kw=n.kids.reduce((s,k)=>s+k.aw,0); n.aw=Math.max(n.kw,n.cw+40); };
+  T.roots.forEach(lay);
+  const put=(n,left)=>{ n.cx=left+n.aw/2; let xr=left+n.aw-(n.aw-n.kw)/2; n.kids.forEach(k=>{ put(k,xr-k.aw); xr-=k.aw; }); };
+  const content=T.roots.reduce((s,r)=>s+r.aw,0)+80*(T.roots.length-1);
+  const W=Math.max(1500,content+MARGIN*2);
+  let xr=W-(W-content)/2; T.roots.forEach(r=>{ put(r,xr-r.aw); xr-=r.aw+80; });
+  const cyOf=n=>TOP+(maxD-n.depth)*GAP+R+34;
+  const groundY=TOP+(maxD-1)*GAP+R+34+TRUNK, H=groundY+ROOTS+120;
+  const sc=Math.min(1,7000/Math.max(W,H),Math.sqrt(40e6/(W*H)));
+  const cv=document.createElement('canvas'); cv.width=Math.round(W*sc); cv.height=Math.round(H*sc);
+  const c=cv.getContext('2d'); c.scale(sc,sc); c.direction='rtl'; c.textAlign='center'; c.textBaseline='middle';
+  let seed=1337; const rnd=()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
+  const GREENS=['#2f7d4f','#3f9460','#5aa86f','#7cc08a','#2a6b45','#4c9a62'], BARK1='#5b3d26', BARK2='#8a6240';
+  // background
+  let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#ffffff'); g.addColorStop(.7,'#f3f8f4'); g.addColorStop(1,'#e2eee5'); c.fillStyle=g; c.fillRect(0,0,W,H);
+  // ground
+  c.fillStyle='#cfe3d3'; c.beginPath(); c.moveTo(0,groundY); c.bezierCurveTo(W*.25,groundY-38,W*.5,groundY+14,W*.75,groundY-26); c.bezierCurveTo(W*.88,groundY-40,W*.95,groundY-8,W,groundY-18); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
+  c.fillStyle='#b9d6bf'; c.beginPath(); c.moveTo(0,groundY+34); c.bezierCurveTo(W*.3,groundY+8,W*.6,groundY+56,W,groundY+18); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
+  const bw=n=>Math.min(80,10+Math.sqrt(n.size)*5.5);
+  // canopy glow
+  T.nodes.forEach(n=>{ if(n.depth>=Math.max(2,maxD-1)){ const y=cyOf(n); const rg=c.createRadialGradient(n.cx,y,10,n.cx,y,GAP*.9); rg.addColorStop(0,'rgba(90,168,111,.20)'); rg.addColorStop(1,'rgba(90,168,111,0)'); c.fillStyle=rg; c.beginPath(); c.arc(n.cx,y,GAP*.9,0,7); c.fill(); } });
+  // roots and trunks
+  T.roots.forEach(r=>{
+    const w=bw(r), y1=cyOf(r), x=r.cx;
+    for(let i=0;i<7;i++){ const dir=i%2?1:-1, k=(i+1)/7, ex=x+dir*(60+rnd()*220)*(.6+k), ey=groundY+ROOTS*(.55+rnd()*.5);
+      c.strokeStyle=BARK1; c.lineCap='round'; c.lineWidth=Math.max(3,w*(.55-k*.35)); c.beginPath(); c.moveTo(x+dir*w*.3,groundY-6); c.bezierCurveTo(x+dir*w*1.1,groundY+ROOTS*.25,ex-dir*60,groundY+ROOTS*.4,ex,ey); c.stroke(); }
+    const lg=c.createLinearGradient(x-w,0,x+w,0); lg.addColorStop(0,BARK1); lg.addColorStop(.5,BARK2); lg.addColorStop(1,BARK1);
+    c.fillStyle=lg; c.beginPath(); c.moveTo(x-w/2,y1); c.bezierCurveTo(x-w/2,y1+TRUNK*.5,x-w*.95,groundY-TRUNK*.25,x-w*1.05,groundY+8); c.lineTo(x+w*1.05,groundY+8); c.bezierCurveTo(x+w*.95,groundY-TRUNK*.25,x+w/2,y1+TRUNK*.5,x+w/2,y1); c.closePath(); c.fill();
+    c.strokeStyle='rgba(40,25,12,.28)'; c.lineWidth=2; for(let i=-1;i<=1;i++){ c.beginPath(); c.moveTo(x+i*w*.22,y1+20); c.bezierCurveTo(x+i*w*.3,y1+TRUNK*.4,x+i*w*.4,groundY-TRUNK*.3,x+i*w*.5,groundY); c.stroke(); }
+  });
+  // branches
+  const leaves=[], bez=(t,a,b,cc,d)=>{ const u=1-t; return u*u*u*a+3*u*u*t*b+3*u*t*t*cc+t*t*t*d; };
+  const branch=(n)=>{ const px=n.cx, py=cyOf(n);
+    n.kids.forEach(k=>{ const kx=k.cx, ky=cyOf(k), w=bw(k);
+      const x1=px, y1=py, x2=px, y2=py-GAP*.5, x3=kx, y3=ky+GAP*.5, x4=kx, y4=ky;
+      c.lineCap='round'; c.strokeStyle=BARK1; c.lineWidth=w; c.beginPath(); c.moveTo(x1,y1); c.bezierCurveTo(x2,y2,x3,y3,x4,y4); c.stroke();
+      c.strokeStyle='rgba(255,230,190,.22)'; c.lineWidth=Math.max(1.5,w*.28); c.beginPath(); c.moveTo(x1-w*.15,y1); c.bezierCurveTo(x2-w*.15,y2,x3-w*.15,y3,x4-w*.15,y4); c.stroke();
+      const cnt=9+Math.round(Math.sqrt(k.size)*3); for(let i=0;i<cnt;i++){ const t=.12+rnd()*.78; leaves.push({x:bez(t,x1,x2,x3,x4)+(rnd()-.5)*w,y:bez(t,y1,y2,y3,y4)+(rnd()-.5)*w}); }
+      branch(k); }); };
+  T.roots.forEach(branch);
+  // leaves
+  const leaf=(x,y,ang,s,col)=>{ c.save(); c.translate(x,y); c.rotate(ang); c.fillStyle=col; c.beginPath(); c.moveTo(0,0); c.quadraticCurveTo(s*.6,-s*.55,s*1.7,0); c.quadraticCurveTo(s*.6,s*.55,0,0); c.fill(); c.restore(); };
+  leaves.forEach(l=>{ for(let i=0;i<3;i++){ leaf(l.x,l.y,rnd()*6.28,11+rnd()*10,rnd()<.07?'#d9a441':GREENS[Math.floor(rnd()*GREENS.length)]); } });
+  // people
+  const fit=(txt,maxW,size,weight)=>{ let s=size; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; while(c.measureText(txt).width>maxW&&s>10){ s--; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; } };
+  const person=(id,x,y)=>{
+    const p=P[id]; if(!p) return;
+    const col=p.gender==='m'?'#3A7CA5':p.gender==='f'?'#B0527A':'#7a8a85';
+    c.save(); c.shadowColor='rgba(0,0,0,.25)'; c.shadowBlur=12; c.shadowOffsetY=4; c.fillStyle='#fff'; c.beginPath(); c.arc(x,y,R+6,0,7); c.fill(); c.restore();
+    c.save(); c.beginPath(); c.arc(x,y,R,0,7); c.clip();
+    const im=imgs[id];
+    if(im){ const sz=Math.max(2*R/im.width,2*R/im.height); const w=im.width*sz,h=im.height*sz; if(p.dead){ try{ c.filter='grayscale(1)'; }catch(e){} } c.drawImage(im,x-w/2,y-R-(h-2*R)*.18,w,h); }
+    else { c.fillStyle=col+'33'; c.fillRect(x-R,y-R,2*R,2*R); c.fillStyle=col; c.font='700 40px Vazirmatn, Tahoma, sans-serif'; c.fillText((p.first||'؟').trim()[0]||'؟',x,y+2); }
+    c.restore();
+    c.strokeStyle=col; c.lineWidth=5; c.setLineDash(p.virtual?[7,6]:[]); c.beginPath(); c.arc(x,y,R+3,0,7); c.stroke(); c.setLineDash([]);
+    const nm=full(p), ly=y+R+26; fit(nm,CW+10,17,700); const tw=Math.min(c.measureText(nm).width+22,CW+30);
+    const yl=lifeLine(p), ph=yl?48:30, pw=yl?Math.max(tw,90):tw;
+    c.fillStyle='rgba(255,255,255,.95)'; c.strokeStyle='#c5d3ce'; c.lineWidth=1.5; c.beginPath(); c.roundRect?c.roundRect(x-pw/2,ly-15,pw,ph,9):c.rect(x-pw/2,ly-15,pw,ph); c.fill(); c.stroke();
+    c.fillStyle=p.dead?'#5A726B':'#14302A'; c.fillText(nm,x,ly+1);
+    if(yl){ c.font='400 13px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#5A726B'; c.fillText(yl,x,ly+23); }
+  };
+  const drawNodes=n=>{ const y=cyOf(n), ids=[n.id,...n.spouses], total=ids.length*CW; let x=n.cx+total/2-CW/2;
+    ids.forEach((id,i)=>{ person(id,x,y); if(i<ids.length-1){ c.strokeStyle='#d9a441'; c.lineWidth=4; c.beginPath(); c.arc(x-CW/2,y,8,0,7); c.stroke(); } x-=CW; });
+    n.kids.forEach(drawNodes); };
+  T.roots.forEach(drawNodes);
+  // title
+  c.fillStyle='#1E5B50'; c.font='700 74px "Aref Ruqaa", Vazirmatn, serif'; c.fillText('شجره‌نامه خاندان الله‌رضایی',W/2,110);
+  c.fillStyle='#5A726B'; c.font='400 26px Vazirmatn, Tahoma, sans-serif'; c.fillText(`${fa(Object.keys(P).length)} نفر، ${fa(maxD)} نسل، ${dstr(TODAY.y,TODAY.m,TODAY.d)}`,W/2,190);
+  c.strokeStyle='#d9a441'; c.lineWidth=3; c.beginPath(); c.moveTo(W/2-120,232); c.lineTo(W/2+120,232); c.stroke();
+  return cv;
+}
+async function makeArt(){
+  const T=buildTree(); const imgs={};
+  try{ await Promise.all([document.fonts.load('700 20px Vazirmatn'),document.fonts.load('400 14px Vazirmatn'),document.fonts.load('700 40px "Aref Ruqaa"')]); }catch(e){}
+  await Promise.all(Object.entries(T.P).map(async([id,p])=>{ if(p.photo) imgs[id]=await loadImg(p.photo); }));
+  return drawArt(T,imgs);
+}
+async function renderArt(){
+  const box=$('#artBox'); if(!box) return; const tok=++S.artTok;
+  let cv; try{ cv=await makeArt(); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
+  if(tok!==S.artTok||!$('#artBox')) return;
+  S.artCanvas=cv; const natural=cv.width; const base=Math.max(300,box.clientWidth||natural);
+  cv.style.width=Math.round(base*S.artZoom)+'px'; cv.style.height='auto';
+  box.innerHTML=''; box.appendChild(cv);
+  if(S.artZoom>1) box.scrollLeft=-(box.scrollWidth-box.clientWidth)/2;
+}
+async function saveBlob(name,blob){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },5000);
+}
+function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+async function saveArt(kind){
+  toast('در حال آماده‌سازی فایل…');
+  try{
+    const cv=await makeArt();
+    if(kind==='png'){
+      const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+      await saveBlob('shajare-allahrezaei.png',blob); toast('فایل ذخیره شد');
+    } else {
+      if(!(window.jspdf&&window.jspdf.jsPDF)) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      const w=cv.width,h=cv.height, pdf=new window.jspdf.jsPDF({orientation:w>=h?'l':'p',unit:'px',format:[w,h],compress:true});
+      pdf.addImage(cv.toDataURL('image/jpeg',.92),'JPEG',0,0,w,h);
+      await saveBlob('shajare-allahrezaei.pdf',pdf.output('blob')); toast('فایل ذخیره شد');
+    }
+  }catch(e){ if(e&&e.code==='declined') return; toast(kind==='pdf'?'ساخت PDF انجام نشد. فایل PNG را ذخیره کنید':'ذخیره فایل انجام نشد'); }
+}
+
+/* ================= photo standardisation ================= */
+const PW=240, PH=320;
+async function toBitmap(file){
+  try{ return await createImageBitmap(file,{imageOrientation:'from-image'}); }
+  catch(e){ const url=URL.createObjectURL(file); const im=await loadImg(url); if(!im) throw new Error('bad image'); return im; }
+}
+async function standardPhoto(file){
+  const bmp=await toBitmap(file), iw=bmp.width, ih=bmp.height;
+  const s0=Math.min(1,1280/Math.max(iw,ih)), tw=Math.round(iw*s0), th=Math.round(ih*s0);
+  const src=document.createElement('canvas'); src.width=tw; src.height=th; src.getContext('2d').drawImage(bmp,0,0,tw,th);
+  let face=null, mode='center';
+  if(S.sample){
+    try{
+      const blob=await new Promise(r=>src.toBlob(r,'image/jpeg',.85));
+      const prompt='This is a photo of one person. Locate the main person\'s head (top of hair to bottom of chin, full width of the head). Reply with only JSON: {"found":true,"x":0.30,"y":0.15,"w":0.35,"h":0.40} where x,y are the top-left corner of the head box and w,h its size, all as fractions (0 to 1) of the image width and height. If no face is visible reply {"found":false}.';
+      const r=await S.sample.json(prompt,{images:blob,modelTier:'quick'});
+      if(r&&r.found&&r.w>0.03&&r.h>0.03&&r.x>=0&&r.y>=0&&r.x+r.w<=1.05&&r.y+r.h<=1.05){ face={x:r.x*tw,y:r.y*th,w:r.w*tw,h:r.h*th}; mode='ai'; }
+    }catch(e){ face=null; }
+  }
+  if(!face&&'FaceDetector' in window){ try{ const fd=new window.FaceDetector({maxDetectedFaces:1}); const r=await fd.detect(src); if(r&&r[0]){ const b=r[0].boundingBox; face={x:b.x,y:b.y,w:b.width,h:b.height}; mode='ai'; } }catch(e){} }
+  let fw,fh,fx,fy; // frame in source pixels (3:4)
+  if(face){ fh=face.h/0.50; fw=fh*PW/PH; fx=face.x+face.w/2-fw/2; fy=face.y-0.17*fh; }
+  else { fh=Math.min(th,tw*PH/PW); fw=fh*PW/PH; fx=(tw-fw)/2; fy=Math.max(0,Math.min(th-fh,(th-fh)*0.25)); }
+  const out=document.createElement('canvas'); out.width=PW; out.height=PH; const o=out.getContext('2d');
+  const bgG=o.createLinearGradient(0,0,0,PH); bgG.addColorStop(0,'#e9efec'); bgG.addColorStop(1,'#cdd9d4'); o.fillStyle=bgG; o.fillRect(0,0,PW,PH);
+  const k=PW/fw, sx=Math.max(0,fx), sy=Math.max(0,fy), ex=Math.min(tw,fx+fw), ey=Math.min(th,fy+fh);
+  if(ex>sx&&ey>sy) o.drawImage(src,sx,sy,ex-sx,ey-sy,(sx-fx)*k,(sy-fy)*k,(ex-sx)*k,(ey-sy)*k);
+  // gentle auto-levels so lighting looks alike
+  try{ const d=o.getImageData(0,0,PW,PH), a=d.data, hist=new Uint32Array(256);
+    for(let i=0;i<a.length;i+=4) hist[Math.round(.299*a[i]+.587*a[i+1]+.114*a[i+2])]++;
+    const tot=PW*PH; let acc=0,lo=0,hi=255; for(let i=0;i<256;i++){ acc+=hist[i]; if(acc>tot*.01){lo=i;break;} } acc=0; for(let i=255;i>=0;i--){ acc+=hist[i]; if(acc>tot*.01){hi=i;break;} }
+    if(hi-lo>40){ const sc=255/(hi-lo), mix=.6; for(let i=0;i<a.length;i+=4) for(let j=0;j<3;j++){ const v=(a[i+j]-lo)*sc; a[i+j]=Math.max(0,Math.min(255,a[i+j]*(1-mix)+v*mix)); } o.putImageData(d,0,0); } }catch(e){}
+  return {data:out.toDataURL('image/jpeg',.78),mode};
+}
+async function onPhotoPicked(file){
+  const msg=$('#phMsg'); if(!file) return;
+  if(msg) msg.textContent='در حال تنظیم عکس…';
+  try{
+    const r=await standardPhoto(file);
+    S.photo=r.data; S.photoDirty=true;
+    S.photoMsg=r.mode==='ai'?'چهره پیدا شد و عکس در قاب استاندارد قرار گرفت.':'عکس از وسط برش خورد. اگر چهره مرکز قاب نیست، عکسی نزدیک‌تر انتخاب کنید.';
+  }catch(e){ S.photoMsg='این فایل به‌عنوان عکس خوانده نشد. فایل دیگری انتخاب کنید.'; }
+  const fa2=$('#formArea'); if(!fa2) return;
+  const prev=$('#phPrev'); if(prev&&S.photo){ const im=document.createElement('img'); im.className='ph'; im.id='phPrev'; im.src=S.photo; im.alt=''; prev.replaceWith(im); }
+  const m2=$('#phMsg'); if(m2) m2.textContent=S.photoMsg;
+  if(!document.querySelector('[data-act=rmphoto]')){ const b=document.createElement('button'); b.type='button'; b.className='btn ghost sm'; b.dataset.act='rmphoto'; b.style.alignSelf='flex-start'; b.textContent='حذف عکس'; m2.parentElement.appendChild(b); }
+}
+
+/* ================= render ================= */
+const LOGO='<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 36V20M20 20C20 13 10 14 10 6M20 20C20 13 30 14 30 6M20 27C20 23 14 23 14 18M20 27C20 23 26 23 26 18"/><circle cx="10" cy="6" r="2.2" fill="var(--accent)" stroke="none"/><circle cx="30" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>';
+const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات']];
+function render(){
+  const root=$('#root');
+  if(!S.ready){ root.innerHTML='<div class="loginbox card empty"><p class="muted" style="margin:0">در حال بارگذاری شجره‌نامه…</p></div>'; return; }
+  if(S.gate){ root.innerHTML=`<div class="loginbox card stack"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div></div></div><div class="note warn">اتصال به پایگاه داده هنوز تنظیم نشده است. چهار مقدار ابتدای فایل (آدرس، کلید، ایمیل خانواده و ایمیل مدیر) را وارد کنید.</div></div>`; return; }
+  if(!S.me||!S.authed){
+    const m=S.me||{first:'',last:''};
+    root.innerHTML=`<div class="loginbox card stack"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">شجره‌نامه خانوادگی</div></div></div>
+     <p style="margin:0">${S.adminLogin?'ورود مدیر':'برای ورود نام و نام خانوادگی خود و رمز خانواده را بنویسید. رمز را در گروه خانوادگی اعلام کرده‌اند.'}</p>
+     <form id="loginForm" class="stack" style="gap:12px"><label class="f"><span>نام</span><input type="text" id="l_first" required autocomplete="given-name" value="${esc(m.first)}"></label>
+     <label class="f"><span>نام خانوادگی</span><input type="text" id="l_last" required autocomplete="family-name" value="${esc(m.last)}"></label>
+     ${S.adminLogin?`<label class="f"><span>ایمیل مدیر</span><input type="text" id="l_email" dir="ltr" required autocomplete="username"></label><label class="f"><span>رمز مدیر</span><input type="password" id="l_pass" dir="ltr" required autocomplete="current-password"></label>`
+       :(!S.authed?`<label class="f"><span>رمز خانواده</span><input type="password" id="l_code" required autocomplete="off"></label>`:'')}
+     ${S.loginErr?`<div class="note bad">${esc(S.loginErr)}</div>`:''}
+     <button class="btn big" type="submit">ورود</button></form>
+     <button class="link" type="button" data-act="toggleadmin" style="align-self:flex-start">${S.adminLogin?'ورود اعضای خانواده':'ورود مدیر'}</button></div>`;
+    return;
+  }
+  root.innerHTML=`<header class="top"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">شجره‌نامه خانوادگی</div></div></div>
+    <div class="who"><span>${esc(fullName())}</span>${S.isAdmin?'<span class="pill adm">مدیر</span>':''}<button class="link" data-act="logout">تغییر نام</button></div></header>
+    <nav class="nav" id="nav"></nav>${S.dbError?`<div class="note bad" style="margin-bottom:12px">ارتباط با پایگاه داده برقرار نیست (${esc(S.dbError)}). صفحه را دوباره باز کنید.</div>`:''}<main id="view"></main>`;
+  renderNav(); renderView();
+}
+function renderNav(){
+  const nav=$('#nav'); if(!nav) return;
+  const tabs=TABS.slice(); if(S.isAdmin) tabs.push(['admin','مدیریت']);
+  const pc=S.isAdmin?pendingList().length:0;
+  nav.innerHTML=tabs.map(([k,l])=>`<button data-act="tab" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}>${l}${k==='admin'&&pc?`<span class="badge">${fa(pc)}</span>`:''}</button>`).join('');
+}
+function renderView(){
+  const v=$('#view'); if(!v) return;
+  const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,admin:viewAdmin}[S.tab]||viewHome;
+  v.innerHTML=f();
+  if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } }
+}
+let rq=0;
+function changed(){ S.T=null; if(rq) return; rq=requestAnimationFrame(()=>{ rq=0; if(!S.me||!S.ready) return; renderNav(); if(S.tab==='add') refreshAdd(); else renderView(); if(S.modal) $('#sheet').innerHTML=personSheet(S.modal); }); }
+
+/* ================= actions ================= */
+function gotoTab(t){ S.tab=t; S.code=null; closeModal(); renderNav(); renderView(); window.scrollTo(0,0); }
+const val=id=>{ const e=$(id); return e?e.value.trim():''; };
+function resetPhoto(from){ S.photo=from||''; S.photoDirty=false; S.photoMsg=''; }
+
+async function submitSub(kind,payload,id,editOf){
+  const item={uid:S.uid,id,kind,payload,by:fullName(),at:Date.now(),status:'pending'}; if(editOf) item.editOf=editOf;
+  await S.db.doc('subs/'+S.uid+'_'+id).set(item);
+  const keep=JSON.parse(JSON.stringify(item)); if(keep.payload) keep.payload.photo='';
+  const my=S.mySub||{items:{}}; my.items[id]=keep; S.mySub=my; lsSet('shj_mysub',JSON.stringify(my));
+}
+function makeCode(kind,payload,id,editOf){
+  const o={k:kind,p:payload,id,by:fullName(),at:Date.now()}; if(editOf) o.e=editOf;
+  return 'SHJ1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+}
+async function deliver(kind,payload,id,editOf){
+  if(!S.uid){ S.code=makeCode(kind,Object.assign({},payload,{photo:''}),id,editOf); return 'code'; }
+  try{ await submitSub(kind,payload,id,editOf); return 'sent'; }
+  catch(e){ S.code=makeCode(kind,Object.assign({},payload,{photo:''}),id,editOf); return 'code'; }
+}
+function showCode(){ const a=$('#codeArea'); if(a) a.innerHTML=codeBox(); }
+function readRel(key){
+  const v=val('#r_'+key);
+  if(v==='__new'){ const dt=readDate('r_'+key); return {id:'',ref:{name:nn(val('#r_'+key+'_n'))?val('#r_'+key+'_n'):'',y:dt.y,m:dt.m,d:dt.d}}; }
+  return {id:v,ref:{name:'',y:0,m:0,d:0}};
+}
+async function onPersonSubmit(){
+  const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
+  const first=val('#f_first'), last=val('#f_last');
+  if(!first||!last){ toast('نام و نام خانوادگی را بنویسید'); return; }
+  if(!g){ toast('جنسیت را انتخاب کنید'); return; }
+  const dead=$('#f_dead').checked, b=readDate('b'), d=dead?readDate('d'):{y:0,m:0,d:0};
+  const fa_=readRel('father'), mo=readRel('mother'), sp=readRel('spouse');
+  const payload={first,last,gender:g,bY:b.y,bM:b.m,bD:b.d,dead,dY:d.y,dM:d.m,dD:d.d,
+    fatherId:fa_.id,fatherRef:fa_.ref,motherId:mo.id,motherRef:mo.ref,spouseId:sp.id,spouseRef:sp.ref,
+    kidNames:val('#f_kids'),place:val('#f_place'),job:val('#f_job'),note:val('#f_note')};
+  if(S.photoDirty) payload.photo=S.photo;
+  if(!S.editId&&!S.dup){
+    const dup=Object.values(S.people).find(p=>p.first===first&&p.last===last&&(p.bY||0)===b.y);
+    if(dup){ S.dup=true; $('#dupMsg').innerHTML='<div class="note warn">فردی با همین نام و سال تولد قبلاً ثبت شده است. اگر مطمئنید فرد دیگری است دوباره دکمه را بزنید.</div>'; return; }
+  }
+  S.dup=false;
+  const btn=$('#pform button[type=submit]'); btn.disabled=true;
+  try{
+    if(S.isAdmin){
+      const id=S.editId||newId('p'), ref=S.db.doc('people/'+id);
+      if(S.editId) await ref.update(payload); else await ref.set(Object.assign({createdBy:fullName(),createdAt:Date.now()},payload));
+      toast(S.editId?'تغییرات ذخیره شد':'در شجره‌نامه ثبت شد');
+    } else {
+      const r=await deliver('person',payload,newId('p'),S.editId||'');
+      toast(r==='sent'?'ارسال شد. بعد از تأیید مدیر در شجره‌نامه دیده می‌شود':'متن ارسال را کپی کنید و برای مدیر بفرستید');
+    }
+    S.editId=null; S.prefill=null; resetPhoto('');
+    const wasCode=!!S.code; $('#formArea').innerHTML=personForm(); if(wasCode) showCode(); else $('#codeArea').innerHTML='';
+    const ms=$('#mySubs'); if(ms) ms.innerHTML=mySubsHTML();
+  }catch(e){ toast('ثبت نشد. دوباره تلاش کنید'); const bb=$('#pform button[type=submit]'); if(bb) bb.disabled=false; }
+}
+async function onMemorySubmit(){
+  const pid=val('#m_person'), text=val('#m_text'), kind=(document.querySelector('input[name=m_kind]:checked')||{}).value||'memory';
+  if(!pid){ toast('فرد مورد نظر را انتخاب کنید'); return; }
+  if(!text){ toast('متن را بنویسید'); return; }
+  const payload={personId:pid,text,kind,author:fullName()};
+  const btn=$('#mform button[type=submit]'); btn.disabled=true;
+  try{
+    if(S.isAdmin){ await S.db.doc('memories/'+newId('m')).set(Object.assign({at:Date.now()},payload)); toast('ثبت شد'); }
+    else{ const r=await deliver('memory',payload,newId('m'),''); toast(r==='sent'?'ارسال شد. بعد از تأیید مدیر نمایش داده می‌شود':'متن ارسال را کپی کنید و برای مدیر بفرستید'); }
+    S.memFor=''; const wasCode=!!S.code; $('#formArea').innerHTML=memoryForm(); if(wasCode) showCode(); else $('#codeArea').innerHTML='';
+    const ms=$('#mySubs'); if(ms) ms.innerHTML=mySubsHTML();
+  }catch(e){ toast('ثبت نشد. دوباره تلاش کنید'); const b2=$('#mform button[type=submit]'); if(b2) b2.disabled=false; }
+}
+
+function findPending(k){ const [uid,id]=k.split('|'); return pendingList().find(x=>x.uid===uid&&x.id===id); }
+async function markSub(it,status){
+  if(it.uid==='__import'){ S.imported=S.imported.filter(x=>x.id!==it.id); return; }
+  const patch={status}; if(it.kind==='person'&&it.payload&&it.payload.photo) patch.payload={photo:''};
+  await S.db.doc('subs/'+it.uid+'_'+it.id).update(patch);
+}
+async function approveOne(it){
+  if(it.kind==='person'){
+    const tid=it.editOf||it.id, ref=S.db.doc('people/'+tid);
+    if(it.editOf) await ref.update(it.payload); else await ref.set(Object.assign({createdBy:it.by||'',createdAt:it.at},it.payload));
+  } else {
+    await S.db.doc('memories/'+it.id).set(Object.assign({kind:'memory'},it.payload,{author:it.payload.author||it.by||'',at:it.at}));
+  }
+  await markSub(it,'approved');
+}
+async function doImport(){
+  const lines=($('#impTxt').value||'').split(/\s+/).filter(l=>l.startsWith('SHJ1:')); let n=0;
+  lines.forEach(l=>{ try{ const o=JSON.parse(decodeURIComponent(escape(atob(l.slice(5)))));
+    if(!o||!o.p||!o.id||(o.k!=='person'&&o.k!=='memory')) return;
+    if(S.imported.some(x=>x.id===o.id)||pendingList().some(x=>x.id===o.id)) return;
+    S.imported.push({id:o.id,kind:o.k,payload:o.p,by:o.by,at:o.at||Date.now(),status:'pending',editOf:o.e||''}); n++; }catch(e){} });
+  toast(n?fa(n)+' مورد به فهرست تأیید اضافه شد':'متن معتبری پیدا نشد'); $('#impTxt').value=''; renderNav(); renderView();
+}
+
+/* ================= events ================= */
+document.addEventListener('click',async ev=>{
+  const el=ev.target.closest('[data-act]');
+  if(el===null){ if(ev.target.id==='modal') closeModal(); if(!ev.target.closest('.search')){ const r=$('#qres'); if(r) r.hidden=true; } return; }
+  const a=el.dataset.act;
+  try{
+  if(a==='tab') gotoTab(el.dataset.tab);
+  else if(a==='person'){ ev.preventDefault(); const r=$('#qres'); if(r) r.hidden=true; openModal(el.dataset.id); }
+  else if(a==='close') closeModal();
+  else if(a==='logout'){ lsSet('shj_me',''); S.me=null; S.loginErr=''; render(); }
+  else if(a==='toggleadmin'){ S.adminLogin=!S.adminLogin; S.loginErr=''; render(); }
+  else if(a==='mode'){ S.mode=el.dataset.m; lsSet('shj_mode2',S.mode); renderView(); }
+  else if(a==='zoom'){ S.zoom=Math.min(1.6,Math.max(.5,S.zoom+(+el.dataset.d))); const z=$('#zoomer'); if(z) z.style.zoom=S.zoom; }
+  else if(a==='artzoom'){ S.artZoom=Math.min(4,Math.max(.5,S.artZoom+(+el.dataset.d))); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } }
+  else if(a==='savepng') saveArt('png');
+  else if(a==='savepdf') saveArt('pdf');
+  else if(a==='addnew'){ S.editId=null; S.prefill=null; resetPhoto(''); S.addTab='person'; gotoTab('add'); }
+  else if(a==='addme'){ S.editId=null; S.prefill={first:S.me.first,last:S.me.last}; resetPhoto(''); S.addTab='person'; gotoTab('add'); }
+  else if(a==='fillvirt'){ const p=EP()[el.dataset.id]; S.editId=null; S.prefill={first:p.first,last:p.last,gender:p.gender,bY:p.bY,bM:p.bM,bD:p.bD}; resetPhoto(''); S.addTab='person'; gotoTab('add'); }
+  else if(a==='addtab'){ S.addTab=el.dataset.t; S.editId=null; S.prefill=null; S.dup=false; resetPhoto(''); renderView(); }
+  else if(a==='addmem'){ S.memFor=el.dataset.id; S.addTab='memory'; gotoTab('add'); }
+  else if(a==='editp'){ S.editId=el.dataset.id; S.prefill=null; resetPhoto((S.people[el.dataset.id]||{}).photo||''); S.addTab='person'; gotoTab('add'); }
+  else if(a==='canceledit'){ S.editId=null; resetPhoto(''); renderView(); }
+  else if(a==='rmphoto'){ S.photo=''; S.photoDirty=true; S.photoMsg='عکس حذف می‌شود.'; $('#formArea').innerHTML=personForm(); }
+  else if(a==='delp'){ const id=el.dataset.id; if(S.confirm==='p'+id){ await S.db.doc('people/'+id).delete(); closeModal(); toast('حذف شد'); } else { S.confirm='p'+id; $('#sheet').innerHTML=personSheet(id); } }
+  else if(a==='delmem'){ const id=el.dataset.id; if(S.confirm==='m'+id){ await S.db.doc('memories/'+id).delete(); S.confirm=null; toast('حذف شد'); } else { S.confirm='m'+id; $('#sheet').innerHTML=personSheet(S.modal); } }
+  else if(a==='approve'){ const it=findPending(el.dataset.k); if(it){ el.disabled=true; await approveOne(it); toast('تأیید شد'); changed(); } }
+  else if(a==='reject'){ const it=findPending(el.dataset.k); if(it){ el.disabled=true; await markSub(it,'rejected'); toast('رد شد'); changed(); } }
+  else if(a==='approveall'){ el.disabled=true; const l=pendingList().slice().sort((x,y)=>(x.kind==='person'?0:1)-(y.kind==='person'?0:1)||x.at-y.at); for(const it of l){ await approveOne(it); } toast('همه تأیید شدند'); changed(); }
+  else if(a==='import') doImport();
+  else if(a==='backup'){
+    try{ await saveBlob('shajare-allahrezaei.json',new Blob([JSON.stringify({people:S.people,memories:S.memories},null,2)],{type:'application/json'})); toast('فایل ذخیره شد'); }catch(e){ toast('ذخیره فایل انجام نشد'); }
+  }
+  else if(a==='copycode'){ const t=$('#codeTxt'); try{ await navigator.clipboard.writeText(S.code); toast('کپی شد'); }catch(e){ t.focus(); t.select(); toast('متن را انتخاب کردم، کپی کنید'); } }
+  else if(a==='closecode'){ S.code=null; showCode(); }
+  }catch(e){ toast('انجام نشد. دوباره تلاش کنید'); changed(); }
+});
+document.addEventListener('submit',ev=>{
+  ev.preventDefault(); const id=ev.target.id;
+  if(id==='loginForm') doLogin();
+  else if(id==='pform') onPersonSubmit();
+  else if(id==='mform') onMemorySubmit();
+});
+document.addEventListener('input',ev=>{
+  const id=ev.target.id;
+  if(id==='f_dead'){ $('#deathWrap').hidden=!ev.target.checked; }
+  else if(id==='f_first'||id==='f_last'){ S.dup=false; const d=$('#dupMsg'); if(d) d.innerHTML=''; }
+  else if(ev.target.name==='m_kind'){ const t=$('#m_text'); if(t) t.placeholder=KINDS[ev.target.value][1]; }
+  else if(id==='q'){
+    S.q=ev.target.value.trim(); const r=$('#qres'); if(!r) return;
+    if(!S.q){ r.hidden=true; return; }
+    const hits=Object.entries(EP()).filter(([,p])=>full(p).includes(S.q)).slice(0,12);
+    r.innerHTML=hits.length?hits.map(([i,p])=>`<button data-act="person" data-id="${esc(i)}">${esc(full(p))} <span class="muted small">${esc(lifeLine(p))}</span></button>`).join(''):'<div class="muted small" style="padding:8px 12px">نتیجه‌ای پیدا نشد</div>'; r.hidden=false;
+  }
+  else if(id==='famQ'){ S.famQ=ev.target.value.trim(); $('#famList').innerHTML=famList(computeStats()); }
+});
+document.addEventListener('change',ev=>{
+  const t=ev.target;
+  if(t.id==='famSort'){ S.famSort=t.value; $('#famList').innerHTML=famList(computeStats()); }
+  else if(t.dataset&&t.dataset.rel){ const b=$('#r_'+t.dataset.rel+'_new'); if(b) b.hidden=t.value!=='__new'; }
+  else if(t.id==='f_photo'){ onPhotoPicked(t.files&&t.files[0]); }
+});
+document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&S.modal) closeModal(); });
+window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(()=>{ if(S.tab==='tree'&&S.mode==='art'&&S.artCanvas){ const box=$('#artBox'),cv=S.artCanvas; if(box&&cv.parentElement===box) cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } },200); });
+
+/* ================= Supabase layer ================= */
+const CFG=Object.assign({url:'',key:'',familyEmail:'',adminEmail:''},window.SHJ_CONFIG||{});
+const SB={tok:null,refresh:null,email:''};
+const sbReady=()=>!!(CFG.url&&CFG.key&&CFG.familyEmail&&CFG.adminEmail)&&!/PASTE/i.test(CFG.url+CFG.key+CFG.adminEmail);
+function sbSave(){ lsSet('shj_sess',JSON.stringify({r:SB.refresh,e:SB.email})); }
+async function sbAuth(body,grant){
+  const r=await fetch(CFG.url+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:CFG.key,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({})); if(!r.ok) throw {code:r.status,message:j.error_description||j.msg||j.message||'خطا'};
+  SB.tok=j.access_token; SB.refresh=j.refresh_token; SB.email=(j.user&&j.user.email)||SB.email; sbSave(); return j;
+}
+let sbRefreshing=null;
+const sbRefresh=()=>sbRefreshing||(sbRefreshing=sbAuth({refresh_token:SB.refresh},'refresh_token').finally(()=>{ sbRefreshing=null; }));
+async function sbFetch(path,opt){
+  opt=opt||{};
+  const go=()=>fetch(CFG.url+path,{method:opt.method||'GET',headers:Object.assign({apikey:CFG.key,Authorization:'Bearer '+(SB.tok||CFG.key),'Content-Type':'application/json'},opt.headers||{}),body:opt.body});
+  let r=await go();
+  if(r.status===401&&SB.refresh&&!opt.retried){ try{ await sbRefresh(); }catch(e){} opt.retried=1; r=await go(); }
+  if(!r.ok) throw {code:r.status,message:await r.text().catch(()=>'')};
+  const t=await r.text(); return t?JSON.parse(t):null;
+}
+function dmerge(a,b){ const o=Object.assign({},a); for(const k in b){ const v=b[k]; o[k]=(v&&typeof v==='object'&&!Array.isArray(v)&&o[k]&&typeof o[k]==='object'&&!Array.isArray(o[k]))?dmerge(o[k],v):v; } return o; }
+function mkDb(){
+  const enc=encodeURIComponent, parentOf=p=>p.split('/').slice(0,-1).join('/');
+  const pollers=new Set(); let timer=null;
+  const poke=()=>setTimeout(()=>pollers.forEach(f=>f()),60);
+  const ensure=()=>{ if(timer) return; timer=setInterval(()=>{ if(!document.hidden) pollers.forEach(f=>f()); },20000); };
+  const snapDoc=(path,data)=>({id:path.split('/').pop(),exists:data!=null,data:()=>data});
+  const doc=path=>({
+    id:path.split('/').pop(), path,
+    async get(){ const r=await sbFetch('/rest/v1/shj_docs?select=data&path=eq.'+enc(path)); return snapDoc(path,r&&r[0]?r[0].data:null); },
+    async set(d){
+      const row={path,parent:parentOf(path),data:d,updated_at:new Date().toISOString()};
+      if(S.isAdmin) await sbFetch('/rest/v1/shj_docs?on_conflict=path',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
+      else await sbFetch('/rest/v1/shj_docs',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(row)});
+      poke();
+    },
+    async update(d){ const cur=await this.get(); if(!cur.exists) throw {code:'invalid_argument'}; await this.set(dmerge(cur.data(),d)); },
+    async delete(){ await sbFetch('/rest/v1/shj_docs?path=eq.'+enc(path),{method:'DELETE'}); poke(); }
+  });
+  const collection=parent=>({
+    onSnapshot(next,err){
+      let sig=''; 
+      const run=async()=>{
+        try{
+          const meta=await sbFetch('/rest/v1/shj_docs?select=path,updated_at&parent=eq.'+enc(parent)+'&order=path.asc&limit=5000');
+          const sg=JSON.stringify(meta); if(sg===sig) return;
+          const rows=await sbFetch('/rest/v1/shj_docs?select=path,data&parent=eq.'+enc(parent)+'&order=path.asc&limit=5000');
+          sig=sg; next({docs:(rows||[]).map(x=>snapDoc(x.path,x.data)),size:(rows||[]).length});
+        }catch(e){ if(err) err({code:(e&&e.code)||'unavailable'}); }
+      };
+      pollers.add(run); ensure(); run(); return ()=>pollers.delete(run);
+    }
+  });
+  return {doc,collection};
+}
+function startData(){
+  const db=mkDb(); S.db=db;
+  const err=e=>{ S.dbError=(e&&e.code)||'خطا'; render(); };
+  db.collection('people').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>o[d.id]=d.data()); S.people=o; S.dbError=null; changed(); },err);
+  db.collection('memories').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>o[d.id]=d.data()); S.memories=o; changed(); },err);
+  setInterval(()=>{ if(SB.refresh) sbRefresh().catch(()=>{}); },40*60*1000);
+  startSubs();
+}
+function startSubs(){
+  if(!S.isAdmin||S.subsOn||!S.db) return; S.subsOn=true;
+  S.db.collection('subs').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ const x=d.data(); const u=x.uid||'?'; (o[u]=o[u]||{items:{}}).items[x.id]=x; }); S.subs=o; changed(); },()=>{});
+}
+async function doLogin(){
+  const f=$('#l_first').value.trim(), l=$('#l_last').value.trim(); if(!f||!l) return;
+  const btn=document.querySelector('#loginForm button[type=submit]'); if(btn) btn.disabled=true;
+  try{
+    if(S.adminLogin){
+      await sbAuth({email:$('#l_email').value.trim(),password:$('#l_pass').value},'password');
+      if(SB.email.toLowerCase()!==CFG.adminEmail.toLowerCase()){ SB.tok=null; SB.refresh=null; lsSet('shj_sess',''); S.authed=false; throw {message:'این حساب مدیر نیست'}; }
+      S.isAdmin=true;
+    } else if(!S.authed){
+      await sbAuth({email:CFG.familyEmail,password:$('#l_code').value},'password'); S.isAdmin=false;
+    }
+    S.authed=true; S.me={first:f,last:l}; lsSet('shj_me',JSON.stringify(S.me)); S.loginErr=''; S.adminLogin=false;
+    if(!S.db) startData(); else startSubs();
+    render();
+  }catch(e){ S.loginErr=(e&&e.code===400)?'رمز یا ایمیل درست نیست':((e&&e.message&&e.code!==undefined&&typeof e.code==='number')?'ورود انجام نشد. اینترنت را بررسی کنید':(e&&e.message)||'ورود انجام نشد'); render(); }
+}
+
+/* ================= boot ================= */
+async function boot(){
+  render();
+  if(!sbReady()){ S.gate=true; S.ready=true; render(); return; }
+  try{ const m=JSON.parse(lsGet('shj_me')||'null'); if(m&&m.first&&m.last) S.me=m; }catch(e){}
+  S.uid=lsGet('shj_uid')||(()=>{ const a=new Uint8Array(8); crypto.getRandomValues(a); const u='u'+Array.from(a).map(x=>x.toString(16).padStart(2,'0')).join(''); lsSet('shj_uid',u); return u; })();
+  try{ S.mySub=JSON.parse(lsGet('shj_mysub')||'null'); }catch(e){}
+  try{ const ss=JSON.parse(lsGet('shj_sess')||'null'); if(ss&&ss.r){ SB.refresh=ss.r; SB.email=ss.e||''; await sbRefresh(); S.authed=true; S.isAdmin=SB.email.toLowerCase()===CFG.adminEmail.toLowerCase(); } }catch(e){ lsSet('shj_sess',''); }
+  S.ready=true;
+  if(S.authed) startData();
+  render();
+}
+boot();
+})();
+</script>
