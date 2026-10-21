@@ -403,9 +403,13 @@ function lifeLine(p){
   if(p.dead) return (b||'؟')+' – '+(p.dY?fa(p.dY):'؟');
   return b;
 }
+function kinLine(id){
+  const P=EP(), p=P[id]; if(!p||!P[p.fatherId]) return '';
+  return (p.gender==='f'?'دختر ':p.gender==='m'?'پسر ':'فرزند ')+full(P[p.fatherId]);
+}
 function tile(id,sp,badge){
   const p=EP()[id]; if(!p) return '';
-  return `<button class="tile ${p.gender==='m'?'m':p.gender==='f'?'f':''} ${p.dead?'dead':''} ${sp?'sp':''} ${p.virtual?'virt':''}" data-act="person" data-id="${esc(id)}">${avatar(p)}<span class="tt"><b>${esc(full(p))}</b>${lifeLine(p)?`<small>${esc(lifeLine(p))}</small>`:(p.virtual?'<small>ثبت‌نشده</small>':'')}${badge?`<small class="bdg">${esc(badge)}</small>`:''}</span></button>`;
+  return `<button class="tile ${p.gender==='m'?'m':p.gender==='f'?'f':''} ${p.dead?'dead':''} ${sp?'sp':''} ${p.virtual?'virt':''}" data-act="person" data-id="${esc(id)}">${avatar(p)}<span class="tt"><b>${esc(full(p))}</b>${lifeLine(p)?`<small>${esc(lifeLine(p))}</small>`:(p.virtual?'<small>ثبت‌نشده</small>':'')}${sp&&kinLine(id)?`<small>${esc(kinLine(id))}</small>`:''}${badge?`<small class="bdg">${esc(badge)}</small>`:''}</span></button>`;
 }
 function couple(n){ return `<span class="couple">${tile(n.id,false)}${n.spouses.map(q=>tile(q,true,stBadge(n.id,q))).join('')}</span>`; }
 function chartNode(n){ return `<li>${couple(n)}${n.kids.length?`<ul>${n.kids.map(chartNode).join('')}</ul>`:''}</li>`; }
@@ -844,7 +848,7 @@ function drawArt(T,imgs){
   leaves.forEach(l=>{ for(let i=0;i<3;i++){ leaf(l.x,l.y,rnd()*6.28,11+rnd()*10,rnd()<.07?'#d9a441':GREENS[Math.floor(rnd()*GREENS.length)]); } });
   // people
   const fit=(txt,maxW,size,weight)=>{ let s=size; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; while(c.measureText(txt).width>maxW&&s>10){ s--; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; } };
-  const person=(id,x,y)=>{
+  const person=(id,x,y,sp)=>{
     const p=P[id]; if(!p) return;
     const col=p.gender==='m'?'#3A7CA5':p.gender==='f'?'#B0527A':'#7a8a85';
     c.save(); c.shadowColor='rgba(0,0,0,.25)'; c.shadowBlur=12; c.shadowOffsetY=4; c.fillStyle='#fff'; c.beginPath(); c.arc(x,y,R+6,0,7); c.fill(); c.restore();
@@ -855,13 +859,14 @@ function drawArt(T,imgs){
     c.restore();
     c.strokeStyle=col; c.lineWidth=5; c.setLineDash(p.virtual?[7,6]:[]); c.beginPath(); c.arc(x,y,R+3,0,7); c.stroke(); c.setLineDash([]);
     const nm=full(p), ly=y+R+26; fit(nm,CW+10,17,700); const tw=Math.min(c.measureText(nm).width+22,CW+30);
-    const yl=lifeLine(p), ph=yl?48:30, pw=yl?Math.max(tw,90):tw;
+    const yl=lifeLine(p), kin=sp?kinLine(id):'', ph=(yl?48:30)+(kin?18:0), pw=Math.max(tw,yl?90:0,kin?Math.min(c.measureText(kin).width*.8+24,CW+30):0);
     c.fillStyle='rgba(255,255,255,.95)'; c.strokeStyle='#c5d3ce'; c.lineWidth=1.5; c.beginPath(); c.roundRect?c.roundRect(x-pw/2,ly-15,pw,ph,9):c.rect(x-pw/2,ly-15,pw,ph); c.fill(); c.stroke();
     c.fillStyle=p.dead?'#5A726B':'#14302A'; c.fillText(nm,x,ly+1);
     if(yl){ c.font='400 13px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#5A726B'; c.fillText(yl,x,ly+23); }
+    if(kin){ c.font='400 12px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#8a5a1f'; c.fillText(kin,x,ly+(yl?41:23),CW+20); }
   };
   const drawNodes=n=>{ const y=cyOf(n), ids=[n.id,...n.spouses], total=ids.length*CW; let x=n.cx+total/2-CW/2;
-    ids.forEach((id,i)=>{ person(id,x,y); if(i<ids.length-1){ const bg=stBadge(n.id,ids[i+1],ids[i+1]); c.save(); c.strokeStyle=bg?'#b4543a':'#d9a441'; c.lineWidth=4; if(bg) c.setLineDash([6,5]); c.beginPath(); c.arc(x-CW/2,y,8,0,7); c.stroke(); if(bg){ c.setLineDash([]); c.fillStyle='#b4543a'; c.textAlign='center'; c.font='700 14px Vazirmatn, Tahoma, sans-serif'; c.fillText(bg,x-CW/2,y-16); } c.restore(); } x-=CW; });
+    ids.forEach((id,i)=>{ person(id,x,y,i>0); if(i<ids.length-1){ const bg=stBadge(n.id,ids[i+1],ids[i+1]); c.save(); c.strokeStyle=bg?'#b4543a':'#d9a441'; c.lineWidth=4; if(bg) c.setLineDash([6,5]); c.beginPath(); c.arc(x-CW/2,y,8,0,7); c.stroke(); if(bg){ c.setLineDash([]); c.fillStyle='#b4543a'; c.textAlign='center'; c.font='700 14px Vazirmatn, Tahoma, sans-serif'; c.fillText(bg,x-CW/2,y-16); } c.restore(); } x-=CW; });
     n.kids.forEach(drawNodes); };
   T.roots.forEach(drawNodes);
   // title
