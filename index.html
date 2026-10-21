@@ -323,7 +323,7 @@ const S={
   db:null,user:null,sample:null,uid:null,isAdmin:false,gate:false,ready:false,dbError:null,
   me:null,tab:'home',people:{},memories:{},subs:{},mySub:null,imported:[],
   mode:lsGet('shj_mode2')||(window.innerWidth<760?'outline':'art'),
-  addTab:'person',editId:null,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
+  addTab:'person',editId:null,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:(window.innerWidth<760?3:1),artTok:0,focus:'',
   editSub:null,adq:'',photo:'',photoDirty:false,photoMsg:'',prefill:null,T:null,artCanvas:null
 };
 const fullName=()=>S.me?(S.me.first+' '+S.me.last).trim():'';
@@ -384,6 +384,53 @@ function effective(){
   return {P,virt};
 }
 
+/* ================= خانوادهٔ نزدیک و نسبت‌یاب فارسی ================= */
+function spousesOf(P,id){ const s=new Set(); (P[id].spl||[]).forEach(x=>{ if(P[x.id]) s.add(x.id); }); Object.keys(P).forEach(i=>{ const q=P[i]; if((q.spl||[]).some(x=>x.id===id)) s.add(i); if(q.fatherId===id&&P[q.motherId]) s.add(q.motherId); if(q.motherId===id&&P[q.fatherId]) s.add(q.fatherId); }); s.delete(id); return [...s]; }
+function closeKin(P,id){ const p=P[id], s=new Set([id]); [p.fatherId,p.motherId].forEach(q=>{ if(P[q]) s.add(q); }); spousesOf(P,id).forEach(q=>s.add(q)); Object.keys(P).forEach(i=>{ const q=P[i]; if(q.fatherId===id||q.motherId===id||(p.fatherId&&q.fatherId===p.fatherId)||(p.motherId&&q.motherId===p.motherId)) s.add(i); }); return s; }
+function ups(P,id){ const m=new Map([[id,{d:0,path:[id]}]]); let fr=[id]; for(let d=1;d<=9&&fr.length;d++){ const nx=[]; fr.forEach(i=>[P[i].fatherId,P[i].motherId].forEach(q=>{ if(q&&P[q]&&!m.has(q)){ m.set(q,{d,path:[...m.get(i).path,q]}); nx.push(q); } })); fr=nx; } return m; }
+function bloodRel(P,a,b){
+  if(a===b) return null;
+  const ua=ups(P,a), ub=ups(P,b); let best=null;
+  ua.forEach((x,id)=>{ const y=ub.get(id); if(y&&(!best||x.d+y.d<best.x.d+best.y.d)) best={x,y}; });
+  if(!best) return null;
+  const dA=best.x.d, dB=best.y.d, pa=best.x.path, pb=best.y.path, f=i=>P[i].gender==='f';
+  const bf=f(b), sib=bf?'خواهر':'برادر', kid=bf?'دختر':'پسر';
+  if(dA===0) return dB===1?kid:dB===2?'نوه':dB===3?'نتیجه':dB===4?'نبیره':'نوادهٔ '+fa(dB)+' نسل بعد';
+  if(dB===0) return dA===1?(bf?'مادر':'پدر'):dA===2?(bf?'مادربزرگ ':'پدربزرگ ')+(f(pa[1])?'مادری':'پدری'):(bf?'جده':'جد')+' ('+fa(dA)+' نسل بالاتر)';
+  if(dA===1&&dB===1){ const A=P[a], B=P[b], sh=(A.fatherId&&A.fatherId===B.fatherId?1:0)+(A.motherId&&A.motherId===B.motherId?1:0); return sib+(sh===1&&A.fatherId&&A.motherId&&B.fatherId&&B.motherId?' ناتنی':''); }
+  if(dA===1) return dB===2?(f(pb[1])?'خواهرزاده':'برادرزاده'):(dB===3?'نوهٔ ':'نوادهٔ ')+(f(pb[pb.length-2])?'خواهر':'برادر');
+  if(dB===1) return dA===2?(bf?(f(pa[1])?'خاله':'عمه'):(f(pa[1])?'دایی':'عمو')):sib+(dA===3?'ِ پدربزرگ/مادربزرگ':'ِ جد');
+  if(dA===2&&dB===2) return kid+(f(pb[1])?(f(pa[1])?'خاله':'عمه'):(f(pa[1])?'دایی':'عمو'));
+  const r=bloodRel(P,a,pb[1]); return r?kid+'ِ '+r:'خویشاوند دور';
+}
+function relFa(P,a,b){
+  if(a===b) return 'همان شخص';
+  if(spousesOf(P,a).includes(b)) return 'همسر';
+  const bl=bloodRel(P,a,b); if(bl) return bl;
+  const bf=P[b].gender==='f', am=P[a].gender!=='f';
+  for(const s of spousesOf(P,b)){ const r=bloodRel(P,a,s); if(!r) continue;
+    if(r==='پسر'&&bf) return 'عروس'; if(r==='دختر'&&!bf) return 'داماد';
+    if(r==='پدر'&&bf) return 'نامادری'; if(r==='مادر'&&!bf) return 'ناپدری';
+    if((r==='عمو'||r==='دایی')&&bf) return 'زن‌'+r; if((r==='عمه'||r==='خاله')&&!bf) return 'شوهر'+r;
+    return 'همسرِ '+r; }
+  for(const s of spousesOf(P,a)){ const r=bloodRel(P,s,b); if(!r) continue;
+    const m={'پدر':['پدرزن','پدرشوهر'],'مادر':['مادرزن','مادرشوهر'],'برادر':['برادرزن','برادرشوهر'],'خواهر':['خواهرزن','خواهرشوهر']}[r];
+    return m?m[am?0:1]:r+'ِ همسر'; }
+  return null;
+}
+function relCardHTML(){
+  const P=EP(), ids=Object.keys(P).sort((x,y)=>full(P[x]).localeCompare(full(P[y]),'fa'));
+  const op=ids.map(i=>`<option value="${esc(i)}">${esc(full(P[i]))}${P[i].bY?' ('+fa(P[i].bY)+')':''}</option>`).join('');
+  const sel=(id,l)=>`<label class="f"><span>${l}</span><select id="${id}"><option value="">انتخاب…</option>${op}</select></label>`;
+  return `<details class="card"><summary><b>🔗 نسبت‌یاب</b> <span class="muted small">نسبت دو نفر با هم</span></summary><div class="stack" style="gap:10px;margin-top:10px">${sel('relA','شخص اول')}${sel('relB','شخص دوم (چه نسبتی با شخص اول دارد؟)')}<div class="note" id="relOut">دو نفر را انتخاب کنید.</div></div></details>`;
+}
+document.addEventListener('change',e=>{ const t=e.target; if(!t||(t.id!=='relA'&&t.id!=='relB')) return;
+  const a=$('#relA').value, b=$('#relB').value, o=$('#relOut'); if(!o) return;
+  if(!a||!b){ o.textContent='دو نفر را انتخاب کنید.'; return; }
+  const P=EP(); if(!P[a]||!P[b]){ o.textContent='فرد پیدا نشد.'; return; }
+  const r=relFa(P,a,b);
+  o.innerHTML=r?`«${esc(full(P[b]))}» برای «${esc(full(P[a]))}» می‌شود: <b>${esc(r)}</b>`:'نسبتی بین این دو نفر در شجره‌نامه ثبت نشده است.'; });
+
 /* ================= tree model ================= */
 function buildTree(){
   if(S.T) return S.T;
@@ -398,7 +445,7 @@ function buildTree(){
   const marryIn={}; ids.forEach(i=>{
     const ps=[...partners[i]];
     marryIn[i]=famMode
-      ? (!isFam(i)&&ps.some(isFam))||(isFam(i)&&!hasParents(i)&&ps.some(q=>isFam(q)&&hasParents(q)))
+      ? (!isFam(i)&&ps.some(isFam))||(isFam(i)&&!hasParents(i)&&ps.some(q=>isFam(q)&&hasParents(q)))||(!isFam(i)&&!hasParents(i)&&ps.some(q=>hasParents(q)))
       : (!hasParents(i)&&ps.some(q=>hasParents(q)));
   });
   const placeOf=i=>{ const p=P[i]; if(has(p.fatherId)&&!marryIn[p.fatherId]) return p.fatherId; if(has(p.motherId)&&!marryIn[p.motherId]) return p.motherId; return null; };
@@ -535,7 +582,9 @@ function viewTree(){
      </div>
      <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button></div>
    </div>
+   ${S.focus&&T.P[S.focus]&&S.mode==='art'?`<section class="note row" style="justify-content:space-between"><span>فقط خانوادهٔ نزدیکِ <b>${esc(full(T.P[S.focus]))}</b> پررنگ است.</span><button class="btn sm" data-act="unfocus">نمایش همه</button></section>`:''}
    ${body}${un}
+   ${relCardHTML()}
    <p class="muted small" style="margin:0">برای دیدن اطلاعات و یادگارهای هر نفر روی نام او بزنید. کادر خط‌چین یعنی آن فرد فقط به‌عنوان پدر، مادر، همسر یا فرزند نام برده شده و هنوز اطلاعاتش ثبت نشده است.</p>
   </div>`;
 }
@@ -895,6 +944,7 @@ function personSheet(id){
    <div class="stack" style="gap:12px"><h3>ویژگی‌ها، خاطرات و جمله‌ها</h3>
      ${mems.length?memGroup('trait','ویژگی‌ها')+memGroup('memory','خاطرات')+memGroup('quote','جمله‌ها'):'<p class="muted small" style="margin:0">هنوز چیزی ثبت نشده است.</p>'}</div>
    <div class="row"><button class="btn" data-act="addmem" data-id="${esc(id)}">نوشتن دربارهٔ او</button>
+     <button class="btn ghost" data-act="focus" data-id="${esc(id)}">🌿 خانوادهٔ نزدیک</button>
      <button class="btn ghost" data-act="editp" data-id="${esc(id)}">${S.isAdmin?'ویرایش':'✏️ اصلاح اطلاعات'}</button>
      ${S.isAdmin?`<button class="btn danger" data-act="delp" data-id="${esc(id)}">${cf==='p'+id?'مطمئنم، حذف شود':'حذف فرد'}</button>`:''}</div>`;
 }
@@ -908,8 +958,8 @@ function loadImg(src){
   const pr=new Promise(res=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>res(null); i.src=src; });
   imgCache.set(src,pr); return pr;
 }
-function drawArt(T,imgs){
-  const P=T.P, R=46, GAP=280, CW=2*R+46, MARGIN=140, TRUNK=230, ROOTS=150, TOP=330;
+function drawArt(T,imgs,focus){
+  const P=T.P, fs=(focus&&T.P[focus])?closeKin(T.P,focus):null, R=46, GAP=280, CW=2*R+80, MARGIN=140, TRUNK=230, ROOTS=150, TOP=330;
   const HUES=[152,205,338,32,268,178,8,96,300,50];
   let maxD=1; T.nodes.forEach(n=>{ if(n.depth>maxD) maxD=n.depth; });
   /* هر شاخهٔ اصلی (فرزندان ریشه) یک رنگ می‌گیرد و نوه‌ها همان رنگ را به ارث می‌برند */
@@ -982,6 +1032,7 @@ function drawArt(T,imgs){
   const fit=(txt,maxW,size,weight)=>{ let s=size; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; while(c.measureText(txt).width>maxW&&s>10){ s--; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; } };
   const person=(id,x,y,sp,node)=>{
     const p=P[id]; if(!p) return;
+    c.save(); if(fs&&!fs.has(id)) c.globalAlpha=.25;
     const gcol=p.gender==='m'?'#3A7CA5':p.gender==='f'?'#B0527A':'#7a8a85', ring=bcol(node,0);
     c.save(); c.shadowColor='rgba(0,0,0,.28)'; c.shadowBlur=14; c.shadowOffsetY=5; c.fillStyle='#fff'; c.beginPath(); c.arc(x,y,R+7,0,7); c.fill(); c.restore();
     c.save(); c.beginPath(); c.arc(x,y,R,0,7); c.clip();
@@ -991,13 +1042,14 @@ function drawArt(T,imgs){
     c.restore();
     c.strokeStyle=ring; c.lineWidth=6; c.setLineDash(p.virtual?[7,6]:[]); c.beginPath(); c.arc(x,y,R+3,0,7); c.stroke(); c.setLineDash([]);
     c.fillStyle=gcol; c.strokeStyle='#fff'; c.lineWidth=3; c.beginPath(); c.arc(x+R*.78,y+R*.78,10,0,7); c.fill(); c.stroke();
-    const nm=full(p), ly=y+R+28; fit(nm,CW-22,17,700); const tw=Math.min(c.measureText(nm).width+24,CW-4);
-    const yl=lifeLine(p), kin=sp?kinLine(id):'', ph=(yl?48:30)+(kin?18:0), pw=Math.max(tw,yl?90:0,kin?Math.min(c.measureText(kin).width*.8+24,CW-4):0);
+    const nm=full(p), ly=y+R+28; fit(nm,CW-20,22,700); const tw=Math.min(c.measureText(nm).width+24,CW-4);
+    const yl=lifeLine(p), kin=sp?kinLine(id):'', ph=(yl?54:34)+(kin?22:0), pw=Math.max(tw,yl?90:0,kin?Math.min(c.measureText(kin).width*.8+24,CW-4):0);
     c.save(); c.shadowColor='rgba(0,0,0,.12)'; c.shadowBlur=8; c.shadowOffsetY=2; c.fillStyle='rgba(255,255,255,.97)'; rr(x-pw/2,ly-15,pw,ph,12); c.fill(); c.restore();
     c.strokeStyle=ring; c.lineWidth=2.2; rr(x-pw/2,ly-15,pw,ph,12); c.stroke();
-    c.fillStyle=p.dead?'#5A726B':'#14302A'; fit(nm,CW-22,17,700); c.fillText(nm,x,ly+1);
-    if(yl){ c.font='400 13px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#5A726B'; c.fillText(yl,x,ly+23); }
-    if(kin){ c.font='400 12px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#8a5a1f'; c.fillText(kin,x,ly+(yl?41:23),CW-16); }
+    c.fillStyle=p.dead?'#5A726B':'#14302A'; fit(nm,CW-20,22,700); c.fillText(nm,x,ly+1);
+    if(yl){ c.font='400 18px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#5A726B'; c.fillText(yl,x,ly+28); }
+    if(kin){ c.font='400 15px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#8a5a1f'; c.fillText(kin,x,ly+(yl?50:28),CW-16); }
+    c.restore();
   };
   const drawNodes=n=>{ const y=cyOf(n), ids=[n.id,...n.spouses], total=ids.length*CW; let x=n.cx+total/2-CW/2;
     ids.forEach((id,i)=>{ person(id,x,y,i>0,n); if(i<ids.length-1){ const bg=stBadge(n.id,ids[i+1],ids[i+1]); c.save(); c.strokeStyle=bg?'#b4543a':'#d9a441'; c.lineWidth=4; if(bg) c.setLineDash([6,5]); c.beginPath(); c.arc(x-CW/2,y,8,0,7); c.stroke(); if(bg){ c.setLineDash([]); c.fillStyle='#b4543a'; c.textAlign='center'; c.font='700 14px Vazirmatn, Tahoma, sans-serif'; c.fillText(bg,x-CW/2,y-16); } c.restore(); } x-=CW; });
@@ -1019,15 +1071,15 @@ function drawArt(T,imgs){
   c.fillStyle='#d9a441'; [[34,34],[W-34,34],[34,H-34],[W-34,H-34]].forEach(([x,y])=>{ c.save(); c.translate(x,y); c.rotate(Math.PI/4); c.fillRect(-9,-9,18,18); c.restore(); }); c.restore();
   return cv;
 }
-async function makeArt(){
+async function makeArt(focus){
   const T=buildTree(); const imgs={};
   try{ await Promise.all([document.fonts.load('700 20px Vazirmatn'),document.fonts.load('400 14px Vazirmatn'),document.fonts.load('700 40px "Aref Ruqaa"')]); }catch(e){}
   await Promise.all(Object.entries(T.P).map(async([id,p])=>{ if(p.photo) imgs[id]=await loadImg(p.photo); }));
-  return drawArt(T,imgs);
+  return drawArt(T,imgs,focus);
 }
 async function renderArt(){
   const box=$('#artBox'); if(!box) return; const tok=++S.artTok;
-  let cv; try{ cv=await makeArt(); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
+  let cv; try{ cv=await makeArt(S.focus); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
   if(tok!==S.artTok||!$('#artBox')) return;
   S.artCanvas=cv; const natural=cv.width; const base=Math.max(300,box.clientWidth||natural);
   cv.style.width=Math.round(base*S.artZoom)+'px'; cv.style.height='auto';
@@ -1355,6 +1407,8 @@ document.addEventListener('click',async ev=>{
   else if(a==='toggleadmin'){ S.adminLogin=!S.adminLogin; S.loginErr=''; render(); }
   else if(a==='mode'){ S.mode=el.dataset.m; lsSet('shj_mode2',S.mode); renderView(); }
   else if(a==='zoom'){ S.zoom=Math.min(1.6,Math.max(.5,S.zoom+(+el.dataset.d))); const z=$('#zoomer'); if(z) z.style.zoom=S.zoom; }
+  else if(a==='focus'){ S.focus=el.dataset.id; S.mode='art'; lsSet('shj_mode2','art'); gotoTab('tree'); }
+  else if(a==='unfocus'){ S.focus=''; renderView(); }
   else if(a==='artzoom'){ S.artZoom=Math.min(4,Math.max(.5,S.artZoom+(+el.dataset.d))); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } }
   else if(a==='savepng') saveArt('png');
   else if(a==='savepdf') saveArt('pdf');
