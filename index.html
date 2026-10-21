@@ -422,7 +422,7 @@ function relCardHTML(){
   const P=EP(), ids=Object.keys(P).sort((x,y)=>full(P[x]).localeCompare(full(P[y]),'fa'));
   const op=ids.map(i=>`<option value="${esc(i)}">${esc(full(P[i]))}${P[i].bY?' ('+fa(P[i].bY)+')':''}</option>`).join('');
   const sel=(id,l)=>`<label class="f"><span>${l}</span><select id="${id}"><option value="">انتخاب…</option>${op}</select></label>`;
-  return `<details class="card"><summary><b>🔗 نسبت‌یاب</b> <span class="muted small">نسبت دو نفر با هم</span></summary><div class="stack" style="gap:10px;margin-top:10px">${sel('relA','شخص اول')}${sel('relB','شخص دوم (چه نسبتی با شخص اول دارد؟)')}<div class="note" id="relOut">دو نفر را انتخاب کنید.</div></div></details>`;
+  return `<details class="card" id="relBox"><summary><b>🔗 نسبت‌یاب</b> <span class="muted small">ببینید دو نفر چه نسبتی با هم دارند</span></summary><div class="stack" style="gap:10px;margin-top:10px">${sel('relA','شخص اول')}${sel('relB','شخص دوم (چه نسبتی با شخص اول دارد؟)')}<div class="note" id="relOut">دو نفر را انتخاب کنید.</div></div></details>`;
 }
 document.addEventListener('change',e=>{ const t=e.target; if(!t||(t.id!=='relA'&&t.id!=='relB')) return;
   const a=$('#relA').value, b=$('#relB').value, o=$('#relOut'); if(!o) return;
@@ -573,7 +573,7 @@ function viewTree(){
   return `<div class="stack">
    <div class="bar">
      <div class="search"><input type="text" id="q" placeholder="جستجوی نام در شجره‌نامه…" value="${esc(S.q)}" autocomplete="off"><div class="results" id="qres" hidden></div></div>
-     <div class="row" style="gap:6px">${modeBtn('art','درخت تصویری')}${modeBtn('chart','نمودار')}${modeBtn('outline','فهرستی')}</div>
+     <div class="row" style="gap:6px">${modeBtn('art','درخت تصویری')}${modeBtn('chart','نمودار')}${modeBtn('outline','فهرستی')}<button class="btn ghost sm" data-act="relopen">🔗 نسبت‌یاب</button></div>
    </div>
    <div class="bar">
      <div class="row" style="gap:6px">
@@ -583,9 +583,9 @@ function viewTree(){
      <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button></div>
    </div>
    ${S.focus&&T.P[S.focus]&&S.mode==='art'?`<section class="note row" style="justify-content:space-between"><span>فقط خانوادهٔ نزدیکِ <b>${esc(full(T.P[S.focus]))}</b> پررنگ است.</span><button class="btn sm" data-act="unfocus">نمایش همه</button></section>`:''}
-   ${body}${un}
    ${relCardHTML()}
-   <p class="muted small" style="margin:0">برای دیدن اطلاعات و یادگارهای هر نفر روی نام او بزنید. کادر خط‌چین یعنی آن فرد فقط به‌عنوان پدر، مادر، همسر یا فرزند نام برده شده و هنوز اطلاعاتش ثبت نشده است.</p>
+   ${body}${un}
+   <p class="muted small" style="margin:0">برای دیدن اطلاعات و یادگارهای هر نفر روی نام او بزنید (یا نامش را در کادر جستجو بنویسید و روی نتیجه بزنید). در کارت او می‌توانید خانوادهٔ نزدیکش را پررنگ کنید یا با «نسبت با دیگری» نسبتش را با هر عضو دیگر ببینید. کادر خط‌چین یعنی آن فرد فقط به‌عنوان پدر، مادر، همسر یا فرزند نام برده شده و هنوز اطلاعاتش ثبت نشده است.</p>
   </div>`;
 }
 
@@ -601,6 +601,13 @@ function viewHelp(){
      <li>روی «ثبت اطلاعات» بزنید و <b>خودتان</b> را ثبت کنید. فرم یک صفحهٔ پایین‌رونده است؛ از بالا به پایین پر کنید و آخرش دکمهٔ ارسال را بزنید.</li>
      <li>سپس پدر و مادرتان را ثبت کنید. ترتیب مهم نیست؛ می‌توانید اول خودتان، بعد پدر، بعد پدربزرگ را ثبت کنید.</li>
      <li>اگر پدر یا مادر هنوز در فهرست نیست، گزینهٔ «در فهرست نیست» را بزنید و نامش را بنویسید. بعداً که او را ثبت کنید، خودکار به شما وصل می‌شود.</li></ol>`)}
+
+   ${sec('🌳','صفحهٔ شجره‌نامه: جستجو، کارت هر نفر و نسبت‌یاب',`<ul class="hl-list">
+     <li><b>جستجو:</b> بالای صفحهٔ شجره‌نامه نام را بنویسید. فهرستی از نتیجه‌ها باز می‌شود؛ روی نام موردنظر بزنید تا <b>کارت آن فرد</b> باز شود. روی نام داخل خود درخت هم می‌شود زد.</li>
+     <li><b>در کارت هر نفر:</b> عکس و مشخصات (سن، تولد، درگذشت)، و پیوندهای پدر، مادر، همسر، فرزندان و برادر و خواهر. روی هر اسم بزنید تا به کارت او بروید. پایین کارت خاطرات و جمله‌هایی که بقیه دربارهٔ او نوشته‌اند هست.</li>
+     <li><b>دکمه‌های کارت:</b> «نوشتن دربارهٔ او» برای ثبت خاطره یا ویژگی؛ «🌿 خانوادهٔ نزدیک» برای پررنگ کردن او و پدر و مادر، همسر، فرزندان و برادر و خواهرش در درخت؛ «🔗 نسبت با دیگری» برای دیدن نسبتش با هر عضو دیگر؛ «اصلاح اطلاعات» برای درست کردن اطلاعات.</li>
+     <li><b>🔗 نسبت‌یاب:</b> دکمه‌اش کنار «درخت تصویری / نمودار / فهرستی» است. دو نفر را انتخاب کنید تا نسبتشان با اصطلاح فارسی بگوید (عمو، دایی، پسرخاله، پدربزرگ مادری، عروس، داماد و …). نتیجه برای «شخص دوم» نسبت به «شخص اول» است.</li>
+     <li><b>نمای درخت:</b> دکمه‌های + و − زوم می‌کنند و درخت را با انگشت بکشید. «نمودار» و «فهرستی» برای درخت‌های شلوغ یا گوشی‌های کوچک خواناترند. ذخیرهٔ PNG و PDF همیشه کل درخت را می‌گیرد.</li></ul>`)}
 
    ${sec('✍️','فرم ثبت؛ چه چیزی لازم است',`<ul class="hl-list">
      <li><b>الزامی (ستاره‌دار):</b> نام، نام خانوادگی، جنسیت، تاریخ تولد، پدر، مادر و وضعیت تأهل. اگر متأهل هستید همسر هم الزامی است.</li>
@@ -945,6 +952,7 @@ function personSheet(id){
      ${mems.length?memGroup('trait','ویژگی‌ها')+memGroup('memory','خاطرات')+memGroup('quote','جمله‌ها'):'<p class="muted small" style="margin:0">هنوز چیزی ثبت نشده است.</p>'}</div>
    <div class="row"><button class="btn" data-act="addmem" data-id="${esc(id)}">نوشتن دربارهٔ او</button>
      <button class="btn ghost" data-act="focus" data-id="${esc(id)}">🌿 خانوادهٔ نزدیک</button>
+     <button class="btn ghost" data-act="relwith" data-id="${esc(id)}">🔗 نسبت با دیگری</button>
      <button class="btn ghost" data-act="editp" data-id="${esc(id)}">${S.isAdmin?'ویرایش':'✏️ اصلاح اطلاعات'}</button>
      ${S.isAdmin?`<button class="btn danger" data-act="delp" data-id="${esc(id)}">${cf==='p'+id?'مطمئنم، حذف شود':'حذف فرد'}</button>`:''}</div>`;
 }
@@ -1407,6 +1415,8 @@ document.addEventListener('click',async ev=>{
   else if(a==='toggleadmin'){ S.adminLogin=!S.adminLogin; S.loginErr=''; render(); }
   else if(a==='mode'){ S.mode=el.dataset.m; lsSet('shj_mode2',S.mode); renderView(); }
   else if(a==='zoom'){ S.zoom=Math.min(1.6,Math.max(.5,S.zoom+(+el.dataset.d))); const z=$('#zoomer'); if(z) z.style.zoom=S.zoom; }
+  else if(a==='relwith'){ const id=el.dataset.id; gotoTab('tree'); const d=$('#relBox'); if(d){ d.open=true; const A=$('#relA'); if(A) A.value=id; const o=$('#relOut'); if(o) o.textContent='حالا شخص دوم را انتخاب کنید.'; d.scrollIntoView({behavior:'smooth',block:'center'}); } }
+  else if(a==='relopen'){ const d=$('#relBox'); if(d){ d.open=true; d.scrollIntoView({behavior:'smooth',block:'center'}); } }
   else if(a==='focus'){ S.focus=el.dataset.id; S.mode='art'; lsSet('shj_mode2','art'); gotoTab('tree'); }
   else if(a==='unfocus'){ S.focus=''; renderView(); }
   else if(a==='artzoom'){ S.artZoom=Math.min(4,Math.max(.5,S.artZoom+(+el.dataset.d))); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } }
