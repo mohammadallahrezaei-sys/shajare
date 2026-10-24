@@ -75,6 +75,20 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
 .tile small.bdg{color:var(--bad);font-weight:700}
 .sprow{border:1px dashed var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:10px}
 .sprow>.row{justify-content:space-between}
+.qlab{font-weight:700;font-size:1.02rem}
+.pn{color:var(--accent)}
+.hintbox{line-height:1.9}
+.rv{border:2px solid var(--primary);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--surface)}
+.rv .sec{border-top:1px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:2px}
+.rv .sech{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+.rv .rw{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;padding:3px 0}
+.rv .rw b{color:var(--muted);font-weight:500;flex:0 0 36%}
+.rv .rw span{flex:1 1 50%;font-weight:700}
+.rv img.rvph{width:84px;height:112px;object-fit:cover;border-radius:10px;border:2px solid var(--line)}
+.famrow{display:flex;gap:10px;align-items:flex-start}
+.famrow>input[type=checkbox]{width:22px;height:22px;margin-top:14px;flex:0 0 auto;accent-color:var(--primary)}
+.famrow>details{flex:1 1 auto;min-width:0}
+.famsum{border:2px solid var(--primary);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
 .muted{color:var(--muted)}
 .small{font-size:.85rem}
 .num{font-variant-numeric:tabular-nums}
@@ -214,7 +228,7 @@ textarea{min-height:110px;resize:vertical}
 
 .modal{position:fixed;inset:0;background:rgba(5,15,12,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .modal[hidden]{display:none!important}
-.sheet{background:var(--surface);color:var(--ink);width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:20px 20px max(20px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.sheet{background:var(--surface);color:var(--ink);width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:16px;padding:20px 20px max(20px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
 @media (min-width:700px){.modal{align-items:center;padding:20px}.sheet{border-radius:16px}}
 .sheet .x{align-self:flex-start;margin-bottom:-6px}
 .mem{background:var(--bg);border-radius:8px;padding:10px 14px}
@@ -225,47 +239,6 @@ textarea{min-height:110px;resize:vertical}
 .loginbox{max-width:440px;margin:8vh auto 0}
 textarea.code{direction:ltr;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;min-height:70px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-
-/* --- فرم فشرده و مناسب موبایل --- */
-details.more{border:1px dashed var(--line);border-radius:8px;padding:6px 10px}
-details.more>summary{cursor:pointer;font-size:.88rem;color:var(--muted);padding:4px 0;list-style:none}
-details.more>summary::before{content:"＋ "}
-details.more[open]>summary::before{content:"－ "}
-details.more[open]>summary{margin-bottom:8px}
-.rel{padding:0;border:0;gap:8px}
-#pform .sprow{padding:8px}
-@media (max-width:600px){
-  #pform{padding:12px;gap:12px}
-  #pform .fields{grid-template-columns:1fr;gap:10px}
-  #pform input[type=text],#pform select,#pform textarea{font-size:16px;padding:11px 10px;min-height:44px}
-  #pform .seg label{padding:11px 10px;min-height:44px}
-  #pform .dw{grid-template-columns:1fr 1.4fr 1.2fr}
-  .stepper button{flex-direction:row;justify-content:center;font-size:.8rem;padding:8px 2px;gap:4px}
-  #pform .navrow{position:sticky;bottom:0;background:var(--surface);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));margin:0 -12px -12px;padding-inline:12px;border-top:1px solid var(--line);z-index:5}
-  #pform .navrow .btn{flex:1 1 0;padding:12px 8px;font-size:1rem}
-}
-
-details.hl{padding:0}
-details.hl>summary{cursor:pointer;padding:14px 16px;font-weight:700;display:flex;gap:10px;align-items:center;list-style:none}
-details.hl>summary::-webkit-details-marker{display:none}
-details.hl>summary::after{content:"▾";margin-inline-start:auto;color:var(--muted)}
-details.hl[open]>summary::after{content:"▴"}
-details.hl .hi{font-size:1.2rem}
-details.hl .hb{padding:0 16px 14px;line-height:1.9}
-.hl-list{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
-.hl-p{margin:0}
-
-.fsec{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:12px}
-.fsec>h4{margin:0;display:flex;gap:8px;align-items:center;font-size:1.05rem}
-.fsec .sn{background:var(--primary);color:var(--on-primary);border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem}
-.err-field{outline:2px solid var(--bad);outline-offset:1px;border-radius:8px}
-.dw{grid-template-columns:1fr 1.5fr 1.3fr}
-#bWrap input,#pform .dw input{min-width:0}
-@media (max-width:600px){
-  #pform .dw{grid-template-columns:1fr 1.5fr 1.3fr}
-  #pform .dw input{font-size:16px;padding:11px 8px;min-height:44px;text-align:center}
-}
-.credit{margin:18px 0 6px;text-align:center;font-size:.85rem;color:var(--muted)}
 </style>
 
 <div class="wrap" id="root"></div>
@@ -323,13 +296,15 @@ const S={
   db:null,user:null,sample:null,uid:null,isAdmin:false,gate:false,ready:false,dbError:null,
   me:null,tab:'home',people:{},memories:{},subs:{},mySub:null,imported:[],
   mode:lsGet('shj_mode2')||(window.innerWidth<760?'outline':'art'),
-  addTab:'person',editId:null,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:(window.innerWidth<760?3:1),artTok:0,focus:'',
-  editSub:null,adq:'',photo:'',photoDirty:false,photoMsg:'',prefill:null,T:null,artCanvas:null
+  addTab:'person',editId:null,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
+  editSub:null,adq:'',famSel:{},photo:'',photoDirty:false,photoMsg:'',prefill:null,T:null,artCanvas:null
 };
 const fullName=()=>S.me?(S.me.first+' '+S.me.last).trim():'';
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>{t.hidden=true},3800);}
 const gLabel=g=>g==='m'?'آقا':g==='f'?'خانم':'';
 
+/* کلید مقایسهٔ نام خانوادگی: «الله رضایی»، «اله‌رضائی»، «الله‌رضایی» و ... یکی حساب می‌شوند */
+const famKey=s=>nn(s).replace(/[ئىي]/g,'ی').replace(/[\s\u200c]/g,'').replace(/الله/g,'اله');
 /* ================= spouses ================= */
 const SP_KEYS=['spouse','spouse2','spouse3','spouse4'];
 const ST_L={current:'همسر فعلی (در کنار هم هستند)',divorced:'جدا شده (طلاق گرفته‌اند)',deceased:'همسر درگذشته'};
@@ -384,53 +359,6 @@ function effective(){
   return {P,virt};
 }
 
-/* ================= خانوادهٔ نزدیک و نسبت‌یاب فارسی ================= */
-function spousesOf(P,id){ const s=new Set(); (P[id].spl||[]).forEach(x=>{ if(P[x.id]) s.add(x.id); }); Object.keys(P).forEach(i=>{ const q=P[i]; if((q.spl||[]).some(x=>x.id===id)) s.add(i); if(q.fatherId===id&&P[q.motherId]) s.add(q.motherId); if(q.motherId===id&&P[q.fatherId]) s.add(q.fatherId); }); s.delete(id); return [...s]; }
-function closeKin(P,id){ const p=P[id], s=new Set([id]); [p.fatherId,p.motherId].forEach(q=>{ if(P[q]) s.add(q); }); spousesOf(P,id).forEach(q=>s.add(q)); Object.keys(P).forEach(i=>{ const q=P[i]; if(q.fatherId===id||q.motherId===id||(p.fatherId&&q.fatherId===p.fatherId)||(p.motherId&&q.motherId===p.motherId)) s.add(i); }); return s; }
-function ups(P,id){ const m=new Map([[id,{d:0,path:[id]}]]); let fr=[id]; for(let d=1;d<=9&&fr.length;d++){ const nx=[]; fr.forEach(i=>[P[i].fatherId,P[i].motherId].forEach(q=>{ if(q&&P[q]&&!m.has(q)){ m.set(q,{d,path:[...m.get(i).path,q]}); nx.push(q); } })); fr=nx; } return m; }
-function bloodRel(P,a,b){
-  if(a===b) return null;
-  const ua=ups(P,a), ub=ups(P,b); let best=null;
-  ua.forEach((x,id)=>{ const y=ub.get(id); if(y&&(!best||x.d+y.d<best.x.d+best.y.d)) best={x,y}; });
-  if(!best) return null;
-  const dA=best.x.d, dB=best.y.d, pa=best.x.path, pb=best.y.path, f=i=>P[i].gender==='f';
-  const bf=f(b), sib=bf?'خواهر':'برادر', kid=bf?'دختر':'پسر';
-  if(dA===0) return dB===1?kid:dB===2?'نوه':dB===3?'نتیجه':dB===4?'نبیره':'نوادهٔ '+fa(dB)+' نسل بعد';
-  if(dB===0) return dA===1?(bf?'مادر':'پدر'):dA===2?(bf?'مادربزرگ ':'پدربزرگ ')+(f(pa[1])?'مادری':'پدری'):(bf?'جده':'جد')+' ('+fa(dA)+' نسل بالاتر)';
-  if(dA===1&&dB===1){ const A=P[a], B=P[b], sh=(A.fatherId&&A.fatherId===B.fatherId?1:0)+(A.motherId&&A.motherId===B.motherId?1:0); return sib+(sh===1&&A.fatherId&&A.motherId&&B.fatherId&&B.motherId?' ناتنی':''); }
-  if(dA===1) return dB===2?(f(pb[1])?'خواهرزاده':'برادرزاده'):(dB===3?'نوهٔ ':'نوادهٔ ')+(f(pb[pb.length-2])?'خواهر':'برادر');
-  if(dB===1) return dA===2?(bf?(f(pa[1])?'خاله':'عمه'):(f(pa[1])?'دایی':'عمو')):sib+(dA===3?'ِ پدربزرگ/مادربزرگ':'ِ جد');
-  if(dA===2&&dB===2) return kid+(f(pb[1])?(f(pa[1])?'خاله':'عمه'):(f(pa[1])?'دایی':'عمو'));
-  const r=bloodRel(P,a,pb[1]); return r?kid+'ِ '+r:'خویشاوند دور';
-}
-function relFa(P,a,b){
-  if(a===b) return 'همان شخص';
-  if(spousesOf(P,a).includes(b)) return 'همسر';
-  const bl=bloodRel(P,a,b); if(bl) return bl;
-  const bf=P[b].gender==='f', am=P[a].gender!=='f';
-  for(const s of spousesOf(P,b)){ const r=bloodRel(P,a,s); if(!r) continue;
-    if(r==='پسر'&&bf) return 'عروس'; if(r==='دختر'&&!bf) return 'داماد';
-    if(r==='پدر'&&bf) return 'نامادری'; if(r==='مادر'&&!bf) return 'ناپدری';
-    if((r==='عمو'||r==='دایی')&&bf) return 'زن‌'+r; if((r==='عمه'||r==='خاله')&&!bf) return 'شوهر'+r;
-    return 'همسرِ '+r; }
-  for(const s of spousesOf(P,a)){ const r=bloodRel(P,s,b); if(!r) continue;
-    const m={'پدر':['پدرزن','پدرشوهر'],'مادر':['مادرزن','مادرشوهر'],'برادر':['برادرزن','برادرشوهر'],'خواهر':['خواهرزن','خواهرشوهر']}[r];
-    return m?m[am?0:1]:r+'ِ همسر'; }
-  return null;
-}
-function relCardHTML(){
-  const P=EP(), ids=Object.keys(P).sort((x,y)=>full(P[x]).localeCompare(full(P[y]),'fa'));
-  const op=ids.map(i=>`<option value="${esc(i)}">${esc(full(P[i]))}${P[i].bY?' ('+fa(P[i].bY)+')':''}</option>`).join('');
-  const sel=(id,l)=>`<label class="f"><span>${l}</span><select id="${id}"><option value="">انتخاب…</option>${op}</select></label>`;
-  return `<details class="card" id="relBox"><summary><b>🔗 نسبت‌یاب</b> <span class="muted small">ببینید دو نفر چه نسبتی با هم دارند</span></summary><div class="stack" style="gap:10px;margin-top:10px">${sel('relA','شخص اول')}${sel('relB','شخص دوم (چه نسبتی با شخص اول دارد؟)')}<div class="note" id="relOut">دو نفر را انتخاب کنید.</div></div></details>`;
-}
-document.addEventListener('change',e=>{ const t=e.target; if(!t||(t.id!=='relA'&&t.id!=='relB')) return;
-  const a=$('#relA').value, b=$('#relB').value, o=$('#relOut'); if(!o) return;
-  if(!a||!b){ o.textContent='دو نفر را انتخاب کنید.'; return; }
-  const P=EP(); if(!P[a]||!P[b]){ o.textContent='فرد پیدا نشد.'; return; }
-  const r=relFa(P,a,b);
-  o.innerHTML=r?`«${esc(full(P[b]))}» برای «${esc(full(P[a]))}» می‌شود: <b>${esc(r)}</b>`:'نسبتی بین این دو نفر در شجره‌نامه ثبت نشده است.'; });
-
 /* ================= tree model ================= */
 function buildTree(){
   if(S.T) return S.T;
@@ -441,14 +369,16 @@ function buildTree(){
   const link=(a,b)=>{ if(a&&b&&a!==b&&has(a)&&has(b)){partners[a].add(b);partners[b].add(a);} };
   ids.forEach(i=>{ const p=P[i]; (p.spl||[]).forEach(x=>link(i,x.id)); if(has(p.fatherId)&&has(p.motherId)) link(p.fatherId,p.motherId); });
   const pst={}; ids.forEach(i=>(P[i].spl||[]).forEach(x=>{ if(!has(x.id)) return; const k=[i,x.id].sort().join('|'); if(!pst[k]||pst[k]==='current') pst[k]=x.st||'current'; }));
-  const FAMN=nn('الله‌رضایی'), isFam=i=>nn(P[i].last)===FAMN, famMode=ids.some(isFam);
+  const FAMN=famKey('الله‌رضایی'), isFam=i=>famKey(P[i].last)===FAMN, famMode=ids.some(isFam);
   const marryIn={}; ids.forEach(i=>{
     const ps=[...partners[i]];
     marryIn[i]=famMode
-      ? (!isFam(i)&&ps.some(isFam))||(isFam(i)&&!hasParents(i)&&ps.some(q=>isFam(q)&&hasParents(q)))||(!isFam(i)&&!hasParents(i)&&ps.some(q=>hasParents(q)))
+      ? (!isFam(i)&&ps.some(isFam))||(isFam(i)&&!hasParents(i)&&ps.some(q=>isFam(q)&&hasParents(q)))
       : (!hasParents(i)&&ps.some(q=>hasParents(q)));
   });
-  const placeOf=i=>{ const p=P[i]; if(has(p.fatherId)&&!marryIn[p.fatherId]) return p.fatherId; if(has(p.motherId)&&!marryIn[p.motherId]) return p.motherId; return null; };
+  const placeOf=i=>{ const p=P[i], f=has(p.fatherId)&&!marryIn[p.fatherId]?p.fatherId:null, m=has(p.motherId)&&!marryIn[p.motherId]?p.motherId:null;
+    if(f&&m) return (!hasParents(f)&&hasParents(m))?m:f;   // اگر پدر بی‌پدرومادر و مادر دارای والدین است، فرزند زیر شاخهٔ مادر می‌رود
+    return f||m||null; };
   const kidsOf={}; ids.forEach(i=>{ const pl=placeOf(i); if(pl&&pl!==i) (kidsOf[pl]=kidsOf[pl]||[]).push(i); });
   const byBirth=(a,b)=>{ const ya=P[a].bY,yb=P[b].bY; if(ya&&yb&&ya!==yb) return ya-yb; if(ya&&!yb) return -1; if(!ya&&yb) return 1; return (P[a].first||'').localeCompare(P[b].first||'','fa'); };
   Object.values(kidsOf).forEach(a=>a.sort(byBirth));
@@ -456,7 +386,7 @@ function buildTree(){
   cands.sort((a,b)=>(P[a].gender==='m'?0:1)-(P[b].gender==='m'?0:1)||byBirth(a,b));
   const used=new Set(), rootSpec=[];
   cands.forEach(r=>{ if(used.has(r)) return; used.add(r); const extra=[]; partners[r].forEach(q=>{ if(cands.includes(q)&&!used.has(q)){used.add(q);extra.push(q);} }); rootSpec.push({id:r,extra}); });
-  const vis=new Set(), shown=new Set(), gen={}; let nodes=[];
+  const vis=new Set(), shown=new Set(), gen={}, inlaw=new Set(); let nodes=[];
   function mk(id,extra,depth){
     if(vis.has(id)) return null; vis.add(id); shown.add(id);
     const sp=new Set(extra||[]); partners[id].forEach(q=>sp.add(q)); sp.delete(id);
@@ -470,21 +400,21 @@ function buildTree(){
   let roots=rootSpec.map(r=>mk(r.id,r.extra,1)).filter(Boolean);
   /* خانوادهٔ همسر (پدر و مادر و خواهر و برادر همسر) شاخهٔ جدا نمی‌سازد؛ درخت اصلی همان است که بزرگ‌تر است */
   if(roots.length>1){
-    const lc={}; ids.forEach(i=>{ const k=nn(P[i].last); if(k) lc[k]=(lc[k]||0)+1; });
-    const FAM=nn('الله‌رضایی'), topLast=lc[FAM]?FAM:(Object.keys(lc).sort((x,y)=>lc[y]-lc[x])[0]||'');
-    const score=n=>{ let c=0,t=0; const w=m=>{ t++; if(nn(P[m.id].last)===topLast) c++; m.kids.forEach(w); }; w(n); return c*1000+t; };
+    const lc={}; ids.forEach(i=>{ const k=famKey(P[i].last); if(k) lc[k]=(lc[k]||0)+1; });
+    const FAM=famKey('الله‌رضایی'), topLast=lc[FAM]?FAM:(Object.keys(lc).sort((x,y)=>lc[y]-lc[x])[0]||'');
+    const score=n=>{ let c=0,t=0; const w=m=>{ t++; if(famKey(P[m.id].last)===topLast) c++; m.kids.forEach(w); }; w(n); return c*1000+t; };
     const main=roots.reduce((a,b)=>score(b)>score(a)?b:a,roots[0]), drop=new Set();
     roots.forEach(r=>{ if(r!==main&&[...r.set].some(x=>main.set.has(x))) drop.add(r); });
     if(drop.size){
       const gone=new Set(), walk=n=>{ gone.add(n); n.kids.forEach(walk); }; drop.forEach(walk);
       nodes=nodes.filter(n=>!gone.has(n));
-      drop.forEach(r=>r.set.forEach(x=>{ if(!main.set.has(x)) shown.delete(x); }));
+      drop.forEach(r=>r.set.forEach(x=>{ if(!main.set.has(x)){ shown.delete(x); inlaw.add(x); } }));
       roots=roots.filter(r=>!drop.has(r));
     }
   }
-  const unplaced=ids.filter(i=>!shown.has(i)).sort(byBirth);
+  const unplaced=ids.filter(i=>!shown.has(i)).sort(byBirth), lost=unplaced.filter(i=>!inlaw.has(i));
   const couples=new Set(); ids.forEach(i=>partners[i].forEach(q=>couples.add([i,q].sort().join('|'))));
-  S.T={P,virt:E.virt,roots,nodes,unplaced,gen,couples:couples.size,pst};
+  S.T={P,virt:E.virt,roots,nodes,unplaced,lost,gen,couples:couples.size,pst};
   return S.T;
 }
 const EP=()=>buildTree().P;
@@ -573,7 +503,7 @@ function viewTree(){
   return `<div class="stack">
    <div class="bar">
      <div class="search"><input type="text" id="q" placeholder="جستجوی نام در شجره‌نامه…" value="${esc(S.q)}" autocomplete="off"><div class="results" id="qres" hidden></div></div>
-     <div class="row" style="gap:6px">${modeBtn('art','درخت تصویری')}${modeBtn('chart','نمودار')}${modeBtn('outline','فهرستی')}<button class="btn ghost sm" data-act="relopen">🔗 نسبت‌یاب</button></div>
+     <div class="row" style="gap:6px">${modeBtn('art','درخت تصویری')}${modeBtn('chart','نمودار')}${modeBtn('outline','فهرستی')}</div>
    </div>
    <div class="bar">
      <div class="row" style="gap:6px">
@@ -582,70 +512,9 @@ function viewTree(){
      </div>
      <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button></div>
    </div>
-   ${S.focus&&T.P[S.focus]&&S.mode==='art'?`<section class="note row" style="justify-content:space-between"><span>فقط خانوادهٔ نزدیکِ <b>${esc(full(T.P[S.focus]))}</b> پررنگ است.</span><button class="btn sm" data-act="unfocus">نمایش همه</button></section>`:''}
-   ${relCardHTML()}
    ${body}${un}
-   <p class="muted small" style="margin:0">برای دیدن اطلاعات و یادگارهای هر نفر روی نام او بزنید (یا نامش را در کادر جستجو بنویسید و روی نتیجه بزنید). در کارت او می‌توانید خانوادهٔ نزدیکش را پررنگ کنید یا با «نسبت با دیگری» نسبتش را با هر عضو دیگر ببینید. کادر خط‌چین یعنی آن فرد فقط به‌عنوان پدر، مادر، همسر یا فرزند نام برده شده و هنوز اطلاعاتش ثبت نشده است.</p>
+   <p class="muted small" style="margin:0">برای دیدن اطلاعات و یادگارهای هر نفر روی نام او بزنید. کادر خط‌چین یعنی آن فرد فقط به‌عنوان پدر، مادر، همسر یا فرزند نام برده شده و هنوز اطلاعاتش ثبت نشده است.</p>
   </div>`;
-}
-
-/* ---------- help ---------- */
-function viewHelp(){
-  const sec=(ic,t,body)=>`<details class="card hl" ${t.startsWith('شروع')?'open':''}><summary><span class="hi">${ic}</span>${t}</summary><div class="hb">${body}</div></details>`;
-  return `<div class="stack">
-   <div class="card"><h3 style="margin:0 0 6px">راهنمای کوتاه</h3>
-   <p class="muted" style="margin:0">این برنامه شجره‌نامهٔ مشترک خانواده است. هر عضو می‌تواند خودش و بستگانش را اضافه کند و همه آن را ببینند.</p>
-   <div class="row" style="margin-top:10px"><button class="btn" data-act="tab" data-tab="add">ثبت یک نفر</button></div></div>
-
-   ${sec('🚀','شروع سریع (۳ قدم)',`<ol class="hl-list">
-     <li>روی «ثبت اطلاعات» بزنید و <b>خودتان</b> را ثبت کنید. فرم یک صفحهٔ پایین‌رونده است؛ از بالا به پایین پر کنید و آخرش دکمهٔ ارسال را بزنید.</li>
-     <li>سپس پدر و مادرتان را ثبت کنید. ترتیب مهم نیست؛ می‌توانید اول خودتان، بعد پدر، بعد پدربزرگ را ثبت کنید.</li>
-     <li>اگر پدر یا مادر هنوز در فهرست نیست، گزینهٔ «در فهرست نیست» را بزنید و نامش را بنویسید. بعداً که او را ثبت کنید، خودکار به شما وصل می‌شود.</li></ol>`)}
-
-   ${sec('🌳','صفحهٔ شجره‌نامه: جستجو، کارت هر نفر و نسبت‌یاب',`<ul class="hl-list">
-     <li><b>جستجو:</b> بالای صفحهٔ شجره‌نامه نام را بنویسید. فهرستی از نتیجه‌ها باز می‌شود؛ روی نام موردنظر بزنید تا <b>کارت آن فرد</b> باز شود. روی نام داخل خود درخت هم می‌شود زد.</li>
-     <li><b>در کارت هر نفر:</b> عکس و مشخصات (سن، تولد، درگذشت)، و پیوندهای پدر، مادر، همسر، فرزندان و برادر و خواهر. روی هر اسم بزنید تا به کارت او بروید. پایین کارت خاطرات و جمله‌هایی که بقیه دربارهٔ او نوشته‌اند هست.</li>
-     <li><b>دکمه‌های کارت:</b> «نوشتن دربارهٔ او» برای ثبت خاطره یا ویژگی؛ «🌿 خانوادهٔ نزدیک» برای پررنگ کردن او و پدر و مادر، همسر، فرزندان و برادر و خواهرش در درخت؛ «🔗 نسبت با دیگری» برای دیدن نسبتش با هر عضو دیگر؛ «اصلاح اطلاعات» برای درست کردن اطلاعات.</li>
-     <li><b>🔗 نسبت‌یاب:</b> دکمه‌اش کنار «درخت تصویری / نمودار / فهرستی» است. دو نفر را انتخاب کنید تا نسبتشان با اصطلاح فارسی بگوید (عمو، دایی، پسرخاله، پدربزرگ مادری، عروس، داماد و …). نتیجه برای «شخص دوم» نسبت به «شخص اول» است.</li>
-     <li><b>نمای درخت:</b> دکمه‌های + و − زوم می‌کنند و درخت را با انگشت بکشید. «نمودار» و «فهرستی» برای درخت‌های شلوغ یا گوشی‌های کوچک خواناترند. ذخیرهٔ PNG و PDF همیشه کل درخت را می‌گیرد.</li></ul>`)}
-
-   ${sec('✍️','فرم ثبت؛ چه چیزی لازم است',`<ul class="hl-list">
-     <li><b>الزامی (ستاره‌دار):</b> نام، نام خانوادگی، جنسیت، تاریخ تولد، پدر، مادر و وضعیت تأهل. اگر متأهل هستید همسر هم الزامی است.</li>
-     <li><b>تاریخ تولد:</b> سال را ۴ رقمی بنویسید (مثلاً ۱۳۶۵)، ماه و روز را انتخاب کنید. اگر دقیق نمی‌دانید، حدودی بنویسید و بعداً اصلاحش کنید.</li>
-     <li><b>پدر و مادر:</b> از فهرست انتخاب کنید یا «در فهرست نیست» را بزنید و نام بنویسید. اگر واقعاً نامش را کسی نمی‌داند، «نام او را نمی‌دانم» هست، ولی بهتر است از بزرگ‌ترها بپرسید.</li>
-     <li><b>همسر:</b> تا چهار همسر با وضعیت فعلی، جدا شده یا درگذشته. اگر مجرد هستید این بخش نمی‌آید.</li>
-     <li><b>عکس:</b> سخت‌گیرانه اجباری نیست ولی لطفاً حتماً یک عکس واضح و رو به دوربین بارگذاری کنید. اگر نگذارید، قبل از ارسال یک‌بار یادآوری می‌شود.</li>
-     <li>اگر چیزی کم باشد، برنامه همان‌جا را قرمز می‌کند و به آن می‌برد.</li></ul>`)}
-
-   ${sec('✏️','اصلاح اطلاعات (مثلاً تاریخ تولد)',`<p class="hl-p">اگر چیزی را حدودی نوشتید یا اشتباه شد، روی نام فرد در شجره‌نامه بزنید و «اصلاح اطلاعات» را انتخاب کنید. تاریخ‌ها و بقیهٔ اطلاعات را درست کنید و ارسال بزنید. بعد از تأیید مدیر اعمال می‌شود. وضعیت ارسالی‌های شما پایین صفحهٔ «ثبت اطلاعات» دیده می‌شود.</p>`)}
-
-   ${sec('🔗','وصل شدن آدم‌ها به هم',`<ul class="hl-list">
-     <li>اگر فردی را از فهرست انتخاب کنید، مستقیم به او وصل می‌شود.</li>
-     <li>اگر فقط نامش را بنویسید، برنامه او را در درخت با کادر خط‌چین نشان می‌دهد. وقتی بعداً خودش ثبت شود، با <b>نام و جنسیت</b> همان کادر پر می‌شود.</li>
-     <li>اگر دو نفر هم‌نام هستند، سال تولد را هم بنویسید تا اشتباه وصل نشوند.</li>
-     <li>فرزندان را می‌توانید فقط با نام در کادر «فرزندان» بنویسید؛ لازم نیست جدا ثبتشان کنید.</li></ul>`)}
-
-   ${sec('🌳','دیدن شجره‌نامه',`<ul class="hl-list">
-     <li><b>سه نما:</b> درخت تصویری، نمودار و فهرستی. روی موبایل نمای فهرستی راحت‌تر است.</li>
-     <li>کادر جستجو بالای صفحه برای پیدا کردن هر نفر است.</li>
-     <li>روی نام هر نفر بزنید تا اطلاعات، عکس، خاطره‌ها و نسبتش با شما را ببینید.</li>
-     <li>در نمای نمودار و درخت تصویری دکمه‌های + و − اندازه را تغییر می‌دهند.</li>
-     <li>دکمه‌های «تصویر (PNG)» و «PDF» درخت را برای چاپ یا ارسال ذخیره می‌کنند.</li></ul>`)}
-
-   ${sec('💬','خاطره، ویژگی و جمله',`<p class="hl-p">در «ثبت اطلاعات» برگهٔ «خاطره، ویژگی، جمله» را باز کنید، فرد را انتخاب کنید و بنویسید. متن با نام شما ثبت می‌شود و کنار نام آن فرد نمایش داده می‌شود. این بخش برای نگه داشتن یادگار بزرگ‌ترهاست.</p>`)}
-
-   ${sec('✅','تأیید مدیر',`<p class="hl-p">اطلاعاتی که اعضا می‌فرستند اول برای مدیر می‌رود و بعد از تأیید در شجره‌نامه دیده می‌شود. برای همین بلافاصله بعد از ثبت ظاهر نمی‌شود. اگر ارسال مستقیم انجام نشد، برنامه متنی می‌دهد که باید کپی کنید و برای مدیر بفرستید.</p>`)}
-
-   ${sec('🎂','خانه و آمار',`<ul class="hl-list">
-     <li><b>خانه:</b> تولدهای امروز و نزدیک و خلاصهٔ شجره‌نامه.</li>
-     <li><b>گزارش و آمار:</b> تعداد افراد، نسل‌ها، خانواده‌ها و نمودارهای ساده.</li></ul>`)}
-
-   ${sec('💡','نکته‌ها',`<ul class="hl-list">
-     <li>همه‌چیز غیر از نام، نام خانوادگی و جنسیت اختیاری است؛ هر چه می‌دانید بنویسید و بقیه را بعداً کامل کنید.</li>
-     <li>اگر فردی از قبل ثبت شده، دوباره ثبتش نکنید. برنامه با نام و سال تولد مشابه به شما هشدار می‌دهد.</li>
-     <li>عکس را رو به دوربین و واضح انتخاب کنید. بعد از انتخاب، آن را در قاب ۳×۴ تنظیم می‌کنید.</li>
-     <li>اگر ثبت انجام نشد، اینترنت را بررسی کنید و دوباره بزنید. اگر باز هم نشد، یک‌بار خارج و دوباره وارد شوید.</li></ul>`)}
-  <p class="muted small" style="text-align:center;margin:4px 0 0">طراح برنامه: محمد الله‌رضایی</p></div>`;
 }
 
 /* ---------- stats ---------- */
@@ -656,7 +525,7 @@ function computeStats(){
   const gens={}; Object.entries(T.gen).forEach(([id,g])=>{ if(P[id]) gens[g]=(gens[g]||0)+1; });
   const fams=T.nodes.filter(n=>n.kids.length||n.spouses.length).map(n=>{
     const ks=n.kids.map(k=>P[k.id]);
-    return {n,title:full(P[n.id])+(n.spouses.length?' و '+n.spouses.map(q=>P[q].first||'').join(' و '):''),
+    return {n,id:n.id,set:n.set,kidIds:n.kids.map(k=>k.id),title:full(P[n.id])+(n.spouses.length?' و '+n.spouses.map(q=>P[q].first||'').join(' و '):''),
       kids:ks.length,sons:ks.filter(p=>p.gender==='m').length,daus:ks.filter(p=>p.gender==='f').length,size:n.size,depth:n.depth};
   });
   const withKids=fams.filter(x=>x.kids);
@@ -677,14 +546,24 @@ function computeStats(){
     comp:{birth:pc(p=>p.bY),date:pc(p=>p.bY&&p.bM&&p.bD),photo:pc(p=>p.photo),parents:pc(p=>p.fatherId||p.motherId||(p.fatherRef&&p.fatherRef.name)||(p.motherRef&&p.motherRef.name))},
     mostMem,realCount:real.length};
 }
+function famSumHTML(st){
+  const P=EP(), sel=st.fams.filter(x=>S.famSel[x.id]);
+  if(!sel.length) return '<p class="muted small" style="margin:0">خانواده‌هایی را که می‌خواهید تیک بزنید تا جمع آن‌ها اینجا نمایش داده شود.</p>';
+  const set=new Set(), kids=new Set(); sel.forEach(x=>{ x.set.forEach(i=>set.add(i)); x.kidIds.forEach(i=>kids.add(i)); });
+  const ppl=[...set].map(i=>P[i]).filter(Boolean), kp=[...kids].map(i=>P[i]).filter(Boolean), c=f=>ppl.filter(f).length;
+  const kpi=(v,l)=>`<div class="kpi"><b class="num">${fa(v)}</b><span>${l}</span></div>`;
+  return `<div class="famsum"><b>جمع ${fa(sel.length)} خانوادهٔ انتخاب‌شده</b>
+   <div class="kpis">${kpi(sel.length,'خانواده')}${kpi(ppl.length,'کل نفرات')}${kpi(c(p=>p.gender==='m'),'آقایان')}${kpi(c(p=>p.gender==='f'),'خانم‌ها')}${kpi(c(p=>!p.dead),'در قید حیات')}${kpi(c(p=>p.dead),'درگذشته')}${kpi(kp.length,'فرزند مستقیم')}${kpi(kp.filter(p=>p.gender==='m').length,'پسر')}${kpi(kp.filter(p=>p.gender==='f').length,'دختر')}</div>
+   <span class="muted small">اگر شاخه‌ای داخل شاخهٔ دیگر باشد، اعضای آن فقط یک بار شمرده می‌شوند.</span></div>`;
+}
 function famList(st){
   let a=st.fams.filter(x=>!S.famQ||x.title.includes(S.famQ));
   const key={members:x=>-x.size,kids:x=>-x.kids,gen:x=>x.depth*1000-x.size}[S.famSort];
   a=a.slice().sort((x,y)=>key(x)-key(y));
   if(!a.length) return '<p class="muted">خانواده‌ای پیدا نشد.</p>';
-  return a.map(x=>`<details class="fam"><summary><span class="t">خانوادهٔ ${esc(x.title)}</span><span class="num">${fa(x.size)} نفر در این شاخه</span>
+  return a.map(x=>`<div class="famrow"><input type="checkbox" data-fsel="${esc(x.id)}" ${S.famSel[x.id]?'checked':''} aria-label="انتخاب خانوادهٔ ${esc(x.title)}"><details class="fam"><summary><span class="t">خانوادهٔ ${esc(x.title)}</span><span class="num">${fa(x.size)} نفر در این شاخه</span>
     <span class="meta">نسل ${fa(x.depth)} – ${x.kids?`${fa(x.kids)} فرزند (${fa(x.sons)} پسر، ${fa(x.daus)} دختر)`:'بدون فرزند ثبت‌شده'}</span></summary>
-    <div class="kids">${x.n.kids.length?x.n.kids.map(k=>tile(k.id,false)).join(''):'<span class="muted small">فرزندی ثبت نشده است.</span>'}</div></details>`).join('');
+    <div class="kids">${x.n.kids.length?x.n.kids.map(k=>tile(k.id,false)).join(''):'<span class="muted small">فرزندی ثبت نشده است.</span>'}</div></details></div>`).join('');
 }
 function barRows(rows,max,cls){ return rows.map(([l,c])=>`<div class="bar-row"><span>${esc(l)}</span><div class="bar-track"><div class="bar-fill ${cls||''}" style="width:${max?c/max*100:0}%"></div></div><span class="num">${fa(c)}</span></div>`).join(''); }
 function viewStats(){
@@ -727,6 +606,8 @@ function viewStats(){
   <section class="card"><h3>آمار هر خانواده</h3>
     <div class="tbl-note" style="margin-top:10px"><input type="text" id="famQ" placeholder="جستجوی خانواده…" value="${esc(S.famQ)}" style="max-width:240px">
       <select id="famSort" style="max-width:220px"><option value="members" ${S.famSort==='members'?'selected':''}>بیشترین اعضای شاخه</option><option value="kids" ${S.famSort==='kids'?'selected':''}>بیشترین فرزند</option><option value="gen" ${S.famSort==='gen'?'selected':''}>به ترتیب نسل</option></select></div>
+    <div class="row" style="gap:6px;margin-top:10px"><button type="button" class="btn ghost sm" data-act="famall">انتخاب همهٔ فهرست</button><button type="button" class="btn ghost sm" data-act="famnone">پاک کردن انتخاب</button></div>
+    <div id="famSum" style="margin:10px 0">${famSumHTML(st)}</div>
     <div id="famList">${famList(st)}</div></section>
   </div>`;
 }
@@ -735,7 +616,7 @@ function viewStats(){
 function opts(filter,sel,self,withNew,q){
   const nq=q?nn(q):'';
   const arr=Object.entries(pendingItems()).filter(([id,r])=>id!==self&&(!filter||filter(r.p))&&(!nq||id===sel||nn(pickLabel(id,r)).includes(nq))).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa'));
-  return (withNew?`<option value="__new" ${sel==='__new'?'selected':''}>✍️ در فهرست نیست (نام را می‌نویسم)</option>`:'')+(withNew==='unk'?`<option value="__unk" ${sel==='__unk'?'selected':''}>❔ نام او را نمی‌دانم</option>`:'')+`<option value="" ${sel?'':'selected'}>— انتخاب کنید —</option>`+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')+((nq&&!arr.length)?'<option value="" disabled>نتیجه‌ای پیدا نشد؛ گزینهٔ «در فهرست نیست» را بزنید</option>':'');
+  return (withNew?`<option value="__new" ${sel==='__new'?'selected':''}>✍️ در فهرست نیست؛ نامش را می‌نویسم</option>`:'')+`<option value="" ${sel?'':'selected'}>— نامشخص —</option>`+arr.map(([id,r])=>`<option value="${esc(id)}" ${id===sel?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')+((nq&&!arr.length)?'<option value="" disabled>نتیجه‌ای پیدا نشد؛ گزینهٔ «در فهرست نیست» را بزنید</option>':'');
 }
 function yearOpts(sel){
   const hi=Math.max(nowYear,sel||0), lo=Math.min(1250,sel||1250); let o='';
@@ -746,7 +627,7 @@ function dateW(p,v){
   v=v||{};
   return `<div class="dw"><select id="${p}_d" aria-label="روز"><option value="">روز</option>${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${v.d===i+1?'selected':''}>${fa(i+1)}</option>`).join('')}</select>
   <select id="${p}_m" aria-label="ماه"><option value="">ماه</option>${MONTHS.map((n,i)=>`<option value="${i+1}" ${v.m===i+1?'selected':''}>${n}</option>`).join('')}</select>
-  <input type="text" id="${p}_y" inputmode="numeric" maxlength="4" placeholder="سال (۱۳۶۵)" aria-label="سال" autocomplete="off" value="${v.y?fa(v.y):''}"></div>`;
+  <select id="${p}_y" aria-label="سال"><option value="">سال</option>${yearOpts(v.y)}</select></div>`;
 }
 function readDate(p){
   let y=parseInt(norm($('#'+p+'_y').value),10)||0, m=parseInt($('#'+p+'_m').value,10)||0, d=parseInt($('#'+p+'_d').value,10)||0;
@@ -754,15 +635,15 @@ function readDate(p){
   if(m&&d&&d>monthLen(y||1403,m)) d=monthLen(y||1403,m);
   return {y,m,d};
 }
-function relBlock(key,label,filter,v){
+function relBlock(key,label,filter,v,q){
   const id=v[key+'Id']||'', ref=v[key+'Ref']||{}, sel=id||(ref.name?'__new':'');
-  const L=label.replace(/\s*\*$/,''), many=Object.keys(pendingItems()).length>8;
-  const hasD=!!(ref.y||ref.m||ref.d);
-  return `<div class="rel wide">${many?`<input type="text" class="relq" id="r_${key}_q" data-relq="${key}" placeholder="🔍 جستجوی ${L}…" aria-label="جستجوی ${L}" autocomplete="off">`:''}<label class="f"><span>${label}</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,(key==='father'||key==='mother')?'unk':true)}</select></label>
-   <div id="r_${key}_unk" class="note warn" ${sel==='__unk'?'':'hidden'}>⚠️ لطفاً تا جای ممکن از بزرگ‌ترها بپرسید و نام ${L} را بنویسید. هر وقت نامش را فهمیدید از «اصلاح اطلاعات» اضافه‌اش کنید.</div>
-   <div id="r_${key}_new" ${sel==='__new'?'':'hidden'} class="stack" style="gap:8px">
-     <label class="f"><span>نام و نام خانوادگی ${L}</span><input type="text" id="r_${key}_n" value="${esc(ref.name||'')}" placeholder="مثلاً: علی الله‌رضایی"></label>
-     <details class="more" ${hasD?'open':''}><summary>تاریخ تولد ${L} (اختیاری)</summary>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</details>
+  return `<div class="rel wide"><div class="qlab">${q||esc(label)}</div>
+   <input type="text" class="relq" id="r_${key}_q" data-relq="${key}" placeholder="🔍 چند حرف از نام را بنویسید تا در لیست پیدا شود" aria-label="جستجوی ${esc(label)}" autocomplete="off">
+   <label class="f"><span class="muted small">یا از لیست انتخاب کنید:</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,true)}</select></label>
+   <span class="muted small">در لیست نیست؟ اولین گزینهٔ لیست («✍️ در فهرست نیست») را بزنید و نامش را بنویسید.</span>
+   <div id="r_${key}_new" ${sel==='__new'?'':'hidden'}><div class="fields">
+     <label class="f"><span>نام و نام خانوادگی ${esc(label)}</span><input type="text" id="r_${key}_n" placeholder="مثلاً: رضا احمدی" value="${esc(ref.name||'')}"></label>
+     <div class="f"><span>تاریخ تولد ${esc(label)} (اگر می‌دانید)</span>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</div></div>
    </div></div>`;
 }
 function photoBlock(){
@@ -772,64 +653,100 @@ function photoBlock(){
       <span class="muted small" id="phMsg">${esc(S.photoMsg||'عکسی انتخاب کنید که چهره در آن واضح و رو به دوربین باشد. بعد از انتخاب، خودتان آن را در قاب ۳×۴ تنظیم می‌کنید تا همهٔ عکس‌ها یک‌شکل شوند.')}</span>
       ${S.photo?'<button type="button" class="btn ghost sm" data-act="rmphoto" style="align-self:flex-start">حذف عکس</button>':''}</div></div></div>`;
 }
+const STEP_T=['او کیست؟','خانواده‌اش','اطلاعات بیشتر'];
+function stepperHTML(n){ return STEP_T.map((t,i)=>`<button type="button" data-act="pgo" data-n="${i+1}" ${i+1===n?'aria-current="step"':''}><span class="num">${fa(i+1)}</span><span>${t}</span></button>`).join(''); }
 function spouseRows(v){
   const list=spListOf(v), shown=Math.max(1,list.length);
   const rows=SP_KEYS.map((k,i)=>{
     const x=list[i]||{id:'',ref:{},st:'current'}, vv={}; vv[k+'Id']=x.id||''; vv[k+'Ref']=x.ref||{};
     const lab=i===0?'همسر':'همسر '+['','دوم','سوم','چهارم'][i];
-    return `<div class="sprow" data-sp="${i}" ${i<shown?'':'hidden'}>${relBlock(k,lab,null,vv)}
+    return `<div class="sprow" data-sp="${i}" ${i<shown?'':'hidden'}>${relBlock(k,lab,null,vv,lab+'ِ <b class="pn">این فرد</b> کیست؟')}
       <div class="row"><label class="f" style="flex:1 1 220px"><span>وضعیت ${lab}</span><select id="r_${k}_st">${Object.entries(ST_L).map(([sv,sl])=>`<option value="${sv}" ${(x.st||'current')===sv?'selected':''}>${sl}</option>`).join('')}</select></label>
       ${i>0?`<button type="button" class="btn ghost sm" data-act="sprm" data-k="${k}">حذف این همسر</button>`:''}</div></div>`;
   }).join('');
-  return rows+`<button type="button" class="btn ghost" id="spAdd" data-act="spadd" ${shown>=SP_KEYS.length?'hidden':''}>➕ همسر دیگر</button>`;
+  return rows+`<button type="button" class="btn ghost" id="spAdd" data-act="spadd" ${shown>=SP_KEYS.length?'hidden':''}>➕ افزودن همسر دیگر (همسر قبلی یا بعدی)</button>`;
+}
+function reviewHTML(){
+  const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
+  const dead=$('#f_dead').checked, b=readDate('b'), dd=dead?readDate('d'):{y:0,m:0,d:0};
+  const mar=(document.querySelector('input[name=f_mar]:checked')||{}).value||'';
+  const rname=r=>r.id?nameOf(r.id):((r.ref&&r.ref.name)||'');
+  const fa_=readRel('father'), mo=readRel('mother'), spl=readSpouses();
+  const dv=(y,m,d)=>(y||m)?dstr(y,m,d):'';
+  const row=(l,v)=>`<div class="rw"><b>${l}</b><span>${v?esc(v):'<i class="muted" style="font-weight:400">ثبت نشده</i>'}</span></div>`;
+  const sec=(t,n,rows)=>`<div class="sec"><div class="sech"><b>${t}</b><button type="button" class="btn ghost sm" data-act="rvgo" data-n="${n}">ویرایش</button></div>${rows}</div>`;
+  const STS={current:'همسر فعلی',divorced:'جدا شده',deceased:'همسر درگذشته'}, ORD=['','دوم','سوم','چهارم'];
+  const spRows=mar==='single'?row('همسر','ندارد (مجرد)'):(spl.length?spl.map((x,i)=>row('همسر'+(i?' '+ORD[i]:''),rname(x)+' ('+STS[x.st||'current']+')')).join(''):row('همسر',''));
+  const kids=val('#f_kids').split(/\n/).map(x=>x.trim()).filter(Boolean).join('، ');
+  const status=dead?('درگذشته'+(dv(dd.y,dd.m,dd.d)?'، '+dv(dd.y,dd.m,dd.d):'')):'زنده';
+  return `<div class="rv"><div><b style="font-size:1.1rem">برگهٔ تأیید اطلاعات</b>
+    <p class="muted small hintbox" style="margin:4px 0 0">لطفاً اطلاعات زیر را با دقت بخوانید. اگر درست است «تأیید و ثبت نهایی» را بزنید و اگر اشتباهی هست، کنار همان بخش «ویرایش» را بزنید.</p></div>
+    <div class="row" style="gap:12px;align-items:flex-start">${S.photo?`<img class="rvph" src="${esc(S.photo)}" alt="">`:''}<div style="flex:1 1 200px;min-width:0">
+      <div style="font-size:1.25rem;font-weight:800">${esc(val('#f_first')+' '+val('#f_last'))}</div><div class="muted">${g==='m'?'آقا':g==='f'?'خانم':''}</div></div></div>
+    ${sec('اطلاعات فرد',1,row('نام و نام خانوادگی',val('#f_first')+' '+val('#f_last'))+row('جنسیت',g==='m'?'آقا':g==='f'?'خانم':'')+row('تاریخ تولد',dv(b.y,b.m,b.d))+row('وضعیت',status))}
+    ${sec('خانواده',2,row('پدر',rname(fa_))+row('مادر',rname(mo))+row('وضعیت تأهل',mar==='single'?'مجرد':mar==='married'?'متأهل یا همسر داشته':'نامشخص')+spRows+row('فرزندان',kids))}
+    ${sec('اطلاعات بیشتر',3,row('محل تولد',val('#f_bplace'))+row('محل سکونت',val('#f_resid'))+row('شغل',val('#f_job'))+row('توضیح',val('#f_note'))+row('عکس',S.photo?'انتخاب شده':''))}
+    ${S.isAdmin?'':'<p class="muted small hintbox" style="margin:0">با تأیید شما، اطلاعات برای مدیر ارسال می‌شود و بعد از بررسی او در درخت اضافه می‌شود.</p>'}
+    <div class="navrow"><button type="button" class="btn ghost big" data-act="rvgo" data-n="1">ویرایش اطلاعات</button><button type="button" class="btn big" id="rvOk" data-act="rvok">${S.isAdmin?'تأیید و ثبت نهایی':'تأیید و ارسال برای مدیر'}</button></div></div>`;
+}
+function showReview(){
+  const box=$('#reviewBox'); if(!box) return;
+  box.innerHTML=reviewHTML(); box.hidden=false;
+  document.querySelectorAll('#pform [data-step]').forEach(d=>{ d.hidden=true; });
+  const st=$('#stepper'); if(st) st.hidden=true; const nr=document.querySelector('#pform .navrow'); if(nr) nr.hidden=true;
+  const dm=$('#dupMsg'); if(dm) dm.innerHTML='';
+  box.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function personForm(){
-  const okMsg=S.okMsg; S.okMsg=null; S.noPhotoOk=false;
+  const okMsg=S.okMsg; S.okMsg=null; S.pstep=1; S.rv=false;
   const e=S.editId&&S.people[S.editId]?S.people[S.editId]:null, sub=S.isAdmin?S.editSub:null, v=sub?Object.assign({},e||{},sub.payload):(e||S.prefill||{});
-  const title=sub?'ویرایش پیشنهاد '+full(v)+' (پیش از تأیید)':e?(S.isAdmin?'ویرایش '+full(e):'اصلاح اطلاعات '+full(e)):'افزودن یک نفر به خاندان';
-  const isNew=!e&&!sub, hasSp=spListOf(v).length>0, spHidden=v.marital==='single'||(!v.marital&&!hasSp);
-  return `<form id="pform" class="card stack" autocomplete="off" novalidate>
-   <div class="row" style="justify-content:space-between"><h3>${esc(title)}</h3>${(e||sub)?'<button type="button" class="btn ghost sm" data-act="canceledit">انصراف</button>':''}</div>
+  const title=sub?'ویرایش پیشنهاد '+full(v)+' (پیش از تأیید)':e?(S.isAdmin?'ویرایش '+full(e):'پیشنهاد ویرایش '+full(e)):'افزودن یک نفر به خاندان';
+  return `<form id="pform" class="card stack" autocomplete="off">
+   <div class="row" style="justify-content:space-between"><h3>${esc(title)}</h3>${(e||sub)?'<button type="button" class="btn ghost sm" data-act="canceledit">انصراف از ویرایش</button>':''}</div>
    ${okMsg?`<div class="${okMsg.ok?'okbig':'note gift'}" role="status" id="okBox">${esc(okMsg.t)}</div>`:''}
-   ${e&&!S.isAdmin?'<div class="note">اصلاح شما بعد از تأیید مدیر در شجره‌نامه اعمال می‌شود.</div>':''}
-
-   <section class="fsec" id="sec1"><h4><span class="sn">۱</span>مشخصات</h4>
+   ${(e||sub)?'':'<div class="note gift hintbox"><b>اینجا یک نفر از خانواده را اضافه می‌کنید.</b> سه مرحلهٔ کوتاه دارد و فقط مرحلهٔ اول اجباری است. هر چیزی را که نمی‌دانید خالی بگذارید.<br>هنوز خودتان ثبت نشده‌اید؟ اول خودتان را ثبت کنید.</div>'}
+   <div class="stepper" id="stepper">${stepperHTML(1)}</div>
+   <div data-step="1" class="stack">
+   <div class="qlab">این فرد کیست؟</div>
    <div class="fields">
-    <label class="f"><span>نام *</span><input type="text" id="f_first" value="${esc(v.first||'')}" autocomplete="off"></label>
+    <label class="f"><span>نام *</span><input type="text" id="f_first" placeholder="مثلاً: علی" value="${esc(v.first||'')}"></label>
     <label class="f"><span>نام خانوادگی *</span><input type="text" id="f_last" value="${esc(v.last||'الله‌رضایی')}"></label>
-    <div class="f"><span>جنسیت *</span><div class="seg" id="gSeg">
+    <div class="f"><span>جنسیت *</span><div class="seg">
       <label><input type="radio" name="f_g" value="m" ${v.gender==='m'?'checked':''}><span>آقا</span></label>
       <label><input type="radio" name="f_g" value="f" ${v.gender==='f'?'checked':''}><span>خانم</span></label></div></div>
-    <div class="f wide" id="bWrap"><span>تاریخ تولد (شمسی) *</span>${dateW('b',bd(v))}
-      <span class="muted small">اگر تاریخ دقیق را نمی‌دانید، حدودی بنویسید. بعداً هر وقت دقیقش را فهمیدید از دکمهٔ «اصلاح اطلاعات» درستش کنید.</span></div>
-    <label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="f_dead" ${v.dead?'checked':''}><span style="color:var(--ink)">درگذشته است</span></label>
-    <div class="f wide" id="deathWrap" ${v.dead?'':'hidden'}><span>تاریخ درگذشت (اختیاری)</span>${dateW('d',{y:v.dY,m:v.dM,d:v.dD})}</div>
-   </div></section>
-
-   <section class="fsec" id="sec2"><h4><span class="sn">۲</span>خانواده</h4>
-   <div class="note warn">⚠️ ثبت پدر، مادر و همسر الزامی است تا درخت درست ساخته شود. اگر هنوز در فهرست نیستند، «در فهرست نیست» را بزنید و نامشان را بنویسید؛ بعداً که ثبت شدند خودکار وصل می‌شوند.</div>
+    <div class="f wide"><span>تاریخ تولد (اگر می‌دانید)</span>${dateW('b',bd(v))}<span class="muted small">سال، ماه و روز را انتخاب کنید. اگر فقط سال را می‌دانید، همان را بزنید.</span></div>
+    <label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="f_dead" ${v.dead?'checked':''}><span style="color:var(--ink)">این فرد درگذشته است (اگر زنده است، این را نزنید)</span></label>
+    <div class="f wide" id="deathWrap" ${v.dead?'':'hidden'}><span>تاریخ درگذشت (اگر می‌دانید)</span>${dateW('d',{y:v.dY,m:v.dM,d:v.dD})}</div>
+   </div></div>
+   <div data-step="2" class="stack" hidden>
+   <div class="qlab">خانوادهٔ <span class="pn">این فرد</span></div>
+   <p class="muted small hintbox" style="margin:0">برای اینکه <b class="pn">این فرد</b> در درخت جا بگیرد، <b>حداقل یکی</b> از پدر، مادر یا همسرش را از لیست انتخاب کنید. بقیه اختیاری است.</p>
    <div class="fields">
-    ${relBlock('father','پدر *',p=>p.gender==='m',v)}
-    ${relBlock('mother','مادر *',p=>p.gender==='f',v)}
-    <div class="f wide"><span>وضعیت تأهل *</span><div class="seg" id="marSeg">
-      <label><input type="radio" name="f_mar" value="single" ${v.marital==='single'?'checked':''}><span>مجرد</span></label>
-      <label><input type="radio" name="f_mar" value="married" ${v.marital==='married'||(!v.marital&&hasSp)?'checked':''}><span>متأهل یا همسر داشته</span></label></div></div>
-    <div class="wide stack" id="spouseWrap" ${spHidden?'hidden':''}>${spouseRows(v)}</div>
-    <label class="f wide"><span>فرزندان (اختیاری؛ هر نام در یک خط)</span><textarea id="f_kids" style="min-height:70px" placeholder="مثلاً: علی الله‌رضایی">${esc(v.kidNames||'')}</textarea></label>
-   </div></section>
-
-   <section class="fsec" id="sec3"><h4><span class="sn">۳</span>عکس و اطلاعات بیشتر</h4>
-   <div class="note gift" id="photoNote">📷 بهتر است حتماً یک عکس واضح و رو به دوربین بارگذاری کنید.</div>
+    ${relBlock('father','پدر',p=>p.gender==='m',v,'پدرِ <b class="pn">این فرد</b> کیست؟')}
+    ${relBlock('mother','مادر',p=>p.gender==='f',v,'مادرِ <b class="pn">این فرد</b> کیست؟')}
+    <div class="f wide"><span class="qlab">آیا <span class="pn">این فرد</span> ازدواج کرده؟</span><div class="seg">
+      <label><input type="radio" name="f_mar" value="" ${!v.marital?'checked':''}><span>نمی‌دانم</span></label>
+      <label><input type="radio" name="f_mar" value="single" ${v.marital==='single'?'checked':''}><span>نه، مجرد است</span></label>
+      <label><input type="radio" name="f_mar" value="married" ${v.marital==='married'?'checked':''}><span>بله، همسر دارد یا داشته</span></label></div>
+      <span class="muted small">اگر «مجرد» را بزنید بخش همسر برداشته می‌شود. اگر همسرش فوت کرده یا جدا شده، «بله» را بزنید و وضعیت همسر را انتخاب کنید.</span></div>
+    <div class="wide stack" id="spouseWrap" ${v.marital==='single'?'hidden':''}>${spouseRows(v)}</div>
+    <label class="f wide"><span>فرزندان (اختیاری)</span><span class="muted small">اسم هر فرزند را در یک خط بنویسید.</span><textarea id="f_kids" style="min-height:70px" placeholder="مثلاً: علی الله‌رضایی">${esc(v.kidNames||'')}</textarea></label>
+   </div></div>
+   <div data-step="3" class="stack" hidden>
+   <div class="qlab">اطلاعات دیگر دربارهٔ <span class="pn">این فرد</span></div>
+   <p class="muted small" style="margin:0">همهٔ این موارد اختیاری است؛ هر چه می‌دانید بنویسید و بقیه را خالی بگذارید.</p>
    <div class="fields">
     ${photoBlock()}
-    <label class="f"><span>محل تولد</span><input type="text" id="f_bplace" value="${esc(v.birthPlace||v.place||'')}"></label>
-    <label class="f"><span>محل سکونت</span><input type="text" id="f_resid" value="${esc(v.residence||'')}"></label>
-    <label class="f"><span>شغل</span><input type="text" id="f_job" value="${esc(v.job||'')}"></label>
-    <label class="f wide"><span>توضیح کوتاه (اختیاری)</span><input type="text" id="f_note" value="${esc(v.note||'')}"></label>
-   </div></section>
-
+    <label class="f"><span>محل تولد</span><input type="text" id="f_bplace" placeholder="مثلاً: تهران" value="${esc(v.birthPlace||v.place||'')}"></label>
+    <label class="f"><span>محل سکونت (الان کجا زندگی می‌کند)</span><input type="text" id="f_resid" placeholder="مثلاً: اصفهان" value="${esc(v.residence||'')}"></label>
+    <label class="f"><span>شغل</span><input type="text" id="f_job" placeholder="مثلاً: معلم" value="${esc(v.job||'')}"></label>
+    <label class="f wide"><span>توضیح کوتاه (اختیاری)</span><input type="text" id="f_note" placeholder="مثلاً: عاشق باغبانی بود" value="${esc(v.note||'')}"></label>
+   </div>${S.isAdmin?'':'<p class="muted small hintbox" style="margin:0">در مرحلهٔ بعد، برگهٔ اطلاعات را می‌بینید. بعد از تأیید شما، اطلاعات برای مدیر ارسال می‌شود و بعد از بررسی او در درخت اضافه می‌شود.</p>'}</div>
+   <div id="reviewBox" hidden></div>
    <div id="dupMsg"></div>
-   <div class="navrow"><button class="btn big" type="submit" id="pSubmit">${S.isAdmin?'ثبت در شجره‌نامه':e?'ارسال اصلاح برای تأیید':'ارسال برای تأیید مدیر'}</button></div>
+   <div class="navrow"><button type="button" class="btn ghost big" id="pBack" data-act="pback" hidden>قبلی</button>
+    <button type="button" class="btn big" id="pNext" data-act="pnext">بعدی</button>
+    <button class="btn big" type="submit" id="pSubmit" hidden>مرور و تأیید اطلاعات</button></div>
   </form>`;
 }
 const KINDS={memory:['خاطره','یک خاطرهٔ شاخص از او…'],trait:['ویژگی','مثلاً: بسیار مهمان‌نواز و خوش‌قول بود…'],quote:['جمله‌ای از او','جمله‌ای که زیاد می‌گفت یا درباره‌اش می‌گویند…']};
@@ -860,12 +777,11 @@ function mySubsHTML(){
     return `<li><span>${esc(t)}</span><span class="status ${esc(stOf(id,it))}">${lab[stOf(id,it)]||''}</span></li>`;}).join('')}</ul></section>`;
 }
 function viewAdd(){
-  return `<div class="stack"><div class="tabs2"><button data-act="addtab" data-t="person" aria-current="${S.addTab==='person'}">افزودن فرد</button><button data-act="addtab" data-t="memory" aria-current="${S.addTab==='memory'}">خاطره، ویژگی، جمله</button></div>
-  <div class="row" style="gap:8px"><span class="muted small">اولین بار است؟</span><button type="button" class="btn ghost sm" data-act="tab" data-tab="help">راهنمای ثبت</button></div>
+  return `<div class="stack"><div class="tabs2"><button data-act="addtab" data-t="person" aria-current="${S.addTab==='person'}">➕ ثبت یک نفر</button><button data-act="addtab" data-t="memory" aria-current="${S.addTab==='memory'}">✍️ نوشتن یک خاطره</button></div>
   <div id="formArea">${S.addTab==='person'?personForm():memoryForm()}</div><div id="codeArea">${codeBox()}</div><div id="mySubs">${mySubsHTML()}</div></div>`;
 }
 const RELF={father:p=>p.gender==='m',mother:p=>p.gender==='f',spouse:null,spouse2:null,spouse3:null,spouse4:null}, RELF_KEYS=['father','mother','spouse','spouse2','spouse3','spouse4'];
-function refillRel(k){ const el=$('#r_'+k); if(!el) return; const v=el.value, qi=$('#r_'+k+'_q'); el.innerHTML=opts(RELF[k],v,S.editId,(k==='father'||k==='mother')?'unk':true,qi?qi.value:''); el.value=v; }
+function refillRel(k){ const el=$('#r_'+k); if(!el) return; const v=el.value, qi=$('#r_'+k+'_q'); el.innerHTML=opts(RELF[k],v,S.editId,true,qi?qi.value:''); el.value=v; }
 function refreshAdd(){
   const fill=(id,html)=>{const el=$(id); if(!el) return; const v=el.value; el.innerHTML=html; el.value=v;};
   if(S.addTab==='person'){
@@ -900,9 +816,15 @@ function pendCard(it){
 }
 function treeWarnHTML(){
   if(!S.isAdmin) return '';
-  const T=buildTree(); if(T.roots.length<=1) return '';
-  const names=T.roots.map(r=>esc(full(T.P[r.id]))).join('، ');
-  return `<section class="note warn">درخت باید یکی باشد، ولی ${fa(T.roots.length)} ریشهٔ جدا دارد: ${names}. برای وصل کردن، در «مدیریت افراد» پدر، مادر یا همسر یکی از آن‌ها را ویرایش کنید.</section>`;
+  const T=buildTree(); let h='';
+  if(T.roots.length>1){
+    const names=T.roots.map(r=>esc(full(T.P[r.id]))).join('، ');
+    h+=`<section class="note warn">درخت باید یکی باشد، ولی ${fa(T.roots.length)} ریشهٔ جدا دارد: ${names}. برای وصل کردن، در «مدیریت افراد» پدر، مادر یا همسر یکی از آن‌ها را ویرایش کنید.</section>`;
+  }
+  if(T.lost&&T.lost.length){
+    h+=`<section class="note warn">این ${fa(T.lost.length)} نفر در درخت نمایش داده نمی‌شوند: ${T.lost.slice(0,10).map(i=>esc(full(T.P[i]))).join('، ')}${T.lost.length>10?' و …':''}. پدر یا مادر آن‌ها را بررسی کنید.</section>`;
+  }
+  return h;
 }
 function adListHTML(){
   const q=nn(S.adq||''), arr=Object.entries(S.people).filter(([,r])=>!q||nn(full(r)).includes(q)).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
@@ -946,14 +868,11 @@ function personSheet(id){
   return `<button class="btn ghost sm x" data-act="close">بستن</button>
    <div class="sheet-head">${p.photo?`<img class="ph" src="${esc(p.photo)}" alt="">`:''}<div style="min-width:0"><h2>${esc(full(p))}</h2><div class="muted">${info.map(esc).join('، ')}</div></div></div>
    ${p.note?`<div class="note">${esc(p.note)}</div>`:''}
-   ${(!p.bY||!p.bM||!p.bD)?'<div class="note warn">تاریخ تولد کامل نیست. اگر می‌دانید، «اصلاح اطلاعات» را بزنید و درستش کنید.</div>':''}
    ${rows.length?`<div class="stack" style="gap:10px">${rows.map(r=>`<div class="row" style="gap:6px;align-items:baseline"><span class="muted small" style="min-width:84px">${r[0]}</span>${r[1].map(i=>r[0]==='همسر'?chip(i,stBadge(id,i,i)):chip(i)).join('')}</div>`).join('')}</div>`:'<p class="muted small" style="margin:0">پیوندی با اعضای دیگر ثبت نشده است.</p>'}
    <div class="stack" style="gap:12px"><h3>ویژگی‌ها، خاطرات و جمله‌ها</h3>
      ${mems.length?memGroup('trait','ویژگی‌ها')+memGroup('memory','خاطرات')+memGroup('quote','جمله‌ها'):'<p class="muted small" style="margin:0">هنوز چیزی ثبت نشده است.</p>'}</div>
    <div class="row"><button class="btn" data-act="addmem" data-id="${esc(id)}">نوشتن دربارهٔ او</button>
-     <button class="btn ghost" data-act="focus" data-id="${esc(id)}">🌿 خانوادهٔ نزدیک</button>
-     <button class="btn ghost" data-act="relwith" data-id="${esc(id)}">🔗 نسبت با دیگری</button>
-     <button class="btn ghost" data-act="editp" data-id="${esc(id)}">${S.isAdmin?'ویرایش':'✏️ اصلاح اطلاعات'}</button>
+     <button class="btn ghost" data-act="editp" data-id="${esc(id)}">${S.isAdmin?'ویرایش':'پیشنهاد ویرایش'}</button>
      ${S.isAdmin?`<button class="btn danger" data-act="delp" data-id="${esc(id)}">${cf==='p'+id?'مطمئنم، حذف شود':'حذف فرد'}</button>`:''}</div>`;
 }
 function openModal(id){ S.modal=id; S.confirm=null; $('#sheet').innerHTML=personSheet(id); $('#modal').hidden=false; }
@@ -966,8 +885,8 @@ function loadImg(src){
   const pr=new Promise(res=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>res(null); i.src=src; });
   imgCache.set(src,pr); return pr;
 }
-function drawArt(T,imgs,focus){
-  const P=T.P, fs=(focus&&T.P[focus])?closeKin(T.P,focus):null, R=46, GAP=280, CW=2*R+80, MARGIN=140, TRUNK=230, ROOTS=150, TOP=330;
+function drawArt(T,imgs){
+  const P=T.P, R=46, GAP=280, CW=2*R+46, MARGIN=140, TRUNK=230, ROOTS=150, TOP=330;
   const HUES=[152,205,338,32,268,178,8,96,300,50];
   let maxD=1; T.nodes.forEach(n=>{ if(n.depth>maxD) maxD=n.depth; });
   /* هر شاخهٔ اصلی (فرزندان ریشه) یک رنگ می‌گیرد و نوه‌ها همان رنگ را به ارث می‌برند */
@@ -976,7 +895,6 @@ function drawArt(T,imgs,focus){
   T.roots.forEach(r=>{ r.ci=-1; r.kids.forEach(k=>{ brs.push({k,ci:bi}); assign(k,bi); bi++; }); });
   const hue=ci=>(HUES[ci%HUES.length]+Math.floor(ci/HUES.length)*14)%360;
   const bcol=(n,dl)=>{ if(n.ci<0) return '#8a6240'; const l=Math.min(54,36+Math.max(0,n.depth-2)*4)+(dl||0); return `hsl(${hue(n.ci)},58%,${l}%)`; };
-  const bark=(n,dl)=>`hsl(28,${30+Math.min(10,n.depth*2)}%,${Math.min(42,20+Math.max(0,n.depth-1)*5)+(dl||0)}%)`;
   const lay=n=>{ n.cw=(1+n.spouses.length)*CW; n.kids.forEach(lay); n.kw=n.kids.reduce((s,k)=>s+k.aw,0); n.aw=Math.max(n.kw,n.cw+40); };
   T.roots.forEach(lay);
   const put=(n,left)=>{ n.cx=left+n.aw/2; let xr=left+n.aw-(n.aw-n.kw)/2; n.kids.forEach(k=>{ put(k,xr-k.aw); xr-=k.aw; }); };
@@ -993,27 +911,23 @@ function drawArt(T,imgs,focus){
   const BARK1='#5b3d26', BARK2='#8a6240';
   const rr=(x,y,w,h,r)=>{ c.beginPath(); if(c.roundRect) c.roundRect(x,y,w,h,r); else c.rect(x,y,w,h); };
   // background
-  let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#f3f9fd'); g.addColorStop(.55,'#f1f7f1'); g.addColorStop(1,'#dcebe0'); c.fillStyle=g; c.fillRect(0,0,W,H);
-  { const sg=c.createRadialGradient(W*.84,190,0,W*.84,190,300); sg.addColorStop(0,'rgba(255,238,170,.6)'); sg.addColorStop(1,'rgba(255,238,170,0)'); c.fillStyle=sg; c.beginPath(); c.arc(W*.84,190,300,0,7); c.fill(); }
+  let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#fffdf6'); g.addColorStop(.55,'#f1f7f1'); g.addColorStop(1,'#dcebe0'); c.fillStyle=g; c.fillRect(0,0,W,H);
   for(let i=0;i<46;i++){ const x=rnd()*W, y=120+rnd()*(groundY-200), r=40+rnd()*110, hh=HUES[Math.floor(rnd()*HUES.length)]; const rg=c.createRadialGradient(x,y,0,x,y,r); rg.addColorStop(0,`hsla(${hh},70%,68%,.11)`); rg.addColorStop(1,`hsla(${hh},70%,68%,0)`); c.fillStyle=rg; c.beginPath(); c.arc(x,y,r,0,7); c.fill(); }
   // ground
   c.fillStyle='#cfe3d3'; c.beginPath(); c.moveTo(0,groundY); c.bezierCurveTo(W*.25,groundY-38,W*.5,groundY+14,W*.75,groundY-26); c.bezierCurveTo(W*.88,groundY-40,W*.95,groundY-8,W,groundY-18); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
   c.fillStyle='#b9d6bf'; c.beginPath(); c.moveTo(0,groundY+34); c.bezierCurveTo(W*.3,groundY+8,W*.6,groundY+56,W,groundY+18); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
   c.lineCap='round'; for(let x=20;x<W-20;x+=13){ const gy=groundY+Math.sin(x/190)*10+8; c.strokeStyle=rnd()<.5?'#86bb92':'#a3cfae'; c.lineWidth=3; c.beginPath(); c.moveTo(x,gy+10); c.lineTo(x+(rnd()-.5)*10,gy-8-rnd()*16); c.stroke(); }
-  const bw=n=>Math.min(80,15+Math.sqrt(n.size)*5.5);
+  const bw=n=>Math.min(80,10+Math.sqrt(n.size)*5.5);
   // tinted canopy glow
-  T.nodes.forEach(n=>{ if(n.ci>=0&&n.depth>=2){ const y=cyOf(n), hh=hue(n.ci); const rg=c.createRadialGradient(n.cx,y,10,n.cx,y,GAP*.95); rg.addColorStop(0,'hsla(112,50%,52%,.20)'); rg.addColorStop(1,'hsla(112,50%,52%,0)'); c.fillStyle=rg; c.beginPath(); c.arc(n.cx,y,GAP*.95,0,7); c.fill(); } });
+  T.nodes.forEach(n=>{ if(n.ci>=0&&n.depth>=2){ const y=cyOf(n), hh=hue(n.ci); const rg=c.createRadialGradient(n.cx,y,10,n.cx,y,GAP*.95); rg.addColorStop(0,`hsla(${hh},65%,60%,.20)`); rg.addColorStop(1,`hsla(${hh},65%,60%,0)`); c.fillStyle=rg; c.beginPath(); c.arc(n.cx,y,GAP*.95,0,7); c.fill(); } });
   // roots and trunks
   T.roots.forEach(r=>{
     const w=bw(r), y1=cyOf(r), x=r.cx;
-    c.fillStyle='rgba(40,60,40,.18)'; c.beginPath(); c.ellipse(x,groundY+16,w*2.6+60,20,0,0,7); c.fill();
     for(let i=0;i<7;i++){ const dir=i%2?1:-1, k=(i+1)/7, ex=x+dir*(60+rnd()*220)*(.6+k), ey=groundY+ROOTS*(.55+rnd()*.5);
       c.strokeStyle=BARK1; c.lineCap='round'; c.lineWidth=Math.max(3,w*(.55-k*.35)); c.beginPath(); c.moveTo(x+dir*w*.3,groundY-6); c.bezierCurveTo(x+dir*w*1.1,groundY+ROOTS*.25,ex-dir*60,groundY+ROOTS*.4,ex,ey); c.stroke(); }
     const lg=c.createLinearGradient(x-w,0,x+w,0); lg.addColorStop(0,BARK1); lg.addColorStop(.5,BARK2); lg.addColorStop(1,BARK1);
-    c.fillStyle=lg; c.beginPath(); c.moveTo(x-w/2,y1); c.bezierCurveTo(x-w/2,y1+TRUNK*.5,x-w*.8,groundY-TRUNK*.12,x-w*1.5,groundY+12); c.lineTo(x+w*1.5,groundY+12); c.bezierCurveTo(x+w*.8,groundY-TRUNK*.12,x+w/2,y1+TRUNK*.5,x+w/2,y1); c.closePath(); c.fill();
-    c.lineCap='round'; for(let i=-3;i<=3;i++){ const o=(rnd()-.5)*w*.08; c.strokeStyle=`rgba(40,25,12,${.18+rnd()*.14})`; c.lineWidth=1.5+rnd()*2.2; c.beginPath(); c.moveTo(x+i*w*.15+o,y1+14); c.bezierCurveTo(x+i*w*.2-w*.1,y1+TRUNK*.35,x+i*w*.3+w*.1,groundY-TRUNK*.35,x+i*w*.5+o*2,groundY+6); c.stroke(); }
-    c.strokeStyle='rgba(255,230,190,.16)'; c.lineWidth=5; c.beginPath(); c.moveTo(x-w*.22,y1+18); c.bezierCurveTo(x-w*.3,y1+TRUNK*.4,x-w*.5,groundY-TRUNK*.3,x-w*.75,groundY); c.stroke();
-    for(let i=0;i<2;i++){ const ky=y1+TRUNK*(.3+.3*i+rnd()*.1), kx=x+(rnd()-.5)*w*.5; c.fillStyle='rgba(30,18,8,.38)'; c.beginPath(); c.ellipse(kx,ky,w*.07+3,w*.12+5,0,0,7); c.fill(); c.strokeStyle='rgba(30,18,8,.2)'; c.lineWidth=2; c.beginPath(); c.ellipse(kx,ky,w*.11+5,w*.18+8,0,0,7); c.stroke(); }
+    c.fillStyle=lg; c.beginPath(); c.moveTo(x-w/2,y1); c.bezierCurveTo(x-w/2,y1+TRUNK*.5,x-w*.95,groundY-TRUNK*.25,x-w*1.05,groundY+8); c.lineTo(x+w*1.05,groundY+8); c.bezierCurveTo(x+w*.95,groundY-TRUNK*.25,x+w/2,y1+TRUNK*.5,x+w/2,y1); c.closePath(); c.fill();
+    c.strokeStyle='rgba(40,25,12,.28)'; c.lineWidth=2; for(let i=-1;i<=1;i++){ c.beginPath(); c.moveTo(x+i*w*.22,y1+20); c.bezierCurveTo(x+i*w*.3,y1+TRUNK*.4,x+i*w*.4,groundY-TRUNK*.3,x+i*w*.5,groundY); c.stroke(); }
   });
   // branches: tapered, coloured per lineage
   const leaves=[], bez=(t,a,b,cc,d)=>{ const u=1-t; return u*u*u*a+3*u*u*t*b+3*u*t*t*cc+t*t*t*d; };
@@ -1027,31 +941,25 @@ function drawArt(T,imgs,focus){
   };
   const branch=n=>{ const px=n.cx, py=cyOf(n);
     n.kids.forEach(k=>{ const kx=k.cx, ky=cyOf(k), w=bw(k);
-      const x1=px, y1=py, x2=px+(kx-px)*.4, y2=py-GAP*.3, x3=kx, y3=ky+GAP*.45, x4=kx, y4=ky;
-      taper(x1,y1,x2,y2,x3,y3,x4,y4,w*1.25,w*.55,bark(k,0),bark(k,-9),1);
-      taper(x1-w*.2,y1,x2-w*.2,y2,x3-w*.16,y3,x4-w*.14,y4,w*.3,w*.12,bark(k,16),null,.45);
-      taper(x1+w*.25,y1,x2+w*.25,y2,x3+w*.18,y3,x4+w*.16,y4,w*.22,w*.08,bark(k,-12),null,.4);
-      for(let j=0;j<14;j++) leaves.push({x:kx+(rnd()-.5)*220,y:ky-30-rnd()*80,ci:k.ci});
-      const nt=2+Math.min(3,Math.round(Math.sqrt(k.size)));
-      for(let i=0;i<nt;i++){ const t=.2+rnd()*.6, tx=bez(t,x1,x2,x3,x4), ty=bez(t,y1,y2,y3,y4), dir=rnd()<.5?-1:1, L=50+rnd()*60, ex=tx+dir*L*(.8+rnd()*.5), ey=ty-L*(.1+rnd()*.5);
-        taper(tx,ty,tx+dir*L*.25,ty-L*.1,ex-dir*L*.25,ey+L*.1,ex,ey,Math.max(5,w*.22),2,bark(k,6),null,.95);
-        for(let j=0;j<6;j++) leaves.push({x:ex+(rnd()-.5)*34,y:ey+(rnd()-.5)*30,ci:k.ci}); }
-      const cnt=14+Math.round(Math.sqrt(k.size)*4); for(let i=0;i<cnt;i++){ const t=.12+rnd()*.78; leaves.push({x:bez(t,x1,x2,x3,x4)+(rnd()-.5)*w*1.4,y:bez(t,y1,y2,y3,y4)+(rnd()-.5)*w*1.4,ci:k.ci}); }
+      const x1=px, y1=py, x2=px, y2=py-GAP*.5, x3=kx, y3=ky+GAP*.5, x4=kx, y4=ky;
+      taper(x1,y1,x2,y2,x3,y3,x4,y4,w*1.15,w*.6,bcol(k,-4),bcol(k,-14),1);
+      taper(x1-w*.12,y1,x2-w*.12,y2,x3-w*.12,y3,x4-w*.12,y4,w*.36,w*.16,bcol(k,18),null,.5);
+      const cnt=9+Math.round(Math.sqrt(k.size)*3); for(let i=0;i<cnt;i++){ const t=.12+rnd()*.78; leaves.push({x:bez(t,x1,x2,x3,x4)+(rnd()-.5)*w*1.4,y:bez(t,y1,y2,y3,y4)+(rnd()-.5)*w*1.4,ci:k.ci}); }
       branch(k); }); };
   T.roots.forEach(branch);
   // leaves and blossoms in the branch colour family
   const leaf=(x,y,ang,s,col)=>{ c.save(); c.translate(x,y); c.rotate(ang); c.fillStyle=col; c.beginPath(); c.moveTo(0,0); c.quadraticCurveTo(s*.6,-s*.55,s*1.7,0); c.quadraticCurveTo(s*.6,s*.55,0,0); c.fill(); c.restore(); };
   leaves.forEach(l=>{ const hh=hue(l.ci);
-    for(let i=0;i<3;i++){ leaf(l.x,l.y,rnd()*6.28,11+rnd()*11,rnd()<.05?'#d9a441':`hsl(${88+rnd()*50},${42+rnd()*28}%,${28+rnd()*30}%)`); }
+    for(let i=0;i<3;i++){ leaf(l.x,l.y,rnd()*6.28,11+rnd()*11,rnd()<.06?'#d9a441':`hsl(${hh+(rnd()-.5)*28},${52+rnd()*22}%,${38+rnd()*26}%)`); }
     if(rnd()<.2){ const bx=l.x+(rnd()-.5)*24, by=l.y+(rnd()-.5)*24; c.fillStyle=`hsla(${hh},85%,84%,.92)`; for(let j=0;j<5;j++){ const a=j*1.2566; c.beginPath(); c.arc(bx+Math.cos(a)*5,by+Math.sin(a)*5,4.2,0,7); c.fill(); } c.fillStyle='#e8b33f'; c.beginPath(); c.arc(bx,by,2.8,0,7); c.fill(); }
   });
   // fallen petals on the ground
   for(let i=0;i<60;i++){ const x=rnd()*W, y=groundY+10+rnd()*(ROOTS+40), hh=HUES[Math.floor(rnd()*HUES.length)]; leaf(x,y,rnd()*6.28,8+rnd()*7,`hsla(${hh},60%,62%,.7)`); }
   // people
   const fit=(txt,maxW,size,weight)=>{ let s=size; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; while(c.measureText(txt).width>maxW&&s>10){ s--; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; } };
+  const hits=[];
   const person=(id,x,y,sp,node)=>{
     const p=P[id]; if(!p) return;
-    c.save(); if(fs&&!fs.has(id)) c.globalAlpha=.25;
     const gcol=p.gender==='m'?'#3A7CA5':p.gender==='f'?'#B0527A':'#7a8a85', ring=bcol(node,0);
     c.save(); c.shadowColor='rgba(0,0,0,.28)'; c.shadowBlur=14; c.shadowOffsetY=5; c.fillStyle='#fff'; c.beginPath(); c.arc(x,y,R+7,0,7); c.fill(); c.restore();
     c.save(); c.beginPath(); c.arc(x,y,R,0,7); c.clip();
@@ -1061,14 +969,14 @@ function drawArt(T,imgs,focus){
     c.restore();
     c.strokeStyle=ring; c.lineWidth=6; c.setLineDash(p.virtual?[7,6]:[]); c.beginPath(); c.arc(x,y,R+3,0,7); c.stroke(); c.setLineDash([]);
     c.fillStyle=gcol; c.strokeStyle='#fff'; c.lineWidth=3; c.beginPath(); c.arc(x+R*.78,y+R*.78,10,0,7); c.fill(); c.stroke();
-    const nm=full(p), ly=y+R+28; fit(nm,CW-20,22,700); const tw=Math.min(c.measureText(nm).width+24,CW-4);
-    const yl=lifeLine(p), kin=sp?kinLine(id):'', ph=(yl?54:34)+(kin?22:0), pw=Math.max(tw,yl?90:0,kin?Math.min(c.measureText(kin).width*.8+24,CW-4):0);
+    const nm=full(p), ly=y+R+28; fit(nm,CW-22,17,700); const tw=Math.min(c.measureText(nm).width+24,CW-4);
+    const yl=lifeLine(p), kin=sp?kinLine(id):'', ph=(yl?48:30)+(kin?18:0), pw=Math.max(tw,yl?90:0,kin?Math.min(c.measureText(kin).width*.8+24,CW-4):0);
+    const hw=Math.max(R+7,pw/2); hits.push({id,x1:x-hw,x2:x+hw,y1:y-R-7,y2:ly-15+ph});
     c.save(); c.shadowColor='rgba(0,0,0,.12)'; c.shadowBlur=8; c.shadowOffsetY=2; c.fillStyle='rgba(255,255,255,.97)'; rr(x-pw/2,ly-15,pw,ph,12); c.fill(); c.restore();
     c.strokeStyle=ring; c.lineWidth=2.2; rr(x-pw/2,ly-15,pw,ph,12); c.stroke();
-    c.fillStyle=p.dead?'#5A726B':'#14302A'; fit(nm,CW-20,22,700); c.fillText(nm,x,ly+1);
-    if(yl){ c.font='400 18px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#5A726B'; c.fillText(yl,x,ly+28); }
-    if(kin){ c.font='400 15px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#8a5a1f'; c.fillText(kin,x,ly+(yl?50:28),CW-16); }
-    c.restore();
+    c.fillStyle=p.dead?'#5A726B':'#14302A'; fit(nm,CW-22,17,700); c.fillText(nm,x,ly+1);
+    if(yl){ c.font='400 13px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#5A726B'; c.fillText(yl,x,ly+23); }
+    if(kin){ c.font='400 12px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#8a5a1f'; c.fillText(kin,x,ly+(yl?41:23),CW-16); }
   };
   const drawNodes=n=>{ const y=cyOf(n), ids=[n.id,...n.spouses], total=ids.length*CW; let x=n.cx+total/2-CW/2;
     ids.forEach((id,i)=>{ person(id,x,y,i>0,n); if(i<ids.length-1){ const bg=stBadge(n.id,ids[i+1],ids[i+1]); c.save(); c.strokeStyle=bg?'#b4543a':'#d9a441'; c.lineWidth=4; if(bg) c.setLineDash([6,5]); c.beginPath(); c.arc(x-CW/2,y,8,0,7); c.stroke(); if(bg){ c.setLineDash([]); c.fillStyle='#b4543a'; c.textAlign='center'; c.font='700 14px Vazirmatn, Tahoma, sans-serif'; c.fillText(bg,x-CW/2,y-16); } c.restore(); } x-=CW; });
@@ -1085,24 +993,28 @@ function drawArt(T,imgs,focus){
     for(const b of brs){ const t='شاخهٔ '+full(P[b.k.id]), tw=c.measureText(t).width, wid=tw+46; if(lx-wid<140){ c.fillStyle='#5A726B'; c.fillText('…',lx-10,ly); break; }
       c.fillStyle=bcol(b.k,0); c.beginPath(); c.arc(lx-10,ly,10,0,7); c.fill(); c.fillStyle='#3d4f49'; c.fillText(t,lx-30-tw/2,ly); lx-=wid+22; }
   }
+  cv.__hits=hits; cv.__W=W; cv.__H=H;
   // decorative frame
   c.save(); c.strokeStyle='#d9a441'; c.lineWidth=4; rr(34,34,W-68,H-68,30); c.stroke(); c.lineWidth=1.5; rr(52,52,W-104,H-104,22); c.stroke();
   c.fillStyle='#d9a441'; [[34,34],[W-34,34],[34,H-34],[W-34,H-34]].forEach(([x,y])=>{ c.save(); c.translate(x,y); c.rotate(Math.PI/4); c.fillRect(-9,-9,18,18); c.restore(); }); c.restore();
   return cv;
 }
-async function makeArt(focus){
+async function makeArt(){
   const T=buildTree(); const imgs={};
   try{ await Promise.all([document.fonts.load('700 20px Vazirmatn'),document.fonts.load('400 14px Vazirmatn'),document.fonts.load('700 40px "Aref Ruqaa"')]); }catch(e){}
   await Promise.all(Object.entries(T.P).map(async([id,p])=>{ if(p.photo) imgs[id]=await loadImg(p.photo); }));
-  return drawArt(T,imgs,focus);
+  return drawArt(T,imgs);
 }
 async function renderArt(){
   const box=$('#artBox'); if(!box) return; const tok=++S.artTok;
-  let cv; try{ cv=await makeArt(S.focus); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
+  let cv; try{ cv=await makeArt(); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
   if(tok!==S.artTok||!$('#artBox')) return;
   S.artCanvas=cv; const natural=cv.width; const base=Math.max(300,box.clientWidth||natural);
   cv.style.width=Math.round(base*S.artZoom)+'px'; cv.style.height='auto';
   box.innerHTML=''; box.appendChild(cv);
+  const hitAt=e=>{ const r=cv.getBoundingClientRect(); if(!r.width) return null; const x=(e.clientX-r.left)/r.width*cv.__W, y=(e.clientY-r.top)/r.height*cv.__H; const hs=cv.__hits||[]; for(let i=hs.length-1;i>=0;i--){ const h=hs[i]; if(x>=h.x1&&x<=h.x2&&y>=h.y1&&y<=h.y2) return h; } return null; };
+  cv.addEventListener('click',e=>{ const h=hitAt(e); if(h) openModal(h.id); });
+  cv.addEventListener('mousemove',e=>{ cv.style.cursor=hitAt(e)?'pointer':'default'; });
   if(S.artZoom>1) box.scrollLeft=-(box.scrollWidth-box.clientWidth)/2;
 }
 async function saveBlob(name,blob){
@@ -1216,7 +1128,7 @@ async function onPhotoPicked(file){
 
 /* ================= render ================= */
 const LOGO='<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 36V20M20 20C20 13 10 14 10 6M20 20C20 13 30 14 30 6M20 27C20 23 14 23 14 18M20 27C20 23 26 23 26 18"/><circle cx="10" cy="6" r="2.2" fill="var(--accent)" stroke="none"/><circle cx="30" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>';
-const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['help','راهنما']];
+const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات']];
 function render(){
   const root=$('#root');
   if(!S.ready){ root.innerHTML='<div class="loginbox card empty"><p class="muted" style="margin:0">در حال بارگذاری شجره‌نامه…</p></div>'; return; }
@@ -1224,19 +1136,19 @@ function render(){
   if(!S.me||!S.authed){
     const m=S.me||{first:'',last:''};
     root.innerHTML=`<div class="loginbox card stack"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">شجره‌نامه خانوادگی</div></div></div>
-     <p style="margin:0">${S.adminLogin?'ورود مدیر':'برای ورود نام و نام خانوادگی خود و رمز خانواده را بنویسید. رمز را در گروه خانوادگی اعلام کرده‌اند.'}</p>
-     <form id="loginForm" class="stack" style="gap:12px"><label class="f"><span>نام</span><input type="text" id="l_first" required autocomplete="given-name" value="${esc(m.first)}"></label>
-     <label class="f"><span>نام خانوادگی</span><input type="text" id="l_last" required autocomplete="family-name" value="${esc(m.last)}"></label>
-     ${S.adminLogin?`<label class="f"><span>ایمیل مدیر</span><input type="text" id="l_email" dir="ltr" readonly value="${esc(CFG.adminEmail)}" autocomplete="username" style="opacity:.8"></label><label class="f"><span>رمز مدیر</span><input type="password" id="l_pass" dir="ltr" required autocomplete="current-password"></label>`
-       :(!S.authed?`<label class="f"><span>رمز خانواده</span><input type="password" id="l_code" required autocomplete="off"></label>`:'')}
+     ${S.adminLogin?'<p style="margin:0">ورود مدیر</p>':`<div class="note gift" style="line-height:1.9"><b>برای ورود سه چیز لازم است:</b><br>۱) <b>نام خودتان</b> (نه نام شخص دیگر)<br>۲) <b>نام خانوادگی خودتان</b><br>۳) <b>رمز خانواده</b> که در گروه خانوادگی اعلام شده<br><span class="muted small">نام شما فقط برای این است که معلوم شود چه کسی اطلاعات را ثبت کرده است.</span></div>`}
+     <form id="loginForm" class="stack" style="gap:12px"><label class="f"><span>${S.adminLogin?'نام':'نام خودتان *'}</span><input type="text" id="l_first" required autocomplete="given-name" placeholder="${S.adminLogin?'':'مثلاً: علی'}" value="${esc(m.first)}"></label>
+     <label class="f"><span>${S.adminLogin?'نام خانوادگی':'نام خانوادگی خودتان *'}</span><input type="text" id="l_last" required autocomplete="family-name" placeholder="${S.adminLogin?'':'مثلاً: الله‌رضایی'}" value="${esc(m.last)}"></label>
+     ${S.adminLogin?`<label class="f"><span>ایمیل مدیر</span><input type="text" id="l_email" dir="ltr" required autocomplete="username"></label><label class="f"><span>رمز مدیر</span><input type="password" id="l_pass" dir="ltr" required autocomplete="current-password"></label>`
+       :(!S.authed?`<label class="f"><span>رمز خانواده *</span><input type="password" id="l_code" required autocomplete="off" placeholder="رمزی که در گروه اعلام شده"></label>`:'')}
      ${S.loginErr?`<div class="note bad">${esc(S.loginErr)}</div>`:''}
      <button class="btn big" type="submit">ورود</button></form>
-     <button class="link" type="button" data-act="toggleadmin" style="align-self:flex-start">${S.adminLogin?'ورود اعضای خانواده':'ورود مدیر'}</button><p class="credit">طراح و سازنده: محمد الله‌رضایی</p></div>`;
+     <button class="link" type="button" data-act="toggleadmin" style="align-self:flex-start">${S.adminLogin?'ورود اعضای خانواده':'ورود مدیر'}</button></div>`;
     return;
   }
   root.innerHTML=`<header class="top"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">شجره‌نامه خانوادگی</div></div></div>
     <div class="who"><span>${esc(fullName())}</span>${S.isAdmin?'<span class="pill adm">مدیر</span>':''}<button class="link" data-act="logout" title="خروج و بازگشت به صفحه ورود">خروج</button></div></header>
-    <nav class="nav" id="nav"></nav>${S.dbError?`<div class="note bad" style="margin-bottom:12px">ارتباط با پایگاه داده برقرار نیست (${esc(S.dbError)}). صفحه را دوباره باز کنید.</div>`:''}<main id="view"></main><p class="credit">طراح و سازنده: محمد الله‌رضایی</p>`;
+    <nav class="nav" id="nav"></nav>${S.dbError?`<div class="note bad" style="margin-bottom:12px">ارتباط با پایگاه داده برقرار نیست (${esc(S.dbError)}). صفحه را دوباره باز کنید.</div>`:''}<main id="view"></main>`;
   renderNav(); renderView();
 }
 function renderNav(){
@@ -1247,7 +1159,7 @@ function renderNav(){
 }
 function renderView(){
   const v=$('#view'); if(!v) return;
-  const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,help:viewHelp,admin:viewAdmin}[S.tab]||viewHome;
+  const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,admin:viewAdmin}[S.tab]||viewHome;
   v.innerHTML=f();
   if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } }
 }
@@ -1277,47 +1189,36 @@ async function deliver(kind,payload,id,editOf){
 function showCode(){ const a=$('#codeArea'); if(a) a.innerHTML=codeBox(); }
 function readRel(key){
   const v=val('#r_'+key);
-  if(v==='__unk') return {id:'',ref:{name:'',y:0,m:0,d:0},unk:true};
   if(v==='__new'){ const dt=readDate('r_'+key); return {id:'',ref:{name:nn(val('#r_'+key+'_n'))?val('#r_'+key+'_n'):'',y:dt.y,m:dt.m,d:dt.d}}; }
   return {id:v,ref:{name:'',y:0,m:0,d:0}};
 }
 function readSpouses(){
   if((document.querySelector('input[name=f_mar]:checked')||{}).value==='single') return [];
   const out=[];
-  if(!(document.querySelector('input[name=f_mar]:checked')||{}).value) return [];
   SP_KEYS.forEach(k=>{ const row=$('#r_'+k); if(!row) return; const r=readRel(k); if(r.id||r.ref.name) out.push({id:r.id,ref:r.ref,st:val('#r_'+k+'_st')||'current'}); });
   return out;
 }
-function validatePerson(){
-  document.querySelectorAll('#pform .err-field').forEach(x=>x.classList.remove('err-field'));
-  const errs=[], add=(id,msg)=>errs.push({id,msg});
-  const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
-  if(!val('#f_first')) add('f_first','نام را بنویسید.');
-  if(!val('#f_last')) add('f_last','نام خانوادگی را بنویسید.');
-  if(!g) add('gSeg','جنسیت را انتخاب کنید.');
-  const strict=!S.editId&&!S.editSub;
-  if(strict){
-    const b=readDate('b');
-    if(!b.y) add('b_y','سال تولد را ۴ رقمی بنویسید (مثلاً ۱۳۶۵).');
-    if(!b.m) add('b_m','ماه تولد را انتخاب کنید.');
-    if(!b.d) add('b_d','روز تولد را انتخاب کنید.');
-    [['father','پدر'],['mother','مادر']].forEach(([k,l])=>{
-      const x=val('#r_'+k);
-      if(!x) add('r_'+k,'«'+l+'» را از فهرست انتخاب کنید یا بنویسید.');
-      else if(x==='__new'&&!nn(val('#r_'+k+'_n'))) add('r_'+k+'_n','نام '+l+' را بنویسید.');
-    });
-    const mar=(document.querySelector('input[name=f_mar]:checked')||{}).value;
-    if(!mar) add('marSeg','وضعیت تأهل را مشخص کنید.');
-    else if(mar==='married'&&!readSpouses().length){
-      const x=val('#r_spouse'); add(x==='__new'?'r_spouse_n':'r_spouse','همسر را از فهرست انتخاب کنید یا نامش را بنویسید.');
-    }
-  }
+function step2Ok(){
   const dm=$('#dupMsg');
-  if(!errs.length){ if(dm) dm.innerHTML=''; return true; }
-  errs.forEach(x=>{ const el=$('#'+x.id); if(el) el.classList.add('err-field'); });
-  if(dm) dm.innerHTML='<div class="errbig"><b>این موارد کامل نیست:</b><ul style="margin:6px 0 0;padding-inline-start:20px">'+errs.map(x=>'<li>'+esc(x.msg)+'</li>').join('')+'</ul></div>';
-  const first=$('#'+errs[0].id); if(first){ first.scrollIntoView({behavior:'smooth',block:'center'}); try{ if(first.focus) first.focus({preventScroll:true}); }catch(_){} }
-  return false;
+  const need=!S.editId&&!S.editSub&&!(S.prefill&&S.prefill._v)&&Object.keys(S.people).length>0;
+  if(need){
+    const real=x=>x.id&&x.id!=='__new';
+    const ok=real(readRel('father'))||real(readRel('mother'))||readSpouses().some(real);
+    if(!ok){ if(dm) dm.innerHTML='<div class="errbig">برای اینکه این فرد در درخت بیاید، حداقل یکی از پدر، مادر یا همسرش را از لیست انتخاب کنید. اگر پدر یا مادرش هنوز در لیست نیست، اول او را ثبت کنید و بعد برگردید.</div>'; setStep(2); return false; }
+  }
+  if(dm) dm.innerHTML=''; return true;
+}
+function step1Ok(){
+  const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
+  if(!val('#f_first')||!val('#f_last')||!g){ const dm=$('#dupMsg'); if(dm) dm.innerHTML='<div class="errbig">لطفاً نام، نام خانوادگی و جنسیت را وارد کنید.</div>'; setStep(1); return false; }
+  const dm=$('#dupMsg'); if(dm) dm.innerHTML=''; return true;
+}
+function setStep(n){
+  S.pstep=n; document.querySelectorAll('#pform [data-step]').forEach(d=>{ d.hidden=(+d.dataset.step!==n); });
+  const st=$('#stepper'); if(st) st.innerHTML=stepperHTML(n);
+  const b=$('#pBack'), x=$('#pNext'), sb=$('#pSubmit'); if(b) b.hidden=(n===1); if(x) x.hidden=(n===3); if(sb) sb.hidden=(n!==3);
+  const nmv=($('#f_first')&&$('#f_first').value.trim())||'این فرد'; document.querySelectorAll('#pform .pn').forEach(e=>{ e.textContent=nmv; });
+  const f=$('#pform'); if(f) f.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function friendlyErr(e){
   const m=String((e&&e.message)||''), c=e&&e.code;
@@ -1328,7 +1229,9 @@ function friendlyErr(e){
   return 'مشکلی پیش آمد و ثبت انجام نشد. دوباره تلاش کنید.';
 }
 async function onPersonSubmit(){
-  if(!validatePerson()) return;
+  if((S.pstep||1)<3){ if(S.pstep===1&&!step1Ok()) return; if(S.pstep===2&&!step2Ok()) return; setStep((S.pstep||1)+1); return; }
+  if(!step1Ok()||!step2Ok()) return;
+  if(!S.rv){ showReview(); return; }
   const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
   const first=val('#f_first'), last=val('#f_last');
   if(!first||!last){ toast('نام و نام خانوادگی را بنویسید'); return; }
@@ -1339,13 +1242,12 @@ async function onPersonSubmit(){
     fatherId:fa_.id,fatherRef:fa_.ref,motherId:mo.id,motherRef:mo.ref,spouseId:sp0.id,spouseRef:sp0.ref,spouses:spl,marital:mar,
     kidNames:val('#f_kids'),place:'',birthPlace:val('#f_bplace'),residence:val('#f_resid'),job:val('#f_job'),note:val('#f_note')};
   if(S.photoDirty) payload.photo=S.photo;
-  if(!S.photo&&!S.noPhotoOk){ S.noPhotoOk=true; $('#dupMsg').innerHTML='<div class="note warn">📷 عکسی بارگذاری نکرده‌اید. عکس باعث می‌شود بستگان راحت‌تر شما را بشناسند. اگر الان عکس ندارید، دوباره دکمهٔ ارسال را بزنید تا بدون عکس ثبت شود (بعداً هم می‌توانید اضافه کنید).</div>'; const pn=$('#sec3'); if(pn) pn.scrollIntoView({behavior:'smooth',block:'start'}); return; }
   if(!S.editId&&!S.editSub&&!S.dup){
     const dup=Object.values(S.people).find(p=>p.first===first&&p.last===last&&(p.bY||0)===b.y);
-    if(dup){ S.dup=true; $('#dupMsg').innerHTML='<div class="note warn">فردی با همین نام و سال تولد قبلاً ثبت شده است. اگر مطمئنید فرد دیگری است دوباره دکمه را بزنید.</div>'; return; }
+    if(dup){ S.dup=true; $('#dupMsg').innerHTML='<div class="note warn">فردی با همین نام و سال تولد قبلاً ثبت شده است. اگر مطمئنید فرد دیگری است دوباره دکمهٔ «تأیید» را بزنید.</div>'; return; }
   }
   S.dup=false;
-  const btn=$('#pform button[type=submit]'); btn.disabled=true;
+  const btn=$('#pform button[type=submit]'); btn.disabled=true; const rvb=$('#rvOk'); if(rvb) rvb.disabled=true;
   try{
     if(S.isAdmin){
       const sub=S.editSub, upd=sub?!!sub.editOf:!!S.editId, id=sub?(sub.editOf||sub.id):(S.editId||newId('p')), ref=S.db.doc('people/'+id);
@@ -1363,7 +1265,7 @@ async function onPersonSubmit(){
     const wasCode=!!S.code; $('#formArea').innerHTML=personForm(); if(wasCode) showCode(); else $('#codeArea').innerHTML='';
     const ms=$('#mySubs'); if(ms) ms.innerHTML=mySubsHTML();
     const ob=$('#okBox'); if(ob) ob.scrollIntoView({behavior:'smooth',block:'center'});
-  }catch(e){ console.error(e); const dm=$('#dupMsg'); if(dm) dm.innerHTML='<div class="errbig">'+esc(friendlyErr(e))+(S.isAdmin?'<div class="small muted" dir="ltr" style="text-align:left;word-break:break-all;margin-top:6px">'+esc((e&&e.message)||JSON.stringify(e))+'</div>':'')+'</div>'; toast('ثبت نشد'); const bb=$('#pform button[type=submit]'); if(bb) bb.disabled=false; }
+  }catch(e){ console.error(e); const dm=$('#dupMsg'); if(dm) dm.innerHTML='<div class="errbig">'+esc(friendlyErr(e))+(S.isAdmin?'<div class="small muted" dir="ltr" style="text-align:left;word-break:break-all;margin-top:6px">'+esc((e&&e.message)||JSON.stringify(e))+'</div>':'')+'</div>'; toast('ثبت نشد'); const bb=$('#pform button[type=submit]'); if(bb) bb.disabled=false; const rb=$('#rvOk'); if(rb) rb.disabled=false; }
 }
 async function onMemorySubmit(){
   const pid=val('#m_person'), text=val('#m_text'), kind=(document.querySelector('input[name=m_kind]:checked')||{}).value||'memory';
@@ -1412,10 +1314,16 @@ document.addEventListener('click',async ev=>{
   if(a==='tab') gotoTab(el.dataset.tab);
   else if(a==='person'){ ev.preventDefault(); const r=$('#qres'); if(r) r.hidden=true; openModal(el.dataset.id); }
   else if(a==='close') closeModal();
+  else if(a==='pnext'){ if(S.pstep===1&&!step1Ok()) return; if(S.pstep===2&&!step2Ok()) return; setStep(Math.min(3,(S.pstep||1)+1)); }
   else if(a==='spadd'){ const rows=[...document.querySelectorAll('#spouseWrap .sprow')], nx=rows.find(r=>r.hidden); if(nx) nx.hidden=false; if(!rows.some(r=>r.hidden)) el.hidden=true; }
   else if(a==='sprm'){ const k=el.dataset.k, row=el.closest('.sprow'); const sl=$('#r_'+k); if(sl){ sl.value=''; const nw=$('#r_'+k+'_new'); if(nw) nw.hidden=true; } const qi=$('#r_'+k+'_q'); if(qi) qi.value=''; if(row) row.hidden=true; const ad=$('#spAdd'); if(ad) ad.hidden=false; }
   else if(a==='editsub'){ const it=findPending(el.dataset.k); if(it&&it.kind==='person'){ S.editSub=it; S.editId=it.editOf||null; S.prefill=null; resetPhoto((it.payload&&it.payload.photo)||''); S.addTab='person'; gotoTab('add'); } }
   else if(a==='editmem'){ const id=el.dataset.id, m=S.memories[id]; if(m){ const t=prompt('ویرایش متن',m.text||''); if(t&&t.trim()&&t.trim()!==m.text){ await S.db.doc('memories/'+id).update({text:t.trim()}); S.memories[id]=Object.assign({},m,{text:t.trim()}); toast('ذخیره شد'); if(S.modal) $('#sheet').innerHTML=personSheet(S.modal); } } }
+  else if(a==='pback') setStep(Math.max(1,(S.pstep||1)-1));
+  else if(a==='famall'||a==='famnone'){ const st=computeStats(); if(a==='famall') st.fams.filter(x=>!S.famQ||x.title.includes(S.famQ)).forEach(x=>{ S.famSel[x.id]=true; }); else S.famSel={}; const fl=$('#famList'); if(fl) fl.innerHTML=famList(st); const fs=$('#famSum'); if(fs) fs.innerHTML=famSumHTML(st); }
+  else if(a==='rvgo'){ const n=+el.dataset.n||1; const rb=$('#reviewBox'); if(rb) rb.hidden=true; const st=$('#stepper'); if(st) st.hidden=false; const nr=document.querySelector('#pform .navrow'); if(nr) nr.hidden=false; S.rv=false; const dm=$('#dupMsg'); if(dm) dm.innerHTML=''; setStep(n); }
+  else if(a==='rvok'){ S.rv=true; await onPersonSubmit(); }
+  else if(a==='pgo'){ const n=+el.dataset.n; if(n>1&&!step1Ok()) return; if(n>2&&!step2Ok()) return; setStep(n); }
   else if(a==='logout'){
     lsSet('shj_me',''); lsSet('shj_sess','');
     SB.tok=null; SB.refresh=null; SB.email='';
@@ -1426,10 +1334,6 @@ document.addEventListener('click',async ev=>{
   else if(a==='toggleadmin'){ S.adminLogin=!S.adminLogin; S.loginErr=''; render(); }
   else if(a==='mode'){ S.mode=el.dataset.m; lsSet('shj_mode2',S.mode); renderView(); }
   else if(a==='zoom'){ S.zoom=Math.min(1.6,Math.max(.5,S.zoom+(+el.dataset.d))); const z=$('#zoomer'); if(z) z.style.zoom=S.zoom; }
-  else if(a==='relwith'){ const id=el.dataset.id; gotoTab('tree'); const d=$('#relBox'); if(d){ d.open=true; const A=$('#relA'); if(A) A.value=id; const o=$('#relOut'); if(o) o.textContent='حالا شخص دوم را انتخاب کنید.'; d.scrollIntoView({behavior:'smooth',block:'center'}); } }
-  else if(a==='relopen'){ const d=$('#relBox'); if(d){ d.open=true; d.scrollIntoView({behavior:'smooth',block:'center'}); } }
-  else if(a==='focus'){ S.focus=el.dataset.id; S.mode='art'; lsSet('shj_mode2','art'); gotoTab('tree'); }
-  else if(a==='unfocus'){ S.focus=''; renderView(); }
   else if(a==='artzoom'){ S.artZoom=Math.min(4,Math.max(.5,S.artZoom+(+el.dataset.d))); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } }
   else if(a==='savepng') saveArt('png');
   else if(a==='savepdf') saveArt('pdf');
@@ -1478,9 +1382,10 @@ document.addEventListener('input',ev=>{
 document.addEventListener('change',ev=>{
   const t=ev.target;
   if(t.id==='f_dead'){ const w=$('#deathWrap'); if(w) w.hidden=!t.checked; }
+  else if(t.dataset&&t.dataset.fsel!==undefined){ if(t.checked) S.famSel[t.dataset.fsel]=true; else delete S.famSel[t.dataset.fsel]; const fs=$('#famSum'); if(fs) fs.innerHTML=famSumHTML(computeStats()); }
   else if(t.name==='f_mar'){ const w=$('#spouseWrap'); if(w) w.hidden=(t.value==='single'); }
   else if(t.id==='famSort'){ S.famSort=t.value; $('#famList').innerHTML=famList(computeStats()); }
-  else if(t.dataset&&t.dataset.rel){ const b=$('#r_'+t.dataset.rel+'_new'); if(b) b.hidden=t.value!=='__new'; const u=$('#r_'+t.dataset.rel+'_unk'); if(u) u.hidden=t.value!=='__unk'; t.classList.remove('err-field'); }
+  else if(t.dataset&&t.dataset.rel){ const b=$('#r_'+t.dataset.rel+'_new'); if(b) b.hidden=t.value!=='__new'; }
   else if(t.id==='f_photo'){ onPhotoPicked(t.files&&t.files[0]); }
 });
 document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&S.modal) closeModal(); });
@@ -1561,7 +1466,7 @@ async function doLogin(){
   const btn=document.querySelector('#loginForm button[type=submit]'); if(btn) btn.disabled=true;
   try{
     if(S.adminLogin){
-      await sbAuth({email:CFG.adminEmail,password:$('#l_pass').value},'password');
+      await sbAuth({email:$('#l_email').value.trim(),password:$('#l_pass').value},'password');
       if(SB.email.toLowerCase()!==CFG.adminEmail.toLowerCase()){ SB.tok=null; SB.refresh=null; lsSet('shj_sess',''); S.authed=false; throw {message:'این حساب مدیر نیست'}; }
       S.isAdmin=true;
     } else if(!S.authed){
