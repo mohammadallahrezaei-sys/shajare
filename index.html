@@ -885,13 +885,13 @@ function reviewHTML(){
     ${sec('خانواده',2,row('پدر',rname(fa_))+row('مادر',rname(mo))+row('وضعیت تأهل',mar==='single'?'مجرد':mar==='married'?'متأهل یا همسر داشته':'نامشخص')+spRows+row('فرزندان',kids))}
     ${sec('اطلاعات بیشتر',3,row('محل تولد',val('#f_bplace'))+row('محل سکونت',val('#f_resid'))+row('شغل',val('#f_job'))+row('توضیح',val('#f_note'))+row('عکس',S.photo?'انتخاب شده':''))}
     ${S.isAdmin?'':'<p class="muted small hintbox" style="margin:0">با تأیید شما، اطلاعات برای مدیر ارسال می‌شود و بعد از بررسی او در درخت اضافه می‌شود.</p>'}
-    <div class="navrow"><button type="button" class="btn ghost big" data-act="rvgo" data-n="1">ویرایش اطلاعات</button><button type="button" class="btn big" id="rvOk" data-act="rvok">${S.isAdmin?'تأیید و ثبت نهایی':'تأیید و ارسال برای مدیر'}</button></div></div>`;
+    <div class="navrow"><button type="button" class="btn ghost big" data-act="rvgo" data-n="1">ویرایش اطلاعات</button><button type="button" class="btn big" id="rvOk" data-act="rvok">${S.isAdmin?'✅ تأیید و ثبت نهایی':'✅ ثبت نهایی (ارسال برای مدیر)'}</button></div></div>`;
 }
 function showReview(){
   const box=$('#reviewBox'); if(!box) return;
   box.innerHTML=reviewHTML(); box.hidden=false;
   document.querySelectorAll('#pform [data-step]').forEach(d=>{ d.hidden=true; });
-  const st=$('#stepper'); if(st) st.hidden=true; const nr=document.querySelector('#pform .navrow'); if(nr) nr.hidden=true;
+  const st=$('#stepper'); if(st) st.hidden=true; const nr=$('#pNav'); if(nr) nr.hidden=true;
   const dm=$('#dupMsg'); if(dm) dm.innerHTML='';
   box.scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -942,7 +942,7 @@ function personForm(){
    </div>${S.isAdmin?'':'<p class="muted small hintbox" style="margin:0">در مرحلهٔ بعد، برگهٔ اطلاعات را می‌بینید. بعد از تأیید شما، اطلاعات برای مدیر ارسال می‌شود و بعد از بررسی او در درخت اضافه می‌شود.</p>'}</div>
    <div id="reviewBox" hidden></div>
    <div id="dupMsg"></div>
-   <div class="navrow"><button type="button" class="btn ghost big" id="pBack" data-act="pback" hidden>قبلی</button>
+   <div class="navrow" id="pNav"><button type="button" class="btn ghost big" id="pBack" data-act="pback" hidden>قبلی</button>
     <button type="button" class="btn big" id="pNext" data-act="pnext">بعدی</button>
     <button class="btn big" type="submit" id="pSubmit" hidden>مرور و تأیید اطلاعات</button></div>
   </form>`;
@@ -1568,7 +1568,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='reltoggle'){ S.relOpen=!S.relOpen; const c=$('#relCard'); if(c) c.innerHTML=relInner(); }
   else if(a==='relswap'){ const t=S.relA; S.relA=S.relB; S.relB=t; const c=$('#relCard'); if(c) c.innerHTML=relInner(); }
   else if(a==='famall'||a==='famnone'){ const st=computeStats(); if(a==='famall') st.fams.filter(x=>!S.famQ||x.title.includes(S.famQ)).forEach(x=>{ S.famSel[x.id]=true; }); else S.famSel={}; const fl=$('#famList'); if(fl) fl.innerHTML=famList(st); const fs=$('#famSum'); if(fs) fs.innerHTML=famSumHTML(st); }
-  else if(a==='rvgo'){ const n=+el.dataset.n||1; const rb=$('#reviewBox'); if(rb) rb.hidden=true; const st=$('#stepper'); if(st) st.hidden=false; const nr=document.querySelector('#pform .navrow'); if(nr) nr.hidden=false; S.rv=false; const dm=$('#dupMsg'); if(dm) dm.innerHTML=''; setStep(n); }
+  else if(a==='rvgo'){ const n=+el.dataset.n||1; const rb=$('#reviewBox'); if(rb) rb.hidden=true; const st=$('#stepper'); if(st) st.hidden=false; const nr=$('#pNav'); if(nr) nr.hidden=false; S.rv=false; const dm=$('#dupMsg'); if(dm) dm.innerHTML=''; setStep(n); }
   else if(a==='rvok'){ S.rv=true; await onPersonSubmit(); }
   else if(a==='pgo'){ const n=+el.dataset.n; if(n>1&&!step1Ok()) return; if(n>2&&!step2Ok()) return; setStep(n); }
   else if(a==='logout'){
