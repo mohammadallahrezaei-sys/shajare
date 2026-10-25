@@ -124,6 +124,51 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
 .bcard b{font-size:.95rem;line-height:1.4}
 .bcard .bdate{color:var(--muted);font-size:.82rem}
 .bcard .bwhen{color:var(--accent);font-weight:700;font-size:.9rem}
+.legacy{margin:0;padding:14px 16px;border-radius:14px;border-inline-start:5px solid var(--accent);background:var(--surface2);line-height:2}
+.legacy q{font-size:1.1rem;font-weight:700;quotes:none}
+.story{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.story summary{cursor:pointer;font-weight:700}
+.story .txt{white-space:pre-wrap;line-height:2;margin-top:8px}
+.cmpbar{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.cmpbar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:99px}
+.cmp-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px dashed var(--line)}
+.cmp-row .pct{font-weight:800;color:var(--accent);min-width:42px;text-align:center}
+.chip.miss{background:transparent;border:1px solid var(--bad);color:var(--bad);font-size:.78rem;padding:1px 8px;margin:2px 2px 0 0;cursor:default}
+#bookletRoot{position:fixed;inset:0;z-index:100;overflow:auto;background:#dfe6e2;color:#14302A}
+.bk-bar{position:sticky;top:0;z-index:2;background:var(--surface);color:var(--ink);padding:10px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line)}
+.bk-bar label{display:flex;gap:6px;align-items:center;font-size:.9rem}
+.bk-pages{max-width:820px;margin:12px auto;padding:0 8px}
+.bk-page{background:#fff;padding:28px 30px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.14);border-radius:6px;line-height:2}
+.bk-cover{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;color:#1E5B50}
+.bk-cover h1{font-family:'Aref Ruqaa','Vazirmatn',serif;font-size:2.6rem;margin:10px 0}
+.bk-sub{font-size:1.15rem;margin:0;color:#3d5a52}.bk-sm{font-size:.9rem;color:#6b7f78;margin-top:18px}
+.bk-tree-page img{width:100%;height:auto;display:block}
+.bk-h{font-family:'Aref Ruqaa','Vazirmatn',serif;color:#1E5B50;font-size:1.8rem;margin:0 0 6px}
+.bk-person{padding:14px 0;border-top:1px solid #d6dfdb}
+.bk-person h2{margin:0;font-size:1.3rem;color:#14302A}
+.bk-person .bk-ph{float:inline-start;width:96px;height:128px;object-fit:cover;border-radius:8px;margin-inline-end:14px;margin-bottom:6px;border:2px solid #d9a441}
+.bk-person .bk-info{color:#5A726B;font-size:.9rem}
+.bk-person blockquote{margin:8px 0;padding:8px 12px;border-inline-start:4px solid #d9a441;background:#faf5e8;font-weight:700}
+.bk-person .bk-story p{margin:6px 0;text-align:justify}
+.bk-person .bk-mem{font-size:.92rem;color:#3d5a52}
+.bk-table{width:100%;border-collapse:collapse;font-size:.82rem;line-height:1.6}
+.bk-table th,.bk-table td{border:1px solid #cfd9d4;padding:4px 6px;text-align:right}
+.bk-table th{background:#eef3f0}
+.bk-table thead{display:table-header-group}.bk-table tr{break-inside:avoid}
+@media print{
+  body.printing-booklet>*:not(#bookletRoot){display:none!important}
+  body.printing-booklet{padding:0!important;background:#fff!important}
+  #bookletRoot{position:static!important;overflow:visible!important;background:#fff!important}
+  .bk-bar{display:none!important}
+  .bk-pages{max-width:none;margin:0;padding:0}
+  .bk-page{box-shadow:none;border-radius:0;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .bk-cover{min-height:240mm;page-break-after:always}
+  .bk-tree-page{page:treepg;page-break-after:always}
+  .bk-person{break-inside:avoid-page}
+  .bk-person.long{break-inside:auto}
+  @page{size:A4;margin:16mm}
+  @page treepg{size:A4 landscape;margin:8mm}
+}
 .muted{color:var(--muted)}
 .small{font-size:.85rem}
 .num{font-variant-numeric:tabular-nums}
@@ -354,7 +399,7 @@ const S={
   me:null,tab:'home',people:{},memories:{},subs:{},mySub:null,imported:[],
   mode:lsGet('shj_mode2')||(window.innerWidth<760?'outline':'art'),
   addTab:'person',editId:null,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
-  editSub:null,adq:'',famSel:{},focus:'',relA:'',relB:'',relOpen:false,photo:'',photoDirty:false,photoMsg:'',prefill:null,T:null,artCanvas:null
+  editSub:null,adq:'',famSel:{},cmpF:'all',bk:null,focus:'',relA:'',relB:'',relOpen:false,photo:'',photoDirty:false,photoMsg:'',prefill:null,T:null,artCanvas:null
 };
 const fullName=()=>S.me?(S.me.first+' '+S.me.last).trim():'';
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>{t.hidden=true},3800);}
@@ -572,6 +617,79 @@ function icsBirthdays(){
       L.push('BEGIN:VEVENT','UID:'+id+'-'+y+'@shajare','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+fmt(j),'DTEND;VALUE=DATE:'+fmt(j+1),'SUMMARY:'+esc2('🎂 تولد '+full(p)+(age?' ('+fa(age)+' ساله می‌شود)':'')),'TRANSP:TRANSPARENT','BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+esc2('تولد '+full(p)),'TRIGGER:PT9H','END:VALARM','END:VEVENT'); } });
   L.push('END:VCALENDAR'); return L.join('\r\n');
 }
+function completeInfo(){
+  const T=buildTree(), P=T.P, depth={}, out={}; T.nodes.forEach(n=>{ depth[n.id]=n.depth; });
+  Object.entries(P).forEach(([id,p])=>{ if(p.virtual) return;
+    const it=[], add=(k,l,w,ok)=>it.push({k,l,w,ok});
+    add('birth','سال تولد',20,!!p.bY); add('date','روز و ماه تولد',8,!!(p.bM&&p.bD)); add('photo','عکس',15,!!p.photo);
+    if((depth[id]||0)>1) add('parents','پدر یا مادر',20,!!(p.fatherId||p.motherId));
+    if(p.dead) add('death','سال درگذشت',10,!!p.dY); else { add('place','محل سکونت یا تولد',10,!!(p.residence||p.birthPlace||p.place)); add('job','شغل',5,!!p.job); }
+    add('story','سرگذشت',15,!!p.story); add('legacy','جمله برای نسل‌های آینده',5,!!p.legacy);
+    const tot=it.reduce((a,x)=>a+x.w,0), got=it.reduce((a,x)=>a+(x.ok?x.w:0),0);
+    out[id]={pct:Math.round(got/tot*100),missing:it.filter(x=>!x.ok)}; });
+  return out;
+}
+function completeListHTML(){
+  const info=completeInfo(), P=EP(), f=S.cmpF||'all';
+  let arr=Object.entries(info).filter(([,c])=>f==='all'?c.missing.length:c.missing.some(m=>m.k===f)).sort((a,b)=>a[1].pct-b[1].pct);
+  const total=arr.length; arr=arr.slice(0,30);
+  if(!arr.length) return '<p class="muted small" style="margin:0">موردی پیدا نشد ✅</p>';
+  return arr.map(([id,c])=>`<div class="cmp-row"><div style="flex:1 1 200px;min-width:0"><b>${esc(full(P[id]))}</b> <span class="muted small">${esc(kinTag(id,P[id]))}</span><div>${c.missing.slice(0,5).map(m=>`<span class="chip miss">${esc(m.l)}</span>`).join('')}</div></div><span class="pct">${fa(c.pct)}٪</span><button type="button" class="btn sm" data-act="${f==='story'?'storyp':'editp'}" data-id="${esc(id)}">${S.isAdmin?'تکمیل':'پیشنهاد تکمیل'}</button></div>`).join('')+(total>30?`<p class="muted small" style="margin:6px 0 0">${fa(total-30)} نفر دیگر هم هست؛ با تکمیل چند نفر اول، بقیه نمایان می‌شوند.</p>`:'');
+}
+function completeCardHTML(){
+  const info=completeInfo(), ids=Object.keys(info); if(!ids.length) return '';
+  const avg=Math.round(ids.reduce((a,i)=>a+info[i].pct,0)/ids.length), cnt=k=>fa(ids.filter(i=>info[i].missing.some(m=>m.k===k)).length);
+  const O=[['all','همهٔ نواقص'],['photo','عکس ندارند ('+cnt('photo')+')'],['birth','سال تولد ندارند ('+cnt('birth')+')'],['parents','پدر و مادر ثبت نشده ('+cnt('parents')+')'],['story','سرگذشت ندارند ('+cnt('story')+')'],['place','محل سکونت ندارند ('+cnt('place')+')']];
+  return `<section class="card stack"><h3>📋 تکمیل اطلاعات خانواده</h3><div class="cmpbar" role="progressbar" aria-valuenow="${avg}" aria-valuemin="0" aria-valuemax="100"><div style="width:${avg}%"></div></div><div class="muted small">اطلاعات ثبت‌شده حدود <b>${fa(avg)}٪</b> کامل است. هر نفری که تکمیل شود، آرشیو خانواده ارزشمندتر می‌شود.</div>
+   <label class="f"><span>نمایش افرادی که:</span><select id="cmpF" data-cmpf="1">${O.map(([k,l])=>`<option value="${k}" ${(S.cmpF||'all')===k?'selected':''}>${l}</option>`).join('')}</select></label><div id="cmpList" class="stack" style="gap:2px">${completeListHTML()}</div></section>`;
+}
+function bookletBody(){
+  const o=S.bk||{}, P=EP(), T=buildTree(), maxGen=Math.max(0,...T.nodes.map(n=>n.depth));
+  const real=Object.entries(P).filter(([,p])=>!p.virtual);
+  const memOf=id=>Object.values(S.memories).filter(m=>m.personId===id).sort((a,b)=>(a.at||0)-(b.at||0));
+  const rel=(id,p)=>{ const r=[]; if(P[p.fatherId]) r.push('پدر: '+full(P[p.fatherId])); if(P[p.motherId]) r.push('مادر: '+full(P[p.motherId]));
+    const sp=new Set((p.spl||[]).map(x=>x.id).filter(x=>P[x])); Object.keys(P).forEach(i=>{ if((P[i].spl||[]).some(x=>x.id===id)) sp.add(i); }); if(sp.size) r.push('همسر: '+[...sp].map(i=>full(P[i])).join('، '));
+    const kids=Object.keys(P).filter(i=>P[i].fatherId===id||P[i].motherId===id); if(kids.length) r.push('فرزندان: '+kids.map(i=>P[i].first||'').join('، ')); return r; };
+  let h=`<section class="bk-page bk-cover"><div>${LOGO.replace('width="40" height="40"','width="120" height="120"')}</div><h1>شجره‌نامه خاندان الله‌رضایی</h1><p class="bk-sub">${fa(Object.keys(P).length)} نفر، ${fa(maxGen)} نسل</p><p class="bk-sub">${dstr(TODAY.y,TODAY.m,TODAY.d)}</p><p class="bk-sm">گردآوری: ${esc(fullName())}</p></section>`;
+  if(o.secTree&&o.tree) h+=`<section class="bk-page bk-tree-page"><img src="${o.tree}" alt="درخت خانواده"></section>`;
+  if(o.secStories){
+    const feat=real.filter(([id,p])=>p.story||p.legacy||(o.secMem&&memOf(id).length)).sort((a,b)=>(a[1].bY||9999)-(b[1].bY||9999));
+    if(feat.length) h+=`<section class="bk-page"><h2 class="bk-h">سرگذشت‌ها و یادگارها</h2>${feat.map(([id,p])=>{
+      const info=[gLabel(p.gender),p.bY?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead?('درگذشت'+(p.dY?' '+dstr(p.dY,p.dM,p.dD):'')):'',placeInfo(p),p.job].filter(Boolean).join('، ');
+      const ms=o.secMem?memOf(id):[];
+      return `<article class="bk-person ${(p.story||'').length>900?'long':''}">${p.photo?`<img class="bk-ph" src="${esc(p.photo)}" alt="">`:''}<h2>${esc(full(p))}</h2><div class="bk-info">${esc(info)}</div><div class="bk-info">${rel(id,p).map(esc).join(' — ')}</div>
+        ${p.legacy?`<blockquote>«${esc(p.legacy)}»<div class="bk-info">پیام ${esc(p.first||'')} برای نسل‌های آینده</div></blockquote>`:''}
+        ${p.story?`<div class="bk-story">${String(p.story).split(/\n+/).filter(Boolean).map(x=>`<p>${esc(x)}</p>`).join('')}</div>`:''}
+        ${ms.map(m=>`<div class="bk-mem">▪ ${esc(m.text)} <span class="muted">— ${esc(m.author||'')}</span></div>`).join('')}<div style="clear:both"></div></article>`; }).join('')}</section>`;
+  }
+  if(o.secList){
+    const rows=real.sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa')).map(([id,p])=>{ const sp=[...new Set([...(p.spl||[]).map(x=>x.id),...Object.keys(P).filter(i=>(P[i].spl||[]).some(x=>x.id===id))])].filter(i=>P[i]).map(i=>P[i].first).join('، ');
+      return `<tr><td>${esc(full(p))}</td><td>${esc(p.bY?dstr(p.bY,p.bM,p.bD):'')}</td><td>${esc(p.dead?(p.dY?dstr(p.dY,p.dM,p.dD):'درگذشته'):'')}</td><td>${esc(P[p.fatherId]?P[p.fatherId].first:'')}</td><td>${esc(P[p.motherId]?P[p.motherId].first:'')}</td><td>${esc(sp)}</td><td>${esc(p.residence||p.birthPlace||p.place||'')}</td></tr>`; }).join('');
+    h+=`<section class="bk-page"><h2 class="bk-h">فهرست اعضای خانواده</h2><table class="bk-table"><thead><tr><th>نام</th><th>تولد</th><th>درگذشت</th><th>پدر</th><th>مادر</th><th>همسر</th><th>محل</th></tr></thead><tbody>${rows}</tbody></table></section>`;
+  }
+  return h;
+}
+async function openBooklet(){
+  toast('در حال آماده‌سازی کتابچه…');
+  let tree=''; try{ const cv=await makeArt(); tree=cv.toDataURL('image/jpeg',.85); }catch(e){}
+  S.bk={tree,secTree:!!tree,secStories:true,secMem:true,secList:true};
+  let root=$('#bookletRoot'); if(!root){ root=document.createElement('div'); root.id='bookletRoot'; document.body.appendChild(root); }
+  document.body.classList.add('printing-booklet');
+  const ck=(k,l)=>`<label><input type="checkbox" data-bk="${k}" ${S.bk[k]?'checked':''}>${l}</label>`;
+  root.innerHTML=`<div class="bk-bar"><b>📚 کتابچهٔ خانوادگی</b>${tree?ck('secTree','تصویر درخت'):''}${ck('secStories','سرگذشت‌ها'+'')}${ck('secMem','خاطره‌ها')}${ck('secList','فهرست اعضا')}<span class="row" style="gap:8px;margin-inline-start:auto"><button type="button" class="btn" data-act="bkprint">🖨 چاپ / ذخیره PDF</button><button type="button" class="btn ghost" data-act="bkclose">بستن</button></span><span class="muted small" style="flex:1 1 100%">برای ساختن PDF، «چاپ» را بزنید و در پنجرهٔ چاپ مقصد را «ذخیره به‌صورت PDF» (Save as PDF) بگذارید.</span></div><div class="bk-pages">${bookletBody()}</div>`;
+  root.scrollTop=0;
+}
+function closeBooklet(){ const r=$('#bookletRoot'); if(r) r.remove(); document.body.classList.remove('printing-booklet'); S.bk=null; }
+function storyHomeHTML(){
+  const P=EP(), all=Object.entries(P).filter(([,p])=>!p.virtual);
+  const withLegacy=all.filter(([,p])=>p.legacy), stories=all.filter(([,p])=>p.story).length;
+  let h='';
+  if(withLegacy.length){ const k=Math.floor(TODAY.jdn%withLegacy.length), [id,p]=withLegacy[k];
+    h+=`<section class="card stack" style="gap:8px"><h3>💌 پیامی برای نسل‌های آینده</h3><blockquote class="legacy" style="margin:0"><q>${esc(p.legacy)}</q><div class="row" style="justify-content:space-between;margin-top:6px"><span class="muted small">— ${esc(full(p))}</span><button type="button" class="btn ghost sm" data-act="person" data-id="${esc(id)}">دیدن پرونده</button></div></blockquote></section>`; }
+  const elders=all.filter(([,p])=>!p.dead&&!p.story&&(ageNow(p)||0)>=60).sort((a,b)=>(ageNow(b[1])||0)-(ageNow(a[1])||0)).slice(0,3);
+  if(elders.length) h+=`<section class="card stack" style="gap:8px"><h3>📖 سرگذشت بزرگ‌ترها را ثبت کنید</h3><p class="muted small" style="margin:0">${stories?fa(stories)+' سرگذشت تا حالا ثبت شده. ':''}خاطره‌های بزرگ‌ترها با گذشت زمان کم‌رنگ می‌شود؛ از آن‌ها بخواهید زندگی‌شان را تعریف کنند و یک جمله برای نوه‌ها بگویند.</p>${elders.map(([id,p])=>`<div class="row" style="justify-content:space-between;gap:8px"><span><b>${esc(full(p))}</b> <span class="muted small">${fa(ageNow(p))} ساله</span></span><button type="button" class="btn sm" data-act="storyp" data-id="${esc(id)}">ثبت سرگذشت</button></div>`).join('')}</section>`;
+  return h;
+}
 function viewHome(){
   const T=buildTree(), n=Object.keys(T.P).length, pend=S.isAdmin?pendingList().length:0;
   const fam=T.nodes.filter(x=>x.kids.length).length, gens=T.nodes.reduce((m,x)=>Math.max(m,x.depth),0);
@@ -588,6 +706,7 @@ function viewHome(){
   ${n===0?`<section class="card empty"><h3>هنوز کسی در شجره‌نامه ثبت نشده است</h3><p class="muted" style="margin:0">${S.isAdmin?'از خودتان یا بزرگ‌ترین فرد خاندان شروع کنید. پدر و مادر را می‌توانید همان‌جا با نام بنویسید و بعدها خودکار پیوند می‌خورند.':'به محض اینکه اولین افراد ثبت شوند اینجا نمایش داده می‌شود. شما هم می‌توانید اطلاعات را بفرستید.'}</p><button class="btn" data-act="addnew">ثبت یک نفر</button></section>`
   :`<section class="kpis"><div class="kpi"><b class="num">${fa(n)}</b><span>نفر در شجره‌نامه</span></div><div class="kpi"><b class="num">${fa(fam)}</b><span>خانواده</span></div><div class="kpi"><b class="num">${fa(gens)}</b><span>نسل</span></div><div class="kpi"><b class="num">${fa(Object.keys(S.memories).length)}</b><span>یادگار نوشته‌شده</span></div></section>`}
   ${bdaySectionHTML()}
+  ${storyHomeHTML()}
   ${treeWarnHTML()}
   ${S.isAdmin&&pend?`<section class="note warn row" style="justify-content:space-between"><span>${fa(pend)} مورد منتظر تأیید شماست.</span><button class="btn sm" data-act="tab" data-tab="admin">بررسی</button></section>`:''}
   </div>`;
@@ -707,7 +826,7 @@ function viewTree(){
        ${S.mode==='chart'?`<button class="btn ghost sm" data-act="zoom" data-d="-0.15" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="zoom" data-d="0.15" aria-label="بزرگ‌نمایی">+</button>`:''}
        ${S.mode==='art'?`<button class="btn ghost sm" data-act="artzoom" data-d="-0.25" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="artzoom" data-d="0.25" aria-label="بزرگ‌نمایی">+</button>`:''}
      </div>
-     <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button></div>
+     <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button><button class="btn ghost sm" data-act="booklet">📚 کتابچهٔ خانوادگی</button></div>
    </div>
    ${relCardHTML()}
    ${body}${un}
@@ -782,6 +901,7 @@ function viewStats(){
     <div class="kpi"><b class="num">${fa(st.couples)}</b><span>زوج</span></div>
     <div class="kpi"><b class="num">${fa(gk.length)}</b><span>نسل</span></div>
   </section>
+  ${completeCardHTML()}
   ${st.virt?`<p class="muted small" style="margin:0">${fa(st.virt)} نفر از این تعداد فقط با نام (به‌عنوان پدر، مادر، همسر یا فرزند) ثبت شده‌اند و هنوز پرونده‌شان کامل نیست.</p>`:''}
   <section class="card"><h3>تولدهای پیش رو</h3>
     <div style="margin-top:8px">${bds.length?bds.slice(0,12).map(b=>`<div class="bday ${b.days===0?'today':''}"><span>${esc(full(b.p))}${b.p.bY?` <span class="muted small">(${fa(TODAY.y+(b.days>=0&&j2d(TODAY.y,b.p.bM,Math.min(b.p.bD,monthLen(TODAY.y,b.p.bM)))<TODAY.jdn?1:0)-b.p.bY)} ساله می‌شود)</span>`:''}</span><span>${esc(dstr(0,b.p.bM,b.p.bD))} – ${whenText(b.days)}</span></div>`).join(''):'<p class="muted" style="margin:0">تا ۶۰ روز آینده تولدی ثبت نشده است. با وارد کردن روز و ماه تولد، اینجا یادآوری می‌شود.</p>'}</div></section>
@@ -883,7 +1003,7 @@ function reviewHTML(){
       <div style="font-size:1.25rem;font-weight:800">${esc(val('#f_first')+' '+val('#f_last'))}</div><div class="muted">${g==='m'?'آقا':g==='f'?'خانم':''}</div></div></div>
     ${sec('اطلاعات فرد',1,row('نام و نام خانوادگی',val('#f_first')+' '+val('#f_last'))+row('جنسیت',g==='m'?'آقا':g==='f'?'خانم':'')+row('تاریخ تولد',dv(b.y,b.m,b.d))+row('وضعیت',status))}
     ${sec('خانواده',2,row('پدر',rname(fa_))+row('مادر',rname(mo))+row('وضعیت تأهل',mar==='single'?'مجرد':mar==='married'?'متأهل یا همسر داشته':'نامشخص')+spRows+row('فرزندان',kids))}
-    ${sec('اطلاعات بیشتر',3,row('محل تولد',val('#f_bplace'))+row('محل سکونت',val('#f_resid'))+row('شغل',val('#f_job'))+row('توضیح',val('#f_note'))+row('عکس',S.photo?'انتخاب شده':''))}
+    ${sec('اطلاعات بیشتر',3,row('محل تولد',val('#f_bplace'))+row('محل سکونت',val('#f_resid'))+row('شغل',val('#f_job'))+row('توضیح',val('#f_note'))+row('سرگذشت',(()=>{ const t=val('#f_story'); return t?(t.length>160?t.slice(0,160)+'… ('+fa(t.length)+' حرف)':t):''; })())+row('جملهٔ نسل‌های آینده',val('#f_legacy'))+row('عکس',S.photo?'انتخاب شده':''))}
     ${S.isAdmin?'':'<p class="muted small hintbox" style="margin:0">با تأیید شما، اطلاعات برای مدیر ارسال می‌شود و بعد از بررسی او در درخت اضافه می‌شود.</p>'}
     <div class="navrow"><button type="button" class="btn ghost big" data-act="rvgo" data-n="1">ویرایش اطلاعات</button><button type="button" class="btn big" id="rvOk" data-act="rvok">${S.isAdmin?'✅ تأیید و ثبت نهایی':'✅ ثبت نهایی (ارسال برای مدیر)'}</button></div></div>`;
 }
@@ -932,13 +1052,15 @@ function personForm(){
    </div></div>
    <div data-step="3" class="stack" hidden>
    <div class="qlab">اطلاعات دیگر دربارهٔ <span class="pn">این فرد</span></div>
-   <p class="muted small" style="margin:0">همهٔ این موارد اختیاری است؛ هر چه می‌دانید بنویسید و بقیه را خالی بگذارید.</p>
+   <p class="muted small" style="margin:0">همهٔ این موارد اختیاری است؛ هر چه می‌دانید بنویسید و بقیه را خالی بگذارید. «سرگذشت» و «جمله برای نسل‌های آینده» در انتهای همین صفحه است و بعدها بسیار ارزشمند می‌شود.</p>
    <div class="fields">
     ${photoBlock()}
     <label class="f"><span>محل تولد</span><input type="text" id="f_bplace" placeholder="مثلاً: تهران" value="${esc(v.birthPlace||v.place||'')}"></label>
     <label class="f"><span>محل سکونت (الان کجا زندگی می‌کند)</span><input type="text" id="f_resid" placeholder="مثلاً: اصفهان" value="${esc(v.residence||'')}"></label>
     <label class="f"><span>شغل</span><input type="text" id="f_job" placeholder="مثلاً: معلم" value="${esc(v.job||'')}"></label>
     <label class="f wide"><span>توضیح کوتاه (اختیاری)</span><input type="text" id="f_note" placeholder="مثلاً: عاشق باغبانی بود" value="${esc(v.note||'')}"></label>
+    <label class="f wide"><span>📖 سرگذشت زندگی (اختیاری)</span><span class="muted small hintbox">زندگی‌اش را همان‌طور که تعریف می‌کند بنویسید: کجا و در چه خانواده‌ای به دنیا آمد، کودکی و جوانی، درس و کار، ازدواج، خاطره‌ای که فراموش نمی‌کند، سختی‌ها و روزهای خوب. هر چقدر که دوست دارید.</span><textarea id="f_story" rows="8" style="min-height:160px" placeholder="مثلاً: در روستا به دنیا آمدم و ...">${esc(v.story||'')}</textarea></label>
+    <label class="f wide"><span>💌 یک جمله برای نسل‌های آینده (اختیاری)</span><span class="muted small hintbox">اگر فقط یک جمله می‌توانست به نوه‌ها و نتیجه‌هایش بگوید، چه می‌گفت؟</span><input type="text" id="f_legacy" maxlength="300" placeholder="مثلاً: همیشه کنار هم بمانید و از هم دست نکشید" value="${esc(v.legacy||'')}"></label>
    </div>${S.isAdmin?'':'<p class="muted small hintbox" style="margin:0">در مرحلهٔ بعد، برگهٔ اطلاعات را می‌بینید. بعد از تأیید شما، اطلاعات برای مدیر ارسال می‌شود و بعد از بررسی او در درخت اضافه می‌شود.</p>'}</div>
    <div id="reviewBox" hidden></div>
    <div id="dupMsg"></div>
@@ -1048,6 +1170,8 @@ function gedcomExport(){
     if(p.residence) L.push('1 RESI','2 PLAC '+p.residence);
     if(p.job) L.push('1 OCCU '+p.job);
     if(p.note) L.push('1 NOTE '+String(p.note).replace(/\s+/g,' '));
+    if(p.story) L.push('1 NOTE '+String(p.story).replace(/\s+/g,' ').slice(0,1500));
+    if(p.legacy) L.push('1 NOTE پیام برای نسل‌های آینده: '+String(p.legacy).replace(/\s+/g,' '));
     if(famc[i]) L.push('1 FAMC @F'+famc[i]+'@');
     (famsOf[i]||[]).forEach(f=>L.push('1 FAMS @F'+f+'@')); });
   fl.forEach(F=>{ L.push('0 @F'+F.id+'@ FAM'); const mem=F.mem.slice().sort((a,b)=>(P[a].gender==='m'?0:1)-(P[b].gender==='m'?0:1));
@@ -1101,6 +1225,9 @@ function personSheet(id){
   return `<button class="btn ghost sm x" data-act="close">بستن</button>
    <div class="sheet-head">${p.photo?`<img class="ph" src="${esc(p.photo)}" alt="">`:''}<div style="min-width:0"><h2>${esc(full(p))}</h2><div class="muted">${info.map(esc).join('، ')}</div></div></div>
    ${p.note?`<div class="note">${esc(p.note)}</div>`:''}
+   ${(()=>{ const c=completeInfo()[id]; return c&&c.missing.length?`<div class="muted small">پروندهٔ این فرد حدود ${fa(c.pct)}٪ کامل است. کم دارد: ${c.missing.slice(0,3).map(m=>esc(m.l)).join('، ')}${c.missing.length>3?' و …':''}</div>`:''; })()}
+   ${p.legacy?`<blockquote class="legacy"><q>${esc(p.legacy)}</q><div class="muted small">پیام ${esc(p.first||'')} برای نسل‌های آینده 💌</div></blockquote>`:''}
+   ${p.story?`<details class="story" ${p.story.length<700?'open':''}><summary>📖 سرگذشت ${esc(p.first||'')}</summary><div class="txt">${esc(p.story)}</div></details>`:''}
    ${rows.length?`<div class="stack" style="gap:10px">${rows.map(r=>`<div class="row" style="gap:6px;align-items:baseline"><span class="muted small" style="min-width:84px">${r[0]}</span>${r[1].map(i=>r[0]==='همسر'?chip(i,stBadge(id,i,i)):chip(i)).join('')}</div>`).join('')}</div>`:'<p class="muted small" style="margin:0">پیوندی با اعضای دیگر ثبت نشده است.</p>'}
    <div class="stack" style="gap:12px"><h3>ویژگی‌ها، خاطرات و جمله‌ها</h3>
      ${mems.length?memGroup('trait','ویژگی‌ها')+memGroup('memory','خاطرات')+memGroup('quote','جمله‌ها'):'<p class="muted small" style="margin:0">هنوز چیزی ثبت نشده است.</p>'}</div>
@@ -1475,7 +1602,7 @@ async function onPersonSubmit(){
   const fa_=readRel('father'), mo=readRel('mother'), spl=readSpouses(), sp0=spl[0]||{id:'',ref:{name:'',y:0,m:0,d:0}}, mar=(document.querySelector('input[name=f_mar]:checked')||{}).value||'';
   const payload={first,last,gender:g,bY:b.y,bM:b.m,bD:b.d,dead,dY:d.y,dM:d.m,dD:d.d,
     fatherId:fa_.id,fatherRef:fa_.ref,motherId:mo.id,motherRef:mo.ref,spouseId:sp0.id,spouseRef:sp0.ref,spouses:spl,marital:mar,
-    kidNames:val('#f_kids'),place:'',birthPlace:val('#f_bplace'),residence:val('#f_resid'),job:val('#f_job'),note:val('#f_note')};
+    kidNames:val('#f_kids'),place:'',birthPlace:val('#f_bplace'),residence:val('#f_resid'),job:val('#f_job'),note:val('#f_note'),story:val('#f_story'),legacy:val('#f_legacy')};
   if(S.photoDirty) payload.photo=S.photo;
   if(!S.editId&&!S.editSub&&!S.dup){
     const dup=Object.values(S.people).find(p=>p.first===first&&p.last===last&&(p.bY||0)===b.y);
@@ -1590,6 +1717,10 @@ document.addEventListener('click',async ev=>{
   else if(a==='addtab'){ S.addTab=el.dataset.t; S.editSub=null; S.editId=null; S.prefill=null; S.dup=false; resetPhoto(''); renderView(); }
   else if(a==='addmem'){ S.memFor=el.dataset.id; S.addTab='memory'; gotoTab('add'); }
   else if(a==='editp'){ S.editSub=null; S.editId=el.dataset.id; S.prefill=null; resetPhoto((S.people[el.dataset.id]||{}).photo||''); S.addTab='person'; gotoTab('add'); }
+  else if(a==='booklet'){ await openBooklet(); }
+  else if(a==='bkprint'){ window.print(); }
+  else if(a==='bkclose'){ closeBooklet(); }
+  else if(a==='storyp'){ S.editSub=null; S.editId=el.dataset.id; S.prefill=null; resetPhoto((S.people[el.dataset.id]||{}).photo||''); S.addTab='person'; gotoTab('add'); setStep(3); }
   else if(a==='canceledit'){ const wasSub=!!S.editSub; S.editSub=null; S.editId=null; resetPhoto(''); if(wasSub) gotoTab('admin'); else renderView(); }
   else if(a==='rmphoto'){ S.photo=''; S.photoDirty=true; S.photoMsg='عکس حذف می‌شود.'; $('#formArea').innerHTML=personForm(); }
   else if(a==='delp'){ const id=el.dataset.id; if(S.confirm==='p'+id){ await S.db.doc('people/'+id).delete(); closeModal(); toast('حذف شد'); } else { S.confirm='p'+id; $('#sheet').innerHTML=personSheet(id); } }
@@ -1632,6 +1763,8 @@ document.addEventListener('change',ev=>{
   if(t.id==='f_dead'){ const w=$('#deathWrap'); if(w) w.hidden=!t.checked; }
   else if(t.dataset&&t.dataset.fsel!==undefined){ if(t.checked) S.famSel[t.dataset.fsel]=true; else delete S.famSel[t.dataset.fsel]; const fs=$('#famSum'); if(fs) fs.innerHTML=famSumHTML(computeStats()); }
   else if(t.dataset&&t.dataset.rsel){ S['rel'+t.dataset.rsel]=t.value; const r=$('#relRes'); if(r) r.innerHTML=relResultHTML(S.relA,S.relB); }
+  else if(t.dataset&&t.dataset.cmpf!==undefined){ S.cmpF=t.value; const l=$('#cmpList'); if(l) l.innerHTML=completeListHTML(); }
+  else if(t.dataset&&t.dataset.bk){ if(S.bk){ S.bk[t.dataset.bk]=t.checked; const pg=document.querySelector('#bookletRoot .bk-pages'); if(pg) pg.innerHTML=bookletBody(); } }
   else if(t.name==='f_mar'){ const w=$('#spouseWrap'); if(w) w.hidden=(t.value==='single'); }
   else if(t.id==='famSort'){ S.famSort=t.value; $('#famList').innerHTML=famList(computeStats()); }
   else if(t.dataset&&t.dataset.rel){ const b=$('#r_'+t.dataset.rel+'_new'); if(b) b.hidden=t.value!=='__new'; }
