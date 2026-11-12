@@ -2179,13 +2179,18 @@ function drawArt(T,imgs){
   const bcol=(n,dl)=>'hsl('+(27+(n.ci<0?0:(n.ci%5)*3))+','+(30+(dl||0))+'%,'+(31+Math.max(0,n.depth-2)*2)+'%)';
   const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.kw=n.kids.reduce((a,k)=>a+k.aw,0)+SIBLING_GAP*Math.max(0,n.kids.length-1);n.aw=Math.max(n.kw,n.cw+64);};
   T.roots.forEach(lay);
+  // Large sibling groups are staggered inside a generation band, rather than forced onto one ruler-straight row.
+  const rowPattern=[0,1,-1,2,-2,3,-3,4,-4];
+  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>3?rowPattern[i%rowPattern.length]*30:0;stagger(k);});};
+  T.roots.forEach(n=>{n.rowOffset=0;stagger(n);});
   // Each sibling group receives real horizontal breathing room; the parent stays centered over that group.
   const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw+n.kw)/2;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw+SIBLING_GAP;});};
   const content=T.roots.reduce((a,r)=>a+r.aw,0)+ROOT_GAP*Math.max(0,T.roots.length-1);
   const W=Math.max(1500,content+MARGIN*2);
   let x=W-(W-content)/2;T.roots.forEach(r=>{put(r,x-r.aw);x-=r.aw+ROOT_GAP;});
-  const cyOf=n=>TOP+(maxD-n.depth)*GAP+R+28;
-  const lowest=Math.max.apply(null,T.roots.map(n=>cyOf(n)));
+  const genY=d=>TOP+(maxD-d)*GAP+R+28;
+  const cyOf=n=>genY(n.depth)+(n.rowOffset||0);
+  const lowest=Math.max.apply(null,T.nodes.map(n=>cyOf(n)));
   const groundY=lowest+R+150, H=groundY+145;
   const sc=Math.min(1,7600/Math.max(W,H),Math.sqrt(42e6/(W*H)));
   const cv=document.createElement('canvas');cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);
@@ -2211,7 +2216,8 @@ function drawArt(T,imgs){
     n.kids.forEach(k=>{
       const kx=k.cx,ky=cyOf(k),dx=kx-px;
       const x1=px,y1=py-R*.62,x4=kx,y4=ky+R*.72;
-      const x2=px+dx*.18,y2=py-GAP*.62,x3=kx-dx*.18,y3=ky+GAP*.62;
+      const dy=ky-py;
+      const x2=px+dx*.18,y2=py+dy*.34,x3=kx-dx*.18,y3=py+dy*.72;
       const width=Math.max(4.5,Math.min(17,4+Math.sqrt(k.size||1)*2.15));
       c.save();c.lineCap='round';c.lineJoin='round';
       c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
