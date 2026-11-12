@@ -148,6 +148,7 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
 .bk-person blockquote{margin:8px 0;padding:8px 12px;border-inline-start:4px solid #d9a441;background:#faf5e8;font-weight:700}
 .bk-person .bk-story p{margin:6px 0;text-align:justify}
 .bk-person .bk-mem{font-size:.92rem;color:#3d5a52}
+.life-intro{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:14px;padding:14px}.life-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.life-stat{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}.life-stat b{display:block;font-size:1.35rem;color:var(--primary)}.life-prompts{display:flex;gap:7px;flex-wrap:wrap}.life-prompts button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:99px;padding:5px 11px;font-size:.85rem}.admin-group{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}.admin-group>summary{cursor:pointer;padding:14px 16px;font-weight:700;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px}.admin-group>summary::-webkit-details-marker{display:none}.admin-group>summary:after{content:'＋';color:var(--muted)}.admin-group[open]>summary:after{content:'−'}.admin-group-body{padding:0 14px 14px;display:grid;gap:12px}.admin-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.admin-overview .kpi{padding:10px}.admin-overview .kpi b{font-size:1.45rem}@media(min-width:700px){.life-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.admin-overview{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .bk-table{width:100%;border-collapse:collapse;font-size:.82rem;line-height:1.6}
 .bk-table th,.bk-table td{border:1px solid #cfd9d4;padding:4px 6px;text-align:right}
 .bk-table th{background:#eef3f0}
@@ -1603,21 +1604,42 @@ async function loadLife(){
   for(const e of list){ e.url=''; const m=(e.media_paths||[])[0]; if(m){ try{ const r=await sbFetch('/storage/v1/object/sign/shj-life-media/'+m.split('/').map(encodeURIComponent).join('/'),{method:'POST',body:JSON.stringify({expiresIn:3600})}); e.url=lifeUrl(r||{}); }catch(x){} } }
   S.lifeRows=list; renderView();
 }
+const LIFE_PROMPTS={
+  milestone:['اولین لبخند','اولین دندان','اولین غلت زدن','اولین نشستن','اولین چهار دست‌وپا رفتن','اولین قدم','اولین کلمه','اولین جمله','اولین غذای کمکی','اولین روز مهد یا مدرسه','اولین دوچرخه‌سواری','اولین سفر'],
+  memory:['خاطره بامزه امروز','حرف شیرینی که گفت','بازی مورد علاقه‌اش','غذای محبوبش','دوست صمیمی‌اش','چیزی که امروز یاد گرفت','ترس یا نگرانی این روزها','کاری که به آن افتخار می‌کنیم'],
+  event:['تولد','جشن دندان','اولین روز مدرسه','سفر خانوادگی','جشن نوروز','مهمانی و دورهمی','موفقیت یا جایزه','یک روز خاص'],
+  letter:['نامه از طرف مامان','نامه از طرف بابا','نامه برای تولد بعدی','نامه برای ۱۸ سالگی','آرزوی ما برای آینده']
+};
+function lifePromptButtons(kind){
+  return (LIFE_PROMPTS[kind]||[]).map((x,i)=>'<button type="button" data-act="lifetemplate" data-template="'+esc(x)+'">'+esc(x)+'</button>').join('');
+}
 function viewLife(){
   const exp=sessionStorage.getItem('shj_parent_exp'); if(exp&&new Date(exp).getTime()<=Date.now()){sessionStorage.removeItem('shj_parent_token');sessionStorage.removeItem('shj_parent_exp');}
-  if(!S.isAdmin&&!sessionStorage.getItem('shj_parent_token')) return `<section class="card stack"><h2>📖 دفتر زندگی من</h2><p class="muted">برای ورود به دفتر شخصی، رمز شخصی خود را وارد کنید. اگر رمز ندارید، «ثبت‌نام» را بزنید.</p><button class="btn big" data-act="lifepin">ورود با رمز شخصی</button><p class="small muted" style="margin:0">اولین بار هستید؟ با چند سؤال از اطلاعات پروندهٔ خودتان، همین‌جا رمز شخصی بسازید.</p><button class="btn ghost" data-act="lifeclaim">ثبت‌نام و ساخت رمز شخصی</button><button class="btn ghost sm" data-act="lifeinvite">کد دعوت دارم</button></section>`;
+  if(!S.isAdmin&&!sessionStorage.getItem('shj_parent_token')) return `<section class="card stack"><h2>📖 دفتر زندگی من</h2><p class="muted">برای ورود به دفتر شخصی، رمز شخصی خود را وارد کنید. اگر رمز ندارید، ثبت‌نام را بزنید.</p><button class="btn big" data-act="lifepin">ورود با رمز شخصی</button><p class="small muted" style="margin:0">اولین بار هستید؟ با اطلاعات پروندهٔ خودتان رمز شخصی بسازید.</p><button class="btn ghost" data-act="lifeclaim">ثبت‌نام و ساخت رمز شخصی</button><button class="btn ghost sm" data-act="lifeinvite">کد دعوت دارم</button></section>`;
   const ppl=lifePeople(); if(!ppl.length) return `<section class="card"><h2>📖 دفتر زندگی من</h2><p class="muted">پروندهٔ شما در شجره‌نامه شناسایی نشد.</p></section>`;
   const pid=ppl.find(x=>x[0]===S.lifePerson)?S.lifePerson:ppl[0][0]; S.lifePerson=pid;
-  const rows=(S.lifeRows||[]).filter(r=>!S.lifeKind||r.kind===S.lifeKind);
+  const person=S.people[pid]||{}, allRows=S.lifeRows||[], rows=allRows.filter(r=>!S.lifeKind||r.kind===S.lifeKind);
+  const counts=Object.keys(LIFE_KINDS).map(k=>[k,allRows.filter(r=>r.kind===k).length]);
+  const years=new Set(allRows.map(r=>String(r.occurred_on||'').slice(0,4)).filter(Boolean)).size;
   const card=e=>{ const pend=e.visibility==='public'&&e.status==='pending';
-    const g=e.kind==='growth'?`<p style="margin:0">${e.height_cm!=null?'قد '+fa(e.height_cm)+' سانتی‌متر ':''}${e.weight_kg!=null?'وزن '+fa(e.weight_kg)+' کیلوگرم':''}</p>`:'';
-    return `<article class="card stack" style="gap:6px"><div class="row" style="justify-content:space-between"><b>${esc(e.title)}</b><span class="small muted">${growthDateFa(e.occurred_on)} · ${LIFE_KINDS[e.kind]||''} · ${LIFE_VIS[e.visibility]||''}${pend?' · در انتظار تأیید':''}</span></div>${g}${e.body?`<p style="white-space:pre-wrap;margin:0">${esc(e.body)}</p>`:''}${e.url?`<img src="${esc(e.url)}" alt="" style="max-width:100%;border-radius:10px">`:''}${e.unlock_on?`<p class="small muted" style="margin:0">تاریخ باز شدن نامه: ${growthDateFa(e.unlock_on)}</p>`:''}<div class="row noprint">${S.isAdmin&&pend?`<button class="btn sm" data-act="lifeapprove" data-id="${e.id}">تأیید انتشار</button>`:''}<button class="btn ghost sm" data-act="lifedel" data-id="${e.id}">حذف</button></div></article>`; };
-  return `<div class="stack"><section class="card stack noprint"><h2>📖 دفتر زندگی</h2><div class="row"><select id="lifePerson">${ppl.map(([id,p])=>`<option value="${esc(id)}" ${id===pid?'selected':''}>${esc(full(p))}</option>`).join('')}</select><select id="lifeKind"><option value="">همهٔ موارد</option>${lifeOpt(LIFE_KINDS,S.lifeKind||'')}</select><button class="btn ghost sm" data-act="lifeprint">چاپ / ذخیره PDF</button>${S.isAdmin?'':'<button class="btn ghost sm" data-act="changepw">تغییر رمز</button><button class="btn ghost sm" data-act="lifelock">خروج از دفتر</button>'}</div>
-  <h3>ثبت مورد جدید</h3><div class="row"><select id="lf_kind">${lifeOpt({milestone:LIFE_KINDS.milestone,memory:LIFE_KINDS.memory,letter:LIFE_KINDS.letter,event:LIFE_KINDS.event,photo:LIFE_KINDS.photo})}</select>${jInput('lf_date',jToday(),true)}<select id="lf_vis">${lifeOpt(LIFE_VIS,'private')}</select></div>
-  <input id="lf_title" placeholder="عنوان"><textarea id="lf_body" rows="4" placeholder="متن خاطره، نامه یا توضیح"></textarea>
-  <div class="row"><label class="small muted">باز شدن نامه در تاریخ شمسی (اختیاری)${jInput('lf_unlock','',false)}</label><label class="small muted">عکس (JPG/PNG/WebP تا ۱۰ مگابایت)<input id="lf_file" type="file" accept="image/jpeg,image/png,image/webp"></label></div>
-  <button class="btn big" data-act="lifesave">ثبت در دفتر</button></section>
-  <div id="lifebook" class="stack"><h3>خط زمانی ${esc(full(S.people[pid]))}</h3>${rows.length?rows.map(card).join(''):'<p class="muted">هنوز موردی ثبت نشده است.</p>'}</div></div>`;
+    const g=e.kind==='growth'?'<p style="margin:0">'+(e.height_cm!=null?'قد '+fa(e.height_cm)+' سانتی‌متر ':'')+(e.weight_kg!=null?'وزن '+fa(e.weight_kg)+' کیلوگرم':'')+'</p>':'';
+    return `<article class="card stack" style="gap:6px"><div class="row" style="justify-content:space-between"><b>${esc(e.title)}</b><span class="small muted">${growthDateFa(e.occurred_on)} · ${LIFE_KINDS[e.kind]||''} · ${LIFE_VIS[e.visibility]||''}${pend?' · در انتظار تأیید':''}</span></div>${g}${e.body?`<p style="white-space:pre-wrap;margin:0">${esc(e.body)}</p>`:''}${e.url?`<img src="${esc(e.url)}" alt="" loading="lazy" style="max-width:100%;max-height:420px;object-fit:contain;border-radius:10px">`:''}${e.unlock_on?`<p class="small muted" style="margin:0">تاریخ باز شدن نامه: ${growthDateFa(e.unlock_on)}</p>`:''}<div class="row noprint">${S.isAdmin&&pend?`<button class="btn sm" data-act="lifeapprove" data-id="${esc(e.id)}">تأیید انتشار</button>`:''}<button class="btn ghost sm" data-act="lifedel" data-id="${esc(e.id)}">حذف</button></div></article>`; };
+  const promptKind=val('#lf_kind')||'milestone';
+  return `<div class="stack">
+  <section class="life-intro stack noprint"><div class="row" style="justify-content:space-between"><div><h2>📖 دفتر زندگی ${S.isAdmin?'خانواده':'من'}</h2><p class="muted small" style="margin:2px 0 0">یک کتاب زنده از تولد تا امروز؛ هر خاطره کوچک، بخشی از داستان زندگی است.</p></div><button class="btn ghost sm" data-act="lifeprint">ساخت کتاب PDF</button></div>
+  <div class="row"><label class="f" style="flex:1"><span>${S.isAdmin?'انتخاب عضو خانواده':'انتخاب دفتر'}</span><select id="lifePerson">${ppl.map(([id,p])=>`<option value="${esc(id)}" ${id===pid?'selected':''}>${esc(full(p))}</option>`).join('')}</select></label><label class="f" style="flex:1"><span>فیلتر دفتر</span><select id="lifeKind"><option value="">همهٔ موارد</option>${lifeOpt(LIFE_KINDS,S.lifeKind||'')}</select></label></div>
+  <div class="life-stats"><div class="life-stat"><b>${fa(allRows.length)}</b><span class="small muted">یادگار ثبت‌شده</span></div><div class="life-stat"><b>${fa(counts.find(x=>x[0]==='milestone')[1])}</b><span class="small muted">اولین‌ها و نقاط عطف</span></div><div class="life-stat"><b>${fa(allRows.filter(x=>x.media_paths&&x.media_paths.length).length)}</b><span class="small muted">عکس‌های خاطره‌انگیز</span></div><div class="life-stat"><b>${fa(years)}</b><span class="small muted">سال‌های ثبت خاطره</span></div></div>
+  <div class="row">${S.isAdmin?'':'<button class="btn ghost sm" data-act="changepw">تغییر رمز شخصی</button><button class="btn ghost sm" data-act="lifelock">خروج از دفتر</button>'}</div></section>
+  <section class="card stack noprint"><h3>✨ ثبت یک خاطره تازه</h3><p class="muted small" style="margin:0">برای شروع لازم نیست همه‌چیز را کامل بنویسید؛ یک عنوان، تاریخ و چند جمله کافی است.</p>
+  <div class="row"><label class="f" style="flex:1"><span>نوع یادگار</span><select id="lf_kind">${lifeOpt({milestone:'اولین‌ها و نقاط عطف',memory:'خاطره و حرف‌های شیرین',event:'مناسبت و اتفاق',letter:'نامه برای آینده',photo:'عکس و تصویر',growth:'یادداشت رشد'},'milestone')}</select></label><label class="f" style="flex:1"><span>تاریخ ثبت / وقوع (شمسی)</span>${jInput('lf_date',jToday(),true)}</label></div>
+  <div class="life-prompts" id="lifePrompts">${lifePromptButtons('milestone')}</div>
+  <input id="lf_title" maxlength="140" placeholder="عنوان؛ مثلاً اولین کلمه‌ای که گفت">
+  <textarea id="lf_body" rows="5" maxlength="5000" placeholder="چه اتفاقی افتاد؟ چند سال یا چند ماه داشت؟ چه کسی کنار او بود؟ واکنش و احساس شما چه بود؟"></textarea>
+  <div class="row"><label class="f" style="flex:1"><span>چه کسانی این یادگار را ببینند؟</span><select id="lf_vis">${lifeOpt(LIFE_VIS,'private')}</select></label><label class="f" style="flex:1"><span>عکس (JPG/PNG/WebP تا ۱۰ مگابایت)</span><input id="lf_file" type="file" accept="image/jpeg,image/png,image/webp"></label></div>
+  <label class="f"><span>اگر نامه است: تاریخ باز شدن (اختیاری، شمسی)</span>${jInput('lf_unlock','',false)}</label>
+  <button class="btn big" data-act="lifesave">💚 ثبت در دفتر زندگی</button></section>
+  <section class="stack" id="lifebook"><div class="row" style="justify-content:space-between"><h3>خط زمانی زندگی · ${esc(full(person))}</h3><span class="small muted">${fa(rows.length)} مورد</span></div>${rows.length?rows.map(card).join(''):'<section class="card empty"><b>هنوز صفحه‌ای از این داستان نوشته نشده است.</b><span class="muted small">با ثبت اولین خاطره، خط زمانی زندگی شکل می‌گیرد.</span></section>'}</section>
+  </div>`;
 }
 /* ---------- رمز عبور قوی و فرم‌های امن ---------- */
 function pwIssues(v){
@@ -1817,30 +1839,34 @@ async function moderateFamilyPost(id,approve){
 
 function viewAdmin(){
   if(!S.isAdmin) return '<div class="note bad">این بخش فقط برای مدیر است.</div>';
-  const pl=pendingList();
-  const fposts=(S.familyPosts||[]).filter(p=>p.status==='pending');
+  const pl=pendingList(), fposts=(S.familyPosts||[]).filter(p=>p.status==='pending');
   const nG=lastGroups().length+['place','job'].reduce((t,k)=>t+Object.values(valGroups(k)).filter(v=>Object.keys(v).length>1).length,0);
   const parents=Object.entries(S.people).filter(([id,p])=>!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
+  const real=parents.length, pendingTotal=pl.length+fposts.length+(S.claims||[]).length+(S.reports||[]).length;
   return `<div class="stack">
-   ${reportsHTML()}${claimsHTML()}<section class="card stack"><h3>🔐 کد شخصی اعضای خانواده</h3><p class="muted small">برای هر عضو، دور یا نزدیک، «ساخت دعوت» را بزنید و پیام را فقط برای خود او بفرستید؛ او رمز قوی خودش را انتخاب می‌کند. «تعیین رمز موقت» برای وقتی است که حضوری کنار فرد هستید.</p><div style="max-height:360px;overflow:auto;display:grid;gap:7px">${parents.map(([id,p])=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>${esc(full(p))}</span><span class="row"><button class="btn sm" data-act="makeinvite" data-id="${esc(id)}">ساخت دعوت</button><button class="btn ghost sm" data-act="setparentpin" data-id="${esc(id)}">تعیین رمز موقت</button><button class="btn ghost sm" data-act="revokeparent" data-id="${esc(id)}">لغو</button></span></div>`).join('')}</div></section>
-   <section class="card stack" style="border:2px solid var(--primary)"><h3>اصلاح همه یکجا</h3>
-     ${nG?`<p class="muted small" style="margin:0">${fa(nG)} گروه املای ناهمسان پیدا شد (نام خانوادگی، شهر و شغل). با یک کلیک همه یکدست می‌شوند؛ در هر گروه پرتکرارترین املا انتخاب می‌شود.</p><div class="row"><button type="button" class="btn" data-act="unifyall" data-w="all">✨ اصلاح همه یکجا</button></div>`:'<p class="muted small" style="margin:0">همهٔ نام‌های خانوادگی، شهرها و شغل‌ها یکدست است ✅</p>'}</section>
-   ${fposts.length?`<section class="card stack"><h3>عکس‌ها و خاطره‌های در انتظار تأیید (${fa(fposts.length)})</h3>${fposts.map(p=>familyPostCard(p,true)).join('')}</section>`:''}
-   ${qualityHTML()}
-   ${histHTML()}
-   ${treeWarnHTML()}
-   <section class="card"><div class="row" style="justify-content:space-between"><h3>منتظر تأیید (${fa(pl.length)})</h3>${pl.length>1?'<button class="btn sm" data-act="approveall">تأیید همه</button>':''}</div>
-     ${pl.length?`<ul class="list" style="margin-top:12px">${pl.map(pendCard).join('')}</ul>`:'<p class="muted" style="margin-bottom:0">موردی در انتظار نیست.</p>'}</section>
-   <section class="card stack"><h3>مدیریت افراد</h3><p class="muted small" style="margin:0">هر فردی را پیدا کنید و اطلاعات، پدر و مادر و همسرانش را ویرایش کنید.</p>
-     <input type="search" id="adq" placeholder="🔍 جستجوی نام…" value="${esc(S.adq||'')}" autocomplete="off"><div id="adList">${adListHTML()}</div></section>
-   <section class="card stack"><h3>پشتیبان و خروجی</h3><p class="muted small" style="margin:0">پشتیبان همهٔ افراد و خاطره‌ها را در یک فایل ذخیره می‌کند؛ هر چند وقت یک‌بار آن را دانلود و جایی امن نگه دارید. فایل GEDCOM را سایت‌های شجره‌نامه‌ای (مثل MyHeritage) می‌خوانند.</p>
-     <div class="row" style="gap:8px"><button type="button" class="btn" data-act="bkjson">💾 دانلود پشتیبان (JSON)</button><button type="button" class="btn ghost" data-act="bkged">📤 خروجی GEDCOM</button><button type="button" class="btn ghost" data-act="bkcsv">📊 خروجی اکسل (CSV)</button></div></section>
-   <section class="card stack"><h3>یکسان‌سازی نام خانوادگی</h3><div class="stack" style="gap:10px" id="unifyBox">${unifyHTML()}</div></section>
-   <section class="card stack"><h3>یکسان‌سازی شهر و شغل</h3><p class="muted small" style="margin:0">مثلاً «قدس» و «قدس » یا «معلم» و «معلّم». آمار «نکته‌های خانوادگی» همین حالا هم این‌ها را یکی می‌شمارد؛ این بخش خود مقدارهای ثبت‌شده را یکدست می‌کند.</p><div class="stack" style="gap:10px" id="unifyValBox">${unifyValsHTML()}</div></section>
-   <section class="card stack"><h3>افراد احتمالاً تکراری</h3><p class="muted small" style="margin:0">اسم‌های مشابه که ممکن است یک نفر باشند. قبل از ادغام، یک‌بار «دانلود پشتیبان» را بزنید. تشخیص «دو نفر جدا هستند» فقط روی همین دستگاه ذخیره می‌شود.</p><div class="stack" style="gap:10px" id="dupBox">${dupHTML()}</div></section>
-   <section class="card stack"><h3>وارد کردن از متن</h3><p class="muted small" style="margin:0">اگر کسی نتوانست مستقیم ثبت کند و متن رمزدار فرستاد، اینجا بچسبانید. هر متن در یک خط باشد. موارد وارد شده به فهرست بالا می‌روند و پس از تأیید شما ثبت می‌شوند.</p>
-     <textarea class="code" id="impTxt" placeholder="SHJ1:…"></textarea><div class="row"><button class="btn ghost" data-act="import">افزودن به فهرست تأیید</button></div></section>
-   <section class="card stack"><h3>پشتیبان‌گیری</h3><p class="muted small" style="margin:0">یک فایل از همهٔ افراد و یادگارهای تأییدشده ذخیره می‌کند.</p><div class="row"><button class="btn ghost" data-act="backup">ذخیرهٔ فایل پشتیبان</button></div></section>
+  <section class="card stack"><div class="row" style="justify-content:space-between"><div><h2>🧭 میزکار مدیریت</h2><p class="muted small" style="margin:0">برای خلوت ماندن صفحه، هر بخش را فقط هنگام نیاز باز کنید.</p></div><span class="pill adm">مدیر</span></div>
+  <div class="admin-overview"><div class="kpi"><b>${fa(real)}</b><span>پروندهٔ اعضا</span></div><div class="kpi"><b>${fa(pendingTotal)}</b><span>موارد نیازمند بررسی</span></div><div class="kpi"><b>${fa(nG)}</b><span>گروه نیازمند یکسان‌سازی</span></div><div class="kpi"><b>${fa(fposts.length)}</b><span>عکس و خاطرهٔ جدید</span></div></div>
+  <p class="small muted" style="margin:0">${pendingTotal?'ابتدا بخش «بررسی و تأیید» را باز کنید.':'در حال حاضر مورد فوری برای بررسی ندارید.'}</p></section>
+  <details class="admin-group" ${pendingTotal?'open':''}><summary>📥 بررسی و تأیید <span class="pill">${fa(pendingTotal)}</span></summary><div class="admin-group-body">
+    ${reportsHTML()}${claimsHTML()}
+    ${fposts.length?`<section class="card stack"><h3>عکس‌ها و خاطره‌های خانوادگی در انتظار تأیید</h3>${fposts.map(p=>familyPostCard(p,true)).join('')}</section>`:''}
+    <section class="card"><div class="row" style="justify-content:space-between"><h3>اطلاعات ثبت‌شده در انتظار تأیید (${fa(pl.length)})</h3>${pl.length>1?'<button class="btn sm" data-act="approveall">تأیید همه</button>':''}</div>${pl.length?`<ul class="list" style="margin-top:12px">${pl.map(pendCard).join('')}</ul>`:'<p class="muted" style="margin-bottom:0">موردی در انتظار نیست.</p>'}</section>
+  </div></details>
+  <details class="admin-group"><summary>👨‍👩‍👧 اعضا و دسترسی‌ها</summary><div class="admin-group-body">
+    <section class="card stack"><h3>جستجو و مدیریت پرونده‌ها</h3><p class="muted small" style="margin:0">پروندهٔ هر فرد را جستجو کنید و اطلاعات، روابط خانوادگی و دفتر زندگی را مدیریت کنید.</p><input type="search" id="adq" placeholder="🔍 جستجوی نام…" value="${esc(S.adq||'')}" autocomplete="off"><div id="adList">${adListHTML()}</div></section>
+    <section class="card stack"><h3>دعوت و مدیریت رمز شخصی</h3><p class="muted small" style="margin:0">کد دعوت فقط برای احراز هویت اولیه است. عضو پس از فعال‌سازی رمز شخصی خودش را انتخاب و مدیریت می‌کند.</p><div style="max-height:360px;overflow:auto;display:grid;gap:7px">${parents.map(([id,p])=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>${esc(full(p))}</span><span class="row"><button class="btn sm" data-act="makeinvite" data-id="${esc(id)}">ساخت کد دعوت</button><button class="btn ghost sm" data-act="revokeparent" data-id="${esc(id)}">لغو دسترسی</button></span></div>`).join('')}</div></section>
+  </div></details>
+  <details class="admin-group"><summary>📊 کیفیت اطلاعات و گزارش‌ها</summary><div class="admin-group-body">${qualityHTML()}${histHTML()}${treeWarnHTML()}</div></details>
+  <details class="admin-group"><summary>🧹 اصلاح و یکسان‌سازی اطلاعات <span class="pill">${fa(nG)}</span></summary><div class="admin-group-body">
+    <section class="card stack"><h3>اصلاح همه یکجا</h3>${nG?`<p class="muted small" style="margin:0">${fa(nG)} گروه املای ناهمسان پیدا شد. قبل از اجرا، نسخهٔ پشتیبان بگیرید.</p><button type="button" class="btn" data-act="unifyall" data-w="all">✨ اصلاح همه یکجا</button>`:'<p class="muted small" style="margin:0">نام‌ها، شهرها و شغل‌ها یکدست هستند ✅</p>'}</section>
+    <section class="card stack"><h3>یکسان‌سازی نام خانوادگی</h3><div class="stack" style="gap:10px" id="unifyBox">${unifyHTML()}</div></section>
+    <section class="card stack"><h3>یکسان‌سازی شهر و شغل</h3><div class="stack" style="gap:10px" id="unifyValBox">${unifyValsHTML()}</div></section>
+    <section class="card stack"><h3>افراد احتمالاً تکراری</h3><p class="muted small" style="margin:0">پیش از ادغام افراد مشابه، حتماً پشتیبان بگیرید و رابطه‌ها را بررسی کنید.</p><div class="stack" style="gap:10px" id="dupBox">${dupHTML()}</div></section>
+  </div></details>
+  <details class="admin-group"><summary>💾 پشتیبان، خروجی و ابزارهای پیشرفته</summary><div class="admin-group-body">
+    <section class="card stack"><h3>پشتیبان و خروجی</h3><p class="muted small" style="margin:0">هر چند وقت یک‌بار نسخهٔ پشتیبان را دانلود و در مکانی امن نگهداری کنید.</p><div class="row"><button type="button" class="btn" data-act="bkjson">💾 دانلود پشتیبان JSON</button><button type="button" class="btn ghost" data-act="bkged">📤 خروجی GEDCOM</button><button type="button" class="btn ghost" data-act="bkcsv">📊 خروجی CSV</button><button type="button" class="btn ghost" data-act="backup">ذخیرهٔ پشتیبان</button></div></section>
+    <section class="card stack"><h3>وارد کردن از متن</h3><p class="muted small" style="margin:0">متن رمزدار SHJ1 را در این قسمت وارد کنید تا پس از بررسی به فهرست تأیید اضافه شود.</p><textarea class="code" id="impTxt" placeholder="SHJ1:…"></textarea><div class="row"><button class="btn ghost" data-act="import">افزودن به فهرست تأیید</button></div></section>
+  </div></details>
   </div>`;
 }
 
@@ -2436,7 +2462,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='lifelock'){ sessionStorage.removeItem('shj_parent_token'); sessionStorage.removeItem('shj_parent_exp'); S.lifeRows=[]; S.growthRows=[]; renderView(); }
   else if(a==='lifeinvite'){ await redeemInvite(); }
   else if(a==='makeinvite'){ await makeInvite(el.dataset.id); }
-  else if(a==='lifesave'){ await saveLife(); }
+  else if(a==='lifetemplate'){ const t=el.dataset.template||''; const ti=$('#lf_title'), bo=$('#lf_body'); if(ti&&!ti.value) ti.value=t; if(bo){ bo.focus(); if(!bo.value) bo.value=t==='اولین کلمه'?'اولین کلمه چه بود؟ چه زمانی گفت و واکنش اطرافیان چه بود؟':t+'؛ چه زمانی اتفاق افتاد و چه چیزی آن را به‌یادماندنی کرد؟'; } }\n  else if(a==='lifesave'){ await saveLife(); }
   else if(a==='lifedel'){ await delLife(el.dataset.id); }
   else if(a==='lifeapprove'){ await approveLife(el.dataset.id); }
   else if(a==='lifeprint'){ window.print(); }
@@ -2559,7 +2585,7 @@ document.addEventListener('submit',ev=>{
   else if(id==='growthForm') saveGrowth().catch(e=>{console.error(e);toast('ثبت اندازه‌گیری انجام نشد؛ دسترسی یا اتصال پایگاه داده را بررسی کنید.');});
   else if(id==='familyPostForm') submitFamilyPost().catch(e=>{console.error(e);toast('ارسال انجام نشد؛ اتصال یا دسترسی بارگذاری عکس را بررسی کنید.');});
 });
-document.addEventListener('change',ev=>{ if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
+document.addEventListener('change',ev=>{\n  if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
   if(id==='l_first'||id==='l_last'){ S.loginDraft={first:(($('#l_first')||{}).value||''),last:(($('#l_last')||{}).value||'')}; S.loginSelected=null; S.loginNewName=false; S.loginSearchDone=false; S.loginResults=[]; S.loginSearchError=''; const box=$('#loginDirectory'); if(box) box.innerHTML='<p class=\"muted small\">برای بررسی، نام و نام خانوادگی را کامل وارد کنید.</p>'; clearTimeout(window.__loginSearchTimer); window.__loginSearchTimer=setTimeout(()=>searchLoginDirectory(),450); }
