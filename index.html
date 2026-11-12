@@ -2072,25 +2072,24 @@ function drawArt(T,imgs){
   let seed=1337; const rnd=()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
   const BARK1='#5b3d26', BARK2='#8a6240';
   const rr=(x,y,w,h,r)=>{ c.beginPath(); if(c.roundRect) c.roundRect(x,y,w,h,r); else c.rect(x,y,w,h); };
-  // background
-  let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#fbfcf8'); g.addColorStop(.58,'#f2f6ef'); g.addColorStop(1,'#e8f0e7'); c.fillStyle=g; c.fillRect(0,0,W,H);
-  for(let i=0;i<46;i++){ const x=rnd()*W, y=120+rnd()*(groundY-200), r=40+rnd()*110, hh=HUES[Math.floor(rnd()*HUES.length)]; const rg=c.createRadialGradient(x,y,0,x,y,r); rg.addColorStop(0,`hsla(${hh},70%,68%,.11)`); rg.addColorStop(1,`hsla(${hh},70%,68%,0)`); c.fillStyle=rg; c.beginPath(); c.arc(x,y,r,0,7); c.fill(); }
-  // ground
-  c.fillStyle='#dce9d9'; c.beginPath(); c.moveTo(0,groundY); c.bezierCurveTo(W*.22,groundY-22,W*.48,groundY+10,W*.72,groundY-16); c.bezierCurveTo(W*.86,groundY-28,W*.95,groundY-8,W,groundY-14); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
-  c.fillStyle='#cbdcc9'; c.beginPath(); c.moveTo(0,groundY+48); c.bezierCurveTo(W*.3,groundY+18,W*.62,groundY+64,W,groundY+30); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
-  c.lineCap='round'; for(let x=20;x<W-20;x+=13){ const gy=groundY+Math.sin(x/190)*10+8; c.strokeStyle=rnd()<.5?'#86bb92':'#a3cfae'; c.lineWidth=3; c.beginPath(); c.moveTo(x,gy+10); c.lineTo(x+(rnd()-.5)*10,gy-8-rnd()*16); c.stroke(); }
+  // heritage-paper background: quiet, elegant and designed to keep names readable
+  let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#fbf8f0'); g.addColorStop(.62,'#f6f1e5'); g.addColorStop(1,'#e9e4d5'); c.fillStyle=g; c.fillRect(0,0,W,H);
+  const vign=c.createRadialGradient(W/2,H*.42,80,W/2,H*.42,Math.max(W,H)*.72); vign.addColorStop(0,'rgba(255,255,255,.32)'); vign.addColorStop(1,'rgba(112,91,57,.07)'); c.fillStyle=vign; c.fillRect(0,0,W,H);
+  // a restrained ground line, no decorative noise behind the people
+  c.fillStyle='#e4e6d8'; c.beginPath(); c.moveTo(0,groundY+18); c.bezierCurveTo(W*.25,groundY-2,W*.68,groundY+30,W,groundY+7); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
+  c.strokeStyle='#c8cdb9'; c.lineWidth=3; c.beginPath(); c.moveTo(0,groundY+18); c.bezierCurveTo(W*.25,groundY-2,W*.68,groundY+30,W,groundY+7); c.stroke();
   const bw=n=>Math.min(92,13+Math.sqrt(n.size)*6.2);
-  // tinted canopy glow
-  T.nodes.forEach(n=>{ if(n.ci>=0&&n.depth>=2){ const y=cyOf(n), hh=hue(n.ci); const rg=c.createRadialGradient(n.cx,y,10,n.cx,y,GAP*.95); rg.addColorStop(0,`hsla(${hh},65%,60%,.20)`); rg.addColorStop(1,`hsla(${hh},65%,60%,0)`); c.fillStyle=rg; c.beginPath(); c.arc(n.cx,y,GAP*.95,0,7); c.fill(); } });
-  // roots and trunks
-  T.roots.forEach(r=>{
-    const w=bw(r), y1=cyOf(r), x=r.cx;
-    for(let i=0;i<9;i++){ const dir=i%2?1:-1, k=(i+1)/9, ex=x+dir*(55+rnd()*245)*(.55+k), ey=groundY+ROOTS*(.48+rnd()*.55);
-      c.strokeStyle=BARK1; c.lineCap='round'; c.lineWidth=Math.max(3,w*(.62-k*.39)); c.beginPath(); c.moveTo(x+dir*w*.22,groundY-5); c.bezierCurveTo(x+dir*w*.9,groundY+ROOTS*.18,ex-dir*72,groundY+ROOTS*.42,ex,ey); c.stroke(); }
-    const lg=c.createLinearGradient(x-w*1.2,0,x+w*1.2,0); lg.addColorStop(0,'#49301f'); lg.addColorStop(.22,BARK1); lg.addColorStop(.52,'#a77b51'); lg.addColorStop(.78,BARK2); lg.addColorStop(1,'#49301f');
-    c.fillStyle=lg; c.beginPath(); c.moveTo(x-w/2,y1); c.bezierCurveTo(x-w*.48,y1+TRUNK*.42,x-w*.82,groundY-TRUNK*.30,x-w*1.18,groundY+8); c.quadraticCurveTo(x,groundY+24,x+w*1.18,groundY+8); c.bezierCurveTo(x+w*.82,groundY-TRUNK*.30,x+w*.48,y1+TRUNK*.42,x+w/2,y1); c.closePath(); c.fill();
-    c.strokeStyle='rgba(40,25,12,.28)'; c.lineWidth=2; for(let i=-1;i<=1;i++){ c.beginPath(); c.moveTo(x+i*w*.22,y1+20); c.bezierCurveTo(x+i*w*.3,y1+TRUNK*.4,x+i*w*.4,groundY-TRUNK*.3,x+i*w*.5,groundY); c.stroke(); }
-  });
+  // a single dignified old-oak silhouette, kept translucent behind the relationship paths
+  const trunkX=W/2, trunkTop=TOP+115, trunkBase=groundY+ROOTS*.22, trunkW=Math.max(70,Math.min(190,W*.075));
+  c.save(); c.globalAlpha=.20;
+  const bark=c.createLinearGradient(trunkX-trunkW,0,trunkX+trunkW,0); bark.addColorStop(0,'#563c2a'); bark.addColorStop(.28,'#8a6746'); bark.addColorStop(.52,'#b18a5d'); bark.addColorStop(.76,'#795338'); bark.addColorStop(1,'#4d3828');
+  c.fillStyle=bark; c.beginPath(); c.moveTo(trunkX-trunkW*.48,trunkBase); c.bezierCurveTo(trunkX-trunkW*.18,trunkBase-TRUNK*.42,trunkX-trunkW*.58,trunkTop+TRUNK*.35,trunkX-trunkW*.18,trunkTop); c.quadraticCurveTo(trunkX,trunkTop-34,trunkX+trunkW*.18,trunkTop); c.bezierCurveTo(trunkX+trunkW*.58,trunkTop+TRUNK*.35,trunkX+trunkW*.18,trunkBase-TRUNK*.42,trunkX+trunkW*.48,trunkBase); c.quadraticCurveTo(trunkX,trunkBase+24,trunkX-trunkW*.48,trunkBase); c.closePath(); c.fill();
+  // fine root flares at the foot of the tree
+  c.strokeStyle='#725238'; c.lineCap='round'; c.lineWidth=12;
+  for(let i=-4;i<=4;i++){ const ex=trunkX+i*trunkW*.48; c.beginPath(); c.moveTo(trunkX+i*5,trunkBase-8); c.bezierCurveTo(trunkX+i*trunkW*.22,trunkBase+18,ex,trunkBase+36,ex+(i*8),trunkBase+58); c.stroke(); }
+  c.restore();
+  // branch colour halos are subtle; they help distinguish family lines without obscuring cards
+  T.nodes.forEach(n=>{ if(n.ci>=0&&n.depth>=2){ const y=cyOf(n), hh=hue(n.ci); const rg=c.createRadialGradient(n.cx,y,8,n.cx,y,GAP*.68); rg.addColorStop(0,`hsla(${hh},48%,66%,.10)`); rg.addColorStop(1,`hsla(${hh},48%,66%,0)`); c.fillStyle=rg; c.beginPath(); c.arc(n.cx,y,GAP*.68,0,7); c.fill(); } });
   // branches: tapered, coloured per lineage
   const leaves=[], bez=(t,a,b,cc,d)=>{ const u=1-t; return u*u*u*a+3*u*u*t*b+3*u*t*t*cc+t*t*t*d; };
   const taper=(x1,y1,x2,y2,x3,y3,x4,y4,w0,w1,fill,edge,alpha)=>{
@@ -2104,19 +2103,18 @@ function drawArt(T,imgs){
   const branch=n=>{ const px=n.cx, py=cyOf(n);
     n.kids.forEach(k=>{ const kx=k.cx, ky=cyOf(k), w=bw(k);
       const x1=px, y1=py, x2=px+(kx-px)*.10, y2=py-GAP*.43, x3=kx-(kx-px)*.10, y3=ky+GAP*.43, x4=kx, y4=ky;
-      taper(x1,y1,x2,y2,x3,y3,x4,y4,w*1.28,w*.58,bcol(k,-7),bcol(k,-18),1);
-      taper(x1-w*.16,y1,x2-w*.16,y2,x3-w*.16,y3,x4-w*.16,y4,w*.34,w*.13,bcol(k,22),null,.42);
-      const cnt=14+Math.round(Math.sqrt(k.size)*4); for(let i=0;i<cnt;i++){ const t=.12+rnd()*.78; leaves.push({x:bez(t,x1,x2,x3,x4)+(rnd()-.5)*w*1.4,y:bez(t,y1,y2,y3,y4)+(rnd()-.5)*w*1.4,ci:k.ci}); }
+      taper(x1,y1,x2,y2,x3,y3,x4,y4,w*1.12,w*.48,bcol(k,-3),bcol(k,-16),.96);
+      taper(x1-w*.10,y1,x2-w*.10,y2,x3-w*.10,y3,x4-w*.10,y4,w*.18,w*.07,bcol(k,25),null,.30);
+      const cnt=7+Math.round(Math.sqrt(k.size)*2); for(let i=0;i<cnt;i++){ const t=.12+rnd()*.78; leaves.push({x:bez(t,x1,x2,x3,x4)+(rnd()-.5)*w*1.4,y:bez(t,y1,y2,y3,y4)+(rnd()-.5)*w*1.4,ci:k.ci}); }
       branch(k); }); };
   T.roots.forEach(branch);
   // leaves and blossoms in the branch colour family
-  const leaf=(x,y,ang,s,col)=>{ c.save(); c.translate(x,y); c.rotate(ang); c.fillStyle=col; c.beginPath(); c.moveTo(0,0); c.quadraticCurveTo(s*.6,-s*.55,s*1.7,0); c.quadraticCurveTo(s*.6,s*.55,0,0); c.fill(); c.restore(); };
+  const leaf=(x,y,ang,s,col)=>{ c.save(); c.translate(x,y); c.rotate(ang); c.fillStyle=col; c.beginPath(); c.moveTo(0,0); c.quadraticCurveTo(s*.65,-s*.48,s*1.45,0); c.quadraticCurveTo(s*.65,s*.48,0,0); c.fill(); c.restore(); };
   leaves.forEach(l=>{ const hh=hue(l.ci);
-    for(let i=0;i<3;i++){ leaf(l.x,l.y,rnd()*6.28,11+rnd()*11,rnd()<.06?'#d9a441':`hsl(${hh+(rnd()-.5)*28},${52+rnd()*22}%,${38+rnd()*26}%)`); }
-    if(rnd()<.2){ const bx=l.x+(rnd()-.5)*24, by=l.y+(rnd()-.5)*24; c.fillStyle=`hsla(${hh},85%,84%,.92)`; for(let j=0;j<5;j++){ const a=j*1.2566; c.beginPath(); c.arc(bx+Math.cos(a)*5,by+Math.sin(a)*5,4.2,0,7); c.fill(); } c.fillStyle='#e8b33f'; c.beginPath(); c.arc(bx,by,2.8,0,7); c.fill(); }
+    for(let i=0;i<2;i++){ leaf(l.x,l.y,rnd()*6.28,8+rnd()*8,rnd()<.035?'#d9a441':`hsl(${hh+(rnd()-.5)*18},${48+rnd()*16}%,${40+rnd()*20}%)`); }
+    if(rnd()<.07){ const bx=l.x+(rnd()-.5)*24, by=l.y+(rnd()-.5)*24; c.fillStyle=`hsla(${hh},85%,84%,.92)`; for(let j=0;j<5;j++){ const a=j*1.2566; c.beginPath(); c.arc(bx+Math.cos(a)*5,by+Math.sin(a)*5,4.2,0,7); c.fill(); } c.fillStyle='#e8b33f'; c.beginPath(); c.arc(bx,by,2.8,0,7); c.fill(); }
   });
-  // fallen petals on the ground
-  for(let i=0;i<60;i++){ const x=rnd()*W, y=groundY+10+rnd()*(ROOTS+40), hh=HUES[Math.floor(rnd()*HUES.length)]; leaf(x,y,rnd()*6.28,8+rnd()*7,`hsla(${hh},60%,62%,.7)`); }
+  // keep the base of the illustration calm so the root and generation labels stay clear
   // people
   const fit=(txt,maxW,size,weight)=>{ let s=size; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; while(c.measureText(txt).width>maxW&&s>10){ s--; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; } };
   const hits=[];
