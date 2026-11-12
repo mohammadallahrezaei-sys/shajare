@@ -401,7 +401,7 @@ const S={
   db:null,user:null,sample:null,uid:null,isAdmin:false,gate:false,ready:false,dbError:null,
   me:null,loginPending:null,peopleLoaded:false,loginResults:[],loginSelected:null,loginNewName:false,loginSearchError:'',loginSearchSeq:0,loginSearchDone:false,loginDraft:{first:'',last:''},tab:'home',people:{},memories:{},subs:{},mySub:null,imported:[],
   mode:lsGet('shj_mode2')||(window.innerWidth<760?'outline':'art'),
-  addTab:'person',editId:null,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
+  addTab:'person',editId:null,marriageOnly:false,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
   editSub:null,adq:'',famSel:{},cacheSig:null,hadCache:false,offline:false,cmpF:'all',bk:null,focus:'',relA:'',relB:'',relOpen:false,photo:'',photoDirty:false,photoMsg:'',prefill:null,missingOnly:false,T:null,artCanvas:null
 };
 const fullName=()=>S.me?(S.me.first+' '+S.me.last).trim():'';
@@ -1002,8 +1002,18 @@ function myRecId(){
 function startMyCompletion(id){
   const p=S.people[id]; if(!p) return;
   lsSet('shj_myid',JSON.stringify({k:myKey(),id}));
-  S.editSub=null; S.editId=id; S.prefill=null; S.missingOnly=true; S.dup=false;
+  S.marriageOnly=false; S.editSub=null; S.editId=id; S.prefill=null; S.missingOnly=true; S.dup=false;
   resetPhoto(p.photo||''); S.addTab='person'; gotoTab('add');
+}
+function startMyMarriageCompletion(id){
+  const p=S.people[id]; if(!p) return;
+  lsSet('shj_myid',JSON.stringify({k:myKey(),id}));
+  S.marriageOnly=true; S.editSub=null; S.editId=id; S.prefill=null; S.missingOnly=true; S.dup=false;
+  S.addTab='person'; gotoTab('add');
+}
+function marriageOnlyForm(){
+  const p=S.people[S.editId]; if(!p) return '<section class="card">پرونده پیدا نشد.</section>';
+  return `<form id="marriageOnlyForm" class="card stack" autocomplete="off"><div class="row" style="justify-content:space-between"><h3>💍 تکمیل اطلاعات زندگی مشترک</h3><button type="button" class="btn ghost sm" data-act="marriagecancel">بازگشت</button></div><p class="muted small">این بخش فقط تاریخ‌های زندگی مشترک شما را تکمیل می‌کند؛ سایر اطلاعات پرونده بدون تغییر باقی می‌ماند.</p>${marriageDatesHTML(p)}<div class="navrow"><button type="submit" class="btn big">ذخیره اطلاعات زندگی مشترک</button></div></form>`;
 }
 function myIdentityHTML(){
   if(!S.me) return '';
@@ -1021,7 +1031,7 @@ function myMarriageHTML(){
   if(!items.length) return '';
   const rows=items.map(({q,x})=>{ const t=dtParts(x), yrs=(+x.my&&x.st!=='divorced'&&!P[id].dead&&!P[q].dead)?TODAY.y-x.my:0;
     return `<li><div style="flex:1 1 220px;min-width:0"><b>${esc(full(P[q]))}</b> <span class="muted small">${t.length?esc(t.join('، ')):'تاریخی ثبت نشده'}${yrs>0?' – '+fa(yrs)+' سال زندگی مشترک':''}</span></div></li>`; }).join('');
-  return `<section class="card stack"><h3>💍 زندگی مشترک شما</h3><ul class="list">${rows}</ul><div class="row"><button type="button" class="btn ghost sm" data-act="mycomplete">تکمیل اطلاعات زندگی مشترک (در فرم تکمیل اطلاعات)</button></div></section>`;
+  return `<section class="card stack"><h3>💍 زندگی مشترک شما</h3><ul class="list">${rows}</ul><div class="row"><button type="button" class="btn ghost sm" data-act="mymarriagecomplete">تکمیل اطلاعات زندگی مشترک</button></div></section>`;
 }
 function annivHTML(){
   const g=relGraph(), P=g.P, seen=new Set(), l=[];
@@ -1176,7 +1186,7 @@ function photoBlock(){
 }
 const STEP_T=['او کیست؟','خانواده‌اش','اطلاعات بیشتر','اطلاعات ازدواج'];
 function hasLivingCurrentSpouse(v){ const list=spListOf(v||{}); return !!(v&&!v.dead&&list.some(x=>{ const current=(x.st||'current')==='current'; if(!current) return false; if(x.id) return !!(S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual); return !!(x.ref&&String(x.ref.name||'').trim()); })); }
-function maxPersonStep(){ const p=S.editId&&S.people[S.editId]?S.people[S.editId]:(S.prefill||{}); let ok=hasLivingCurrentSpouse(p); if($('#pform')){ try{ const mar=(document.querySelector('input[name=f_mar]:checked')||{}).value||p.marital; const alive=!$('#f_dead').checked; const candidates=readSpouses().some(x=>(x.st||'current')==='current'&&(x.id?(S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual):!!(x.ref&&String(x.ref.name||'').trim()))); ok=alive&&(mar==='married'||hasLivingCurrentSpouse(p))&&candidates; }catch(e){} } return ok?4:3; }
+function maxPersonStep(){ const p=S.editId&&S.people[S.editId]?S.people[S.editId]:(S.prefill||{}); let ok=hasLivingCurrentSpouse(p); if($('#pform')){ try{ const mar=(document.querySelector('input[name=f_mar]:checked')||{}).value||p.marital; const alive=!$('#f_dead').checked; const candidates=readSpouses().some(x=>{ if((x.st||'current')!=='current') return false; if(x.id) return !!x.id && !(S.people[x.id]&&S.people[x.id].dead); return !!(x.ref&&String(x.ref.name||'').trim()); }); ok=alive&&(mar==='married'||hasLivingCurrentSpouse(p))&&candidates; }catch(e){ ok=hasLivingCurrentSpouse(p); } } return ok?4:3; }
 function stepperHTML(n,max){ max=max||maxPersonStep(); return STEP_T.slice(0,max).map((t,i)=>`<button type="button" data-act="pgo" data-n="${i+1}" ${i+1===n?'aria-current="step"':''}><span class="num">${fa(i+1)}</span><span>${t}</span></button>`).join(''); }
 function spouseRows(v){
   const list=spListOf(v), shown=Math.max(1,list.length);
@@ -1322,6 +1332,7 @@ function mySubsHTML(){
     return `<li><span>${esc(t)}</span><span class="status ${esc(stOf(id,it))}">${lab[stOf(id,it)]||''}</span></li>`;}).join('')}</ul></section>`;
 }
 function viewAdd(){
+  if(S.marriageOnly) return `<div class="stack"><div id="formArea">${marriageOnlyForm()}</div><div id="codeArea">${codeBox()}</div></div>`;
   return `<div class="stack"><div class="tabs2"><button data-act="addtab" data-t="person" aria-current="${S.addTab==='person'}">➕ ثبت یک نفر</button><button data-act="addtab" data-t="memory" aria-current="${S.addTab==='memory'}">✍️ نوشتن یک خاطره</button></div>
   <div id="formArea">${S.addTab==='person'?personForm():memoryForm()}</div><div id="codeArea">${codeBox()}</div><div id="mySubs">${mySubsHTML()}</div></div>`;
 }
@@ -1980,6 +1991,27 @@ function friendlyErr(e){
   if(typeof c==='number'&&c>=500) return 'سرور موقتاً پاسخ نمی‌دهد. چند دقیقه بعد دوباره امتحان کنید.';
   return 'مشکلی پیش آمد و ثبت انجام نشد. دوباره تلاش کنید.';
 }
+async function onMarriageOnlySubmit(){
+  const old=S.people[S.editId]; if(!old){ toast('پرونده پیدا نشد.'); return; }
+  const spouses=spListOf(old).map((x,i)=>{
+    const y=Object.assign({},x), key=SP_KEYS[i]||SP_KEYS[0], dt=Object.assign({},x.dt||{});
+    ['nishan','aghd','aroosi'].forEach(n=>{
+      const el=$('#r_'+key+'_'+n+'_y');
+      if(el){ const d=readDate('r_'+key+'_'+n); if(d.y||d.m||d.d) dt[n]=d; }
+    });
+    y.dt=Object.keys(dt).length?dt:null;
+    y.my=(dt.aroosi&&dt.aroosi.y)||(dt.aghd&&dt.aghd.y)||(dt.nishan&&dt.nishan.y)||x.my||0;
+    return y;
+  });
+  const payload=Object.assign({},old,{spouses,spouseId:(spouses[0]||{}).id||old.spouseId||'',spouseRef:(spouses[0]||{}).ref||old.spouseRef||{}});
+  const btn=$('#marriageOnlyForm button[type=submit]'); if(btn) btn.disabled=true;
+  try{
+    if(S.isAdmin){ await S.db.doc('people/'+S.editId).update({spouses,spouseId:payload.spouseId,spouseRef:payload.spouseRef}); S.people[S.editId]=Object.assign({},old,{spouses,spouseId:payload.spouseId,spouseRef:payload.spouseRef}); toast('تاریخ‌های زندگی مشترک ذخیره شد.'); }
+    else { const r=await deliver('person',payload,newId('p'),S.editId); toast(r==='sent'?'اطلاعات زندگی مشترک برای مدیر ارسال شد.':'متن ارسال آماده شد؛ آن را برای مدیر بفرستید.'); }
+    S.marriageOnly=false; S.editId=null; S.missingOnly=false; renderView();
+  }catch(e){ console.error(e); toast(friendlyErr(e)); if(btn) btn.disabled=false; }
+}
+
 async function onPersonSubmit(){
   if((S.pstep||1)<maxPersonStep()){ if(S.pstep===1&&!step1Ok()) return; if(S.pstep===2&&!step2Ok()) return; setStep((S.pstep||1)+1); return; }
   if(!step1Ok()||!step2Ok()) return;
@@ -2154,6 +2186,8 @@ document.addEventListener('click',async ev=>{
   else if(a==='addme'){ const mid=myRecId(), mc=myCands(); if(mid){ startMyCompletion(mid); } else if(mc.length){ const box=$('#myIdentity'); if(box) box.scrollIntoView({behavior:'smooth',block:'center'}); toast('ابتدا پروندهٔ خودتان را از فهرست بالا انتخاب کنید تا ثبت تکراری انجام نشود.'); } else { S.editSub=null; S.editId=null; S.prefill={first:S.me.first,last:S.me.last}; S.missingOnly=false; resetPhoto(''); S.addTab='person'; gotoTab('add'); } }
   else if(a==='mychoose'){ startMyCompletion(el.dataset.id); }
   else if(a==='mycomplete'){ const mid=myRecId(); if(mid) startMyCompletion(mid); }
+  else if(a==='mymarriagecomplete'){ const mid=myRecId(); if(mid) startMyMarriageCompletion(mid); }
+  else if(a==='marriagecancel'){ S.marriageOnly=false; S.editId=null; S.missingOnly=false; renderView(); }
   else if(a==='mynew'){ S.editSub=null; S.editId=null; S.prefill={first:S.me.first,last:S.me.last}; S.missingOnly=false; S.dup=false; resetPhoto(''); S.addTab='person'; gotoTab('add'); }
   else if(a==='fillvirt'){ const p=EP()[el.dataset.id]; S.editSub=null; S.editId=null; S.prefill={_v:1,first:p.first,last:p.last,gender:p.gender,bY:p.bY,bM:p.bM,bD:p.bD}; resetPhoto(''); S.addTab='person'; gotoTab('add'); }
   else if(a==='addtab'){ S.addTab=el.dataset.t; S.editSub=null; S.editId=null; S.prefill=null; S.missingOnly=false; S.dup=false; resetPhoto(''); renderView(); }
@@ -2182,6 +2216,7 @@ document.addEventListener('submit',ev=>{
   ev.preventDefault(); const id=ev.target.id;
   if(id==='loginForm') doLogin();
   else if(id==='pform') onPersonSubmit();
+  else if(id==='marriageOnlyForm') onMarriageOnlySubmit();
   else if(id==='mform') onMemorySubmit();
 });
 document.addEventListener('input',ev=>{
