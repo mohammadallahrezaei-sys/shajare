@@ -1989,8 +1989,9 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=46, GAP=280, CW=2*R+46, MARGIN=140, TRUNK=230, ROOTS=150, TOP=330;
-  const HUES=[152,205,338,32,268,178,8,96,300,50];
+  const P=T.P, R=46, GAP=280, CW=2*R+46, MARGIN=160, TRUNK=260, ROOTS=170, TOP=330;
+  /* رنگ‌های طبیعی و آرام؛ هر شاخهٔ خانوادگی یک هویت رنگی مستقل دارد */
+  const HUES=[151,198,344,28,263,174,12,92,316,48];
   let maxD=1; T.nodes.forEach(n=>{ if(n.depth>maxD) maxD=n.depth; });
   /* هر شاخهٔ اصلی (فرزندان ریشه) یک رنگ می‌گیرد و نوه‌ها همان رنگ را به ارث می‌برند */
   /* تنه: هر جا فقط یک خانواده ادامه می‌دهد؛ شاخه‌های رنگی از جایی شروع می‌شوند که درخت واقعاً چند شاخه می‌شود */
@@ -2019,22 +2020,22 @@ function drawArt(T,imgs){
   const BARK1='#5b3d26', BARK2='#8a6240';
   const rr=(x,y,w,h,r)=>{ c.beginPath(); if(c.roundRect) c.roundRect(x,y,w,h,r); else c.rect(x,y,w,h); };
   // background
-  let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#fffdf6'); g.addColorStop(.55,'#f1f7f1'); g.addColorStop(1,'#dcebe0'); c.fillStyle=g; c.fillRect(0,0,W,H);
+  let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#fbfcf8'); g.addColorStop(.58,'#f2f6ef'); g.addColorStop(1,'#e8f0e7'); c.fillStyle=g; c.fillRect(0,0,W,H);
   for(let i=0;i<46;i++){ const x=rnd()*W, y=120+rnd()*(groundY-200), r=40+rnd()*110, hh=HUES[Math.floor(rnd()*HUES.length)]; const rg=c.createRadialGradient(x,y,0,x,y,r); rg.addColorStop(0,`hsla(${hh},70%,68%,.11)`); rg.addColorStop(1,`hsla(${hh},70%,68%,0)`); c.fillStyle=rg; c.beginPath(); c.arc(x,y,r,0,7); c.fill(); }
   // ground
-  c.fillStyle='#cfe3d3'; c.beginPath(); c.moveTo(0,groundY); c.bezierCurveTo(W*.25,groundY-38,W*.5,groundY+14,W*.75,groundY-26); c.bezierCurveTo(W*.88,groundY-40,W*.95,groundY-8,W,groundY-18); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
-  c.fillStyle='#b9d6bf'; c.beginPath(); c.moveTo(0,groundY+34); c.bezierCurveTo(W*.3,groundY+8,W*.6,groundY+56,W,groundY+18); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
+  c.fillStyle='#dce9d9'; c.beginPath(); c.moveTo(0,groundY); c.bezierCurveTo(W*.22,groundY-22,W*.48,groundY+10,W*.72,groundY-16); c.bezierCurveTo(W*.86,groundY-28,W*.95,groundY-8,W,groundY-14); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
+  c.fillStyle='#cbdcc9'; c.beginPath(); c.moveTo(0,groundY+48); c.bezierCurveTo(W*.3,groundY+18,W*.62,groundY+64,W,groundY+30); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
   c.lineCap='round'; for(let x=20;x<W-20;x+=13){ const gy=groundY+Math.sin(x/190)*10+8; c.strokeStyle=rnd()<.5?'#86bb92':'#a3cfae'; c.lineWidth=3; c.beginPath(); c.moveTo(x,gy+10); c.lineTo(x+(rnd()-.5)*10,gy-8-rnd()*16); c.stroke(); }
-  const bw=n=>Math.min(80,10+Math.sqrt(n.size)*5.5);
+  const bw=n=>Math.min(92,13+Math.sqrt(n.size)*6.2);
   // tinted canopy glow
   T.nodes.forEach(n=>{ if(n.ci>=0&&n.depth>=2){ const y=cyOf(n), hh=hue(n.ci); const rg=c.createRadialGradient(n.cx,y,10,n.cx,y,GAP*.95); rg.addColorStop(0,`hsla(${hh},65%,60%,.20)`); rg.addColorStop(1,`hsla(${hh},65%,60%,0)`); c.fillStyle=rg; c.beginPath(); c.arc(n.cx,y,GAP*.95,0,7); c.fill(); } });
   // roots and trunks
   T.roots.forEach(r=>{
     const w=bw(r), y1=cyOf(r), x=r.cx;
-    for(let i=0;i<7;i++){ const dir=i%2?1:-1, k=(i+1)/7, ex=x+dir*(60+rnd()*220)*(.6+k), ey=groundY+ROOTS*(.55+rnd()*.5);
-      c.strokeStyle=BARK1; c.lineCap='round'; c.lineWidth=Math.max(3,w*(.55-k*.35)); c.beginPath(); c.moveTo(x+dir*w*.3,groundY-6); c.bezierCurveTo(x+dir*w*1.1,groundY+ROOTS*.25,ex-dir*60,groundY+ROOTS*.4,ex,ey); c.stroke(); }
-    const lg=c.createLinearGradient(x-w,0,x+w,0); lg.addColorStop(0,BARK1); lg.addColorStop(.5,BARK2); lg.addColorStop(1,BARK1);
-    c.fillStyle=lg; c.beginPath(); c.moveTo(x-w/2,y1); c.bezierCurveTo(x-w/2,y1+TRUNK*.5,x-w*.95,groundY-TRUNK*.25,x-w*1.05,groundY+8); c.lineTo(x+w*1.05,groundY+8); c.bezierCurveTo(x+w*.95,groundY-TRUNK*.25,x+w/2,y1+TRUNK*.5,x+w/2,y1); c.closePath(); c.fill();
+    for(let i=0;i<9;i++){ const dir=i%2?1:-1, k=(i+1)/9, ex=x+dir*(55+rnd()*245)*(.55+k), ey=groundY+ROOTS*(.48+rnd()*.55);
+      c.strokeStyle=BARK1; c.lineCap='round'; c.lineWidth=Math.max(3,w*(.62-k*.39)); c.beginPath(); c.moveTo(x+dir*w*.22,groundY-5); c.bezierCurveTo(x+dir*w*.9,groundY+ROOTS*.18,ex-dir*72,groundY+ROOTS*.42,ex,ey); c.stroke(); }
+    const lg=c.createLinearGradient(x-w*1.2,0,x+w*1.2,0); lg.addColorStop(0,'#49301f'); lg.addColorStop(.22,BARK1); lg.addColorStop(.52,'#a77b51'); lg.addColorStop(.78,BARK2); lg.addColorStop(1,'#49301f');
+    c.fillStyle=lg; c.beginPath(); c.moveTo(x-w/2,y1); c.bezierCurveTo(x-w*.48,y1+TRUNK*.42,x-w*.82,groundY-TRUNK*.30,x-w*1.18,groundY+8); c.quadraticCurveTo(x,groundY+24,x+w*1.18,groundY+8); c.bezierCurveTo(x+w*.82,groundY-TRUNK*.30,x+w*.48,y1+TRUNK*.42,x+w/2,y1); c.closePath(); c.fill();
     c.strokeStyle='rgba(40,25,12,.28)'; c.lineWidth=2; for(let i=-1;i<=1;i++){ c.beginPath(); c.moveTo(x+i*w*.22,y1+20); c.bezierCurveTo(x+i*w*.3,y1+TRUNK*.4,x+i*w*.4,groundY-TRUNK*.3,x+i*w*.5,groundY); c.stroke(); }
   });
   // branches: tapered, coloured per lineage
@@ -2049,10 +2050,10 @@ function drawArt(T,imgs){
   };
   const branch=n=>{ const px=n.cx, py=cyOf(n);
     n.kids.forEach(k=>{ const kx=k.cx, ky=cyOf(k), w=bw(k);
-      const x1=px, y1=py, x2=px, y2=py-GAP*.5, x3=kx, y3=ky+GAP*.5, x4=kx, y4=ky;
-      taper(x1,y1,x2,y2,x3,y3,x4,y4,w*1.15,w*.6,bcol(k,-4),bcol(k,-14),1);
-      taper(x1-w*.12,y1,x2-w*.12,y2,x3-w*.12,y3,x4-w*.12,y4,w*.36,w*.16,bcol(k,18),null,.5);
-      const cnt=9+Math.round(Math.sqrt(k.size)*3); for(let i=0;i<cnt;i++){ const t=.12+rnd()*.78; leaves.push({x:bez(t,x1,x2,x3,x4)+(rnd()-.5)*w*1.4,y:bez(t,y1,y2,y3,y4)+(rnd()-.5)*w*1.4,ci:k.ci}); }
+      const x1=px, y1=py, x2=px+(kx-px)*.10, y2=py-GAP*.43, x3=kx-(kx-px)*.10, y3=ky+GAP*.43, x4=kx, y4=ky;
+      taper(x1,y1,x2,y2,x3,y3,x4,y4,w*1.28,w*.58,bcol(k,-7),bcol(k,-18),1);
+      taper(x1-w*.16,y1,x2-w*.16,y2,x3-w*.16,y3,x4-w*.16,y4,w*.34,w*.13,bcol(k,22),null,.42);
+      const cnt=14+Math.round(Math.sqrt(k.size)*4); for(let i=0;i<cnt;i++){ const t=.12+rnd()*.78; leaves.push({x:bez(t,x1,x2,x3,x4)+(rnd()-.5)*w*1.4,y:bez(t,y1,y2,y3,y4)+(rnd()-.5)*w*1.4,ci:k.ci}); }
       branch(k); }); };
   T.roots.forEach(branch);
   // leaves and blossoms in the branch colour family
@@ -2099,7 +2100,7 @@ function drawArt(T,imgs){
     n.kids.forEach(drawNodes); };
   T.roots.forEach(drawNodes);
   // title with ornament
-  c.fillStyle='#1E5B50'; c.font='700 70px Vazirmatn, Tahoma, sans-serif'; c.fillText(T.focusTitle||'شجره‌نامه خاندان الله‌رضایی',W/2,118);
+  c.fillStyle='#214f43'; c.font='700 70px Vazirmatn, Tahoma, sans-serif'; c.fillText(T.focusTitle||'شجره‌نامه خاندان الله‌رضایی',W/2,118);
   c.fillStyle='#5A726B'; c.font='400 26px Vazirmatn, Tahoma, sans-serif'; c.fillText(`${fa(T.focusCount||Object.keys(P).length)} نفر، ${fa(maxD)} نسل، ${dstr(TODAY.y,TODAY.m,TODAY.d)}`,W/2,198);
   c.strokeStyle='#d9a441'; c.lineWidth=3; c.beginPath(); c.moveTo(W/2-190,242); c.lineTo(W/2-18,242); c.moveTo(W/2+18,242); c.lineTo(W/2+190,242); c.stroke();
   c.fillStyle='#d9a441'; c.save(); c.translate(W/2,242); c.rotate(Math.PI/4); c.fillRect(-7,-7,14,14); c.restore();
@@ -2111,7 +2112,7 @@ function drawArt(T,imgs){
   }
   cv.__hits=hits; cv.__W=W; cv.__H=H;
   // decorative frame
-  c.save(); c.strokeStyle='#d9a441'; c.lineWidth=4; rr(34,34,W-68,H-68,30); c.stroke(); c.lineWidth=1.5; rr(52,52,W-104,H-104,22); c.stroke();
+  c.save(); c.strokeStyle='rgba(154,126,76,.42)'; c.lineWidth=3; rr(30,30,W-60,H-60,28); c.stroke(); c.lineWidth=1; rr(46,46,W-92,H-92,20); c.stroke();
   c.fillStyle='#d9a441'; [[34,34],[W-34,34],[34,H-34],[W-34,H-34]].forEach(([x,y])=>{ c.save(); c.translate(x,y); c.rotate(Math.PI/4); c.fillRect(-9,-9,18,18); c.restore(); }); c.restore();
   return cv;
 }
