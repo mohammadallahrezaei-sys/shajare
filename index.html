@@ -377,6 +377,20 @@ input[type=search]{width:100%;background:var(--bg);border:1px solid var(--line);
   .art-box canvas,#artBox canvas{width:100%!important;height:auto!important}
 }
 @media print{body *{visibility:hidden}#lifebook,#lifebook *{visibility:visible}#lifebook{position:absolute;inset:0;padding:16px}.noprint{display:none!important}}
+
+/* Family statistics dashboard */
+.stats-dashboard{gap:18px}
+.stats-welcome{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:26px 28px;border-radius:24px;background:linear-gradient(120deg,#153f38,#267665 65%,#4a947b);color:#fff;overflow:hidden;position:relative}
+.stats-welcome:after{content:"";position:absolute;width:230px;height:230px;border:1px solid #ffffff25;border-radius:50%;left:-55px;top:-115px;box-shadow:0 0 0 24px #ffffff0b,0 0 0 48px #ffffff08}
+.stats-welcome-copy{position:relative;z-index:1;max-width:680px}.stats-welcome h2{font-size:clamp(22px,3vw,30px);margin:7px 0 8px;color:#fff}.stats-welcome p{margin:0;color:#e2f0eb;line-height:1.9;font-size:13px}.stats-eyebrow{font-size:10px;letter-spacing:.04em;color:var(--muted);font-weight:800}.stats-welcome .stats-eyebrow{color:#c5e4d8}
+.stats-total-orb{width:126px;height:126px;flex:0 0 126px;border-radius:50%;border:1px solid #ffffff70;background:#ffffff18;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1;backdrop-filter:blur(4px)}.stats-total-orb b{font-size:32px;line-height:1.2}.stats-total-orb span{font-size:10px;color:#e4f1ec}.stats-total-orb i{font-style:normal;position:absolute;bottom:-12px;right:-7px;font-size:24px}
+.stats-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.stats-kpi{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:15px;display:grid;grid-template-columns:34px 1fr;align-items:center;column-gap:8px;box-shadow:0 4px 14px #193d3010}.stats-kpi>span{grid-row:span 2;font-size:23px}.stats-kpi>b{font-size:25px;line-height:1.2;color:var(--ink)}.stats-kpi>small{font-size:11px;color:var(--muted)}.stats-kpi>em{grid-column:1/-1;margin-top:10px;font-size:10px;font-style:normal;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}.stats-kpi.primary{background:linear-gradient(145deg,#e4f2ec,#fff);border-color:#b9d9cb}
+.stats-panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:19px;box-shadow:0 4px 16px #193d3009;min-width:0}.stats-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.stats-section-head h3{margin:4px 0 0;font-size:16px}.stats-head-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:var(--surface2);font-size:21px}.stats-gender-layout{display:grid;grid-template-columns:minmax(170px,1fr) minmax(180px,1.4fr);gap:20px;align-items:center}.stats-donut-wrap{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap}.stats-donut{width:148px;height:148px;border-radius:50%;background:conic-gradient(#4389b7 0 var(--male),#c46b91 var(--male) var(--female),#dfe7e3 var(--female) 100%);display:grid;place-items:center;position:relative}.stats-donut:before{content:"";position:absolute;inset:17px;background:var(--surface);border-radius:50%}.stats-donut>div{position:relative;display:grid;text-align:center}.stats-donut b{font-size:25px}.stats-donut small{font-size:10px;color:var(--muted)}.stats-legend{display:grid;gap:8px;font-size:11px;color:var(--muted)}.stats-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:6px}.male-dot{background:#4389b7}.female-dot{background:#c46b91}.stats-side-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stats-side-metrics>div{padding:13px 10px;border-radius:14px;background:var(--surface2);display:grid;gap:5px}.stats-side-metrics span,.stats-side-metrics small{font-size:10px;color:var(--muted)}.stats-side-metrics b{font-size:22px}
+.stats-chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.stats-bars{display:grid;gap:11px}.stats-bars .bar-row{display:grid;grid-template-columns:minmax(72px,auto) minmax(50px,1fr) 30px;align-items:center;gap:9px;font-size:11px}.stats-bars .bar-track{height:11px;border-radius:20px;background:var(--surface2);overflow:hidden}.stats-bars .bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#2c806b,#78b99a);transition:width .6s ease}.stats-bars .bar-fill.m{background:linear-gradient(90deg,#387ca8,#8bb9d3)}.stats-bars .bar-fill.f{background:linear-gradient(90deg,#a94f7b,#d89bb5)}.stats-bars .bar-fill.a{background:linear-gradient(90deg,#b27a36,#e3c17c)}.stats-footnote{font-size:10px;line-height:1.8;color:var(--muted);margin:13px 0 0}.stats-completion-list{display:grid;gap:13px}.completion-item>div:first-child{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px}.completion-item b{font-variant-numeric:tabular-nums}.completion-track{height:9px;border-radius:20px;background:var(--surface2);overflow:hidden}.completion-track i{display:block;height:100%;border-radius:20px;transition:width .6s ease}
+.stats-insights{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stats-insights article{display:flex;gap:11px;padding:14px;border-radius:15px;background:var(--surface2);align-items:flex-start}.stats-insights article>span{font-size:23px}.stats-insights b{font-size:12px}.stats-insights p{margin:4px 0 0;font-size:11px;line-height:1.8;color:var(--muted)}.stats-birthdays{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.stats-birthdays .bday{padding:11px 13px;border:1px solid var(--line);border-radius:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:11px}.stats-birthdays .bday b{font-size:10px;color:var(--primary);white-space:nowrap}.stats-birthdays .bday.today{background:#fff4d9;border-color:#e7c36d}.stats-facts .fact{border-radius:12px;background:var(--surface2);padding:12px}
+@media(max-width:720px){.stats-welcome{padding:20px;align-items:flex-start}.stats-total-orb{width:94px;height:94px;flex-basis:94px}.stats-total-orb b{font-size:25px}.stats-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-chart-grid{grid-template-columns:1fr}.stats-gender-layout{grid-template-columns:1fr}.stats-side-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.stats-insights{grid-template-columns:1fr}.stats-birthdays{grid-template-columns:1fr}}
+@media(max-width:390px){.stats-welcome{display:block}.stats-total-orb{margin:16px 0 0 0}.stats-kpi{padding:12px}.stats-kpi>b{font-size:22px}.stats-panel{padding:14px}.stats-side-metrics>div{padding:10px 7px}.stats-side-metrics b{font-size:18px}}
+
 </style>
 </head>
 <body>
@@ -1162,48 +1176,64 @@ function viewStats(){
   const st=computeStats(), P=EP();
   if(!st.total) return `<div class="card empty"><h3>آماری برای نمایش نیست</h3><p class="muted" style="margin:0">پس از ثبت اولین افراد، گزارش کلی و آمار هر خانواده اینجا دیده می‌شود.</p></div>`;
   const gk=Object.keys(st.gens).map(Number).sort((a,b)=>a-b), maxG=Math.max(...Object.values(st.gens),1);
-  const bds=birthdaysList(60);
+  const bds=birthdaysList(60), real=Math.max(st.realCount||0,1);
   const fact=(l,v)=>`<div class="fact"><b>${v}</b><span>${l}</span></div>`;
   const pname=p=>p?esc(full(p))+' ('+fa(ageNow(p))+' ساله)':'—';
-  return `<div class="stack">
-  <section class="kpis">
-    <div class="kpi"><b class="num">${fa(st.total)}</b><span>کل نفرات</span></div>
-    <div class="kpi"><b class="num">${fa(st.m)}</b><span>آقایان</span></div>
-    <div class="kpi"><b class="num">${fa(st.f)}</b><span>خانم‌ها</span></div>
-    <div class="kpi"><b class="num">${fa(st.alive)}</b><span>در قید حیات</span></div>
-    <div class="kpi"><b class="num">${fa(st.dead)}</b><span>درگذشته</span></div>
-    <div class="kpi"><b class="num">${fa(st.famCount)}</b><span>خانوادهٔ دارای فرزند</span></div>
-    <div class="kpi"><b class="num">${fa(st.couples)}</b><span>زوج</span></div>
-    <div class="kpi"><b class="num">${fa(gk.length)}</b><span>نسل</span></div>
+  const pct=(n,d)=>d?Math.round(n/d*100):0;
+  const malePct=pct(st.m,st.total), femalePct=pct(st.f,st.total);
+  const alivePct=pct(st.alive,st.total), memorialPct=pct(st.mem,st.total);
+  const complete=Math.round((st.comp.birth+st.comp.photo+st.comp.parents)/3);
+  const ageTop=st.groups.slice().sort((a,b)=>b.c-a.c)[0];
+  const genTop=gk.length?gk.map(g=>({g,c:st.gens[g]})).sort((a,b)=>b.c-a.c)[0]:null;
+  const insights=[];
+  if(genTop) insights.push(['🌳','پرجمعیت‌ترین نسل','نسل '+fa(genTop.g)+' با '+fa(genTop.c)+' نفر، بزرگ‌ترین بخش درخت شماست.']);
+  if(ageTop&&ageTop.c) insights.push(['🧭','ترکیب سنی خانواده','بیشترین تعداد اعضای زنده در گروه «'+ageTop.l+'» قرار دارند.']);
+  if(st.comp.photo<50) insights.push(['📷','فرصت ثبت خاطره','برای بیش از نیمی از اعضا هنوز عکسی ثبت نشده؛ افزودن عکس، درخت را زنده‌تر می‌کند.']);
+  else insights.push(['💚','آرشیو تصویری','بخش قابل توجهی از اعضا عکس دارند؛ با تکمیل عکس‌های قدیمی‌تر، نسل‌ها بهتر به هم پیوند می‌خورند.']);
+  if(st.comp.birth<70) insights.push(['📅','دقت شجره‌نامه','ثبت سال تولد اعضا کمک می‌کند سن‌ها، گروه‌های سنی و مناسبت‌ها دقیق‌تر نمایش داده شوند.']);
+  if(st.mem) insights.push(['✍️','حافظه خانوادگی','تا امروز '+fa(st.mem)+' یادگار ثبت شده؛ روایت‌ها و خاطرات کوتاه را هم به این گنجینه اضافه کنید.']);
+  return `<div class="stack stats-dashboard">
+  <section class="stats-welcome">
+    <div class="stats-welcome-copy"><span class="stats-eyebrow">داشبورد خانواده</span><h2>داستان خانواده در یک نگاه</h2><p>آمارها فقط عدد نیستند؛ راهی هستند برای شناخت ریشه‌ها، دیدن پیوند نسل‌ها و ثبت خاطراتی که نباید فراموش شوند.</p></div>
+    <div class="stats-total-orb"><b>${fa(st.total)}</b><span>عضو در شجره‌نامه</span><i>🌿</i></div>
+  </section>
+  <section class="stats-kpi-grid">
+    <div class="stats-kpi primary"><span>👨‍👩‍👧‍👦</span><b>${fa(st.total)}</b><small>کل اعضای ثبت‌شده</small><em>${fa(gk.length)} نسل خانوادگی</em></div>
+    <div class="stats-kpi"><span>🌱</span><b>${fa(st.alive)}</b><small>در قید حیات</small><em>${fa(alivePct)}٪ از کل اعضا</em></div>
+    <div class="stats-kpi"><span>💍</span><b>${fa(st.couples)}</b><small>پیوندهای همسری</small><em>${fa(st.famCount)} خانواده دارای فرزند</em></div>
+    <div class="stats-kpi"><span>📖</span><b>${fa(st.mem)}</b><small>یادگار و خاطره</small><em>روایت‌هایی برای نسل بعد</em></div>
   </section>
   ${completeCardHTML()}
-  ${st.virt?`<p class="muted small" style="margin:0">${fa(st.virt)} نفر از این تعداد فقط با نام (به‌عنوان پدر، مادر، همسر یا فرزند) ثبت شده‌اند و هنوز پرونده‌شان کامل نیست.</p>`:''}
-  <section class="card"><h3>تولدهای پیش رو</h3>
-    <div style="margin-top:8px">${bds.length?bds.slice(0,12).map(b=>`<div class="bday ${b.days===0?'today':''}"><span>${esc(full(b.p))}${b.p.bY?` <span class="muted small">(${fa(TODAY.y+(b.days>=0&&j2d(TODAY.y,b.p.bM,Math.min(b.p.bD,monthLen(TODAY.y,b.p.bM)))<TODAY.jdn?1:0)-b.p.bY)} ساله می‌شود)</span>`:''}</span><span>${esc(dstr(0,b.p.bM,b.p.bD))} – ${whenText(b.days)}</span></div>`).join(''):'<p class="muted" style="margin:0">تا ۶۰ روز آینده تولدی ثبت نشده است. با وارد کردن روز و ماه تولد، اینجا یادآوری می‌شود.</p>'}</div></section>
-  <div class="grid2">
-    <section class="card"><h3>تعداد نفرات هر نسل</h3><div class="bars" style="margin-top:12px">${barRows(gk.map(g=>['نسل '+fa(g),st.gens[g]]),maxG)}</div></section>
-    <section class="card"><h3>آقایان و خانم‌ها</h3><div class="bars" style="margin-top:12px">
-      ${barRows([['آقایان',st.m]],st.total,'m')}${barRows([['خانم‌ها',st.f]],st.total,'f')}${barRows([['در قید حیات',st.alive]],st.total)}</div></section>
-    <section class="card"><h3>گروه‌های سنی (زنده‌ها)</h3><div class="bars" style="margin-top:12px">${barRows(st.groups.map(g=>[g.l,g.c]),Math.max(...st.groups.map(g=>g.c),1),'a')}</div></section>
-    <section class="card"><h3>تولدها به تفکیک ماه</h3><div class="bars" style="margin-top:12px">${barRows(st.months.map((c,i)=>[MONTHS[i],c]),Math.max(...st.months,1))}</div></section>
+  ${st.virt?`<p class="muted small" style="margin:0">${fa(st.virt)} نفر فقط با نام و به‌عنوان نسبت خانوادگی ثبت شده‌اند و هنوز پرونده مستقل ندارند.</p>`:''}
+  <section class="stats-panel">
+    <div class="stats-section-head"><div><span class="stats-eyebrow">ترکیب خانواده</span><h3>چه کسانی در شجره‌نامه هستند؟</h3></div><span class="stats-head-icon">👥</span></div>
+    <div class="stats-gender-layout">
+      <div class="stats-donut-wrap"><div class="stats-donut" style="--male:${malePct}%;--female:${malePct+femalePct}%"><div><b>${fa(st.total)}</b><small>نفر</small></div></div><div class="stats-legend"><span><i class="male-dot"></i>آقایان ${fa(malePct)}٪</span><span><i class="female-dot"></i>خانم‌ها ${fa(femalePct)}٪</span></div></div>
+      <div class="stats-side-metrics"><div><span>آقایان</span><b>${fa(st.m)}</b><small>${fa(malePct)}٪</small></div><div><span>خانم‌ها</span><b>${fa(st.f)}</b><small>${fa(femalePct)}٪</small></div><div><span>درگذشتگان</span><b>${fa(st.dead)}</b><small>یاد و نامشان ماندگار</small></div></div>
+    </div>
+  </section>
+  <div class="stats-chart-grid">
+    <section class="stats-panel"><div class="stats-section-head"><div><span class="stats-eyebrow">ساختار نسل‌ها</span><h3>پراکندگی اعضا در نسل‌ها</h3></div><span class="stats-head-icon">🌳</span></div><div class="stats-bars">${barRows(gk.map(g=>['نسل '+fa(g),st.gens[g]]),maxG)}</div><p class="stats-footnote">این نمودار نشان می‌دهد کدام نسل‌ها در شجره‌نامه پرجمعیت‌تر ثبت شده‌اند.</p></section>
+    <section class="stats-panel"><div class="stats-section-head"><div><span class="stats-eyebrow">سن و تجربه</span><h3>گروه‌های سنی اعضای زنده</h3></div><span class="stats-head-icon">🧭</span></div><div class="stats-bars">${barRows(st.groups.map(g=>[g.l,g.c]),Math.max(...st.groups.map(g=>g.c),1),'a')}</div><p class="stats-footnote">با ثبت سال تولد، تصویر دقیق‌تری از ترکیب سنی خانواده به دست می‌آید.</p></section>
+    <section class="stats-panel"><div class="stats-section-head"><div><span class="stats-eyebrow">تقویم خانوادگی</span><h3>تولدها در ماه‌های سال</h3></div><span class="stats-head-icon">🎂</span></div><div class="stats-bars">${barRows(st.months.map((c,i)=>[MONTHS[i],c]),Math.max(...st.months,1))}</div><p class="stats-footnote">ماه‌های پرمناسبت را بشناسید و برای دورهمی‌ها و تبریک‌ها برنامه‌ریزی کنید.</p></section>
+    <section class="stats-panel"><div class="stats-section-head"><div><span class="stats-eyebrow">رشد شجره‌نامه</span><h3>کامل بودن اطلاعات</h3></div><span class="stats-head-icon">✨</span></div><div class="stats-completion-list">${[['سال تولد',st.comp.birth,'#2f8c72'],['تاریخ کامل تولد',st.comp.date,'#4b91bd'],['عکس اعضا',st.comp.photo,'#bd7a45'],['اطلاعات والدین',st.comp.parents,'#9b75b8']].map(([l,v,c])=>`<div class="completion-item"><div><span>${l}</span><b>${fa(v)}٪</b></div><div class="completion-track"><i style="width:${Math.max(0,Math.min(100,v))}%;background:${c}"></i></div></div>`).join('')}</div><p class="stats-footnote">این درصدها از اعضای دارای پرونده مستقل محاسبه شده‌اند.</p></section>
   </div>
-  <section class="card"><h3>نکته‌های خانوادگی</h3><div class="facts" style="margin-top:12px">
+  <section class="stats-panel"><div class="stats-section-head"><div><span class="stats-eyebrow">بینش‌های خانوادگی</span><h3>این آمار چه چیزی به ما می‌گوید؟</h3></div><span class="stats-head-icon">💡</span></div><div class="stats-insights">${insights.map(([ic,t,d])=>`<article><span>${ic}</span><div><b>${t}</b><p>${d}</p></div></article>`).join('')}</div></section>
+  <section class="stats-panel"><div class="stats-section-head"><div><span class="stats-eyebrow">مناسبت‌های پیش رو</span><h3>تولدهای ۶۰ روز آینده</h3></div><span class="stats-head-icon">🎉</span></div>
+    <div class="stats-birthdays">${bds.length?bds.slice(0,12).map(b=>`<div class="bday ${b.days===0?'today':''}"><span>${esc(full(b.p))}${b.p.bY?` <small class="muted">(${fa(TODAY.y+(" ${b.days>=0&&j2d(TODAY.y,b.p.bM,Math.min(b.p.bD,monthLen(TODAY.y,b.p.bM)))<TODAY.jdn?1:0)-b.p.bY)} ساله می‌شود)</small>`:''}</span><b>${esc(dstr(0,b.p.bM,b.p.bD))} · ${whenText(b.days)}</b></div>`).join(''):'<p class="muted">تولد ثبت‌شده‌ای در ۶۰ روز آینده نیست. با ثبت روز و ماه تولد اعضا، این بخش به یادآوری مناسبت‌ها کمک می‌کند.</p>'}</div></section>
+  <section class="stats-panel"><div class="stats-section-head"><div><span class="stats-eyebrow">گنجینه خانواده</span><h3>چهره‌ها و داستان‌های ماندگار</h3></div><span class="stats-head-icon">❤️</span></div><div class="facts stats-facts" style="margin-top:12px">
     ${fact('مسن‌ترین عضو زنده',pname(st.oldest))}${fact('جوان‌ترین عضو',pname(st.youngest))}
     ${fact('میانگین عمر درگذشتگان',st.lifespan?fa(Math.round(st.lifespan))+' سال':'—')}${fact('میانگین فرزند هر خانواده',fa(st.avg.toFixed(1)))}
-    ${fact('بیشترین یادگار نوشته‌شده',st.mostMem.length?st.mostMem.map(([id,c])=>esc(full(P[id]))+' ('+fa(c)+')').join('، '):'—')}
-    ${fact('شهرهای پرتکرار (محل سکونت)',st.places.length?st.places.map(([k,c])=>esc(k)+' ('+fa(c)+')').join('، '):'—')}
+    ${fact('بیشترین یادگار نوشته‌شده',st.mostMem.length?st.mostMem.map(([id,c])=>esc(full(P[id]))+' ('+fa(c)+')').join('، '):'هنوز یادگاری ثبت نشده')}
+    ${fact('شهرهای پرتکرار',st.places.length?st.places.map(([k,c])=>esc(k)+' ('+fa(c)+')').join('، '):'—')}
     ${fact('شغل‌های پرتکرار',st.jobs.length?st.jobs.map(([k,c])=>esc(k)+' ('+fa(c)+')').join('، '):'—')}</div></section>
   ${famMarriageHTML()}
   ${ageAllHTML()}
-  <section class="card"><h3>کامل بودن اطلاعات</h3><div class="bars" style="margin-top:12px">
-    ${barRows([['سال تولد',st.comp.birth],['تاریخ کامل',st.comp.date],['عکس',st.comp.photo],['پدر یا مادر',st.comp.parents]].map(([l,c])=>[l,c]),100)}</div>
-    <p class="muted small" style="margin:10px 0 0">درصد افراد ثبت‌شده که این اطلاعات را دارند. هر چه کامل‌تر باشد گزارش دقیق‌تر است.</p></section>
-  <section class="card"><h3>آمار هر خانواده</h3>
+  <section class="stats-panel"><div class="stats-section-head"><div><span class="stats-eyebrow">مقایسه شاخه‌ها</span><h3>آمار هر خانواده</h3></div><span class="stats-head-icon">🏡</span></div>
     <div class="tbl-note" style="margin-top:10px"><input type="text" id="famQ" placeholder="جستجوی خانواده…" value="${esc(S.famQ)}" style="max-width:240px">
       <select id="famSort" style="max-width:220px"><option value="members" ${S.famSort==='members'?'selected':''}>بیشترین اعضای شاخه</option><option value="kids" ${S.famSort==='kids'?'selected':''}>بیشترین فرزند</option><option value="gen" ${S.famSort==='gen'?'selected':''}>به ترتیب نسل</option></select></div>
     <div class="row" style="gap:6px;margin-top:10px"><button type="button" class="btn ghost sm" data-act="famall">انتخاب همهٔ فهرست</button><button type="button" class="btn ghost sm" data-act="famnone">پاک کردن انتخاب</button></div>
-    <div id="famSum" style="margin:10px 0">${famSumHTML(st)}</div>
-    <div id="famList">${famList(st)}</div></section>
+    <div id="famSum" style="margin:10px 0">${famSumHTML(st)}</div><div id="famList">${famList(st)}</div></section>
   </div>`;
 }
 
