@@ -391,6 +391,12 @@ input[type=search]{width:100%;background:var(--bg);border:1px solid var(--line);
 @media(max-width:720px){.stats-welcome{padding:20px;align-items:flex-start}.stats-total-orb{width:94px;height:94px;flex-basis:94px}.stats-total-orb b{font-size:25px}.stats-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-chart-grid{grid-template-columns:1fr}.stats-gender-layout{grid-template-columns:1fr}.stats-side-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.stats-insights{grid-template-columns:1fr}.stats-birthdays{grid-template-columns:1fr}}
 @media(max-width:390px){.stats-welcome{display:block}.stats-total-orb{margin:16px 0 0 0}.stats-kpi{padding:12px}.stats-kpi>b{font-size:22px}.stats-panel{padding:14px}.stats-side-metrics>div{padding:10px 7px}.stats-side-metrics b{font-size:18px}}
 
+
+/* Welcoming family home dashboard */
+.home-dashboard{gap:19px}.home-hero{position:relative;isolation:isolate;overflow:hidden;min-height:270px;border-radius:25px;padding:32px clamp(20px,4vw,42px);display:flex;align-items:center;background:linear-gradient(115deg,#153f38 0%,#236d5d 58%,#4b9276 100%);color:#fff;box-shadow:0 12px 32px #173e3020}.home-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 78% 48%,#ffffff16,transparent 35%),linear-gradient(90deg,transparent,#ffffff08)}.home-hero-copy{max-width:650px;position:relative;z-index:2}.home-kicker{font-size:10px;font-weight:800;letter-spacing:.05em;color:#739889}.home-hero .home-kicker{color:#c4e4d7}.home-hero h2{font-size:clamp(25px,4vw,36px);color:#fff;margin:9px 0 10px}.home-hero p{font-size:13px;line-height:2;color:#e1f0e9;margin:0;max-width:590px}.home-hero-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}.home-hero-secondary{background:#ffffff16!important;border:1px solid #ffffff55!important;color:#fff!important}.home-hero-art{position:absolute;left:7%;top:50%;transform:translateY(-50%);width:230px;height:230px;display:grid;place-items:center;opacity:.95}.home-hero-art>span{font-size:120px;filter:drop-shadow(0 12px 18px #09251d55);z-index:1}.home-hero-art>i,.home-hero-art>em{position:absolute;color:#f2d99a;font-size:26px;font-style:normal}.home-hero-art>i{top:26px;right:42px}.home-hero-art>em{bottom:36px;left:25px}.home-orbit{position:absolute;border:1px solid #ffffff35;border-radius:50%;inset:10px}.orbit-two{inset:31px;border-style:dashed;transform:rotate(25deg)}.home-hero-note{position:absolute;left:32px;bottom:22px;display:grid;gap:2px;text-align:left;color:#d9eee4;font-size:10px}.home-hero-note b{font-size:13px;color:#fff}.home-overview,.home-shortcuts-section{display:grid;gap:12px}.home-overview-heading{display:flex;align-items:end;justify-content:space-between;gap:12px}.home-overview-heading h3{margin:4px 0 0;font-size:17px}.home-text-link{border:0;background:none;color:var(--primary);font:inherit;font-size:11px;font-weight:800;cursor:pointer}.home-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.home-metrics article{background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:15px;display:grid;grid-template-columns:34px 1fr;align-items:center;gap:2px 8px;box-shadow:0 4px 14px #193d3009}.metric-icon{grid-row:span 2;font-size:23px}.home-metrics b{font-size:25px;color:var(--ink);line-height:1.2}.home-metrics small{font-size:10px;color:var(--muted)}.home-shortcuts-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.home-shortcut{position:relative;display:grid;gap:6px;text-align:right;padding:15px;border:1px solid var(--line);border-radius:17px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s}.home-shortcut:hover{transform:translateY(-3px);border-color:var(--primary);box-shadow:0 8px 22px #183d3012}.home-shortcut>span{font-size:25px}.home-shortcut>b{font-size:12px}.home-shortcut>small{font-size:10px;color:var(--muted);line-height:1.6}.home-shortcut>i{position:absolute;left:13px;bottom:13px;color:var(--primary);font-style:normal}.home-pending{display:flex;align-items:center;gap:12px;padding:14px 17px;border-radius:16px;background:#fff5df;border:1px solid #ead5a5}.home-pending>span{font-size:24px}.home-pending>div{display:grid;gap:3px;flex:1}.home-pending b{font-size:12px;color:#785315}.home-pending small{font-size:10px;color:#856d43}
+@media(max-width:760px){.home-hero{min-height:290px;padding:24px 20px;align-items:flex-start}.home-hero-copy{max-width:100%}.home-hero-art{left:-24px;top:auto;bottom:-56px;transform:none;opacity:.28}.home-hero-note{display:none}.home-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.home-shortcuts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-pending{flex-wrap:wrap}.home-pending button{margin-right:36px}}
+@media(max-width:390px){.home-hero{padding:20px 16px}.home-hero h2{font-size:24px}.home-hero-actions .btn{font-size:11px;padding:10px}.home-metrics article{padding:12px}.home-metrics b{font-size:22px}.home-shortcut{padding:12px}}
+
 </style>
 </head>
 <body>
@@ -777,23 +783,40 @@ function storyHomeHTML(){
 function viewHome(){
   const T=buildTree(), n=Object.keys(T.P).length, pend=S.isAdmin?pendingList().length:0;
   const fam=T.nodes.filter(x=>x.kids.length).length, gens=T.nodes.reduce((m,x)=>Math.max(m,x.depth),0);
-  return `<div class="stack">
-  ${myIdentityHTML()}${bdayHTML()}${myMarriageHTML()}${fsHTML()}
-  ${installCardHTML()}
-  <section class="card hero herobg"><div class="hero-deco" aria-hidden="true">${LOGO.replace('width="40" height="40"','width="190" height="190"')}</div>
-    <h2>سلام ${esc(S.me.first)} جان</h2>
-    <p>اینجا شجره‌نامهٔ خاندان الله‌رضایی است. خودتان و پدر و مادر و همسر و فرزندانتان را ثبت کنید و اگر خاطره یا ویژگی از کسی به یاد دارید بنویسید. اطلاعات پس از تأیید مدیر در شجره‌نامه دیده می‌شود.</p>
-    <div class="row">
-      <button class="btn big" data-act="tab" data-tab="tree">مشاهدهٔ شجره‌نامه</button>
-      <button class="btn ghost big" data-act="addme">${myRecId()?'تکمیل اطلاعات پروندهٔ من':'ثبت اطلاعات خودم'}</button>
+  const memories=Object.keys(S.memories).length, births=birthdaysList(60);
+  const quick=(ic,title,desc,act,tab)=>`<button class="home-shortcut" type="button" data-act="${act}" ${tab?`data-tab="${tab}"`:''}><span>${ic}</span><b>${title}</b><small>${desc}</small><i>←</i></button>`;
+  return `<div class="stack home-dashboard">
+  <section class="home-hero">
+    <div class="home-hero-art" aria-hidden="true"><div class="home-orbit orbit-one"></div><div class="home-orbit orbit-two"></div><span>🌳</span><i>✦</i><em>✧</em></div>
+    <div class="home-hero-copy"><span class="home-kicker">خانهٔ خاندان الله‌رضایی</span><h2>خوش آمدی، ${esc(S.me.first)} جان</h2>
+      <p>اینجا خانهٔ خاطره‌ها و ریشه‌های ماست؛ جایی برای شناخت نسل‌ها، ثبت لحظه‌های زندگی و نزدیک‌تر ماندن به خانواده.</p>
+      <div class="home-hero-actions"><button class="btn big" data-act="tab" data-tab="tree">🌳 دیدن شجره‌نامه</button><button class="btn home-hero-secondary big" data-act="addme">${myRecId()?'تکمیل پرونده من':'ثبت اطلاعات خودم'}</button></div>
+    </div>
+    <div class="home-hero-note"><span>یک خانواده،</span><b>هزاران خاطره</b><small>هر نام، بخشی از داستان ماست.</small></div>
+  </section>
+  ${n===0?`<section class="card empty"><h3>اولین برگ این درخت را ثبت کنیم</h3><p class="muted" style="margin:0">${S.isAdmin?'از خودتان یا بزرگ‌ترین فرد خاندان شروع کنید. پدر و مادر را می‌توانید همان‌جا با نام بنویسید و بعدها پیوند دهید.':'به محض ثبت اولین افراد، شجره‌نامه شکل می‌گیرد. شما هم می‌توانید اطلاعاتتان را ارسال کنید.'}</p><button class="btn" data-act="addnew">ثبت اولین نفر</button></section>`
+  :`<section class="home-overview">
+    <div class="home-overview-heading"><div><span class="home-kicker">نگاهی به خانواده</span><h3>خانواده ما در یک نگاه</h3></div><button class="home-text-link" data-act="tab" data-tab="stats">گزارش کامل آمار ←</button></div>
+    <div class="home-metrics">
+      <article><span class="metric-icon">👨‍👩‍👧‍👦</span><b>${fa(n)}</b><small>عضو ثبت‌شده</small></article>
+      <article><span class="metric-icon">🌿</span><b>${fa(gens)}</b><small>نسل خانوادگی</small></article>
+      <article><span class="metric-icon">🏡</span><b>${fa(fam)}</b><small>شاخه دارای فرزند</small></article>
+      <article><span class="metric-icon">📖</span><b>${fa(memories)}</b><small>یادگار و خاطره</small></article>
+    </div>
+  </section>`}
+  <section class="home-shortcuts-section"><div class="home-overview-heading"><div><span class="home-kicker">از کجا شروع کنیم؟</span><h3>راه‌های سریع</h3></div></div>
+    <div class="home-shortcuts-grid">
+      ${quick('🌳','شجره‌نامه','دیدن ریشه‌ها و نسل‌ها','tab','tree')}
+      ${quick('✍️','ثبت اطلاعات','افزودن یا تکمیل پرونده','addme')}
+      ${quick('❤️','دفتر زندگی','خاطره‌ها و یادگارها','tab','tree')}
+      ${quick('📊','گزارش و آمار','شناخت بهتر خانواده','tab','stats')}
     </div>
   </section>
-  ${n===0?`<section class="card empty"><h3>هنوز کسی در شجره‌نامه ثبت نشده است</h3><p class="muted" style="margin:0">${S.isAdmin?'از خودتان یا بزرگ‌ترین فرد خاندان شروع کنید. پدر و مادر را می‌توانید همان‌جا با نام بنویسید و بعدها خودکار پیوند می‌خورند.':'به محض اینکه اولین افراد ثبت شوند اینجا نمایش داده می‌شود. شما هم می‌توانید اطلاعات را بفرستید.'}</p><button class="btn" data-act="addnew">ثبت یک نفر</button></section>`
-  :`<section class="kpis"><div class="kpi"><b class="num">${fa(n)}</b><span>نفر در شجره‌نامه</span></div><div class="kpi"><b class="num">${fa(fam)}</b><span>خانواده</span></div><div class="kpi"><b class="num">${fa(gens)}</b><span>نسل</span></div><div class="kpi"><b class="num">${fa(Object.keys(S.memories).length)}</b><span>یادگار نوشته‌شده</span></div></section>`}
+  ${myIdentityHTML()} ${bdayHTML()} ${myMarriageHTML()} ${fsHTML()} ${installCardHTML()}
   ${bdaySectionHTML()}
   ${storyHomeHTML()}
   ${treeWarnHTML()}
-  ${S.isAdmin&&pend?`<section class="note warn row" style="justify-content:space-between"><span>${fa(pend)} مورد منتظر تأیید شماست.</span><button class="btn sm" data-act="tab" data-tab="admin">بررسی</button></section>`:''}
+  ${S.isAdmin&&pend?`<section class="home-pending"><span>🔔</span><div><b>${fa(pend)} مورد منتظر بررسی شماست</b><small>برای به‌روز ماندن اطلاعات خانواده، درخواست‌ها را بررسی کنید.</small></div><button class="btn sm" data-act="tab" data-tab="admin">بررسی درخواست‌ها</button></section>`:''}
   </div>`;
 }
 
