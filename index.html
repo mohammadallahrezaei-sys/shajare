@@ -723,7 +723,7 @@ function viewHome(){
   const T=buildTree(), n=Object.keys(T.P).length, pend=S.isAdmin?pendingList().length:0;
   const fam=T.nodes.filter(x=>x.kids.length).length, gens=T.nodes.reduce((m,x)=>Math.max(m,x.depth),0);
   return `<div class="stack">
-  ${cpHTML()}${bdayHTML()}${myMarriageHTML()}${fsHTML()}
+  ${bdayHTML()}${myMarriageHTML()}${fsHTML()}
   ${installCardHTML()}
   <section class="card hero herobg"><div class="hero-deco" aria-hidden="true">${LOGO.replace('width="40" height="40"','width="190" height="190"')}</div>
     <h2>سلام ${esc(S.me.first)} جان</h2>
@@ -982,21 +982,15 @@ function coupleStatsHTML(){
   return `<section class="card"><h3>زندگی مشترک زوج‌ها</h3><div class="facts" style="margin-top:12px">${h}</div>${dur.length?'':'<p class="muted small" style="margin:10px 0 0">تاریخ ازدواج را هنگام ثبت یا ویرایش همسر وارد کنید (اختیاری) تا آمار مدت زندگی مشترک ساخته شود.</p>'}
   ${dl.length?`<h4 style="margin:14px 0 6px">تاریخ نشان، عقد و عروسی زوج‌ها</h4><ul class="list">${dl.slice(0,40).map(r=>`<li><div style="flex:1 1 220px;min-width:0"><b>${esc(nm(r))}</b> <span class="muted small">${esc(dtParts(r.f).join('، '))}</span></div></li>`).join('')}</ul>${dl.length>40?`<p class="muted small" style="margin:6px 0 0">${fa(dl.length-40)} زوج دیگر هم هست.</p>`:''}`:''}</section>`;
 }
-function myRecId(){ const f=nn(S.me.first), l=famKey(S.me.last), ids=Object.keys(S.people).filter(i=>nn(S.people[i].first)===f&&famKey(S.people[i].last)===l); return ids.length===1?ids[0]:''; }
-function cpHTML(){
-  if(!S.me||S.cpDone) return '';
-  const id=myRecId(); if(!id){ const f=nn(S.me.first), l=famKey(S.me.last); if(Object.values(S.people).some(x=>nn(x.first)===f&&famKey(x.last)===l)) return ''; return `<section class="card stack" style="border:2px solid #d9a441"><h3>⚠️ اطلاعات شما هنوز ثبت نشده</h3><div class="row"><button type="button" class="btn" data-act="addme">ثبت اطلاعات خودم</button></div></section>`; }
-  const p=S.people[id];
-  if(Object.values((S.mySub&&S.mySub.items)||{}).some(it=>it.editOf===id&&it.status==='pending')) return '';
-  const inp=(k,l,t)=>`<label class="f" style="flex:1 1 200px"><span>${l}</span><input type="${t||'text'}" id="cp_${k}" ${t==='number'?`min="1200" max="${TODAY.y}" placeholder="مثلاً ۱۳۶۵"`:''}></label>`; let f='';
-  if(!p.gender) f+=`<label class="f" style="flex:1 1 200px"><span>جنسیت</span><select id="cp_gender"><option value="">— انتخاب —</option><option value="m">آقا</option><option value="f">خانم</option></select></label>`;
-  if(!p.bY) f+=inp('bY','سال تولد','number');
-  if(!p.birthPlace&&!p.place) f+=inp('birthPlace','محل تولد');
-  if(!p.residence) f+=inp('residence','محل سکونت');
-  if(!p.job) f+=inp('job','شغل');
-  if(!f) return '';
-  return `<section class="card stack" style="border:2px solid #d9a441"><h3>⚠️ اطلاعات شما کامل نیست</h3><p class="muted small" style="margin:0">فقط همین موارد خالی مانده است؛ بقیهٔ اطلاعات شما کامل است. بعد از تأیید مدیر ثبت می‌شود.</p><div class="row" style="gap:10px">${f}</div><div class="row"><button type="button" class="btn" data-act="cpsave" data-id="${esc(id)}">ارسال اطلاعات</button></div></section>`;
+function myKey(){ return nn(S.me.first)+'|'+famKey(S.me.last); }
+function myCands(){
+  const f=nn(S.me.first).replace(/\s/g,''), l=famKey(S.me.last); if(!f) return [];
+  const sc=i=>{ const q=S.people[i], pf=nn(q.first).replace(/\s/g,''), pl=famKey(q.last); if(!pf) return 0;
+    let fs=0; if(pf===f) fs=10; else if(pf.startsWith(f)||f.startsWith(pf)) fs=6; else if(pf.includes(f)||f.includes(pf)) fs=4; if(!fs) return 0;
+    let ls=0; if(pl===l||(isAllahK(pl)&&isAllahK(l))) ls=2; else if(pl&&l&&(pl.includes(l)||l.includes(pl))) ls=1; if(!ls) return 0; return fs*10+ls; };
+  return Object.keys(S.people).map(i=>[i,sc(i)]).filter(x=>x[1]).sort((x,y)=>y[1]-x[1]);
 }
+function myRecId(){ try{ const o=JSON.parse(lsGet('shj_myid')||'null'); if(o&&o.k===myKey()&&S.people[o.id]) return o.id; }catch(e){} const c=myCands(); return (c.length&&c[0][1]>=102&&(c.length===1||c[0][1]>c[1][1]))?c[0][0]:''; }
 function dtParts(x){ return x&&x.dt?[['nishan','نشان'],['aghd','عقد'],['aroosi','عروسی']].map(([n,l])=>{ const d=x.dt[n], t=d?dstr(d.y,d.m,d.d):''; return t?l+' '+t:''; }).filter(Boolean):[]; }
 function myMarriageHTML(){
   if(!S.me) return ''; const id=myRecId(); if(!id) return '';
@@ -2015,14 +2009,6 @@ document.addEventListener('click',async ev=>{
   else if(a==='hundo'){ let h=[]; try{ h=JSON.parse(lsGet('shj_hist')||'[]'); }catch(e){} const x=h.find(y=>String(y.at)===el.dataset.at); if(!x||x.undone) return; if(!confirm('«'+x.label+'» برگردانده شود؟')) return;
     for(const [id,before] of x.entries){ if(!S.people[id]) continue; await S.db.doc('people/'+id).update(before); S.people[id]=Object.assign({},S.people[id],before); }
     x.undone=true; lsSet('shj_hist',JSON.stringify(h)); S.T=null; toast('برگردانده شد'); renderView(); }
-  else if(a==='cpsave'){ const id=el.dataset.id, p=S.people[id]; if(!p) return; const patch={};
-    const g=val('#cp_gender'); if(g) patch.gender=g; const y=+val('#cp_bY'); if(y) patch.bY=y; ['birthPlace','residence','job'].forEach(f=>{ const v=val('#cp_'+f); if(v) patch[f]=v; });
-    if(!Object.keys(patch).length){ toast('حداقل یک مورد را پر کنید'); return; }
-    if(patch.bY&&(patch.bY<1200||patch.bY>TODAY.y)){ toast('سال تولد درست نیست'); return; }
-    if(S.isAdmin){ await S.db.doc('people/'+id).update(patch); S.people[id]=Object.assign({},p,patch); S.T=null; S.cpDone=true; toast('اطلاعات ثبت شد'); renderView(); return; }
-    patch.first=p.first; patch.last=p.last; const r=await deliver('person',patch,newId('p'),id); S.cpDone=true;
-    if(r==='sent') toast('ارسال شد؛ پس از تأیید مدیر ثبت می‌شود'); else { try{ await navigator.clipboard.writeText(S.code); }catch(e){} alert('ارسال مستقیم ممکن نبود. کد اطلاعات کپی شد؛ آن را برای مدیر بفرستید.'); }
-    renderView(); }
   else if(a==='unifyall'){
     const top=v=>Object.entries(v).sort((x,y)=>y[1].length-x[1].length)[0][0], todo={};
     const add=(id,f,to)=>{ if(S.people[id]&&S.people[id][f]!==to) (todo[id]=todo[id]||{})[f]=to; };
