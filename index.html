@@ -1512,25 +1512,34 @@ function growthChildren(){
   const pid=myRecId(); if(!pid) return [];
   return all.filter(([id,p])=>String(p.fatherId||'')===String(pid)||String(p.motherId||'')===String(pid));
 }
-function growthDateFa(v){ if(!v) return ''; try{return new Intl.DateTimeFormat('fa-IR').format(new Date(v+'T12:00:00'));}catch(e){return v;} }
+function growthDateFa(v){ if(!v) return ''; try{return new Intl.DateTimeFormat('fa-IR-u-ca-persian',{year:'numeric',month:'long',day:'numeric'}).format(new Date(v+'T12:00:00'));}catch(e){return v;} }
+const jPad=n=>String(n).padStart(2,'0');
+const jToday=()=>fa(TODAY.y+'/'+jPad(TODAY.m)+'/'+jPad(TODAY.d));
+const jInput=(id,val,req)=>`<input id="${id}" type="text" inputmode="numeric" dir="ltr" autocomplete="off" placeholder="${fa('1405/01/15')}" ${req?'required':''} value="${val||''}" style="text-align:center">`;
+function jParse(sel){
+  const t=enDigits(($(sel)||{value:''}).value).trim().replace(/[-.\s]/g,'/'); const m=t.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/); if(!m) return null;
+  const y=+m[1], mo=+m[2], d=+m[3]; if(y<1200||y>1500||mo<1||mo>12||d<1) return null;
+  const max=mo<=6?31:mo<=11?30:(jalCal(y).leap===0?30:29); if(d>max) return null;
+  const g=d2g(j2d(y,mo,d)); return g.gy+'-'+jPad(g.gm)+'-'+jPad(g.gd);
+}
 function growthChart(rows,key,label,unit){
   const pts=rows.filter(r=>r[key]!=null&&Number.isFinite(Number(r[key]))); if(pts.length<2) return `<p class="muted small">برای رسم نمودار ${label} حداقل دو اندازه‌گیری لازم است.</p>`;
   const vals=pts.map(r=>Number(r[key])), lo=Math.min(...vals), hi=Math.max(...vals), span=(hi-lo)||1;
   const xy=vals.map((v,i)=>({x:30+i*540/(vals.length-1),y:125-(v-lo)/span*90,v}));
   const poly=xy.map(p=>p.x+','+p.y).join(' ');
-  return `<div class="stack" style="gap:4px"><b>${label} (${unit})</b><svg viewBox="0 0 600 160" role="img" aria-label="نمودار ${label}" style="width:100%;height:auto;max-height:190px"><line x1="25" y1="125" x2="575" y2="125" stroke="currentColor" opacity=".25"/><polyline points="${poly}" fill="none" stroke="#168a72" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${xy.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#168a72"><title>${esc(pts[i].recorded_on)}: ${p.v} ${unit}</title></circle>`).join('')}<text x="30" y="150" font-size="12" fill="currentColor">${esc(pts[0].recorded_on)}</text><text x="570" y="150" text-anchor="end" font-size="12" fill="currentColor">${esc(pts[pts.length-1].recorded_on)}</text><text x="570" y="18" text-anchor="end" font-size="13" fill="currentColor">${fa(hi)} ${unit}</text><text x="570" y="140" text-anchor="end" font-size="13" fill="currentColor">${fa(lo)} ${unit}</text></svg></div>`;
+  return `<div class="stack" style="gap:4px"><b>${label} (${unit})</b><svg viewBox="0 0 600 160" role="img" aria-label="نمودار ${label}" style="width:100%;height:auto;max-height:190px"><line x1="25" y1="125" x2="575" y2="125" stroke="currentColor" opacity=".25"/><polyline points="${poly}" fill="none" stroke="#168a72" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${xy.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="5" fill="#168a72"><title>${esc(growthDateFa(pts[i].recorded_on))}: ${p.v} ${unit}</title></circle>`).join('')}<text x="30" y="150" font-size="12" fill="currentColor">${esc(growthDateFa(pts[0].recorded_on))}</text><text x="570" y="150" text-anchor="end" font-size="12" fill="currentColor">${esc(growthDateFa(pts[pts.length-1].recorded_on))}</text><text x="570" y="18" text-anchor="end" font-size="13" fill="currentColor">${fa(hi)} ${unit}</text><text x="570" y="140" text-anchor="end" font-size="13" fill="currentColor">${fa(lo)} ${unit}</text></svg></div>`;
 }
 function viewGrowth(){
   const exp=sessionStorage.getItem('shj_parent_exp'); if(exp&&new Date(exp).getTime()<=Date.now()){sessionStorage.removeItem('shj_parent_token');sessionStorage.removeItem('shj_parent_exp');S.growthRows=[];}
   const kids=growthChildren();
-  if(!S.isAdmin&&!sessionStorage.getItem('shj_parent_token')) return `<div class="stack"><section class="card stack"><h2>📏 دفتر رشد کودک</h2><p class="muted">برای مشاهدهٔ اطلاعات رشد، ابتدا کد اختصاصی ۶ رقمی والد را وارد کنید. رمز ورود خانواده همان رمز همیشگی است.</p><button class="btn big" data-act="growthpin">ورود با کد والد</button><p class="small muted">کد والد را مدیر برای هر پدر یا مادر تعریف می‌کند. دسترسی فقط به فرزندانی است که رابطهٔ پدر/مادر آن‌ها در شجره‌نامه درست ثبت شده باشد.</p></section></div>`;
+  if(!S.isAdmin&&!sessionStorage.getItem('shj_parent_token')) return `<div class="stack"><section class="card stack"><h2>📏 دفتر رشد کودک</h2><p class="muted">برای مشاهدهٔ اطلاعات رشد، ابتدا با رمز شخصی خود وارد شوید. رمز ورود خانواده همان رمز همیشگی است.</p><button class="btn big" data-act="growthpin">ورود با رمز شخصی</button><p class="small muted">کد والد را مدیر برای هر پدر یا مادر تعریف می‌کند. دسترسی فقط به فرزندانی است که رابطهٔ پدر/مادر آن‌ها در شجره‌نامه درست ثبت شده باشد.</p></section></div>`;
   if(!kids.length) return `<section class="card"><h2>📏 دفتر رشد کودک</h2><p class="muted">برای این حساب، فرزند وابسته‌ای در شجره‌نامه پیدا نشد. اگر رابطهٔ پدر یا مادر ثبت نشده یا پروندهٔ خودتان به‌درستی شناسایی نشده است، ابتدا آن را اصلاح کنید.</p>${S.isAdmin?'<p>برای مدیر، افراد زیر ۱۹ سال یا دارای علامت کودک نمایش داده می‌شوند.</p>':''}</section>`;
   const selected=kids.find(([id])=>id===S.growthChild)||kids[0]; S.growthChild=selected[0];
   const [cid,cp]=selected, rows=S.growthRows||[];
   return `<div class="stack"><section class="card stack"><div class="row" style="justify-content:space-between"><h2>📏 دفتر رشد کودک</h2>${!S.isAdmin?'<button class="btn ghost sm" data-act="growthlock">خروج از دفتر رشد</button>':''}</div>
   <label class="f"><span>انتخاب فرزند</span><select id="growthChild">${kids.map(([id,p])=>`<option value="${esc(id)}" ${id===cid?'selected':''}>${esc(full(p))}</option>`).join('')}</select></label>
   <div class="note">ثبت قد و وزن در تاریخ‌های مختلف؛ اطلاعات این بخش فقط برای والدین تأییدشده و مدیر قابل مشاهده است.</div>
-  <form id="growthForm" class="stack" style="gap:10px"><label class="f"><span>تاریخ اندازه‌گیری (میلادی)</span><input id="g_date" type="date" required value="${new Date().toISOString().slice(0,10)}"></label><div class="row"><label class="f" style="flex:1"><span>قد (سانتی‌متر)</span><input id="g_height" type="number" min="20" max="250" step="0.1" placeholder="مثلاً ۱۰۲"></label><label class="f" style="flex:1"><span>وزن (کیلوگرم)</span><input id="g_weight" type="number" min="0.5" max="300" step="0.1" placeholder="مثلاً ۱۶٫۵"></label></div><label class="f"><span>یادداشت اختیاری</span><textarea id="g_note" rows="2" placeholder="مثلاً اندازه‌گیری در منزل"></textarea></label><button class="btn" type="submit">ثبت اندازه‌گیری</button></form></section>
+  <form id="growthForm" class="stack" style="gap:10px"><label class="f"><span>تاریخ اندازه\u200cگیری (شمسی، مثل ${fa('1405/01/15')})</span>${jInput('g_date',jToday(),true)}</label><div class="row"><label class="f" style="flex:1"><span>قد (سانتی‌متر)</span><input id="g_height" type="number" min="20" max="250" step="0.1" placeholder="مثلاً ۱۰۲"></label><label class="f" style="flex:1"><span>وزن (کیلوگرم)</span><input id="g_weight" type="number" min="0.5" max="300" step="0.1" placeholder="مثلاً ۱۶٫۵"></label></div><label class="f"><span>یادداشت اختیاری</span><textarea id="g_note" rows="2" placeholder="مثلاً اندازه‌گیری در منزل"></textarea></label><button class="btn" type="submit">ثبت اندازه‌گیری</button></form></section>
   <section class="card stack"><div class="row" style="justify-content:space-between"><h3>سوابق ${esc(full(cp))}</h3><button class="btn ghost sm" data-act="growthrefresh">به‌روزرسانی</button></div>
   ${rows.length>=2?`<div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px">${growthChart(rows,'height_cm','روند قد','cm')}${growthChart(rows,'weight_kg','روند وزن','kg')}</div>`:''}
   ${rows.length?`<div style="overflow:auto"><table class="tbl"><thead><tr><th>تاریخ</th><th>قد</th><th>وزن</th><th>یادداشت</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(growthDateFa(r.recorded_on))}</td><td>${r.height_cm==null?'—':fa(r.height_cm)+' cm'}</td><td>${r.weight_kg==null?'—':fa(r.weight_kg)+' kg'}</td><td>${esc(r.note||'')}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted">هنوز اندازه‌گیری‌ای ثبت نشده است.</p>'}</section></div>`;
@@ -1541,28 +1550,42 @@ async function loadGrowth(){
   const rows=await sbFetch(q); S.growthRows=Array.isArray(rows)?rows.map(r=>({id:r.id,child_id:r.person_id,recorded_on:r.occurred_on,height_cm:r.height_cm,weight_kg:r.weight_kg,note:r.body})):[]; renderView();
 }
 async function verifyGrowthPin(){
-  const raw=prompt('کد اختصاصی ۶ رقمی والد را وارد کنید:'); if(raw===null) return;
-  const pin=enDigits(raw).trim(); if(!/^\d{6}$/.test(pin)){toast('کد باید دقیقاً ۶ رقم باشد.');return;}
-  const pid=myRecId(); if(!pid){toast('پروندهٔ شما در شجره‌نامه شناسایی نشد؛ امکان احراز والد وجود ندارد.');return;}
-  const out=await sbFetch('/rest/v1/rpc/shj_verify_parent_pin',{method:'POST',body:JSON.stringify({p_parent_id:pid,p_pin:pin})});
-  const rec=Array.isArray(out)?out[0]:out; if(!rec||!rec.access_token){toast('کد والد نادرست، غیرفعال یا موقتاً قفل شده است.');return;}
-  sessionStorage.setItem('shj_parent_token',rec.access_token); sessionStorage.setItem('shj_parent_exp',rec.expires_at||''); S.growthChild=''; S.growthRows=[]; renderView();
+  const me=myRecId(); if(!me){toast('پروندهٔ شما در شجره‌نامه شناسایی نشد؛ امکان ورود وجود ندارد.');return;}
+  const v=await askForm('ورود به دفتر رشد',[{id:'pw',label:'رمز شخصی شما',type:'password'}],'ورود'); if(!v||!v.pw) return;
+  const out=await rpcCall('shj_verify_parent_pin',{p_parent_id:me,p_pin:v.pw}); const rec=Array.isArray(out)?out[0]:out;
+  if(!rec||!rec.access_token){toast('رمز نادرست، غیرفعال یا موقتاً قفل شده است.');return;}
+  startSession(rec); S.growthChild=''; S.growthRows=[]; renderView();
   const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} else toast('ورود انجام شد، اما فرزند مرتبطی در شجره‌نامه پیدا نشد.');
 }
 async function saveGrowth(){
-  const cid=$('#growthChild')?.value||S.growthChild, date=val('#g_date'), h=val('#g_height'), w=val('#g_weight'), note=val('#g_note');
-  if(!cid||!date||(!h&&!w&&!note)){toast('تاریخ و حداقل یکی از قد، وزن یا یادداشت را وارد کنید.');return;}
+  const cid=$('#growthChild')?.value||S.growthChild, date=jParse('#g_date'), h=val('#g_height'), w=val('#g_weight'), note=val('#g_note');
+  if(!date){toast('تاریخ شمسی را به شکل ۱۴۰۵/۰۱/۱۵ وارد کنید.');return;} if(!cid||(!h&&!w&&!note)){toast('حداقل یکی از قد، وزن یا یادداشت را وارد کنید.');return;}
   const row={person_id:cid,author_person_id:S.isAdmin?null:myRecId(),kind:'growth',occurred_on:date,title:'ثبت رشد',height_cm:h?Number(h):null,weight_kg:w?Number(w):null,body:note||null,visibility:'parents'};
   await sbFetch('/rest/v1/shj_life_entries',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(row)});
   toast('اندازه‌گیری ثبت شد.'); $('#g_height').value=''; $('#g_weight').value=''; $('#g_note').value=''; await loadGrowth();
 }
 async function adminSetParentPin(id){
-  const p=S.people[id]; if(!p)return; const pin=prompt('برای '+full(p)+' یک کد ۶ رقمی تعیین کنید:'); if(pin===null)return;
-  const code=enDigits(pin).trim(); if(!/^\d{6}$/.test(code)){toast('کد باید دقیقاً ۶ رقم باشد.');return;}
-  await sbFetch('/rest/v1/rpc/shj_set_parent_pin',{method:'POST',body:JSON.stringify({p_parent_id:id,p_pin:code})}); toast('کد والد ثبت شد؛ کد را امن و مستقیم به خود فرد بدهید.');
+  const p=S.people[id]; if(!p) return;
+  const v=await askForm('رمز موقت برای '+full(p),[{id:'pw',label:'رمز موقت',type:'password',strength:1}],'ثبت',PW_NOTE+' فرد باید بلافاصله بعد از ورود از «تغییر رمز» آن را عوض کند.'); if(!v) return;
+  const iss=pwIssues(v.pw); if(iss.length){toast('رمز ضعیف است: '+iss.join('، '));return;}
+  await rpcCall('shj_set_parent_pin',{p_parent_id:id,p_pin:v.pw}); toast('رمز موقت ثبت شد؛ آن را امن و مستقیم به خود فرد بدهید.');
 }
 async function adminRevokeParent(id){ if(!confirm('دسترسی والد برای این فرد لغو شود؟'))return; await sbFetch('/rest/v1/rpc/shj_revoke_parent_access',{method:'POST',body:JSON.stringify({p_parent_id:id})}); toast('دسترسی والد لغو شد.'); }
 
+/* ---------- ماژول ابزارها: دفتر زندگی، رشد کودک، عکس و خاطره ---------- */
+const TOOLS=[['life','📖','دفتر زندگی'],['growth','📏','رشد کودک'],['family','🖼️','عکس و خاطره']];
+function viewTools(){
+  const t=TOOLS.find(x=>x[0]===S.tool)?S.tool:'life';
+  const f={life:viewLife,growth:viewGrowth,family:viewFamily}[t];
+  return `<div class="stack"><div class="row noprint" role="tablist" style="gap:8px;flex-wrap:wrap">${TOOLS.map(([k,i,l])=>`<button class="btn ${k===t?'':'ghost'} sm" role="tab" data-act="tool" data-tool="${k}" ${k===t?'aria-selected="true"':''}>${i} ${l}</button>`).join('')}</div>${f()}</div>`;
+}
+async function openTool(t){
+  S.tool=TOOLS.find(x=>x[0]===t)?t:'life'; renderView();
+  const ok=S.isAdmin||sessionStorage.getItem('shj_parent_token');
+  if(S.tool==='growth'&&ok){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} }
+  else if(S.tool==='life'&&ok){ const pp=lifePeople(); if(pp[0]){ if(!pp.find(x=>x[0]===S.lifePerson)) S.lifePerson=pp[0][0]; await loadLife(); } }
+  else if(S.tool==='family') await loadFamilyPosts();
+}
 /* ---------- دفتر زندگی ---------- */
 const LIFE_KINDS={milestone:'نقطه عطف',memory:'خاطره',letter:'نامه',event:'رویداد',photo:'عکس',growth:'رشد'};
 const LIFE_VIS={private:'خصوصی',parents:'والدین',family:'خانواده',public:'عمومی (پس از تأیید مدیر)'};
@@ -1582,32 +1605,141 @@ async function loadLife(){
 }
 function viewLife(){
   const exp=sessionStorage.getItem('shj_parent_exp'); if(exp&&new Date(exp).getTime()<=Date.now()){sessionStorage.removeItem('shj_parent_token');sessionStorage.removeItem('shj_parent_exp');}
-  if(!S.isAdmin&&!sessionStorage.getItem('shj_parent_token')) return `<section class="card stack"><h2>📖 دفتر زندگی من</h2><p class="muted">برای ورود به دفتر شخصی، کد ۶ رقمی خود را وارد کنید. کد را مدیر برای هر فرد تعریف می‌کند.</p><button class="btn big" data-act="lifepin">ورود با کد شخصی</button></section>`;
+  if(!S.isAdmin&&!sessionStorage.getItem('shj_parent_token')) return `<section class="card stack"><h2>📖 دفتر زندگی من</h2><p class="muted">برای ورود به دفتر شخصی، رمز شخصی خود را وارد کنید. اگر رمز ندارید، «ثبت‌نام» را بزنید.</p><button class="btn big" data-act="lifepin">ورود با رمز شخصی</button><p class="small muted" style="margin:0">اولین بار هستید؟ با چند سؤال از اطلاعات پروندهٔ خودتان، همین‌جا رمز شخصی بسازید.</p><button class="btn ghost" data-act="lifeclaim">ثبت‌نام و ساخت رمز شخصی</button><button class="btn ghost sm" data-act="lifeinvite">کد دعوت دارم</button></section>`;
   const ppl=lifePeople(); if(!ppl.length) return `<section class="card"><h2>📖 دفتر زندگی من</h2><p class="muted">پروندهٔ شما در شجره‌نامه شناسایی نشد.</p></section>`;
   const pid=ppl.find(x=>x[0]===S.lifePerson)?S.lifePerson:ppl[0][0]; S.lifePerson=pid;
   const rows=(S.lifeRows||[]).filter(r=>!S.lifeKind||r.kind===S.lifeKind);
   const card=e=>{ const pend=e.visibility==='public'&&e.status==='pending';
     const g=e.kind==='growth'?`<p style="margin:0">${e.height_cm!=null?'قد '+fa(e.height_cm)+' سانتی‌متر ':''}${e.weight_kg!=null?'وزن '+fa(e.weight_kg)+' کیلوگرم':''}</p>`:'';
     return `<article class="card stack" style="gap:6px"><div class="row" style="justify-content:space-between"><b>${esc(e.title)}</b><span class="small muted">${growthDateFa(e.occurred_on)} · ${LIFE_KINDS[e.kind]||''} · ${LIFE_VIS[e.visibility]||''}${pend?' · در انتظار تأیید':''}</span></div>${g}${e.body?`<p style="white-space:pre-wrap;margin:0">${esc(e.body)}</p>`:''}${e.url?`<img src="${esc(e.url)}" alt="" style="max-width:100%;border-radius:10px">`:''}${e.unlock_on?`<p class="small muted" style="margin:0">تاریخ باز شدن نامه: ${growthDateFa(e.unlock_on)}</p>`:''}<div class="row noprint">${S.isAdmin&&pend?`<button class="btn sm" data-act="lifeapprove" data-id="${e.id}">تأیید انتشار</button>`:''}<button class="btn ghost sm" data-act="lifedel" data-id="${e.id}">حذف</button></div></article>`; };
-  return `<div class="stack"><section class="card stack noprint"><h2>📖 دفتر زندگی</h2><div class="row"><select id="lifePerson">${ppl.map(([id,p])=>`<option value="${esc(id)}" ${id===pid?'selected':''}>${esc(full(p))}</option>`).join('')}</select><select id="lifeKind"><option value="">همهٔ موارد</option>${lifeOpt(LIFE_KINDS,S.lifeKind||'')}</select><button class="btn ghost sm" data-act="lifeprint">چاپ / ذخیره PDF</button></div>
-  <h3>ثبت مورد جدید</h3><div class="row"><select id="lf_kind">${lifeOpt({milestone:LIFE_KINDS.milestone,memory:LIFE_KINDS.memory,letter:LIFE_KINDS.letter,event:LIFE_KINDS.event,photo:LIFE_KINDS.photo})}</select><input id="lf_date" type="date"><select id="lf_vis">${lifeOpt(LIFE_VIS,'private')}</select></div>
+  return `<div class="stack"><section class="card stack noprint"><h2>📖 دفتر زندگی</h2><div class="row"><select id="lifePerson">${ppl.map(([id,p])=>`<option value="${esc(id)}" ${id===pid?'selected':''}>${esc(full(p))}</option>`).join('')}</select><select id="lifeKind"><option value="">همهٔ موارد</option>${lifeOpt(LIFE_KINDS,S.lifeKind||'')}</select><button class="btn ghost sm" data-act="lifeprint">چاپ / ذخیره PDF</button>${S.isAdmin?'':'<button class="btn ghost sm" data-act="changepw">تغییر رمز</button><button class="btn ghost sm" data-act="lifelock">خروج از دفتر</button>'}</div>
+  <h3>ثبت مورد جدید</h3><div class="row"><select id="lf_kind">${lifeOpt({milestone:LIFE_KINDS.milestone,memory:LIFE_KINDS.memory,letter:LIFE_KINDS.letter,event:LIFE_KINDS.event,photo:LIFE_KINDS.photo})}</select>${jInput('lf_date',jToday(),true)}<select id="lf_vis">${lifeOpt(LIFE_VIS,'private')}</select></div>
   <input id="lf_title" placeholder="عنوان"><textarea id="lf_body" rows="4" placeholder="متن خاطره، نامه یا توضیح"></textarea>
-  <div class="row"><label class="small muted">باز شدن نامه در تاریخ (اختیاری)<input id="lf_unlock" type="date"></label><label class="small muted">عکس (JPG/PNG/WebP تا ۱۰ مگابایت)<input id="lf_file" type="file" accept="image/jpeg,image/png,image/webp"></label></div>
+  <div class="row"><label class="small muted">باز شدن نامه در تاریخ شمسی (اختیاری)${jInput('lf_unlock','',false)}</label><label class="small muted">عکس (JPG/PNG/WebP تا ۱۰ مگابایت)<input id="lf_file" type="file" accept="image/jpeg,image/png,image/webp"></label></div>
   <button class="btn big" data-act="lifesave">ثبت در دفتر</button></section>
   <div id="lifebook" class="stack"><h3>خط زمانی ${esc(full(S.people[pid]))}</h3>${rows.length?rows.map(card).join(''):'<p class="muted">هنوز موردی ثبت نشده است.</p>'}</div></div>`;
 }
+/* ---------- رمز عبور قوی و فرم‌های امن ---------- */
+function pwIssues(v){
+  const b=[], n=[...v].length;
+  if(n<10) b.push('حداقل ۱۰ نویسه');
+  if(new TextEncoder().encode(v).length>72) b.push('حداکثر ۷۲ بایت (حدود ۷۰ حرف انگلیسی)');
+  const cls=[/[a-zآ-ی]/.test(v),/[A-Z]/.test(v),/[0-9۰-۹]/.test(v),/[^A-Za-z0-9آ-ی۰-۹\s]/.test(v)].filter(Boolean).length;
+  if(cls<3) b.push('ترکیب حداقل ۳ نوع: حرف کوچک، حرف بزرگ انگلیسی، عدد، نماد');
+  if(/(.)\1{3,}/.test(v)) b.push('بدون تکرار یک نویسه ۴ بار پشت‌سرهم');
+  if(/password|passw0rd|qwerty|letmein|iloveyou|admin|welcome|12345678|123456789|abcdefgh/i.test(v)) b.push('نباید رمز رایج باشد');
+  return b;
+}
+const pwHint=v=>{ if(!v) return ''; const i=pwIssues(v); return i.length?'⚠️ '+i.join('؛ '):'✅ رمز قوی است'; };
+const PW_NOTE='رمز را مثل سایت‌های معتبر انتخاب کنید: حداقل ۱۰ نویسه با ترکیب حرف کوچک، حرف بزرگ انگلیسی، عدد و نماد. یک جملهٔ بلند هم عالی است. این رمز را در سایت دیگری استفاده نکنید.';
+function askForm(title,fields,okLabel,note){
+  return new Promise(res=>{
+    const w=document.createElement('div'); w.setAttribute('role','dialog'); w.setAttribute('aria-modal','true');
+    w.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:12px';
+    w.innerHTML=`<div class="card stack" style="max-width:430px;width:100%;max-height:90vh;overflow:auto"><h3>${esc(title)}</h3>${note?`<p class="muted small">${esc(note)}</p>`:''}${fields.map(f=>`<label class="f"><span>${esc(f.label)}</span><input id="af_${f.id}" type="${f.type||'text'}" ${f.type==='password'?`autocomplete="${f.strength?'new-password':'current-password'}" dir="ltr"`:'autocomplete="off"'}></label>${f.strength?`<div class="small muted" id="af_m_${f.id}" aria-live="polite"></div>`:''}`).join('')}<div class="row"><button class="btn big" data-af="ok">${esc(okLabel||'تأیید')}</button><button class="btn ghost" data-af="no">انصراف</button></div></div>`;
+    document.body.appendChild(w);
+    const done=v=>{ w.remove(); res(v); };
+    fields.filter(f=>f.strength).forEach(f=>{ const inp=w.querySelector('#af_'+f.id), m=w.querySelector('#af_m_'+f.id); inp.addEventListener('input',()=>{ m.textContent=pwHint(inp.value); }); });
+    const submit=()=>{ const out={}; fields.forEach(f=>{ out[f.id]=w.querySelector('#af_'+f.id).value; }); done(out); };
+    w.addEventListener('click',ev=>{ const b=ev.target.closest('[data-af]'); if(!b) return; ev.stopPropagation(); if(b.dataset.af==='no') done(null); else submit(); });
+    w.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); submit(); } else if(ev.key==='Escape') done(null); });
+    const first=w.querySelector('input'); if(first) first.focus();
+  });
+}
+const rpcCall=(fn,body)=>sbFetch('/rest/v1/rpc/'+fn,{method:'POST',body:JSON.stringify(body)});
+function startSession(rec){ sessionStorage.setItem('shj_parent_token',rec.access_token); sessionStorage.setItem('shj_parent_exp',rec.expires_at||''); }
+async function loginPersonal(me,pw){
+  const out=await rpcCall('shj_verify_parent_pin',{p_parent_id:me,p_pin:pw}); const rec=Array.isArray(out)?out[0]:out;
+  if(!rec||!rec.access_token){ toast('رمز نادرست، غیرفعال یا موقتاً قفل شده است (۵ اشتباه ← ۱۵ دقیقه قفل).'); return false; }
+  startSession(rec); S.lifePerson=me; await loadLife(); return true;
+}
 async function lifePin(){
-  const raw=prompt('کد ۶ رقمی شخصی خود را وارد کنید:'); if(raw===null) return;
-  const pin=enDigits(raw).trim(); if(!/^\d{6}$/.test(pin)){toast('کد باید دقیقاً ۶ رقم باشد.');return;}
   const me=myRecId(); if(!me){toast('پروندهٔ شما در شجره‌نامه شناسایی نشد.');return;}
-  const out=await sbFetch('/rest/v1/rpc/shj_verify_parent_pin',{method:'POST',body:JSON.stringify({p_parent_id:me,p_pin:pin})});
-  const rec=Array.isArray(out)?out[0]:out; if(!rec||!rec.access_token){toast('کد نادرست، غیرفعال یا موقتاً قفل شده است.');return;}
-  sessionStorage.setItem('shj_parent_token',rec.access_token); sessionStorage.setItem('shj_parent_exp',rec.expires_at||'');
-  S.lifePerson=me; await loadLife();
+  const v=await askForm('ورود به دفتر شخصی',[{id:'pw',label:'رمز شخصی شما',type:'password'}],'ورود'); if(!v||!v.pw) return;
+  await loginPersonal(me,v.pw);
+}
+async function changePassword(){
+  const me=myRecId(); if(!me) return;
+  const v=await askForm('تغییر رمز شخصی',[{id:'o',label:'رمز فعلی',type:'password'},{id:'n',label:'رمز جدید',type:'password',strength:1},{id:'n2',label:'تکرار رمز جدید',type:'password'}],'تغییر رمز',PW_NOTE); if(!v) return;
+  if(v.n!==v.n2){toast('دو رمز جدید یکسان نبودند.');return;}
+  const iss=pwIssues(v.n); if(iss.length||v.n===v.o){toast('رمز جدید ضعیف است: '+(iss.join('، ')||'باید با رمز قبلی فرق کند'));return;}
+  const r=await rpcCall('shj_change_password',{p_person_id:me,p_old:v.o,p_new:v.n});
+  if(r!=='ok'){toast(r==='locked'?'موقتاً قفل شده است؛ بعداً تلاش کنید.':r==='weak'?'رمز جدید پذیرفته نشد.':'رمز فعلی نادرست است.');return;}
+  sessionStorage.removeItem('shj_parent_token'); sessionStorage.removeItem('shj_parent_exp');
+  toast('رمز تغییر کرد. با رمز جدید وارد شوید.'); await loginPersonal(me,v.n);
+}
+const weakPin=p=>/^(\d)\1{5}$/.test(p)||'0123456789876543210'.includes(p);
+function claimsHTML(){
+  const c=S.claims||[]; if(!c.length) return '';
+  return `<section class="card stack" style="border:2px solid var(--primary)"><h3>🆕 درخواست فعال‌سازی دفتر شخصی</h3><p class="muted small">قبل از تأیید، با راه ارتباطی که فرد نوشته تماس بگیرید و مطمئن شوید خودش درخواست داده است.</p>${c.map(r=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span><b>${esc(S.people[r.person_id]?full(S.people[r.person_id]):r.person_id)}</b><br><span class="small muted">راه ارتباطی: ${esc(r.contact)} · ${growthDateFa(String(r.created_at).slice(0,10))}</span></span><span class="row"><button class="btn sm" data-act="claimok" data-id="${esc(r.person_id)}">تأیید</button><button class="btn ghost sm" data-act="claimno" data-id="${esc(r.person_id)}">رد</button></span></div>`).join('')}</section>`;
+}
+async function loadClaims(){
+  const rows=await sbFetch('/rest/v1/rpc/shj_list_claims',{method:'POST',body:'{}'});
+  S.claims=Array.isArray(rows)?rows:[]; try{ const rp=await sbFetch('/rest/v1/rpc/shj_list_reports',{method:'POST',body:'{}'}); S.reports=Array.isArray(rp)?rp:[]; }catch(e){ S.reports=[]; } renderNav(); if(S.tab==='admin') renderView();
+}
+async function decideClaim(id,ok){
+  const p=S.people[id]; if(!confirm((ok?'تأیید':'رد')+' درخواست '+(p?full(p):id)+'؟')) return;
+  await sbFetch('/rest/v1/rpc/shj_decide_claim',{method:'POST',body:JSON.stringify({p_person_id:id,p_approve:!!ok})});
+  toast(ok?'تأیید شد؛ فرد می‌تواند با کد خودش وارد شود.':'درخواست رد شد.'); await loadClaims();
+}
+async function claimAccount(){
+  const me=myRecId(); if(!me){toast('پروندهٔ شما در شجره‌نامه شناسایی نشد. نام و نام خانوادگی را دقیق وارد کنید.');return;}
+  const st=await rpcCall('shj_claim_status',{p_person_id:me});
+  if(st==='active'){
+    if(confirm('برای این پرونده قبلاً دفتر شخصی فعال شده است.\nاگر خودتان قبلاً رمز ساخته‌اید «انصراف» را بزنید و با «ورود با رمز شخصی» وارد شوید.\nاگر شما این کار را نکرده‌اید «تأیید» را بزنید تا به مدیر گزارش شود.')){ await rpcCall('shj_report_claim',{p_person_id:me}); toast('گزارش شما برای مدیر ثبت شد.'); }
+    return;
+  }
+  if(st==='pending'){toast('درخواست شما در انتظار تأیید مدیر است.');return;}
+  const rq=await rpcCall('shj_claim_requirements',{p_person_id:me});
+  if(!rq||rq.count<2){ toast('اطلاعات پروندهٔ شما برای تأیید خودکار کافی نیست؛ درخواست برای مدیر ارسال می‌شود.'); return claimAccountManual(); }
+  const f=[]; if(rq.birth) f.push({id:'bd',label:'تاریخ تولد شمسی (مثل ۱۳۷۰/۰۵/۱۲)'}); if(rq.father) f.push({id:'fa',label:'نام کوچک پدر'}); if(rq.mother) f.push({id:'ma',label:'نام کوچک مادر'});
+  f.push({id:'pw',label:'رمز شخصی جدید',type:'password',strength:1},{id:'pw2',label:'تکرار رمز',type:'password'});
+  const v=await askForm('ساخت رمز شخصی',f,'ثبت‌نام','برای اطمینان از اینکه خودِ شما هستید، به این سؤال‌ها از پروندهٔ خودتان پاسخ دهید. '+PW_NOTE); if(!v) return;
+  if(v.pw!==v.pw2){toast('دو رمز یکسان نبودند.');return;}
+  const iss=pwIssues(v.pw); if(iss.length){toast('رمز ضعیف است: '+iss.join('، '));return;}
+  let by=null,bm=null,bd=null;
+  if(rq.birth){ const m=enDigits(v.bd||'').trim().replace(/[-.\s]/g,'/').match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/); if(!m){toast('تاریخ تولد را مثل ۱۳۷۰/۰۵/۱۲ وارد کنید.');return;} by=+m[1];bm=+m[2];bd=+m[3]; }
+  const r=await rpcCall('shj_self_claim',{p_person_id:me,p_pin:v.pw,p_by:by,p_bm:bm,p_bd:bd,p_father:rq.father?(v.fa||'').trim():null,p_mother:rq.mother?(v.ma||'').trim():null});
+  if(r==='ok'){ toast('دفتر شخصی شما فعال شد.'); await loginPersonal(me,v.pw); return; }
+  toast(r==='wrong'?'پاسخ‌ها با پروندهٔ شما نمی‌خواند. پس از ۵ اشتباه ۳۰ دقیقه قفل می‌شود.':r==='locked'?'به‌دلیل تلاش‌های ناموفق، موقتاً قفل شده است. بعداً دوباره امتحان کنید.':r==='active_exists'?'برای شما رمز فعال است.':r==='need_admin'?'اطلاعات پرونده کافی نیست؛ با مدیر هماهنگ کنید.':'اطلاعات نامعتبر است.');
+}
+function reportsHTML(){
+  const c=S.reports||[]; if(!c.length) return '';
+  return `<section class="card stack" style="border:2px solid #c0392b"><h3>⚠️ گزارش «این من نیستم»</h3><p class="muted small">کسی گزارش داده دفتر این پرونده را شخص دیگری فعال کرده است. با صاحب پرونده صحبت کنید؛ اگر درست بود «لغو دسترسی» را بزنید تا خودش دوباره ثبت‌نام کند.</p>${c.map(r=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><b>${esc(S.people[r.person_id]?full(S.people[r.person_id]):r.person_id)}</b><span class="row"><button class="btn sm" data-act="reportrevoke" data-id="${esc(r.person_id)}">لغو دسترسی</button><button class="btn ghost sm" data-act="reportdismiss" data-id="${esc(r.person_id)}">نادیده بگیر</button></span></div>`).join('')}</section>`;
+}
+async function reportAct(id,revoke){
+  if(revoke&&!confirm('دسترسی فعلی این پرونده لغو شود؟')) return;
+  if(revoke) await sbFetch('/rest/v1/rpc/shj_revoke_parent_access',{method:'POST',body:JSON.stringify({p_parent_id:id})});
+  await sbFetch('/rest/v1/rpc/shj_dismiss_report',{method:'POST',body:JSON.stringify({p_person_id:id})});
+  toast(revoke?'دسترسی لغو شد؛ صاحب پرونده می‌تواند دوباره ثبت‌نام کند.':'گزارش نادیده گرفته شد.'); await loadClaims();
+}
+async function claimAccountManual(){
+  const me=myRecId(); if(!me){toast('پروندهٔ شما در شجره‌نامه شناسایی نشد.');return;}
+  const v=await askForm('درخواست دفتر شخصی',[{id:'c',label:'شمارهٔ تلفن یا ایمیل شما (برای تأیید مدیر)'},{id:'pw',label:'رمز شخصی جدید',type:'password',strength:1},{id:'pw2',label:'تکرار رمز',type:'password'}],'ارسال درخواست',PW_NOTE); if(!v) return;
+  if(!(v.c||'').trim()){toast('راه ارتباطی را بنویسید.');return;}
+  if(v.pw!==v.pw2){toast('دو رمز یکسان نبودند.');return;}
+  const iss=pwIssues(v.pw); if(iss.length){toast('رمز ضعیف است: '+iss.join('، '));return;}
+  const r=await rpcCall('shj_submit_claim',{p_person_id:me,p_pin:v.pw,p_contact:v.c.trim()});
+  toast(r==='submitted'?'درخواست ثبت شد. بعد از تأیید مدیر، با همین رمز وارد شوید.':r==='pending_exists'?'برای این پرونده درخواستی در انتظار تأیید است.':r==='active_exists'?'برای شما رمز فعال است.':'اطلاعات نامعتبر است.');
+}
+async function makeInvite(id){
+  const p=S.people[id]; if(!p) return;
+  const code=await sbFetch('/rest/v1/rpc/shj_create_invite',{method:'POST',body:JSON.stringify({p_person_id:id})});
+  const msg='سلام '+full(p)+'، برای فعال‌سازی دفتر شخصی شجره‌نامه: وارد '+location.origin+location.pathname+' شوید (با رمز همیشگی خانواده)، تب «دفتر زندگی» را باز کنید، «فعال‌سازی با کد دعوت» را بزنید و این کد را وارد کنید: '+code+' . سپس یک رمز قوی دلخواه (حداقل ۱۰ نویسه) برای خودتان انتخاب کنید. کد دعوت ۷ روز اعتبار دارد.';
+  prompt('این پیام را کپی و فقط برای خود '+full(p)+' بفرستید (کد فقط همین یک‌بار نمایش داده می‌شود):',msg);
+}
+async function redeemInvite(){
+  const me=myRecId(); if(!me){toast('پروندهٔ شما در شجره‌نامه شناسایی نشد. نام و نام خانوادگی را دقیق وارد کنید.');return;}
+  const v=await askForm('فعال‌سازی با کد دعوت',[{id:'code',label:'کد دعوت (مثل ABCDE-FGHJK)'},{id:'pw',label:'رمز شخصی جدید',type:'password',strength:1},{id:'pw2',label:'تکرار رمز',type:'password'}],'فعال‌سازی',PW_NOTE); if(!v) return;
+  if(v.pw!==v.pw2){toast('دو رمز یکسان نبودند.');return;}
+  const iss=pwIssues(v.pw); if(iss.length){toast('رمز ضعیف است: '+iss.join('، '));return;}
+  const ok=await rpcCall('shj_redeem_invite',{p_person_id:me,p_code:v.code||'',p_pin:v.pw});
+  if(ok!==true){toast('کد دعوت نادرست، منقضی یا باطل شده است. از مدیر دعوت تازه بخواهید.');return;}
+  toast('رمز شخصی شما فعال شد.'); await loginPersonal(me,v.pw);
 }
 async function saveLife(){
-  const pid=S.lifePerson, kind=val('#lf_kind'), date=val('#lf_date'), title=val('#lf_title'), body=val('#lf_body'), vis=val('#lf_vis'), unlock=val('#lf_unlock'), file=$('#lf_file')?.files?.[0]||null;
-  if(!pid||!date||!title){toast('تاریخ و عنوان را وارد کنید.');return;}
+  const pid=S.lifePerson, kind=val('#lf_kind'), date=jParse('#lf_date'), title=val('#lf_title'), body=val('#lf_body'), vis=val('#lf_vis'), unlockRaw=val('#lf_unlock'), unlock=unlockRaw?jParse('#lf_unlock'):'', file=$('#lf_file')?.files?.[0]||null;
+  if(!date){toast('تاریخ شمسی را به شکل ۱۴۰۵/۰۱/۱۵ وارد کنید.');return;} if(unlockRaw&&!unlock){toast('تاریخ باز شدن نامه معتبر نیست (مثل ۱۴۰۵/۰۱/۱۵).');return;} if(!pid||!title){toast('عنوان را وارد کنید.');return;}
   if(kind==='letter'&&!body){toast('متن نامه را بنویسید.');return;}
   if(file&&(!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size>10*1024*1024)){toast('فقط عکس JPG، PNG یا WebP تا ۱۰ مگابایت پذیرفته می‌شود.');return;}
   const paths=[];
@@ -1648,7 +1780,7 @@ async function loadFamilyPosts(){
       try{const r=await sbFetch('/storage/v1/object/sign/shj-family-pending/'+p.media_path.split('/').map(encodeURIComponent).join('/'),{method:'POST',body:JSON.stringify({expiresIn:3600})}); p.media_url=r&&r.signedURL?(String(r.signedURL).startsWith('http')?r.signedURL:CFG.url+'/storage/v1'+r.signedURL):'';}catch(e){}
     }
   }
-  S.familyPosts=list; if(S.tab==='family'||S.tab==='admin') renderView();
+  S.familyPosts=list; if(S.tab==='family'||S.tab==='tools'||S.tab==='admin') renderView();
 }
 function familyPostCard(p,admin){
   const img=familyMediaUrl(p); const stat=p.status==='pending'?'در انتظار تأیید':p.status==='approved'?'تأییدشده':'ردشده';
@@ -1690,7 +1822,7 @@ function viewAdmin(){
   const nG=lastGroups().length+['place','job'].reduce((t,k)=>t+Object.values(valGroups(k)).filter(v=>Object.keys(v).length>1).length,0);
   const parents=Object.entries(S.people).filter(([id,p])=>!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
   return `<div class="stack">
-   <section class="card stack"><h3>🔐 مدیریت کد والدین</h3><p class="muted small">برای هر پدر یا مادر یک کد مستقل ۶ رقمی تعریف کنید. با تغییر کد، نشست‌های قبلی همان والد باطل می‌شود.</p><div style="max-height:360px;overflow:auto;display:grid;gap:7px">${parents.map(([id,p])=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>${esc(full(p))}</span><span class="row"><button class="btn sm" data-act="setparentpin" data-id="${esc(id)}">تعریف / تغییر کد</button><button class="btn ghost sm" data-act="revokeparent" data-id="${esc(id)}">لغو</button></span></div>`).join('')}</div></section>
+   ${reportsHTML()}${claimsHTML()}<section class="card stack"><h3>🔐 کد شخصی اعضای خانواده</h3><p class="muted small">برای هر عضو، دور یا نزدیک، «ساخت دعوت» را بزنید و پیام را فقط برای خود او بفرستید؛ او رمز قوی خودش را انتخاب می‌کند. «تعیین رمز موقت» برای وقتی است که حضوری کنار فرد هستید.</p><div style="max-height:360px;overflow:auto;display:grid;gap:7px">${parents.map(([id,p])=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>${esc(full(p))}</span><span class="row"><button class="btn sm" data-act="makeinvite" data-id="${esc(id)}">ساخت دعوت</button><button class="btn ghost sm" data-act="setparentpin" data-id="${esc(id)}">تعیین رمز موقت</button><button class="btn ghost sm" data-act="revokeparent" data-id="${esc(id)}">لغو</button></span></div>`).join('')}</div></section>
    <section class="card stack" style="border:2px solid var(--primary)"><h3>اصلاح همه یکجا</h3>
      ${nG?`<p class="muted small" style="margin:0">${fa(nG)} گروه املای ناهمسان پیدا شد (نام خانوادگی، شهر و شغل). با یک کلیک همه یکدست می‌شوند؛ در هر گروه پرتکرارترین املا انتخاب می‌شود.</p><div class="row"><button type="button" class="btn" data-act="unifyall" data-w="all">✨ اصلاح همه یکجا</button></div>`:'<p class="muted small" style="margin:0">همهٔ نام‌های خانوادگی، شهرها و شغل‌ها یکدست است ✅</p>'}</section>
    ${fposts.length?`<section class="card stack"><h3>عکس‌ها و خاطره‌های در انتظار تأیید (${fa(fposts.length)})</h3>${fposts.map(p=>familyPostCard(p,true)).join('')}</section>`:''}
@@ -2029,7 +2161,7 @@ async function onPhotoPicked(file){
 
 /* ================= render ================= */
 const LOGO='<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 36V20M20 20C20 13 10 14 10 6M20 20C20 13 30 14 30 6M20 27C20 23 14 23 14 18M20 27C20 23 26 23 26 18"/><circle cx="10" cy="6" r="2.2" fill="var(--accent)" stroke="none"/><circle cx="30" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>';
-const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['growth','دفتر رشد کودک'],['life','دفتر زندگی'],['family','عکس و خاطره']];
+const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['tools','ابزارها']];
 
 function loginCandidates(first,last){
   const f=nn(first).replace(/\s/g,''), l=famKey(last); if(!f||!l) return [];
@@ -2094,13 +2226,13 @@ function render(){
 function renderNav(){
   const nav=$('#nav'); if(!nav) return;
   const tabs=TABS.slice(); if(S.isAdmin) tabs.push(['admin','مدیریت']);
-  const pc=S.isAdmin?pendingList().length:0;
-  const ICO={home:'🏠',tree:'🌳',stats:'📊',add:'➕',growth:'📏',family:'🖼️',admin:'⚙️'};
+  const pc=S.isAdmin?pendingList().length+(S.claims||[]).length+(S.reports||[]).length:0;
+  const ICO={home:'🏠',tree:'🌳',stats:'📊',add:'➕',tools:'🧰',admin:'⚙️'};
   nav.innerHTML=tabs.map(([k,l])=>`<button data-act="tab" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}><span class="ni" aria-hidden="true">${ICO[k]||''}</span><span>${l}</span>${k==='admin'&&pc?`<span class="badge">${fa(pc)}</span>`:''}</button>`).join('');
 }
 function renderView(){
   const v=$('#view'); if(!v) return;
-  const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,growth:viewGrowth,life:viewLife,family:viewFamily,admin:viewAdmin}[S.tab]||viewHome;
+  const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,tools:viewTools,growth:viewGrowth,life:viewLife,family:viewFamily,admin:viewAdmin}[S.tab]||viewHome;
   v.innerHTML=f();
   if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } }
 }
@@ -2287,13 +2419,23 @@ document.addEventListener('click',async ev=>{
   if(el===null){ if(ev.target.id==='modal') closeModal(); if(!ev.target.closest('.search')){ const r=$('#qres'); if(r) r.hidden=true; } return; }
   const a=el.dataset.act;
   try{
-  if(a==='tab'){ gotoTab(el.dataset.tab); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||(el.dataset.tab==='admin'&&S.isAdmin)) await loadFamilyPosts(); }
+  if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||(el.dataset.tab==='admin'&&S.isAdmin)) await loadFamilyPosts(); }
   else if(a==='familyapprove'){ await moderateFamilyPost(el.dataset.id,true); }
   else if(a==='familyreject'){ await moderateFamilyPost(el.dataset.id,false); }
   else if(a==='growthpin'){ await verifyGrowthPin(); }
   else if(a==='growthlock'){ sessionStorage.removeItem('shj_parent_token'); sessionStorage.removeItem('shj_parent_exp'); S.growthRows=[]; S.growthChild=''; renderView(); }
   else if(a==='growthrefresh'){ await loadGrowth(); }
+  else if(a==='tool'){ await openTool(el.dataset.tool); }
   else if(a==='lifepin'){ await lifePin(); }
+  else if(a==='changepw'){ await changePassword(); }
+  else if(a==='lifeclaim'){ await claimAccount(); }
+  else if(a==='reportrevoke'){ await reportAct(el.dataset.id,true); }
+  else if(a==='reportdismiss'){ await reportAct(el.dataset.id,false); }
+  else if(a==='claimok'){ await decideClaim(el.dataset.id,true); }
+  else if(a==='claimno'){ await decideClaim(el.dataset.id,false); }
+  else if(a==='lifelock'){ sessionStorage.removeItem('shj_parent_token'); sessionStorage.removeItem('shj_parent_exp'); S.lifeRows=[]; S.growthRows=[]; renderView(); }
+  else if(a==='lifeinvite'){ await redeemInvite(); }
+  else if(a==='makeinvite'){ await makeInvite(el.dataset.id); }
   else if(a==='lifesave'){ await saveLife(); }
   else if(a==='lifedel'){ await delLife(el.dataset.id); }
   else if(a==='lifeapprove'){ await approveLife(el.dataset.id); }
