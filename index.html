@@ -2175,16 +2175,16 @@ function drawArt(T,imgs){
   const rr=(x,y,w,h,r)=>{c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);};
   let seed=90210;const rnd=()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
   // Soft botanical paper, with no heavy frame or noisy decoration.
-  const bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#fbfaf5');bg.addColorStop(.55,'#f5f5ed');bg.addColorStop(1,'#edf1e8');c.fillStyle=bg;c.fillRect(0,0,W,H);
-  const glow=c.createRadialGradient(W/2,H*.42,30,W/2,H*.42,Math.max(W,H)*.72);glow.addColorStop(0,'rgba(255,255,255,.58)');glow.addColorStop(1,'rgba(126,150,125,.055)');c.fillStyle=glow;c.fillRect(0,0,W,H);
+  const bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#102f2a');bg.addColorStop(.48,'#1c4036');bg.addColorStop(1,'#294b3d');c.fillStyle=bg;c.fillRect(0,0,W,H);
+  const glow=c.createRadialGradient(W/2,H*.43,20,W/2,H*.43,Math.max(W,H)*.72);glow.addColorStop(0,'rgba(193,211,177,.13)');glow.addColorStop(.62,'rgba(131,164,135,.045)');glow.addColorStop(1,'rgba(5,22,19,.20)');c.fillStyle=glow;c.fillRect(0,0,W,H);
   // Delicate title treatment.
-  c.fillStyle='#254b3e';c.font='700 54px Vazirmatn, Tahoma, sans-serif';c.fillText(T.focusTitle||'شجره‌نامه خاندان الله‌رضایی',W/2,82);
-  c.fillStyle='#78877b';c.font='400 22px Vazirmatn, Tahoma, sans-serif';c.fillText(fa(T.focusCount||Object.keys(P).length)+' نفر  •  '+fa(maxD)+' نسل  •  '+dstr(TODAY.y,TODAY.m,TODAY.d),W/2,135);
-  c.strokeStyle='#d5c49a';c.lineWidth=1.5;c.beginPath();c.moveTo(W/2-110,180);c.lineTo(W/2-18,180);c.moveTo(W/2+18,180);c.lineTo(W/2+110,180);c.stroke();
-  c.fillStyle='#b79a5e';c.beginPath();c.arc(W/2,180,4,0,Math.PI*2);c.fill();
+  c.fillStyle='#f4f0df';c.font='700 54px Vazirmatn, Tahoma, sans-serif';c.fillText(T.focusTitle||'شجره‌نامه خاندان الله‌رضایی',W/2,82);
+  c.fillStyle='#c2d0c2';c.font='400 22px Vazirmatn, Tahoma, sans-serif';c.fillText(fa(T.focusCount||Object.keys(P).length)+' نفر  •  '+fa(maxD)+' نسل  •  '+dstr(TODAY.y,TODAY.m,TODAY.d),W/2,135);
+  c.strokeStyle='rgba(218,190,126,.72)';c.lineWidth=1.5;c.beginPath();c.moveTo(W/2-110,180);c.lineTo(W/2-18,180);c.moveTo(W/2+18,180);c.lineTo(W/2+110,180);c.stroke();
+  c.fillStyle='#d8b875';c.beginPath();c.arc(W/2,180,4,0,Math.PI*2);c.fill();
   // A light ground wash and root filaments, placed below the lowest generation.
-  const soil=c.createLinearGradient(0,groundY-12,0,H);soil.addColorStop(0,'rgba(176,190,157,.04)');soil.addColorStop(1,'rgba(176,190,157,.22)');c.fillStyle=soil;c.fillRect(0,groundY-12,W,H-groundY+12);
-  c.strokeStyle='rgba(139,157,125,.35)';c.lineWidth=2;c.beginPath();c.moveTo(55,groundY+3);c.bezierCurveTo(W*.28,groundY-9,W*.72,groundY+12,W-55,groundY+1);c.stroke();
+  const soil=c.createLinearGradient(0,groundY-12,0,H);soil.addColorStop(0,'rgba(7,24,20,.02)');soil.addColorStop(1,'rgba(5,20,17,.28)');c.fillStyle=soil;c.fillRect(0,groundY-12,W,H-groundY+12);
+  c.strokeStyle='rgba(199,183,132,.34)';c.lineWidth=2;c.beginPath();c.moveTo(55,groundY+3);c.bezierCurveTo(W*.28,groundY-9,W*.72,groundY+12,W-55,groundY+1);c.stroke();
   // Natural curved branches: warm wood with a fine highlight and restrained lineage tint.
   const branchPaths=[];
   const bez=(t,a,b,d,e)=>{const u=1-t;return u*u*u*a+3*u*u*t*b+3*u*t*t*d+t*t*t*e;};
@@ -2197,11 +2197,11 @@ function drawArt(T,imgs){
       const width=Math.max(4.5,Math.min(17,4+Math.sqrt(k.size||1)*2.15));
       c.save();c.lineCap='round';c.lineJoin='round';
       c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
-      c.strokeStyle='rgba(71,57,41,.16)';c.lineWidth=width+5;c.stroke();
+      c.strokeStyle='rgba(5,18,15,.36)';c.lineWidth=width+5;c.stroke();
       c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
       c.strokeStyle=bcol(k,-2);c.lineWidth=width;c.stroke();
       c.beginPath();c.moveTo(x1-width*.18,y1);c.bezierCurveTo(x2-width*.18,y2,x3-width*.18,y3,x4-width*.18,y4);
-      c.strokeStyle='rgba(239,218,177,.52)';c.lineWidth=Math.max(1,width*.16);c.stroke();c.restore();
+      c.strokeStyle='rgba(244,219,169,.62)';c.lineWidth=Math.max(1,width*.16);c.stroke();c.restore();
       branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
       branch(k);
     });
@@ -2212,14 +2212,14 @@ function drawArt(T,imgs){
     c.save();c.translate(x,y);c.rotate(ang);c.fillStyle=col;c.beginPath();c.moveTo(0,0);c.bezierCurveTo(size*.28,-size*.58,size*.98,-size*.52,size*1.28,0);c.bezierCurveTo(size*.92,size*.48,size*.30,size*.48,0,0);c.fill();c.restore();
   };
   branchPaths.forEach((p,idx)=>{
-    const hh=hue(p.n.ci<0?0:p.n.ci), col='hsl('+hh+',27%,54%)';
+    const hh=hue(p.n.ci<0?0:p.n.ci), col='hsl('+hh+',30%,69%)';
     [0.30,0.54,0.75].forEach((t,j)=>{
       const bx=bez(t,p.x1,p.x2,p.x3,p.x4),by=bez(t,p.y1,p.y2,p.y3,p.y4);
       const side=(idx+j)%2?1:-1, spread=12+rnd()*7;
       const tx=bx+side*spread,ty=by-13-rnd()*13;
-      c.save();c.strokeStyle='rgba(111,128,91,.66)';c.lineWidth=1.8;c.lineCap='round';c.beginPath();c.moveTo(bx,by);c.quadraticCurveTo(bx+side*10,by-10,tx,ty);c.stroke();c.restore();
+      c.save();c.strokeStyle='rgba(183,205,163,.72)';c.lineWidth=1.8;c.lineCap='round';c.beginPath();c.moveTo(bx,by);c.quadraticCurveTo(bx+side*10,by-10,tx,ty);c.stroke();c.restore();
       drawLeaf(tx,ty,-.65,9,col);drawLeaf(tx+side*5,ty-7,.5,8,'hsl('+hh+',24%,64%)');
-      if(j===1&&rnd()<.5){drawLeaf(tx-side*9,ty+4,1.0,7,'#a9b994');}
+      if(j===1&&rnd()<.5){drawLeaf(tx-side*9,ty+4,1.0,7,'#c5d5ad');}
     });
   });
   // Root-like fine strokes beneath the base people, not a giant opaque trunk.
@@ -2235,16 +2235,16 @@ function drawArt(T,imgs){
   const hits=[];
   const person=(id,x,y,sp,node)=>{
     const p=P[id];if(!p)return;
-    const gender=p.gender==='m'?'#477f9b':p.gender==='f'?'#ae6b83':'#82918a';
+    const gender=p.gender==='m'?'#397d9b':p.gender==='f'?'#a85e7b':'#7c8d83';
     const ring=node.ci<0?'#9c865e':'hsl('+hue(node.ci)+',30%,54%)';
-    c.save();c.shadowColor='rgba(44,58,45,.16)';c.shadowBlur=13;c.shadowOffsetY=4;
-    c.fillStyle='#fffdf8';c.beginPath();c.arc(x,y,R+8,0,Math.PI*2);c.fill();c.restore();
+    c.save();c.shadowColor='rgba(3,16,13,.38)';c.shadowBlur=13;c.shadowOffsetY=4;
+    c.fillStyle='#f7f2e5';c.beginPath();c.arc(x,y,R+8,0,Math.PI*2);c.fill();c.restore();
     c.save();c.beginPath();c.arc(x,y,R,0,Math.PI*2);c.clip();
     const im=imgs[id];
     if(im){const sz=Math.max(2*R/im.width,2*R/im.height),iw=im.width*sz,ih=im.height*sz;if(p.dead){try{c.filter='grayscale(1)';}catch(e){}}c.drawImage(im,x-iw/2,y-ih/2,iw,ih);}
     else{c.fillStyle=gender+'22';c.fillRect(x-R,y-R,2*R,2*R);c.fillStyle=gender;c.font='700 36px Vazirmatn, Tahoma, sans-serif';c.fillText((p.first||'؟').trim()[0]||'؟',x,y+1);}
     c.restore();
-    c.strokeStyle='#fffdf8';c.lineWidth=7;c.beginPath();c.arc(x,y,R+2,0,Math.PI*2);c.stroke();
+    c.strokeStyle='#f7f2e5';c.lineWidth=7;c.beginPath();c.arc(x,y,R+2,0,Math.PI*2);c.stroke();
     c.strokeStyle=ring;c.lineWidth=2.5;c.setLineDash(p.virtual?[5,4]:[]);c.beginPath();c.arc(x,y,R+5,0,Math.PI*2);c.stroke();c.setLineDash([]);
     c.fillStyle=gender;c.strokeStyle='#fffdf8';c.lineWidth=3;c.beginPath();c.arc(x+R*.72,y+R*.72,8,0,Math.PI*2);c.fill();c.stroke();
     const nm=full(p), maxW=CW-18;let names=[nm],fs=17;
@@ -2262,12 +2262,12 @@ function drawArt(T,imgs){
     const pw=Math.min(CW-6,Math.max(112,...names.map(t=>{setF(fs);return c.measureText(t).width+20;}),yl?90:0,kin?Math.min(kw+16,CW-6):0));
     const top=y+R+11, left=x-pw/2;
     hits.push({id,x1:x-Math.max(R+8,pw/2),x2:x+Math.max(R+8,pw/2),y1:y-R-8,y2:top+ph});
-    c.save();c.shadowColor='rgba(43,57,45,.13)';c.shadowBlur=9;c.shadowOffsetY=3;c.fillStyle='#fffdf8';rr(left,top,pw,ph,11);c.fill();c.restore();
-    c.strokeStyle='rgba(157,139,99,.48)';c.lineWidth=1;rr(left,top,pw,ph,11);c.stroke();
-    c.fillStyle=p.dead?'#69776e':'#263e34';setF(fs);names.forEach((t,i)=>c.fillText(t,x,top+7+(fs+5)*i+(fs+5)/2));
+    c.save();c.shadowColor='rgba(43,57,45,.13)';c.shadowBlur=9;c.shadowOffsetY=3;c.fillStyle='#fffdf5';rr(left,top,pw,ph,11);c.fill();c.restore();
+    c.strokeStyle='rgba(174,145,87,.78)';c.lineWidth=1;rr(left,top,pw,ph,11);c.stroke();
+    c.fillStyle=p.dead?'#69776e':'#213d32';setF(fs);names.forEach((t,i)=>c.fillText(t,x,top+7+(fs+5)*i+(fs+5)/2));
     let yy=top+nameH;
-    if(yl){c.font='400 12px Vazirmatn, Tahoma, sans-serif';c.fillStyle='#78867b';c.fillText(yl,x,yy+8);yy+=19;}
-    if(kin){c.font='400 11px Vazirmatn, Tahoma, sans-serif';c.fillStyle='#987744';c.fillText(kin,x,yy+8,CW-16);}
+    if(yl){c.font='400 12px Vazirmatn, Tahoma, sans-serif';c.fillStyle='#718174';c.fillText(yl,x,yy+8);yy+=19;}
+    if(kin){c.font='400 11px Vazirmatn, Tahoma, sans-serif';c.fillStyle='#967344';c.fillText(kin,x,yy+8,CW-16);}
   };
   const drawNodes=n=>{
     const y=cyOf(n),ids=[n.id,...n.spouses],total=ids.length*CW;let x=n.cx+total/2-CW/2;
@@ -2287,7 +2287,7 @@ function drawArt(T,imgs){
   for(let d=1;d<=maxD;d++){
     const sample=T.nodes.find(n=>n.depth===d);if(!sample)continue;
     const yy=cyOf(sample);
-    c.fillStyle='rgba(93,112,96,.72)';c.font='500 14px Vazirmatn, Tahoma, sans-serif';c.textAlign='right';
+    c.fillStyle='rgba(225,232,213,.72)';c.font='500 14px Vazirmatn, Tahoma, sans-serif';c.textAlign='right';
     c.fillText('نسل '+fa(maxD-d+1),W-42,yy);
     c.textAlign='center';
   }
@@ -2298,11 +2298,11 @@ function drawArt(T,imgs){
       const label='شاخهٔ '+full(P[b.k.id]),tw=c.measureText(label).width,wid=tw+34;
       if(lx-wid<150)break;
       c.fillStyle=bcol(b.k,0);c.beginPath();c.arc(lx-7,ly,5,0,Math.PI*2);c.fill();
-      c.fillStyle='#64736a';c.fillText(label,lx-18-tw/2,ly);lx-=wid+14;
+      c.fillStyle='#d0d9c9';c.fillText(label,lx-18-tw/2,ly);lx-=wid+14;
     }
   }
   // A barely-there outer keyline instead of the former heavy ornamental frame.
-  c.strokeStyle='rgba(145,157,132,.35)';c.lineWidth=1.5;rr(22,22,W-44,H-44,22);c.stroke();
+  c.strokeStyle='rgba(218,196,143,.34)';c.lineWidth=1.5;rr(22,22,W-44,H-44,22);c.stroke();
   cv.__hits=hits;cv.__W=W;cv.__H=H;
   return cv;
 }
