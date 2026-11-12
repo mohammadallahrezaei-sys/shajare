@@ -2149,129 +2149,161 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=46, GAP=280, CW=2*R+46, MARGIN=160, TRUNK=260, ROOTS=170, TOP=330;
-  /* رنگ‌های طبیعی و آرام؛ هر شاخهٔ خانوادگی یک هویت رنگی مستقل دارد */
-  const HUES=[151,198,344,28,263,174,12,92,316,48];
-  let maxD=1; T.nodes.forEach(n=>{ if(n.depth>maxD) maxD=n.depth; });
-  /* هر شاخهٔ اصلی (فرزندان ریشه) یک رنگ می‌گیرد و نوه‌ها همان رنگ را به ارث می‌برند */
-  /* تنه: هر جا فقط یک خانواده ادامه می‌دهد؛ شاخه‌های رنگی از جایی شروع می‌شوند که درخت واقعاً چند شاخه می‌شود */
+  const P=T.P, R=39, CW=190, GAP=246, MARGIN=150, TOP=260;
+  const HUES=[145,198,344,28,263,174,12,92,316,48];
+  let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   let bi=0; const brs=[];
-  const assign=(n,ci,off)=>{ n.ci=ci; n.off=off||0; n.kids.forEach(k=>assign(k,ci,off)); };
+  const assign=(n,ci,off)=>{n.ci=ci;n.off=off||0;n.kids.forEach(k=>assign(k,ci,off));};
   const BH=branchHeads(T.roots), headSet=new Set(BH.list);
-  const trunkWalk=n=>{ if(headSet.has(n)) return; n.ci=-1; n.kids.forEach(trunkWalk); };
+  const trunkWalk=n=>{if(headSet.has(n))return;n.ci=-1;n.kids.forEach(trunkWalk);};
   T.roots.forEach(trunkWalk);
-  BH.list.forEach(k=>{ brs.push({k,ci:bi}); assign(k,bi,0);
-    k.kids.forEach((s,i)=>assign(s,bi,Math.max(-30,Math.min(30,(i-(k.kids.length-1)/2)*16)))); bi++; });
-  const hue=ci=>(HUES[ci%HUES.length]+Math.floor(ci/HUES.length)*14)%360;
-  const bcol=(n,dl)=>{ if(n.ci<0) return '#8a6240'; const l=Math.min(54,36+Math.max(0,n.depth-2)*4)+(dl||0); return `hsl(${(hue(n.ci)+(n.off||0)+360)%360},58%,${l}%)`; };
-  const lay=n=>{ n.cw=(1+n.spouses.length)*CW; n.kids.forEach(lay); n.kw=n.kids.reduce((s,k)=>s+k.aw,0); n.aw=Math.max(n.kw,n.cw+40); };
+  BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>assign(q,bi,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
+  const hue=ci=>(HUES[ci%HUES.length]+Math.floor(ci/HUES.length)*13)%360;
+  const bcol=(n,dl)=>n.ci<0?'#76563d':'hsl('+((hue(n.ci)+(n.off||0)+360)%360)+',34%,'+(Math.min(52,34+Math.max(0,n.depth-2)*3)+(dl||0))+'%)';
+  const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.kw=n.kids.reduce((a,k)=>a+k.aw,0);n.aw=Math.max(n.kw,n.cw+46);};
   T.roots.forEach(lay);
-  const put=(n,left)=>{ n.cx=left+n.aw/2; let xr=left+n.aw-(n.aw-n.kw)/2; n.kids.forEach(k=>{ put(k,xr-k.aw); xr-=k.aw; }); };
-  const content=T.roots.reduce((s,r)=>s+r.aw,0)+80*(T.roots.length-1);
-  const W=Math.max(1500,content+MARGIN*2);
-  let xr=W-(W-content)/2; T.roots.forEach(r=>{ put(r,xr-r.aw); xr-=r.aw+80; });
-  const cyOf=n=>TOP+(maxD-n.depth)*GAP+R+34;
-  const LEG=brs.length?110:0;
-  const groundY=TOP+(maxD-1)*GAP+R+34+TRUNK, H=groundY+ROOTS+120+LEG;
-  const sc=Math.min(1,7000/Math.max(W,H),Math.sqrt(40e6/(W*H)));
-  const cv=document.createElement('canvas'); cv.width=Math.round(W*sc); cv.height=Math.round(H*sc);
-  const c=cv.getContext('2d'); c.scale(sc,sc); c.direction='rtl'; c.textAlign='center'; c.textBaseline='middle';
-  let seed=1337; const rnd=()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
-  const BARK1='#5b3d26', BARK2='#8a6240';
-  const rr=(x,y,w,h,r)=>{ c.beginPath(); if(c.roundRect) c.roundRect(x,y,w,h,r); else c.rect(x,y,w,h); };
-  // heritage-paper background: quiet, elegant and designed to keep names readable
-  let g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#fbf8f0'); g.addColorStop(.62,'#f6f1e5'); g.addColorStop(1,'#e9e4d5'); c.fillStyle=g; c.fillRect(0,0,W,H);
-  const vign=c.createRadialGradient(W/2,H*.42,80,W/2,H*.42,Math.max(W,H)*.72); vign.addColorStop(0,'rgba(255,255,255,.32)'); vign.addColorStop(1,'rgba(112,91,57,.07)'); c.fillStyle=vign; c.fillRect(0,0,W,H);
-  // a restrained ground line, no decorative noise behind the people
-  c.fillStyle='#e4e6d8'; c.beginPath(); c.moveTo(0,groundY+18); c.bezierCurveTo(W*.25,groundY-2,W*.68,groundY+30,W,groundY+7); c.lineTo(W,H); c.lineTo(0,H); c.closePath(); c.fill();
-  c.strokeStyle='#c8cdb9'; c.lineWidth=3; c.beginPath(); c.moveTo(0,groundY+18); c.bezierCurveTo(W*.25,groundY-2,W*.68,groundY+30,W,groundY+7); c.stroke();
-  const bw=n=>Math.min(92,13+Math.sqrt(n.size)*6.2);
-  // a single dignified old-oak silhouette, kept translucent behind the relationship paths
-  const trunkX=W/2, trunkTop=TOP+115, trunkBase=groundY+ROOTS*.22, trunkW=Math.max(70,Math.min(190,W*.075));
-  c.save(); c.globalAlpha=.20;
-  const bark=c.createLinearGradient(trunkX-trunkW,0,trunkX+trunkW,0); bark.addColorStop(0,'#563c2a'); bark.addColorStop(.28,'#8a6746'); bark.addColorStop(.52,'#b18a5d'); bark.addColorStop(.76,'#795338'); bark.addColorStop(1,'#4d3828');
-  c.fillStyle=bark; c.beginPath(); c.moveTo(trunkX-trunkW*.48,trunkBase); c.bezierCurveTo(trunkX-trunkW*.18,trunkBase-TRUNK*.42,trunkX-trunkW*.58,trunkTop+TRUNK*.35,trunkX-trunkW*.18,trunkTop); c.quadraticCurveTo(trunkX,trunkTop-34,trunkX+trunkW*.18,trunkTop); c.bezierCurveTo(trunkX+trunkW*.58,trunkTop+TRUNK*.35,trunkX+trunkW*.18,trunkBase-TRUNK*.42,trunkX+trunkW*.48,trunkBase); c.quadraticCurveTo(trunkX,trunkBase+24,trunkX-trunkW*.48,trunkBase); c.closePath(); c.fill();
-  // fine root flares at the foot of the tree
-  c.strokeStyle='#725238'; c.lineCap='round'; c.lineWidth=12;
-  for(let i=-4;i<=4;i++){ const ex=trunkX+i*trunkW*.48; c.beginPath(); c.moveTo(trunkX+i*5,trunkBase-8); c.bezierCurveTo(trunkX+i*trunkW*.22,trunkBase+18,ex,trunkBase+36,ex+(i*8),trunkBase+58); c.stroke(); }
-  c.restore();
-  // branch colour halos are subtle; they help distinguish family lines without obscuring cards
-  T.nodes.forEach(n=>{ if(n.ci>=0&&n.depth>=2){ const y=cyOf(n), hh=hue(n.ci); const rg=c.createRadialGradient(n.cx,y,8,n.cx,y,GAP*.68); rg.addColorStop(0,`hsla(${hh},48%,66%,.10)`); rg.addColorStop(1,`hsla(${hh},48%,66%,0)`); c.fillStyle=rg; c.beginPath(); c.arc(n.cx,y,GAP*.68,0,7); c.fill(); } });
-  // branches: tapered, coloured per lineage
-  const leaves=[], bez=(t,a,b,cc,d)=>{ const u=1-t; return u*u*u*a+3*u*u*t*b+3*u*t*t*cc+t*t*t*d; };
-  const taper=(x1,y1,x2,y2,x3,y3,x4,y4,w0,w1,fill,edge,alpha)=>{
-    const N=30, A=[], B=[];
-    for(let i=0;i<=N;i++){ const t=i/N, x=bez(t,x1,x2,x3,x4), y=bez(t,y1,y2,y3,y4), ta=Math.max(0,t-.015), tb=Math.min(1,t+.015);
-      let dx=bez(tb,x1,x2,x3,x4)-bez(ta,x1,x2,x3,x4), dy=bez(tb,y1,y2,y3,y4)-bez(ta,y1,y2,y3,y4); const L=Math.hypot(dx,dy)||1; dx/=L; dy/=L;
-      const w=(w0+(w1-w0)*t)/2; A.push([x-dy*w,y+dx*w]); B.push([x+dy*w,y-dx*w]); }
-    c.save(); c.globalAlpha=alpha==null?1:alpha; c.beginPath(); A.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1])); for(let i=N;i>=0;i--) c.lineTo(B[i][0],B[i][1]); c.closePath();
-    c.fillStyle=fill; c.fill(); if(edge){ c.strokeStyle=edge; c.lineWidth=1.6; c.lineJoin='round'; c.stroke(); } c.restore();
+  const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+n.aw-(n.aw-n.kw)/2;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw;});};
+  const content=T.roots.reduce((a,r)=>a+r.aw,0)+74*Math.max(0,T.roots.length-1);
+  const W=Math.max(1450,content+MARGIN*2);
+  let x=W-(W-content)/2;T.roots.forEach(r=>{put(r,x-r.aw);x-=r.aw+74;});
+  const cyOf=n=>TOP+(maxD-n.depth)*GAP+R+28;
+  const lowest=Math.max.apply(null,T.roots.map(n=>cyOf(n)));
+  const groundY=lowest+R+150, H=groundY+145;
+  const sc=Math.min(1,7600/Math.max(W,H),Math.sqrt(42e6/(W*H)));
+  const cv=document.createElement('canvas');cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);
+  const c=cv.getContext('2d');c.scale(sc,sc);c.direction='rtl';c.textAlign='center';c.textBaseline='middle';
+  const rr=(x,y,w,h,r)=>{c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);};
+  let seed=90210;const rnd=()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+  // Soft botanical paper, with no heavy frame or noisy decoration.
+  const bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#fbfaf5');bg.addColorStop(.55,'#f5f5ed');bg.addColorStop(1,'#edf1e8');c.fillStyle=bg;c.fillRect(0,0,W,H);
+  const glow=c.createRadialGradient(W/2,H*.42,30,W/2,H*.42,Math.max(W,H)*.72);glow.addColorStop(0,'rgba(255,255,255,.58)');glow.addColorStop(1,'rgba(126,150,125,.055)');c.fillStyle=glow;c.fillRect(0,0,W,H);
+  // Delicate title treatment.
+  c.fillStyle='#254b3e';c.font='700 54px Vazirmatn, Tahoma, sans-serif';c.fillText(T.focusTitle||'شجره‌نامه خاندان الله‌رضایی',W/2,82);
+  c.fillStyle='#78877b';c.font='400 22px Vazirmatn, Tahoma, sans-serif';c.fillText(fa(T.focusCount||Object.keys(P).length)+' نفر  •  '+fa(maxD)+' نسل  •  '+dstr(TODAY.y,TODAY.m,TODAY.d),W/2,135);
+  c.strokeStyle='#d5c49a';c.lineWidth=1.5;c.beginPath();c.moveTo(W/2-110,180);c.lineTo(W/2-18,180);c.moveTo(W/2+18,180);c.lineTo(W/2+110,180);c.stroke();
+  c.fillStyle='#b79a5e';c.beginPath();c.arc(W/2,180,4,0,Math.PI*2);c.fill();
+  // A light ground wash and root filaments, placed below the lowest generation.
+  const soil=c.createLinearGradient(0,groundY-12,0,H);soil.addColorStop(0,'rgba(176,190,157,.04)');soil.addColorStop(1,'rgba(176,190,157,.22)');c.fillStyle=soil;c.fillRect(0,groundY-12,W,H-groundY+12);
+  c.strokeStyle='rgba(139,157,125,.35)';c.lineWidth=2;c.beginPath();c.moveTo(55,groundY+3);c.bezierCurveTo(W*.28,groundY-9,W*.72,groundY+12,W-55,groundY+1);c.stroke();
+  // Natural curved branches: warm wood with a fine highlight and restrained lineage tint.
+  const branchPaths=[];
+  const bez=(t,a,b,d,e)=>{const u=1-t;return u*u*u*a+3*u*u*t*b+3*u*t*t*d+t*t*t*e;};
+  const branch=n=>{
+    const px=n.cx,py=cyOf(n);
+    n.kids.forEach(k=>{
+      const kx=k.cx,ky=cyOf(k),dx=kx-px;
+      const x1=px,y1=py-R*.62,x4=kx,y4=ky+R*.72;
+      const x2=px+dx*.18,y2=py-GAP*.62,x3=kx-dx*.18,y3=ky+GAP*.62;
+      const width=Math.max(4.5,Math.min(17,4+Math.sqrt(k.size||1)*2.15));
+      c.save();c.lineCap='round';c.lineJoin='round';
+      c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
+      c.strokeStyle='rgba(71,57,41,.16)';c.lineWidth=width+5;c.stroke();
+      c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
+      c.strokeStyle=bcol(k,-2);c.lineWidth=width;c.stroke();
+      c.beginPath();c.moveTo(x1-width*.18,y1);c.bezierCurveTo(x2-width*.18,y2,x3-width*.18,y3,x4-width*.18,y4);
+      c.strokeStyle='rgba(239,218,177,.52)';c.lineWidth=Math.max(1,width*.16);c.stroke();c.restore();
+      branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
+      branch(k);
+    });
   };
-  const branch=n=>{ const px=n.cx, py=cyOf(n);
-    n.kids.forEach(k=>{ const kx=k.cx, ky=cyOf(k), w=bw(k);
-      const x1=px, y1=py, x2=px+(kx-px)*.10, y2=py-GAP*.43, x3=kx-(kx-px)*.10, y3=ky+GAP*.43, x4=kx, y4=ky;
-      taper(x1,y1,x2,y2,x3,y3,x4,y4,w*1.12,w*.48,bcol(k,-3),bcol(k,-16),.96);
-      taper(x1-w*.10,y1,x2-w*.10,y2,x3-w*.10,y3,x4-w*.10,y4,w*.18,w*.07,bcol(k,25),null,.30);
-      const cnt=7+Math.round(Math.sqrt(k.size)*2); for(let i=0;i<cnt;i++){ const t=.12+rnd()*.78; leaves.push({x:bez(t,x1,x2,x3,x4)+(rnd()-.5)*w*1.4,y:bez(t,y1,y2,y3,y4)+(rnd()-.5)*w*1.4,ci:k.ci}); }
-      branch(k); }); };
   T.roots.forEach(branch);
-  // leaves and blossoms in the branch colour family
-  const leaf=(x,y,ang,s,col)=>{ c.save(); c.translate(x,y); c.rotate(ang); c.fillStyle=col; c.beginPath(); c.moveTo(0,0); c.quadraticCurveTo(s*.65,-s*.48,s*1.45,0); c.quadraticCurveTo(s*.65,s*.48,0,0); c.fill(); c.restore(); };
-  leaves.forEach(l=>{ const hh=hue(l.ci);
-    for(let i=0;i<2;i++){ leaf(l.x,l.y,rnd()*6.28,8+rnd()*8,rnd()<.035?'#d9a441':`hsl(${hh+(rnd()-.5)*18},${48+rnd()*16}%,${40+rnd()*20}%)`); }
-    if(rnd()<.07){ const bx=l.x+(rnd()-.5)*24, by=l.y+(rnd()-.5)*24; c.fillStyle=`hsla(${hh},85%,84%,.92)`; for(let j=0;j<5;j++){ const a=j*1.2566; c.beginPath(); c.arc(bx+Math.cos(a)*5,by+Math.sin(a)*5,4.2,0,7); c.fill(); } c.fillStyle='#e8b33f'; c.beginPath(); c.arc(bx,by,2.8,0,7); c.fill(); }
+  // Fine twigs and botanical leaf pairs around outer limbs, away from portrait labels.
+  const drawLeaf=(x,y,ang,size,col)=>{
+    c.save();c.translate(x,y);c.rotate(ang);c.fillStyle=col;c.beginPath();c.moveTo(0,0);c.bezierCurveTo(size*.28,-size*.58,size*.98,-size*.52,size*1.28,0);c.bezierCurveTo(size*.92,size*.48,size*.30,size*.48,0,0);c.fill();c.restore();
+  };
+  branchPaths.forEach((p,idx)=>{
+    const hh=hue(p.n.ci<0?0:p.n.ci), col='hsl('+hh+',27%,54%)';
+    [0.30,0.54,0.75].forEach((t,j)=>{
+      const bx=bez(t,p.x1,p.x2,p.x3,p.x4),by=bez(t,p.y1,p.y2,p.y3,p.y4);
+      const side=(idx+j)%2?1:-1, spread=17+rnd()*10;
+      const tx=bx+side*spread,ty=by-13-rnd()*13;
+      c.save();c.strokeStyle='rgba(111,128,91,.66)';c.lineWidth=1.8;c.lineCap='round';c.beginPath();c.moveTo(bx,by);c.quadraticCurveTo(bx+side*10,by-10,tx,ty);c.stroke();c.restore();
+      drawLeaf(tx,ty,-.65,9,col);drawLeaf(tx+side*5,ty-7,.5,8,'hsl('+hh+',24%,64%)');
+      if(j===1&&rnd()<.5){drawLeaf(tx-side*9,ty+4,1.0,7,'#a9b994');}
+    });
   });
-  // keep the base of the illustration calm so the root and generation labels stay clear
-  // people
-  const fit=(txt,maxW,size,weight)=>{ let s=size; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; while(c.measureText(txt).width>maxW&&s>10){ s--; c.font=`${weight} ${s}px Vazirmatn, Tahoma, sans-serif`; } };
+  // Root-like fine strokes beneath the base people, not a giant opaque trunk.
+  T.roots.forEach(n=>{
+    const rx=n.cx,ry=cyOf(n)+R+112;
+    c.save();c.strokeStyle='rgba(123,101,72,.48)';c.lineCap='round';
+    c.lineWidth=5;c.beginPath();c.moveTo(rx,ry-40);c.bezierCurveTo(rx,ry-5,rx-10,ry+13,rx-40,ry+28);c.stroke();
+    c.lineWidth=2.2;
+    for(let j=-2;j<=2;j++){c.beginPath();c.moveTo(rx-10,ry+12);c.quadraticCurveTo(rx+j*17,ry+25,rx+j*30,ry+42+Math.abs(j)*4);c.stroke();}
+    c.restore();
+  });
+  // Person medallions and compact name plaques.
   const hits=[];
   const person=(id,x,y,sp,node)=>{
-    const p=P[id]; if(!p) return;
-    const gcol=p.gender==='m'?'#3A7CA5':p.gender==='f'?'#B0527A':'#7a8a85', ring=bcol(node,0);
-    c.save(); c.shadowColor='rgba(0,0,0,.28)'; c.shadowBlur=14; c.shadowOffsetY=5; c.fillStyle='#fff'; c.beginPath(); c.arc(x,y,R+7,0,7); c.fill(); c.restore();
-    c.save(); c.beginPath(); c.arc(x,y,R,0,7); c.clip();
+    const p=P[id];if(!p)return;
+    const gender=p.gender==='m'?'#477f9b':p.gender==='f'?'#ae6b83':'#82918a';
+    const ring=node.ci<0?'#9c865e':'hsl('+hue(node.ci)+',30%,54%)';
+    c.save();c.shadowColor='rgba(44,58,45,.16)';c.shadowBlur=13;c.shadowOffsetY=4;
+    c.fillStyle='#fffdf8';c.beginPath();c.arc(x,y,R+8,0,Math.PI*2);c.fill();c.restore();
+    c.save();c.beginPath();c.arc(x,y,R,0,Math.PI*2);c.clip();
     const im=imgs[id];
-    if(im){ const sz=Math.max(2*R/im.width,2*R/im.height); const w=im.width*sz,h=im.height*sz; if(p.dead){ try{ c.filter='grayscale(1)'; }catch(e){} } c.drawImage(im,x-w/2,y-R-(h-2*R)*.18,w,h); }
-    else { c.fillStyle=gcol+'33'; c.fillRect(x-R,y-R,2*R,2*R); c.fillStyle=gcol; c.font='700 40px Vazirmatn, Tahoma, sans-serif'; c.fillText((p.first||'؟').trim()[0]||'؟',x,y+2); }
+    if(im){const sz=Math.max(2*R/im.width,2*R/im.height),iw=im.width*sz,ih=im.height*sz;if(p.dead){try{c.filter='grayscale(1)';}catch(e){}}c.drawImage(im,x-iw/2,y-ih/2,iw,ih);}
+    else{c.fillStyle=gender+'22';c.fillRect(x-R,y-R,2*R,2*R);c.fillStyle=gender;c.font='700 36px Vazirmatn, Tahoma, sans-serif';c.fillText((p.first||'؟').trim()[0]||'؟',x,y+1);}
     c.restore();
-    c.strokeStyle=ring; c.lineWidth=6; c.setLineDash(p.virtual?[7,6]:[]); c.beginPath(); c.arc(x,y,R+3,0,7); c.stroke(); c.setLineDash([]);
-    c.fillStyle=gcol; c.strokeStyle='#fff'; c.lineWidth=3; c.beginPath(); c.arc(x+R*.78,y+R*.78,10,0,7); c.fill(); c.stroke();
-    const nm=full(p), ly=y+R+28, MW=CW-16, top=ly-15;
-    const setF=z=>{ c.font=`700 ${z}px Vazirmatn, Tahoma, sans-serif`; };
-    let nl=[nm], fs=21; setF(fs); while(c.measureText(nm).width>MW&&fs>17){ fs--; setF(fs); }
-    if(c.measureText(nm).width>MW){ const w=nm.split(' ');
-      if(w.length>1){ let bi=1,bm=1e9; for(let i=1;i<w.length;i++){ const m=Math.max(c.measureText(w.slice(0,i).join(' ')).width,c.measureText(w.slice(i).join(' ')).width); if(m<bm){ bm=m; bi=i; } } nl=[w.slice(0,bi).join(' '),w.slice(bi).join(' ')]; fs=19; setF(fs); while(Math.max(...nl.map(t=>c.measureText(t).width))>MW&&fs>13){ fs--; setF(fs); } }
-      else { while(c.measureText(nm).width>MW&&fs>12){ fs--; setF(fs); } } }
-    const lh=fs+7, nameH=nl.length*lh+8, nameW=Math.max(...nl.map(t=>c.measureText(t).width));
-    const yl=lifeLine(p), kin=sp?kinLine(id):'';
-    c.font='400 14px Vazirmatn, Tahoma, sans-serif'; const kw=kin?c.measureText(kin).width:0;
-    const ph=nameH+(yl?24:0)+(kin?22:0), pw=Math.max(Math.min(nameW+26,CW-2),yl?96:0,kin?Math.min(kw+24,CW-2):0);
-    const hw=Math.max(R+7,pw/2); hits.push({id,x1:x-hw,x2:x+hw,y1:y-R-7,y2:top+ph});
-    c.save(); c.shadowColor='rgba(0,0,0,.16)'; c.shadowBlur=9; c.shadowOffsetY=2; c.fillStyle='#fff'; rr(x-pw/2,top,pw,ph,12); c.fill(); c.restore();
-    c.strokeStyle=ring; c.lineWidth=2.6; rr(x-pw/2,top,pw,ph,12); c.stroke();
-    c.fillStyle=p.dead?'#4a615a':'#0B1F1A'; setF(fs); nl.forEach((t,i)=>c.fillText(t,x,top+4+lh*i+lh/2+1));
-    if(yl){ c.font='400 15px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#3f5a52'; c.fillText(yl,x,top+nameH+12); }
-    if(kin){ c.font='400 14px Vazirmatn, Tahoma, sans-serif'; c.fillStyle='#7a4a12'; c.fillText(kin,x,top+nameH+(yl?24:0)+11,CW-12); }
+    c.strokeStyle='#fffdf8';c.lineWidth=7;c.beginPath();c.arc(x,y,R+2,0,Math.PI*2);c.stroke();
+    c.strokeStyle=ring;c.lineWidth=2.5;c.setLineDash(p.virtual?[5,4]:[]);c.beginPath();c.arc(x,y,R+5,0,Math.PI*2);c.stroke();c.setLineDash([]);
+    c.fillStyle=gender;c.strokeStyle='#fffdf8';c.lineWidth=3;c.beginPath();c.arc(x+R*.72,y+R*.72,8,0,Math.PI*2);c.fill();c.stroke();
+    const nm=full(p), maxW=CW-20;let names=[nm],fs=17;
+    const setF=z=>{c.font='700 '+z+'px Vazirmatn, Tahoma, sans-serif';};
+    setF(fs);while(c.measureText(nm).width>maxW&&fs>14){fs--;setF(fs);}
+    if(c.measureText(nm).width>maxW){
+      const words=nm.split(' ');
+      if(words.length>1){let best=1,score=1e9;for(let i=1;i<words.length;i++){const v=Math.max(c.measureText(words.slice(0,i).join(' ')).width,c.measureText(words.slice(i).join(' ')).width);if(v<score){score=v;best=i;}}
+        names=[words.slice(0,best).join(' '),words.slice(best).join(' ')];fs=15;setF(fs);while(Math.max.apply(null,names.map(t=>c.measureText(t).width))>maxW&&fs>12){fs--;setF(fs);}
+      }
+    }
+    const nameH=names.length*(fs+5)+7, yl=lifeLine(p), kin=sp?kinLine(id):'';
+    c.font='400 12px Vazirmatn, Tahoma, sans-serif';const kw=kin?c.measureText(kin).width:0;
+    const ph=nameH+(yl?19:0)+(kin?18:0)+8;
+    const pw=Math.min(CW-8,Math.max(126,...names.map(t=>{setF(fs);return c.measureText(t).width+25;}),yl?96:0,kin?Math.min(kw+20,CW-8):0));
+    const top=y+R+15, left=x-pw/2;
+    hits.push({id,x1:x-Math.max(R+8,pw/2),x2:x+Math.max(R+8,pw/2),y1:y-R-8,y2:top+ph});
+    c.save();c.shadowColor='rgba(43,57,45,.13)';c.shadowBlur=9;c.shadowOffsetY=3;c.fillStyle='#fffdf8';rr(left,top,pw,ph,11);c.fill();c.restore();
+    c.strokeStyle='rgba(157,139,99,.48)';c.lineWidth=1;rr(left,top,pw,ph,11);c.stroke();
+    c.fillStyle=p.dead?'#69776e':'#263e34';setF(fs);names.forEach((t,i)=>c.fillText(t,x,top+7+(fs+5)*i+(fs+5)/2));
+    let yy=top+nameH;
+    if(yl){c.font='400 12px Vazirmatn, Tahoma, sans-serif';c.fillStyle='#78867b';c.fillText(yl,x,yy+8);yy+=19;}
+    if(kin){c.font='400 11px Vazirmatn, Tahoma, sans-serif';c.fillStyle='#987744';c.fillText(kin,x,yy+8,CW-16);}
   };
-  const drawNodes=n=>{ const y=cyOf(n), ids=[n.id,...n.spouses], total=ids.length*CW; let x=n.cx+total/2-CW/2;
-    ids.forEach((id,i)=>{ person(id,x,y,i>0,n); if(i<ids.length-1){ const bg=stBadge(n.id,ids[i+1],ids[i+1]); c.save(); c.strokeStyle=bg?'#b4543a':'#d9a441'; c.lineWidth=4; if(bg) c.setLineDash([6,5]); c.beginPath(); c.arc(x-CW/2,y,8,0,7); c.stroke(); if(bg){ c.setLineDash([]); c.fillStyle='#b4543a'; c.textAlign='center'; c.font='700 14px Vazirmatn, Tahoma, sans-serif'; c.fillText(bg,x-CW/2,y-16); } c.restore(); } x-=CW; });
-    n.kids.forEach(drawNodes); };
+  const drawNodes=n=>{
+    const y=cyOf(n),ids=[n.id,...n.spouses],total=ids.length*CW;let x=n.cx+total/2-CW/2;
+    ids.forEach((id,i)=>{
+      person(id,x,y,i>0,n);
+      if(i<ids.length-1){
+        const bg=stBadge(n.id,ids[i+1],ids[i]);
+        c.save();c.strokeStyle=bg?'#b66b55':'#c5a76c';c.lineWidth=2.5;c.setLineDash(bg?[4,4]:[]);c.beginPath();c.moveTo(x-CW/2+8,y);c.lineTo(x-CW/2-8,y);c.stroke();c.setLineDash([]);
+        if(bg){c.fillStyle='#a45d4b';c.font='700 12px Vazirmatn, Tahoma, sans-serif';c.fillText(bg,x-CW/2,y-13);}c.restore();
+      }
+      x-=CW;
+    });
+    n.kids.forEach(drawNodes);
+  };
   T.roots.forEach(drawNodes);
-  // title with ornament
-  c.fillStyle='#214f43'; c.font='700 70px Vazirmatn, Tahoma, sans-serif'; c.fillText(T.focusTitle||'شجره‌نامه خاندان الله‌رضایی',W/2,118);
-  c.fillStyle='#5A726B'; c.font='400 26px Vazirmatn, Tahoma, sans-serif'; c.fillText(`${fa(T.focusCount||Object.keys(P).length)} نفر، ${fa(maxD)} نسل، ${dstr(TODAY.y,TODAY.m,TODAY.d)}`,W/2,198);
-  c.strokeStyle='#d9a441'; c.lineWidth=3; c.beginPath(); c.moveTo(W/2-190,242); c.lineTo(W/2-18,242); c.moveTo(W/2+18,242); c.lineTo(W/2+190,242); c.stroke();
-  c.fillStyle='#d9a441'; c.save(); c.translate(W/2,242); c.rotate(Math.PI/4); c.fillRect(-7,-7,14,14); c.restore();
-  // legend: one dot per main branch
-  if(brs.length){
-    c.font='600 22px Vazirmatn, Tahoma, sans-serif'; let lx=W-140; const ly=H-72;
-    for(const b of brs){ const t='شاخهٔ '+full(P[b.k.id]), tw=c.measureText(t).width, wid=tw+46; if(lx-wid<140){ c.fillStyle='#5A726B'; c.fillText('…',lx-10,ly); break; }
-      c.fillStyle=bcol(b.k,0); c.beginPath(); c.arc(lx-10,ly,10,0,7); c.fill(); c.fillStyle='#3d4f49'; c.fillText(t,lx-30-tw/2,ly); lx-=wid+22; }
+  // Quiet generation labels on the far edge make the hierarchy easier to scan.
+  for(let d=1;d<=maxD;d++){
+    const sample=T.nodes.find(n=>n.depth===d);if(!sample)continue;
+    const yy=cyOf(sample);
+    c.fillStyle='rgba(93,112,96,.72)';c.font='500 14px Vazirmatn, Tahoma, sans-serif';c.textAlign='right';
+    c.fillText('نسل '+fa(maxD-d+1),W-42,yy);
+    c.textAlign='center';
   }
-  cv.__hits=hits; cv.__W=W; cv.__H=H;
-  // decorative frame
-  c.save(); c.strokeStyle='rgba(154,126,76,.42)'; c.lineWidth=3; rr(30,30,W-60,H-60,28); c.stroke(); c.lineWidth=1; rr(46,46,W-92,H-92,20); c.stroke();
-  c.fillStyle='#d9a441'; [[34,34],[W-34,34],[34,H-34],[W-34,H-34]].forEach(([x,y])=>{ c.save(); c.translate(x,y); c.rotate(Math.PI/4); c.fillRect(-9,-9,18,18); c.restore(); }); c.restore();
+  // Branch key, kept small and low-contrast.
+  if(brs.length){
+    c.font='500 15px Vazirmatn, Tahoma, sans-serif';let lx=W-150,ly=H-40;
+    for(const b of brs){
+      const label='شاخهٔ '+full(P[b.k.id]),tw=c.measureText(label).width,wid=tw+34;
+      if(lx-wid<150)break;
+      c.fillStyle=bcol(b.k,0);c.beginPath();c.arc(lx-7,ly,5,0,Math.PI*2);c.fill();
+      c.fillStyle='#64736a';c.fillText(label,lx-18-tw/2,ly);lx-=wid+14;
+    }
+  }
+  // A barely-there outer keyline instead of the former heavy ornamental frame.
+  c.strokeStyle='rgba(145,157,132,.35)';c.lineWidth=1.5;rr(22,22,W-44,H-44,22);c.stroke();
+  cv.__hits=hits;cv.__W=W;cv.__H=H;
   return cv;
 }
 async function makeArt(){
