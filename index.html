@@ -284,6 +284,23 @@ textarea{min-height:110px;resize:vertical}
 .tree-only .art-box{height:calc(100vh - 230px)}
 .tree-only .chart-box,.tree-only .outline{overflow:auto}
 .tree-help{margin:0;text-align:center}
+/* Compact tree controls: preserve every action without consuming the viewport */
+.tree-compact-controls{gap:6px;align-items:center;margin:0;padding:0}
+.tree-mode-switch{gap:4px!important}
+.tree-compact-controls .btn,.tree-mode-switch .btn{min-height:30px;padding:5px 9px;font-size:12px;line-height:1.25;border-radius:9px}
+.tree-mode-switch .btn{padding-inline:11px}
+.tree-toolbar{gap:6px}
+.tree-toolbar .search input{min-height:38px;padding-block:7px}
+@media(max-width:620px){
+ .tree-toolbar{gap:5px}
+ .tree-mode-switch{width:auto!important;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px!important}
+ .tree-mode-switch .btn{min-width:0;padding:5px 6px;font-size:11px}
+ .tree-compact-controls{display:flex;justify-content:space-between;gap:5px;flex-wrap:nowrap}
+ .tree-compact-controls>.row{gap:3px!important;flex-wrap:nowrap}
+ .tree-compact-controls .btn{padding:5px 7px;min-width:30px;font-size:11px;white-space:nowrap}
+ .tree-compact-controls .tree-export-tools .btn{padding-inline:8px}
+ .tree-toolbar .search input{min-height:36px}
+}
 @media(max-width:620px){.tree-only .art-box,.tree-only .chart-box,.tree-only .outline{min-height:calc(100dvh - 300px);max-height:calc(100dvh - 270px)}.tree-only .art-box{height:calc(100dvh - 270px)}.tree-toolbar{align-items:stretch}.tree-toolbar .search{max-width:none;flex-basis:100%}.tree-toolbar>.row{width:100%}.tree-toolbar>.row .btn{flex:1}}
 
 .cbtn{display:block;margin:4px auto 0;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;line-height:1;padding:0;font-size:16px}
@@ -1092,16 +1109,16 @@ function viewTree(){
   return `<section class="tree-only stack">
    <div class="tree-toolbar">
      <div class="search"><input type="text" id="q" placeholder="جستجوی نام در شجره‌نامه…" value="${esc(S.q)}" autocomplete="off"><div class="results" id="qres" hidden></div></div>
-     <div class="row" style="gap:6px">${modeBtn('art','درخت تصویری')}${modeBtn('chart','نمودار نسلی')}${modeBtn('outline','فهرستی')}</div>
+     <div class="row tree-mode-switch" style="gap:4px">${modeBtn('art','تصویری')}${modeBtn('chart','نسلی')}${modeBtn('outline','فهرست')}</div>
    </div>
    ${S.focus?`<div class="note gift row" style="justify-content:space-between"><span>نمایش شاخهٔ <b>${esc(T.focusTitle?T.focusTitle.replace('شجره‌نامه ',''):'انتخاب‌شده')}</b></span><button class="btn sm" data-act="unfocus">نمایش کل درخت</button></div>`:''}
-   <div class="tree-controls">
-     <div class="row" style="gap:6px">
+   <div class="tree-controls tree-compact-controls">
+     <div class="row tree-zoom-tools" style="gap:4px">
        ${S.mode!=='art'?`<button class="btn ghost sm" data-act="zoom" data-d="-0.15" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" id="zoomPct" data-act="zoomreset" title="بازنشانی اندازه">${fa(Math.round(S.zoom*100))}٪</button><button class="btn ghost sm" data-act="zoom" data-d="0.15" aria-label="بزرگ‌نمایی">+</button>`:''}
-       ${S.mode==='chart'?`<button class="btn ghost sm" data-act="cexp" data-v="0">جمع شاخه‌ها</button><button class="btn ghost sm" data-act="cexp" data-v="1">باز کردن همه</button>`:''}
-       ${S.mode==='art'?`<button class="btn ghost sm" data-act="artzoom" data-d="-0.25" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="artzoom" data-d="0.25" aria-label="بزرگ‌نمایی">+</button><button class="btn ghost sm" data-act="artfit">کل درخت</button><button class="btn ghost sm" data-act="artauto">اندازهٔ خوانا</button>`:''}
+       ${S.mode==='chart'?`<button class="btn ghost sm" data-act="cexp" data-v="0">جمع شاخه‌ها</button><button class="btn ghost sm" data-act="cexp" data-v="1">بازکردن همه</button>`:''}
+       ${S.mode==='art'?`<button class="btn ghost sm" data-act="artzoom" data-d="-0.25" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="artzoom" data-d="0.25" aria-label="بزرگ‌نمایی">+</button><button class="btn ghost sm" data-act="artfit">تمام درخت</button><button class="btn ghost sm" data-act="artauto">خوانا</button>`:''}
      </div>
-     <div class="row" style="gap:6px"><button class="btn sm" data-act="savepng">ذخیره تصویر درخت</button><button class="btn ghost sm" data-act="savepdf">چاپ / PDF درخت</button></div>
+     <div class="row tree-export-tools" style="gap:4px"><button class="btn sm" data-act="savepng">PNG</button><button class="btn ghost sm" data-act="savepdf">PDF / چاپ</button></div>
    </div>
    ${branchSelHTML()}
    <div class="tree-canvas-area">${body}</div>
