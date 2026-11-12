@@ -1292,7 +1292,7 @@ function lastGroups(){
 }
 function unifyHTML(){
   const gs=lastGroups(); if(!gs.length) return '<p class="muted small" style="margin:0">همهٔ نام‌های خانوادگی یکدست است ✅</p>';
-  return gs.map(([k,v])=>`<div class="card stack" style="background:var(--bg);gap:8px"><span class="muted small">این املاها در واقع یک نام‌اند؛ املای درست را انتخاب کنید:</span>${Object.entries(v).sort((a,b)=>b[1].length-a[1].length).map(([sp,a])=>`<div class="row"><span><b>${esc(sp)}</b> <span class="muted small">(${fa(a.length)} نفر)</span></span><button type="button" class="btn ghost sm" data-act="unify" data-k="${esc(k)}" data-to="${esc(sp)}">همه را «${esc(sp)}» کن</button></div>`).join('')}</div>`).join('');
+  return `<div class="row"><button type="button" class="btn sm" data-act="unifyall" data-w="last">✨ اصلاح همه یکجا (با پرتکرارترین املا)</button><span class="muted small">${fa(gs.length)} گروه</span></div>`+gs.map(([k,v])=>`<div class="card stack" style="background:var(--bg);gap:8px"><span class="muted small">این املاها در واقع یک نام‌اند؛ املای درست را انتخاب کنید:</span>${Object.entries(v).sort((a,b)=>b[1].length-a[1].length).map(([sp,a])=>`<div class="row"><span><b>${esc(sp)}</b> <span class="muted small">(${fa(a.length)} نفر)</span></span><button type="button" class="btn ghost sm" data-act="unify" data-k="${esc(k)}" data-to="${esc(sp)}">همه را «${esc(sp)}» کن</button></div>`).join('')}</div>`).join('');
 }
 
 /* ---------- وصل کردن فرزند ثبت‌شده به والد (فقط مدیر) ---------- */
@@ -1372,7 +1372,7 @@ async function mergePeople(keep,drop){
 }
 function unifyValsHTML(){
   const out=[['place','شهر / محل'],['job','شغل']].map(([kind,label])=>Object.entries(valGroups(kind)).filter(([,v])=>Object.keys(v).length>1).map(([k,v])=>`<div class="card stack" style="background:var(--bg);gap:8px"><span class="muted small">${label}: این موارد در واقع یکی هستند؛ املای درست را انتخاب کنید:</span>${Object.entries(v).sort((a,b)=>b[1].length-a[1].length).map(([sp,a])=>`<div class="row"><span><b>${esc(sp)}</b> <span class="muted small">(${fa(a.length)} مورد)</span></span><button type="button" class="btn ghost sm" data-act="unifyv" data-kind="${kind}" data-k="${esc(k)}" data-to="${esc(sp)}">همه را «${esc(sp)}» کن</button></div>`).join('')}</div>`).join('')).join('');
-  return out||'<p class="muted small" style="margin:0">همهٔ شهرها و شغل‌ها یکدست است ✅</p>';
+  return out?`<div class="row"><button type="button" class="btn sm" data-act="unifyall" data-w="vals">✨ اصلاح همه یکجا (با پرتکرارترین املا)</button></div>`+out:'<p class="muted small" style="margin:0">همهٔ شهرها و شغل‌ها یکدست است ✅</p>';
 }
 
 function viewAdmin(){
@@ -1905,6 +1905,16 @@ document.addEventListener('click',async ev=>{
   else if(a==='bkjson'){ const d=new Date(); saveBlob('shajare-backup-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.json',new Blob([backupJSON()],{type:'application/json'})); toast('پشتیبان دانلود شد'); }
   else if(a==='bkged'){ saveBlob('shajare-allahrezaei.ged',new Blob([gedcomExport()],{type:'text/plain;charset=utf-8'})); toast('فایل GEDCOM دانلود شد'); }
   else if(a==='unify'){ const grp=Object.fromEntries(lastGroups())[el.dataset.k], to=el.dataset.to; if(!grp) return; const ids=Object.entries(grp).filter(([sp])=>sp!==to).flatMap(([,a])=>a); if(!ids.length) return; if(!confirm('نام خانوادگی '+fa(ids.length)+' نفر به «'+to+'» تغییر کند؟')) return; for(const id of ids){ await S.db.doc('people/'+id).update({last:to}); S.people[id]=Object.assign({},S.people[id],{last:to}); } S.T=null; toast('یکدست شد'); renderView(); }
+  else if(a==='unifyall'){
+    const top=v=>Object.entries(v).sort((x,y)=>y[1].length-x[1].length)[0][0], todo={};
+    const add=(id,f,to)=>{ if(S.people[id]&&S.people[id][f]!==to) (todo[id]=todo[id]||{})[f]=to; };
+    if(el.dataset.w==='last') lastGroups().forEach(([k,v])=>{ const to=top(v); Object.values(v).forEach(arr=>arr.forEach(id=>add(id,'last',to))); });
+    else ['place','job'].forEach(kind=>Object.values(valGroups(kind)).filter(v=>Object.keys(v).length>1).forEach(v=>{ const to=top(v); Object.values(v).forEach(arr=>arr.forEach(([id,f])=>add(id,f,to))); }));
+    const ids=Object.keys(todo); if(!ids.length){ toast('چیزی برای تغییر نبود'); return; }
+    if(!confirm('اطلاعات '+fa(ids.length)+' نفر یکدست شود؟ (در هر گروه، پرتکرارترین املا انتخاب می‌شود) قبل از این کار بهتر است پشتیبان بگیرید.')) return;
+    for(const id of ids){ await S.db.doc('people/'+id).update(todo[id]); S.people[id]=Object.assign({},S.people[id],todo[id]); }
+    S.T=null; toast('همه یکدست شد'); renderView();
+  }
   else if(a==='unifyv'){ const kind=el.dataset.kind, grp=valGroups(kind)[el.dataset.k], to=el.dataset.to; if(!grp) return; const todo={}; Object.values(grp).forEach(arr=>arr.forEach(([id,f])=>{ if(S.people[id]&&S.people[id][f]!==to) (todo[id]=todo[id]||{})[f]=to; })); const ids=Object.keys(todo); if(!ids.length){ toast('چیزی برای تغییر نبود'); return; } if(!confirm('مقدار '+fa(ids.length)+' نفر به «'+to+'» تغییر کند؟')) return; for(const id of ids){ await S.db.doc('people/'+id).update(todo[id]); S.people[id]=Object.assign({},S.people[id],todo[id]); } S.T=null; toast('یکدست شد'); renderView(); }
   else if(a==='kladd'){ const sel=$('#kl_sel'), cid=sel&&sel.value; if(!cid||!S.editId||!S.people[cid]){ toast('اول یک نفر را از لیست انتخاب کنید'); return; } const [fid,fref]=klFld(); const patch={[fid]:S.editId,[fref]:{name:'',y:0,m:0,d:0}}; await S.db.doc('people/'+cid).update(patch); S.people[cid]=Object.assign({},S.people[cid],patch); const lines=kl(S.people[S.editId].kidNames), kept=lines.filter(t=>!nameLike(t,S.people[cid])); if(kept.length!==lines.length) await klSaveKidNames(kept.join('\n')); S.T=null; const bx=$('#klBox'); if(bx) bx.innerHTML=kidsLinkInner(); toast('وصل شد'); }
   else if(a==='klrm'){ const cid=el.dataset.id; if(!S.people[cid]||!confirm('«'+full(S.people[cid])+'» از این فرد جدا شود؟')) return; const [fid,fref]=klFld(); const patch={[fid]:'',[fref]:{name:'',y:0,m:0,d:0}}; await S.db.doc('people/'+cid).update(patch); S.people[cid]=Object.assign({},S.people[cid],patch); S.T=null; const bx=$('#klBox'); if(bx) bx.innerHTML=kidsLinkInner(); toast('جدا شد'); }
