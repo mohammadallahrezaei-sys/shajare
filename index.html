@@ -397,6 +397,113 @@ input[type=search]{width:100%;background:var(--bg);border:1px solid var(--line);
 @media(max-width:760px){.home-hero{min-height:290px;padding:24px 20px;align-items:flex-start}.home-hero-copy{max-width:100%}.home-hero-art{left:-24px;top:auto;bottom:-56px;transform:none;opacity:.28}.home-hero-note{display:none}.home-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.home-shortcuts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-pending{flex-wrap:wrap}.home-pending button{margin-right:36px}}
 @media(max-width:390px){.home-hero{padding:20px 16px}.home-hero h2{font-size:24px}.home-hero-actions .btn{font-size:11px;padding:10px}.home-metrics article{padding:12px}.home-metrics b{font-size:22px}.home-shortcut{padding:12px}}
 
+
+/* ===== لایهٔ نهایی یکپارچگی بصری و تجربهٔ کاربری ===== */
+:root{
+  --radius:14px;
+  --elev-1:0 2px 8px rgba(18,48,40,.045);
+  --elev-2:0 10px 26px rgba(18,48,40,.085);
+  --ring:0 0 0 4px color-mix(in srgb,var(--primary) 16%,transparent);
+}
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+body{
+  background:
+    radial-gradient(ellipse at 92% 0%,color-mix(in srgb,var(--primary) 5%,transparent),transparent 34rem),
+    var(--bg);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+::selection{background:color-mix(in srgb,var(--primary) 22%,transparent);color:var(--ink)}
+button{ -webkit-tap-highlight-color:transparent }
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{
+  outline:3px solid var(--accent);outline-offset:3px
+}
+.card,.kpi,.stats-panel,.stats-kpi,.home-metrics article,.home-shortcut,.admin-group,.life-intro{
+  box-shadow:var(--elev-1);
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease,background-color .18s ease;
+}
+.card{border-radius:16px}
+.card:hover,.stats-panel:hover{border-color:color-mix(in srgb,var(--primary) 30%,var(--line))}
+.btn{
+  min-height:40px;border-radius:11px;font-weight:700;
+  box-shadow:0 2px 5px color-mix(in srgb,var(--primary) 12%,transparent);
+  transition:transform .16s ease,box-shadow .16s ease,filter .16s ease,background-color .16s ease;
+}
+.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 14px color-mix(in srgb,var(--primary) 18%,transparent);filter:saturate(1.08)}
+.btn:active:not(:disabled){transform:translateY(0) scale(.985);box-shadow:none}
+.btn.ghost{box-shadow:none}
+.nav button{transition:background-color .18s ease,color .18s ease,border-color .18s ease,transform .18s ease}
+.nav button:hover{border-color:var(--primary);transform:translateY(-1px)}
+.nav button[aria-current="page"]{box-shadow:0 3px 10px color-mix(in srgb,var(--primary) 18%,transparent)}
+input[type=text],input[type=password],input[type=search],input[type=number],select,textarea{
+  border-radius:11px;transition:border-color .16s ease,box-shadow .16s ease,background-color .16s ease;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--primary)!important;box-shadow:var(--ring);outline:0}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.72}
+label.f>span,div.f>span{font-weight:600}
+.tile,.bcard,.chip,.story,.fact,.note,.life-stat{transition:border-color .16s ease,box-shadow .16s ease,background-color .16s ease}
+.tile:focus-visible,.home-shortcut:focus-visible{outline-offset:4px}
+.sheet{box-shadow:0 18px 60px rgba(0,0,0,.2)}
+.toast{box-shadow:0 8px 28px rgba(0,0,0,.22);backdrop-filter:blur(12px)}
+.results button:focus-visible,.results button:hover{background:var(--surface2)}
+.top{padding-top:14px;padding-bottom:10px}
+.brand-t{letter-spacing:-.025em}
+.brand-s{line-height:1.5}
+.home-hero,.stats-welcome{box-shadow:var(--elev-2)}
+.home-hero{border:1px solid #ffffff1c}
+.home-shortcut:active{transform:scale(.985)}
+.home-shortcut>span{filter:drop-shadow(0 2px 3px rgba(0,0,0,.08))}
+.stats-panel{border-radius:18px}
+.stats-kpi{border-radius:16px}
+.stats-kpi.primary{background:linear-gradient(145deg,color-mix(in srgb,var(--primary) 10%,var(--surface)),var(--surface));border-color:color-mix(in srgb,var(--primary) 28%,var(--line))}
+.stats-birthdays .bday.today{background:color-mix(in srgb,var(--accent) 13%,var(--surface));border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.admin-group>summary{transition:background-color .16s ease}
+.admin-group>summary:hover{background:var(--surface2)}
+.modal{backdrop-filter:blur(5px)}
+.modal .sheet{animation:sheet-in .2s ease-out}
+@keyframes sheet-in{from{opacity:.6;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+#view{animation:view-in .2s ease-out}
+@keyframes view-in{from{opacity:.65;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+:root[data-theme="dark"] .stats-kpi.primary{background:linear-gradient(145deg,color-mix(in srgb,var(--primary) 17%,var(--surface)),var(--surface))}
+:root[data-theme="dark"] .home-pending{background:color-mix(in srgb,var(--warn) 14%,var(--surface));border-color:color-mix(in srgb,var(--warn) 38%,var(--line))}
+:root[data-theme="dark"] .home-pending b,:root[data-theme="dark"] .home-pending small{color:var(--ink)}
+:root[data-theme="dark"] .stats-birthdays .bday.today{background:color-mix(in srgb,var(--accent) 15%,var(--surface));border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.art-box,.chart-box,.outline{box-shadow:var(--elev-1)}
+.art-box{border-radius:16px}
+@media(min-width:701px){
+  .top{padding-top:18px}
+  .nav{padding-bottom:16px}
+  .stack{gap:18px}
+}
+@media(max-width:700px){
+  body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+  .top{gap:8px;padding-top:12px}
+  .brand{gap:8px}
+  .brand-t{font-size:1.28rem}
+  .brand-s{font-size:.75rem}
+  .who{gap:7px;font-size:.82rem}
+  .nav{padding-bottom:max(7px,env(safe-area-inset-bottom,0px))}
+  .nav button{min-height:52px}
+  .card{padding:15px}
+  .sheet{border-radius:20px 20px 0 0;padding-top:25px}
+  .sheet:before{content:"";width:38px;height:4px;border-radius:99px;background:var(--line);position:absolute;top:9px;left:calc(50% - 19px)}
+  .home-hero,.stats-welcome{border-radius:20px}
+}
+@media(max-width:380px){
+  .brand-t{font-size:1.12rem}
+  .who{font-size:.76rem}
+  .who .link{font-size:.78rem}
+  .nav button{font-size:.68rem}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  #view,.modal .sheet{animation:none!important}
+  *,*::before,*::after{transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+
+.skip-link{position:fixed;top:8px;right:8px;z-index:120;transform:translateY(-160%);background:var(--ink);color:var(--surface);padding:9px 14px;border-radius:10px;font-weight:700;text-decoration:none;box-shadow:var(--elev-2)}
+.skip-link:focus{transform:translateY(0)}
 </style>
 </head>
 <body>
@@ -2360,7 +2467,7 @@ function render(){
   }
   root.innerHTML=`<header class="top"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">شجره‌نامه خانوادگی</div></div></div>
     <div class="who"><span>${esc(fullName())}</span>${S.isAdmin?'<span class="pill adm">مدیر</span>':''}<button class="link" data-act="theme" title="تغییر حالت روشن یا تیره" aria-label="تغییر حالت روشن یا تیره">🌓</button><button class="link" data-act="logout" title="خروج و بازگشت به صفحه ورود">خروج</button></div></header>
-    <nav class="nav" id="nav"></nav>${S.dbError?`<div class="note bad" style="margin-bottom:12px">ارتباط با پایگاه داده برقرار نیست (${esc(S.dbError)}). صفحه را دوباره باز کنید.</div>`:''}<main id="view"></main>`;
+    <nav class="nav" id="nav" aria-label="ناوبری اصلی"></nav>${S.dbError?`<div class="note bad" style="margin-bottom:12px">ارتباط با پایگاه داده برقرار نیست (${esc(S.dbError)}). صفحه را دوباره باز کنید.</div>`:''}<a class="skip-link" href="#view">رفتن به محتوای اصلی</a><main id="view" tabindex="-1" aria-label="محتوای اصلی"></main>`;
   renderNav(); renderView();
 }
 function renderNav(){
