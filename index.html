@@ -305,7 +305,7 @@ textarea{min-height:110px;resize:vertical}
 .org ul ul::before{content:"";position:absolute;top:0;left:50%;border-left:2px solid var(--line);height:22px}
 .org li>ul{padding-top:22px}
 
-.art-box{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff;min-height:200px;max-height:86vh;cursor:grab}
+.art-box{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:#eee5d2;min-height:200px;max-height:86vh;cursor:grab;overscroll-behavior:contain}
 .art-box canvas{display:block;max-width:none}
 .art-box .wait{padding:60px 16px;text-align:center;color:#5A726B}
 
@@ -2322,14 +2322,14 @@ async function renderArt(){
   let cv; try{ cv=await makeArt(); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
   if(tok!==S.artTok||!$('#artBox')) return;
   S.artCanvas=cv; const natural=cv.width; const base=Math.max(300,box.clientWidth||natural);
-  if(!S.artZoomUser){ const tile=138*base/cv.__W; S.artZoom=Math.min(4,Math.max(1,Math.round(84/tile*4)/4)); }   // اندازهٔ خوانا: کارت هر نفر حدود ۸۴ پیکسل
+  if(!S.artZoomUser){ const tile=138*base/cv.__W; S.artZoom=Math.min(10,Math.max(2,Math.round(112/tile*4)/4)); }   // موبایل: اولویت با خوانایی چهره‌ها؛ حرکت افقی برای دیدن شاخه‌ها
   cv.style.width=Math.round(base*S.artZoom)+'px'; cv.style.height='auto';
   box.innerHTML=''; box.appendChild(cv);
   const hitAt=e=>{ const r=cv.getBoundingClientRect(); if(!r.width) return null; const x=(e.clientX-r.left)/r.width*cv.__W, y=(e.clientY-r.top)/r.height*cv.__H; const hs=cv.__hits||[]; for(let i=hs.length-1;i>=0;i--){ const h=hs[i]; if(x>=h.x1&&x<=h.x2&&y>=h.y1&&y<=h.y2) return h; } return null; };
   cv.addEventListener('click',e=>{ if(cv.__noclick){ cv.__noclick=false; return; } const h=hitAt(e); if(h) openModal(h.id); });
   cv.addEventListener('mousedown',e=>{ cv.__noclick=false; PAN={x:e.clientX,y:e.clientY,l:box.scrollLeft,t:box.scrollTop,m:false,box,cv}; });
   cv.addEventListener('mousemove',e=>{ cv.style.cursor=hitAt(e)?'pointer':'default'; });
-  if(S.artZoom>1) box.scrollLeft=-(box.scrollWidth-box.clientWidth)/2;
+  if(S.artZoom>1) box.scrollLeft=Math.max(0,(box.scrollWidth-box.clientWidth)/2);
 }
 async function saveBlob(name,blob){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
