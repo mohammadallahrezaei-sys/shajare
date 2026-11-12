@@ -248,6 +248,7 @@ textarea{min-height:110px;resize:vertical}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:1px 12px;font-size:.88rem}
 .chip:hover{border-color:var(--primary)}
 
+.chart-box,.outline,.art-box{touch-action:pan-x pan-y}
 .chart-box{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:24px 16px}
 .org{display:flex;justify-content:center;min-width:max-content}
 .org ul{display:flex;justify-content:center;padding:22px 0 0;margin:0;position:relative}
@@ -404,7 +405,10 @@ function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTi
 const gLabel=g=>g==='m'?'آقا':g==='f'?'خانم':'';
 
 /* کلید مقایسهٔ نام خانوادگی: «الله رضایی»، «اله‌رضائی»، «الله‌رضایی» و ... یکی حساب می‌شوند */
-const famKey=s=>nn(s).replace(/[ئىي]/g,'ی').replace(/[\s\u200c]/g,'').replace(/الله/g,'اله');
+const famKey=s=>nn(s).replace(/[\u064B-\u065F\u0670\u0640\u200c-\u200f\u0654\u0655]/g,'').replace(/[ئىي]/g,'ی').replace(/[ۀةھ]/g,'ه').replace(/ؤ/g,'و').replace(/[أإٱآ]/g,'ا').replace(/ء/g,'').replace(/\s/g,'').replace(/ﷲ/g,'اله').replace(/الله/g,'اله');
+/* آیا نام خانوادگی «الله‌رضایی» است؟ (با املاهای مختلف: اله رضایی، الله‌رضائی، با اعراب و …؛ اگر نام خانوادگی خالی بود، نام خانوادگی پدر ملاک است) */
+const isAllahK=k=>!!k&&(k==='الهرضایی'||(k.includes('اله')&&k.includes('رضا')));
+function isAllahP(P,id){ const p=P[id]; if(!p) return false; if(isAllahK(famKey(p.last))) return true; if(!famKey(p.last)&&p.fatherId&&P[p.fatherId]) return isAllahK(famKey(P[p.fatherId].last)); return false; }
 
 /* کلید مقایسهٔ عمومی (شهر، شغل، نام): فاصله، نیم‌فاصله، ی/ک عربی، اعراب و نشانه‌ها نادیده گرفته می‌شود */
 const vKey=s=>nn(s).replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[ئىي]/g,'ی').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/[^\p{L}\p{N}]+/gu,'');
@@ -494,7 +498,7 @@ function buildTree(){
   const link=(a,b)=>{ if(a&&b&&a!==b&&has(a)&&has(b)){partners[a].add(b);partners[b].add(a);} };
   ids.forEach(i=>{ const p=P[i]; (p.spl||[]).forEach(x=>link(i,x.id)); if(has(p.fatherId)&&has(p.motherId)) link(p.fatherId,p.motherId); });
   const pst={}; ids.forEach(i=>(P[i].spl||[]).forEach(x=>{ if(!has(x.id)) return; const k=[i,x.id].sort().join('|'); if(!pst[k]||pst[k]==='current') pst[k]=x.st||'current'; }));
-  const FAMN=famKey('الله‌رضایی'), isFam=i=>famKey(P[i].last)===FAMN, famMode=ids.some(isFam);
+  const FAMN=famKey('الله‌رضایی'), isFam=i=>isAllahP(P,i), famMode=ids.some(isFam);
   const marryIn={}; ids.forEach(i=>{
     const ps=[...partners[i]];
     marryIn[i]=famMode
@@ -784,8 +788,8 @@ function relName(g,nodes){
   else if(s==='DDD') r='نتیجه'; else if(s==='DDDD') r='نبیره';
   else if(/^D{5,}$/.test(s)) r='نوادهٔ '+fa(s.length)+' نسل پایین‌تر';
   else if(s==='UD') r=pick('برادر','خواهر')+(half()?' ناتنی':'');
-  else if(s==='UUD') r=gn(1)==='m'?(bm?'عمو':'عمه'):(bm?'دایی':'خاله');
-  else if(s==='UUDD'){ const t=gn(1)==='m'?(gn(3)==='m'?'عمو':'عمه'):(gn(3)==='m'?'دایی':'خاله'); r=(bm?'پسر':'دختر')+t; }
+  else if(s==='UUD'){ const pm=gn(1)==='m'; r=bm?(pm?'عمو':'دایی'):bf?(pm?'عمه':'خاله'):(pm?'عمو / عمه':'دایی / خاله'); }
+  else if(s==='UUDD'){ const pm=gn(1)==='m', um=gn(3)==='m', uf=gn(3)==='f', t=pm?(um?'عمو':uf?'عمه':'عمو / عمه'):(um?'دایی':uf?'خاله':'دایی / خاله'); r=(bm?'پسر':bf?'دختر':'پسر / دختر')+t; }
   else if(s==='UDD') r=gn(2)==='m'?'برادرزاده':'خواهرزاده';
   else if(s==='UDDD') r='نوهٔ '+(gn(2)==='m'?'برادر':'خواهر');
   else if(s==='US'&&gn(1)==='m'&&bf) r='نامادری';
@@ -868,7 +872,7 @@ function viewTree(){
   let body='';
   if(S.mode==='art') body=`<div class="art-box" id="artBox"><div class="wait">در حال کشیدن درخت…</div></div>`;
   else if(S.mode==='chart') body=`<div class="chart-box" id="chartBox"><div id="zoomer" style="zoom:${S.zoom}">${T.roots.map(r=>`<div class="tree-root org"><ul>${chartNode(r)}</ul></div>`).join('')}</div></div>`;
-  else body=`<div class="outline">${T.roots.map(r=>`<div class="tree-root">${outNode(r,0)}</div>`).join('')}</div>`;
+  else body=`<div class="outline"><div id="zoomer" style="zoom:${S.zoom}">${T.roots.map(r=>`<div class="tree-root">${outNode(r,0)}</div>`).join('')}</div></div>`;
   const un='';
   const modeBtn=(m,l)=>`<button class="btn ${S.mode===m?'':'ghost'} sm" data-act="mode" data-m="${m}">${l}</button>`;
   return `<div class="stack">
@@ -879,7 +883,7 @@ function viewTree(){
    </div>
    <div class="bar">
      <div class="row" style="gap:6px">
-       ${S.mode==='chart'?`<button class="btn ghost sm" data-act="zoom" data-d="-0.15" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="zoom" data-d="0.15" aria-label="بزرگ‌نمایی">+</button>`:''}
+       ${S.mode!=='art'?`<button class="btn ghost sm" data-act="zoom" data-d="-0.15" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" id="zoomPct" data-act="zoomreset" title="بازنشانی اندازه">${fa(Math.round(S.zoom*100))}٪</button><button class="btn ghost sm" data-act="zoom" data-d="0.15" aria-label="بزرگ‌نمایی">+</button>`:''}
        ${S.mode==='art'?`<button class="btn ghost sm" data-act="artzoom" data-d="-0.25" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="artzoom" data-d="0.25" aria-label="بزرگ‌نمایی">+</button><button class="btn ghost sm" data-act="artfit">کل درخت</button><button class="btn ghost sm" data-act="artauto">اندازهٔ خوانا</button>`:''}
      </div>
      <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button><button class="btn ghost sm" data-act="booklet">📚 کتابچهٔ خانوادگی</button></div>
@@ -953,7 +957,7 @@ function famMarriageStats(){
     const A=anc(a), B=anc(b); let best=null;
     Object.keys(A).forEach(c=>{ if(B[c]!=null&&c!==a&&c!==b){ const L=A[c]+B[c]; if(!best||L<best.L) best={L,u:A[c],d:B[c]}; } });
     if(best){ bl++; if(best.L<=3) near++; else if(best.u===2&&best.d===2) cousin++; else far++; }
-    else if(famKey(g.P[a].last)===FAM&&famKey(g.P[b].last)===FAM) sameName++; }));
+    else if(isAllahP(g.P,a)&&isAllahP(g.P,b)) sameName++; }));
   return {tot,bl,near,cousin,far,sameName};
 }
 function famMarriageHTML(){
@@ -1923,7 +1927,8 @@ document.addEventListener('click',async ev=>{
   }
   else if(a==='toggleadmin'){ S.adminLogin=!S.adminLogin; S.loginErr=''; render(); }
   else if(a==='mode'){ S.mode=el.dataset.m; lsSet('shj_mode2',S.mode); renderView(); }
-  else if(a==='zoom'){ S.zoom=Math.min(1.6,Math.max(.5,S.zoom+(+el.dataset.d))); const z=$('#zoomer'); if(z) z.style.zoom=S.zoom; }
+  else if(a==='zoom'){ setZoom(S.zoom+(+el.dataset.d)); }
+  else if(a==='zoomreset'){ setZoom(1); }
   else if(a==='artfit'){ S.artZoomUser=true; S.artZoom=1; const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.max(300,box.clientWidth)+'px'; } }
   else if(a==='artauto'){ S.artZoomUser=false; renderArt(); }
   else if(a==='artzoom'){ S.artZoomUser=true; S.artZoom=Math.min(6,Math.max(.5,S.artZoom+(+el.dataset.d))); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } }
@@ -1991,6 +1996,19 @@ document.addEventListener('change',ev=>{
   else if(t.id==='f_photo'){ onPhotoPicked(t.files&&t.files[0]); }
 });
 document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&S.modal) closeModal(); });
+function setZoom(v){ S.zoom=Math.min(2.5,Math.max(.3,Math.round(v*100)/100)); const z=$('#zoomer'); if(z) z.style.zoom=S.zoom; const b=$('#zoomPct'); if(b) b.textContent=fa(Math.round(S.zoom*100))+'٪'; }
+document.addEventListener('wheel',e=>{ if(!(e.ctrlKey||e.metaKey)||S.tab!=='tree') return; const box=e.target.closest&&e.target.closest('#chartBox,.outline,#artBox'); if(!box) return; e.preventDefault(); const d=e.deltaY<0?1:-1; if(box.id==='artBox'){ const b=document.querySelector('[data-act="artzoom"][data-d="'+(d>0?'0.25':'-0.25')+'"]'); if(b) b.click(); } else setZoom(S.zoom+d*.1); },{passive:false});
+/* زوم با دو انگشت (باز و بسته کردن) روی گوشی */
+(function(){
+  let pin=null;
+  const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  const boxOf=e=>e.target.closest&&e.target.closest('#chartBox,.outline,#artBox');
+  const artSet=v=>{ S.artZoomUser=true; S.artZoom=Math.min(6,Math.max(.5,v)); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box) cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; };
+  document.addEventListener('touchstart',e=>{ if(S.tab!=='tree'||e.touches.length!==2){ pin=null; return; } const b=boxOf(e); if(!b){ pin=null; return; } pin={d:dist(e.touches),art:b.id==='artBox',z:b.id==='artBox'?S.artZoom:S.zoom}; },{passive:true});
+  document.addEventListener('touchmove',e=>{ if(!pin||e.touches.length!==2) return; e.preventDefault(); const k=dist(e.touches)/pin.d; if(pin.art) artSet(pin.z*k); else setZoom(pin.z*k); },{passive:false});
+  const end=e=>{ if(e.touches.length<2) pin=null; };
+  document.addEventListener('touchend',end,{passive:true}); document.addEventListener('touchcancel',end,{passive:true});
+})();
 window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(()=>{ if(S.tab==='tree'&&S.mode==='art'&&S.artCanvas){ const box=$('#artBox'),cv=S.artCanvas; if(box&&cv.parentElement===box) cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } },200); });
 
 /* ================= Supabase layer ================= */
