@@ -2462,7 +2462,8 @@ document.addEventListener('click',async ev=>{
   else if(a==='lifelock'){ sessionStorage.removeItem('shj_parent_token'); sessionStorage.removeItem('shj_parent_exp'); S.lifeRows=[]; S.growthRows=[]; renderView(); }
   else if(a==='lifeinvite'){ await redeemInvite(); }
   else if(a==='makeinvite'){ await makeInvite(el.dataset.id); }
-  else if(a==='lifetemplate'){ const t=el.dataset.template||''; const ti=$('#lf_title'), bo=$('#lf_body'); if(ti&&!ti.value) ti.value=t; if(bo){ bo.focus(); if(!bo.value) bo.value=t==='اولین کلمه'?'اولین کلمه چه بود؟ چه زمانی گفت و واکنش اطرافیان چه بود؟':t+'؛ چه زمانی اتفاق افتاد و چه چیزی آن را به‌یادماندنی کرد؟'; } }\n  else if(a==='lifesave'){ await saveLife(); }
+  else if(a==='lifetemplate'){ const t=el.dataset.template||''; const ti=$('#lf_title'), bo=$('#lf_body'); if(ti&&!ti.value) ti.value=t; if(bo){ bo.focus(); if(!bo.value) bo.value=t==='اولین کلمه'?'اولین کلمه چه بود؟ چه زمانی گفت و واکنش اطرافیان چه بود؟':t+'؛ چه زمانی اتفاق افتاد و چه چیزی آن را به‌یادماندنی کرد؟'; } }
+  else if(a==='lifesave'){ await saveLife(); }
   else if(a==='lifedel'){ await delLife(el.dataset.id); }
   else if(a==='lifeapprove'){ await approveLife(el.dataset.id); }
   else if(a==='lifeprint'){ window.print(); }
@@ -2585,7 +2586,8 @@ document.addEventListener('submit',ev=>{
   else if(id==='growthForm') saveGrowth().catch(e=>{console.error(e);toast('ثبت اندازه‌گیری انجام نشد؛ دسترسی یا اتصال پایگاه داده را بررسی کنید.');});
   else if(id==='familyPostForm') submitFamilyPost().catch(e=>{console.error(e);toast('ارسال انجام نشد؛ اتصال یا دسترسی بارگذاری عکس را بررسی کنید.');});
 });
-document.addEventListener('change',ev=>{\n  if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
+document.addEventListener('change',ev=>{
+  if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
   if(id==='l_first'||id==='l_last'){ S.loginDraft={first:(($('#l_first')||{}).value||''),last:(($('#l_last')||{}).value||'')}; S.loginSelected=null; S.loginNewName=false; S.loginSearchDone=false; S.loginResults=[]; S.loginSearchError=''; const box=$('#loginDirectory'); if(box) box.innerHTML='<p class=\"muted small\">برای بررسی، نام و نام خانوادگی را کامل وارد کنید.</p>'; clearTimeout(window.__loginSearchTimer); window.__loginSearchTimer=setTimeout(()=>searchLoginDirectory(),450); }
