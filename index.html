@@ -360,6 +360,8 @@ const nn=s=>norm(s).replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/[‌‏‎]
 const hash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36);};
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const LOGIN_FLOW_VERSION='2026-11-12-login-directory-v3';
+const SESSION_KEY='shj_sess_v3';
 const newId=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const full=p=>p?((p.first||'')+' '+(p.last||'')).trim():'';
 const MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
@@ -397,7 +399,7 @@ function ageNow(p){
 
 const S={
   db:null,user:null,sample:null,uid:null,isAdmin:false,gate:false,ready:false,dbError:null,
-  me:null,loginPending:null,peopleLoaded:false,tab:'home',people:{},memories:{},subs:{},mySub:null,imported:[],
+  me:null,loginPending:null,peopleLoaded:false,loginResults:[],loginSelected:null,loginNewName:false,loginSearchError:'',loginSearchSeq:0,loginSearchDone:false,loginDraft:{first:'',last:''},tab:'home',people:{},memories:{},subs:{},mySub:null,imported:[],
   mode:lsGet('shj_mode2')||(window.innerWidth<760?'outline':'art'),
   addTab:'person',editId:null,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
   editSub:null,adq:'',famSel:{},cacheSig:null,hadCache:false,offline:false,cmpF:'all',bk:null,focus:'',relA:'',relB:'',relOpen:false,photo:'',photoDirty:false,photoMsg:'',prefill:null,missingOnly:false,T:null,artCanvas:null
@@ -1019,7 +1021,7 @@ function myMarriageHTML(){
   if(!items.length) return '';
   const rows=items.map(({q,x})=>{ const t=dtParts(x), yrs=(+x.my&&x.st!=='divorced'&&!P[id].dead&&!P[q].dead)?TODAY.y-x.my:0;
     return `<li><div style="flex:1 1 220px;min-width:0"><b>${esc(full(P[q]))}</b> <span class="muted small">${t.length?esc(t.join('، ')):'تاریخی ثبت نشده'}${yrs>0?' – '+fa(yrs)+' سال زندگی مشترک':''}</span></div></li>`; }).join('');
-  return `<section class="card stack"><h3>💍 زندگی مشترک شما</h3><ul class="list">${rows}</ul><div class="row"><button type="button" class="btn ghost sm" data-act="editp" data-id="${esc(id)}">ثبت یا ویرایش تاریخ‌ها (اختیاری)</button></div></section>`;
+  return `<section class="card stack"><h3>💍 زندگی مشترک شما</h3><ul class="list">${rows}</ul><div class="row"><button type="button" class="btn ghost sm" data-act="mycomplete">تکمیل اطلاعات زندگی مشترک (در فرم تکمیل اطلاعات)</button></div></section>`;
 }
 function annivHTML(){
   const g=relGraph(), P=g.P, seen=new Set(), l=[];
@@ -1173,8 +1175,8 @@ function photoBlock(){
       ${S.photo?'<button type="button" class="btn ghost sm" data-act="rmphoto" style="align-self:flex-start">حذف عکس</button>':''}</div></div></div>`;
 }
 const STEP_T=['او کیست؟','خانواده‌اش','اطلاعات بیشتر','اطلاعات ازدواج'];
-function hasLivingCurrentSpouse(v){ const list=spListOf(v||{}); return !!(v&&!v.dead&&list.some(x=>(x.st||'current')==='current'&&x.id&&S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual)); }
-function maxPersonStep(){ const p=S.editId&&S.people[S.editId]?S.people[S.editId]:(S.prefill||{}); let ok=hasLivingCurrentSpouse(p); if($('#pform')){ try{ const mar=(document.querySelector('input[name=f_mar]:checked')||{}).value||p.marital; ok=(mar==='married'||(S.editId&&hasLivingCurrentSpouse(p)))&&!$('#f_dead').checked&&readSpouses().some(x=>(x.st||'current')==='current'&&x.id&&S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual); }catch(e){} } return ok?4:3; }
+function hasLivingCurrentSpouse(v){ const list=spListOf(v||{}); return !!(v&&!v.dead&&list.some(x=>{ const current=(x.st||'current')==='current'; if(!current) return false; if(x.id) return !!(S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual); return !!(x.ref&&String(x.ref.name||'').trim()); })); }
+function maxPersonStep(){ const p=S.editId&&S.people[S.editId]?S.people[S.editId]:(S.prefill||{}); let ok=hasLivingCurrentSpouse(p); if($('#pform')){ try{ const mar=(document.querySelector('input[name=f_mar]:checked')||{}).value||p.marital; const alive=!$('#f_dead').checked; const candidates=readSpouses().some(x=>(x.st||'current')==='current'&&(x.id?(S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual):!!(x.ref&&String(x.ref.name||'').trim()))); ok=alive&&(mar==='married'||hasLivingCurrentSpouse(p))&&candidates; }catch(e){} } return ok?4:3; }
 function stepperHTML(n,max){ max=max||maxPersonStep(); return STEP_T.slice(0,max).map((t,i)=>`<button type="button" data-act="pgo" data-n="${i+1}" ${i+1===n?'aria-current="step"':''}><span class="num">${fa(i+1)}</span><span>${t}</span></button>`).join(''); }
 function spouseRows(v){
   const list=spListOf(v), shown=Math.max(1,list.length);
@@ -1190,14 +1192,14 @@ function spouseRows(v){
 }
 function marriageDatesCurrent(){
   const src=readSpouses(), old=spListOf(S.editId&&S.people[S.editId]?S.people[S.editId]:(S.prefill||{}));
-  const list=src.map(x=>{ const o=old.find(y=>y.id&&y.id===x.id)||{}; return Object.assign({},x,{dt:x.dt||o.dt||null,my:x.my||o.my||0}); }).filter(x=>(x.st||'current')==='current'&&x.id&&S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual);
-  if(!list.length) return '<p class="muted small">همسر فعلی و زنده‌ای برای ثبت تاریخ ازدواج شناسایی نشد.</p>';
-  return list.map((x,i)=>{ const k=SP_KEYS.find(key=>val('#r_'+key)===x.id)||SP_KEYS[i]||SP_KEYS[0], label=full(S.people[x.id]); return `<section class="card stack" style="gap:10px"><b>تاریخ‌های زندگی مشترک با ${esc(label)}</b>${[['nishan','تاریخ نشان'],['aghd','تاریخ عقد'],['aroosi','تاریخ عروسی']].map(([n,l])=>`<label class="f"><span>${l} (اختیاری)</span>${dateW('r_'+k+'_'+n,(x.dt&&x.dt[n])||(n==='aroosi'&&x.my?{y:+x.my}:{}))}</label>`).join('')}</section>`; }).join('');
+  const list=src.map((x,i)=>{ const o=old.find(y=>(x.id&&y.id===x.id)||(!x.id&&x.ref&&y.ref&&vKey(x.ref.name)===vKey(y.ref.name)))||old[i]||{}; return Object.assign({},o,x,{dt:x.dt||o.dt||null,my:x.my||o.my||0,_key:SP_KEYS[i]||SP_KEYS[0]}); }).filter(x=>(x.st||'current')==='current'&&(x.id?(S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual):!!(x.ref&&String(x.ref.name||'').trim())));
+  if(!list.length) return '<p class="muted small">برای نمایش این صفحه باید همسر فعلی و زنده مشخص شده باشد.</p>';
+  return list.map(x=>{ const label=x.id&&S.people[x.id]?full(S.people[x.id]):(x.ref&&x.ref.name)||'همسر'; const fields=[['nishan','تاریخ نشان'],['aghd','تاریخ عقد'],['aroosi','تاریخ عروسی']]; return `<section class="card stack" style="gap:10px"><b>تاریخ‌های زندگی مشترک با ${esc(label)}</b>${fields.map(([n,l])=>{ const existing=x.dt&&x.dt[n]; return S.missingOnly&&existing? '' : `<label class="f"><span>${l} (اختیاری)</span>${dateW('r_'+x._key+'_'+n,existing||(n==='aroosi'&&x.my?{y:+x.my}:{}))}</label>`; }).join('')||'<p class="muted small">تاریخ‌های زندگی مشترک قبلاً تکمیل شده‌اند.</p>'}</section>`; }).join('');
 }
 function marriageDatesHTML(v){
-  const list=spListOf(v||{}).map((x,i)=>Object.assign({_key:SP_KEYS[i]||SP_KEYS[0]},x)).filter(x=>(x.st||'current')==='current'&&x.id&&S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual);
-  if(!list.length) return '<p class="muted small">همسر فعلی و زنده‌ای برای ثبت تاریخ ازدواج شناسایی نشد.</p>';
-  return list.map((x,i)=>{ const k=x._key, label=full(S.people[x.id]); return `<section class="card stack" style="gap:10px"><b>تاریخ‌های زندگی مشترک با ${esc(label)}</b>${[['nishan','تاریخ نشان'],['aghd','تاریخ عقد'],['aroosi','تاریخ عروسی']].map(([n,l])=>`<label class="f"><span>${l} (اختیاری)</span>${dateW('r_'+k+'_'+n,(x.dt&&x.dt[n])||(n==='aroosi'&&x.my?{y:+x.my}:{}))}</label>`).join('')}</section>`; }).join('');
+  const list=spListOf(v||{}).map((x,i)=>Object.assign({_key:SP_KEYS[i]||SP_KEYS[0]},x)).filter(x=>(x.st||'current')==='current'&&(x.id?(S.people[x.id]&&!S.people[x.id].dead&&!S.people[x.id].virtual):!!(x.ref&&String(x.ref.name||'').trim())));
+  if(!list.length) return '<p class="muted small">برای نمایش اطلاعات ازدواج، همسر فعلی و زنده را در مرحله خانواده مشخص کنید.</p>';
+  return list.map(x=>{ const label=x.id&&S.people[x.id]?full(S.people[x.id]):(x.ref&&x.ref.name)||'همسر'; const fields=[['nishan','تاریخ نشان'],['aghd','تاریخ عقد'],['aroosi','تاریخ عروسی']]; return `<section class="card stack" style="gap:10px"><b>تاریخ‌های زندگی مشترک با ${esc(label)}</b>${fields.map(([n,l])=>{ const existing=x.dt&&x.dt[n]; return S.missingOnly&&existing? '' : `<label class="f"><span>${l} (اختیاری)</span>${dateW('r_'+x._key+'_'+n,existing||(n==='aroosi'&&x.my?{y:+x.my}:{}))}</label>`; }).join('')||'<p class="muted small">تاریخ‌های زندگی مشترک قبلاً تکمیل شده‌اند.</p>'}</section>`; }).join('');
 }
 function reviewHTML(){
   const g=(document.querySelector('input[name=f_g]:checked')||{}).value;
@@ -1218,6 +1220,7 @@ function reviewHTML(){
       <div style="font-size:1.25rem;font-weight:800">${esc(val('#f_first')+' '+val('#f_last'))}</div><div class="muted">${g==='m'?'آقا':g==='f'?'خانم':''}</div></div></div>
     ${sec('اطلاعات فرد',1,row('نام و نام خانوادگی',val('#f_first')+' '+val('#f_last'))+row('جنسیت',g==='m'?'آقا':g==='f'?'خانم':'')+row('تاریخ تولد',dv(b.y,b.m,b.d))+row('وضعیت',status))}
     ${sec('خانواده',2,row('پدر',rname(fa_))+row('مادر',rname(mo))+row('وضعیت تأهل',mar==='single'?'مجرد':mar==='married'?'متأهل یا همسر داشته':'نامشخص')+spRows+row('فرزندان',kids))}
+    ${maxPersonStep()===4?sec('تاریخ‌های زندگی مشترک',4,readSpouses().map((x,i)=>{const nm=x.id?nameOf(x.id):(x.ref&&x.ref.name)||'همسر';const ds=x.dt||{};return row(nm,['nishan','aghd','aroosi'].map(k=>ds[k]&&dstr(ds[k].y,ds[k].m,ds[k].d)?dstr(ds[k].y,ds[k].m,ds[k].d):'').filter(Boolean).join('، '));}).join('')):''}
     ${sec('اطلاعات بیشتر',3,row('محل تولد',val('#f_bplace'))+row('محل سکونت',val('#f_resid'))+row('شغل',val('#f_job'))+row('توضیح',val('#f_note'))+row('سرگذشت',(()=>{ const t=val('#f_story'); return t?(t.length>160?t.slice(0,160)+'… ('+fa(t.length)+' حرف)':t):''; })())+row('جملهٔ نسل‌های آینده',val('#f_legacy'))+row('عکس',S.photo?'انتخاب شده':''))}
     ${S.isAdmin?'':'<p class="muted small hintbox" style="margin:0">با تأیید شما، اطلاعات برای مدیر ارسال می‌شود و بعد از بررسی او در درخت اضافه می‌شود.</p>'}
     <div class="navrow"><button type="button" class="btn ghost big" data-act="rvgo" data-n="1">ویرایش اطلاعات</button><button type="button" class="btn big" id="rvOk" data-act="rvok">${S.isAdmin?'✅ تأیید و ثبت نهایی':'✅ ثبت نهایی (ارسال برای مدیر)'}</button></div></div>`;
@@ -1843,33 +1846,47 @@ function loginCandidates(first,last){
   };
   return Object.keys(S.people).map(id=>[id,score(id)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
 }
-function loginIdentityHTML(){
-  const m=S.loginPending||{first:'',last:''}, c=loginCandidates(m.first,m.last);
-  return `<div class="loginbox card stack"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">تطبیق هویت با فهرست افراد ثبت‌شده</div></div></div>
-  <div class="note gift" style="line-height:1.9"><b>نام و نام خانوادگی را دقیق و کامل وارد کنید.</b><br>ابتدا نام شما با فهرست قبلی شجره‌نامه تطبیق داده شده است. اگر پروندهٔ خودتان را دیدید، همان را انتخاب کنید تا اطلاعات تکراری ساخته نشود.</div>
-  <div class="fields">
-   <label class="f"><span>نام</span><input id="li_first" value="${esc(m.first)}" autocomplete="given-name"></label>
-   <label class="f"><span>نام خانوادگی</span><input id="li_last" value="${esc(m.last)}" autocomplete="family-name"></label>
-  </div>
-  <button type="button" class="btn ghost" data-act="loginsearch">بررسی دوبارهٔ نام در فهرست</button>
-  ${c.length?`<h3 style="margin:8px 0 0">افراد مشابه در فهرست ثبت‌شده</h3><p class="muted small" style="margin:0">فقط در صورتی انتخاب کنید که مشخصات واقعاً متعلق به شماست.</p><div class="stack" style="gap:8px">${c.slice(0,6).map(([id])=>`<button type="button" class="btn ghost" style="text-align:right" data-act="loginpick" data-id="${esc(id)}"><b>${esc(full(S.people[id]))}</b><small class="muted" style="display:block">${esc(kinTag(id,S.people[id])||'مشخصات تکمیلی ثبت نشده')}</small><span class="small">این پرونده متعلق به من است</span></button>`).join('')}</div>
-  <button type="button" class="btn ghost sm" data-act="loginnew">هیچ‌کدام من نیستم؛ ادامه با نام واردشده</button>`
-  :`<div class="note">با این نام و نام خانوادگی، فردی در فهرست قبلی پیدا نشد. اگر املای نام درست است، می‌توانید با همین مشخصات ادامه دهید.</div><button type="button" class="btn big" data-act="loginnew">تأیید نام و ورود به شجره‌نامه</button>`}
-  <p class="muted small" style="margin:0">اطلاعات ثبت‌شدهٔ قبلی حذف نمی‌شود؛ این مرحله فقط هویت ورود شما را مشخص می‌کند.</p></div>`;
+function loginDirectoryHTML(){
+  if(S.adminLogin) return '';
+  const results=S.loginResults||[];
+  const selected=S.loginSelected;
+  if(selected) return `<div class="note ok" style="line-height:1.8"><b>✓ پرونده انتخاب‌شده:</b><br>${esc(full(selected))}<br><span class="small">این هویت مبنای ورود و اتصال شما به اطلاعات قبلی خواهد بود.</span><button type="button" class="link" data-act="loginchange">تغییر انتخاب</button></div>`;
+  if(S.loginSearchError) return `<div class="note bad">${esc(S.loginSearchError)}</div>`;
+  if(!S.loginSearchDone) return `<p class="muted small" style="margin:0">نام و نام خانوادگی را کامل وارد کنید تا فهرست ثبت‌شده بررسی شود.</p>`;
+  if(results.length) return `<div class="stack" style="gap:8px"><b>نام‌های پیدا‌شده در فهرست قبلی؛ پرونده خودتان را انتخاب کنید:</b>${results.slice(0,12).map(p=>`<button type="button" class="btn ghost" style="text-align:right" data-act="loginpick" data-id="${esc(p.id)}"><b>${esc((p.first+' '+p.last).trim())}</b><small class="muted" style="display:block">${esc([p.father_name?'نام پدر: '+p.father_name:'',p.spouse_name?'همسر: '+p.spouse_name:''].filter(Boolean).join(' ـ ')||'مشخصات تکمیلی ثبت نشده')}</small><span class="small">این پرونده متعلق به من است</span></button>`).join('')}<button type="button" class="btn ghost sm" data-act="loginnew">هیچ‌کدام من نیستم؛ ثبت نام و نام خانوادگی جدید</button></div>`;
+  return `<div class="note">با این نام و نام خانوادگی، موردی در فهرست قبلی پیدا نشد.</div><button type="button" class="btn ghost" data-act="loginnew">نام من در فهرست نیست؛ ادامه با نام جدید</button>`;
 }
+async function searchLoginDirectory(){
+  const f=($('#l_first')||{}).value||'', l=($('#l_last')||{}).value||'';
+  const q=(f+' '+l).replace(/\s+/g,' ').trim();
+  S.loginSelected=null; S.loginNewName=false; S.loginResults=[]; S.loginSearchError=''; S.loginSearchDone=false;
+  const box=$('#loginDirectory'); if(!box) return;
+  if(q.replace(/\s/g,'').length<3){ box.innerHTML='<p class="muted small">برای جستجو، حداقل سه حرف وارد کنید.</p>'; return; }
+  const seq=++S.loginSearchSeq; box.innerHTML='<p class="muted small">در حال جستجو در فهرست ثبت‌شده…</p>';
+  try{
+    const rows=await sbFetch('/rest/v1/rpc/shj_login_directory',{method:'POST',body:JSON.stringify({q})});
+    if(seq!==S.loginSearchSeq) return;
+    S.loginResults=Array.isArray(rows)?rows:[]; S.loginSearchDone=true; box.innerHTML=loginDirectoryHTML();
+  }catch(e){
+    if(seq!==S.loginSearchSeq) return;
+    S.loginSearchError='دریافت فهرست اسامی انجام نشد. ابتدا اسکریپت تکمیلی دسترسی فهرست ورود را در Supabase اجرا کنید و دوباره تلاش کنید.';
+    box.innerHTML=loginDirectoryHTML();
+  }
+}
+
 function render(){
   const root=$('#root');
   if(!S.ready){ root.innerHTML='<div class="loginbox card empty"><p class="muted" style="margin:0">در حال بارگذاری شجره‌نامه…</p></div>'; return; }
   if(S.gate){ root.innerHTML=`<div class="loginbox card stack"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div></div></div><div class="note warn">اتصال به پایگاه داده هنوز تنظیم نشده است. چهار مقدار ابتدای فایل (آدرس، کلید، ایمیل خانواده و ایمیل مدیر) را وارد کنید.</div></div>`; return; }
-  if(S.authed&&S.loginPending){ root.innerHTML=S.peopleLoaded?loginIdentityHTML():`<div class="loginbox card stack"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div></div></div>${S.dbError?`<div class="note bad">دریافت فهرست افراد با خطا روبه‌رو شد. اتصال اینترنت را بررسی و صفحه را دوباره بارگذاری کنید.</div>`:'<p>در حال دریافت فهرست افراد ثبت‌شده برای تطبیق نام شما…</p>'}</div>`; return; }
   if(!S.me||!S.authed){
-    const m=S.me||{first:'',last:''};
+    const m=S.loginDraft||S.me||{first:'',last:''};
     root.innerHTML=`<div class="loginbox card stack"><div class="brand">${LOGO}<div><div class="brand-t">خاندان الله‌رضایی</div><div class="brand-s">شجره‌نامه خانوادگی</div></div></div>
-     ${S.adminLogin?'<p style="margin:0">ورود مدیر</p>':`<div class="note gift" style="line-height:1.9"><b>لطفاً نام و نام خانوادگی خود را دقیق و کامل بنویسید.</b><br>نام و نام خانوادگی باید با مشخصات واقعی خودتان و با املای صحیح وارد شود؛ از نام مستعار یا نام شخص دیگر استفاده نکنید.<br><b>برای ورود سه چیز لازم است:</b><br>۱) <b>نام خودتان</b> (دقیق و کامل)<br>۲) <b>نام خانوادگی خودتان</b> (دقیق و کامل)<br>۳) <b>رمز خانواده</b> که در گروه خانوادگی اعلام شده <b>(رمز را با حروف و اعداد انگلیسی بنویسید؛ قبل از تایپ، کیبورد گوشی را روی انگلیسی بگذارید)</b></div>`}
+     ${S.adminLogin?'<p style="margin:0">ورود مدیر</p>':`<div class="note gift" style="line-height:1.9"><b>نام و نام خانوادگی خود را دقیق و کامل بنویسید.</b><br>ابتدا فهرست قبلی شجره‌نامه جستجو می‌شود؛ اگر نامتان را دیدید، پرونده خودتان را انتخاب کنید. اگر در فهرست نبودید، گزینه ثبت نام جدید را بزنید.<br><b>رمز خانواده را نیز با حروف و اعداد انگلیسی وارد کنید.</b></div>`}
      <form id="loginForm" class="stack" style="gap:12px"><label class="f"><span>${S.adminLogin?'نام':'نام خودتان *'}</span><input type="text" id="l_first" required autocomplete="given-name" placeholder="${S.adminLogin?'':'مثلاً: علی'}" value="${esc(m.first)}"></label>
      <label class="f"><span>${S.adminLogin?'نام خانوادگی':'نام خانوادگی خودتان *'}</span><input type="text" id="l_last" required autocomplete="family-name" placeholder="${S.adminLogin?'':'مثلاً: الله‌رضایی'}" value="${esc(m.last)}"></label>
+     ${S.adminLogin?'':`<div id="loginDirectory" class="stack" style="gap:8px">${loginDirectoryHTML()}</div>`}
      ${S.adminLogin?`<label class="f"><span>ایمیل مدیر</span><input type="text" id="l_email" dir="ltr" required autocomplete="username"></label><label class="f"><span>رمز مدیر</span><input type="password" id="l_pass" dir="ltr" required autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false"><span class="muted small">رمز را با کیبورد انگلیسی بنویسید.</span></label>`
-       :(!S.authed?`<label class="f"><span>رمز خانواده *</span><input type="password" id="l_code" dir="ltr" required autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="رمزی که در گروه اعلام شده"><span class="muted small">رمز را با حروف و اعداد انگلیسی بنویسید (کیبورد انگلیسی).</span></label>`:'')}
+       :`<label class="f"><span>رمز خانواده *</span><input type="password" id="l_code" dir="ltr" required autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="رمزی که در گروه اعلام شده"><span class="muted small">رمز را با حروف و اعداد انگلیسی بنویسید (کیبورد انگلیسی).</span></label>`}
      ${S.loginErr?`<div class="note bad">${esc(S.loginErr)}</div>`:''}
      <button class="btn big" type="submit">ورود</button></form>
      <button class="link" type="button" data-act="toggleadmin" style="align-self:flex-start">${S.adminLogin?'ورود اعضای خانواده':'ورود مدیر'}</button></div>`;
@@ -1926,8 +1943,9 @@ function mdOf(k){ const o={}; ['nishan','aghd','aroosi'].forEach(n=>{ if(!$('#r_
 function mdY(k){ const o=mdOf(k); return o?((o.aroosi&&o.aroosi.y)||(o.aghd&&o.aghd.y)||(o.nishan&&o.nishan.y)||0):0; }
 function readSpouses(){
   if((document.querySelector('input[name=f_mar]:checked')||{}).value==='single') return [];
-  const out=[], base=S.editId&&S.people[S.editId]?S.people[S.editId]:(S.prefill||{}), old=spListOf(base);
-  SP_KEYS.forEach((k,i)=>{ const row=$('#r_'+k); if(!row) return; const r=readRel(k); if(r.id||r.ref.name){ const prev=old.find(x=>x.id&&x.id===r.id)||old[i]||{}; const dt=mdOf(k)||prev.dt||null, my=mdY(k)||prev.my||0; out.push({id:r.id,ref:r.ref,st:val('#r_'+k+'_st')||'current',my,dt}); } });
+  const out=[], base=S.editId&&S.people[S.editId]?S.people[S.editId]:(S.prefill||{}), old=spListOf(base), seen=new Set();
+  SP_KEYS.forEach((k,i)=>{ const row=$('#r_'+k); if(!row||row.hidden) return; const r=readRel(k); if(r.id||r.ref.name){ const prev=old.find(x=>(r.id&&x.id===r.id)||(!r.id&&r.ref.name&&x.ref&&vKey(x.ref.name)===vKey(r.ref.name)))||old[i]||{}; const dt=mdOf(k)||prev.dt||null, my=mdY(k)||prev.my||0; const item={id:r.id,ref:r.ref,st:val('#r_'+k+'_st')||prev.st||'current',my,dt}; out.push(item); if(item.id) seen.add(item.id); } });
+  if(S.missingOnly) old.forEach(x=>{ if(x.id&&!seen.has(x.id)) out.push(x); else if(!x.id&&x.ref&&x.ref.name&&!out.some(y=>y.ref&&vKey(y.ref.name)===vKey(x.ref.name))) out.push(x); });
   return out;
 }
 function step2Ok(){
@@ -1935,7 +1953,7 @@ function step2Ok(){
   const need=!S.editId&&!S.editSub&&!(S.prefill&&S.prefill._v)&&Object.keys(S.people).length>0;
   if(need){
     const real=x=>x.id&&x.id!=='__new';
-    const ok=real(readRel('father'))||real(readRel('mother'))||readSpouses().some(real);
+    const ok=real(readRel('father'))||real(readRel('mother'))||readSpouses().some(x=>real(x)||!!(x.ref&&String(x.ref.name||'').trim()));
     if(!ok){ if(dm) dm.innerHTML='<div class="errbig">برای اینکه این فرد در درخت بیاید، حداقل یکی از پدر، مادر یا همسرش را از لیست انتخاب کنید. اگر پدر یا مادرش هنوز در لیست نیست، اول او را ثبت کنید و بعد برگردید.</div>'; setStep(2); return false; }
   }
   if(dm) dm.innerHTML=''; return true;
@@ -1948,7 +1966,7 @@ function step1Ok(){
 function setStep(n){
   const max=maxPersonStep(); if(n===4&&max<4) n=3; n=Math.max(1,Math.min(max,n));
   S.pstep=n; document.querySelectorAll('#pform [data-step]').forEach(d=>{ d.hidden=(+d.dataset.step!==n); });
-  if(n===4){ const md=$('#marriageDates'); if(md) md.innerHTML=marriageDatesCurrent(); }
+  if(n===4){ const md=$('#marriageDates'); if(md) md.innerHTML=(S.missingOnly&&S.editId&&S.people[S.editId])?marriageDatesHTML(S.people[S.editId]):marriageDatesCurrent(); }
   const st=$('#stepper'); if(st) st.innerHTML=stepperHTML(n,max);
   const b=$('#pBack'), x=$('#pNext'), sb=$('#pSubmit'); if(b) b.hidden=(n===1); if(x) x.hidden=(n===max); if(sb) sb.hidden=(n!==max);
   const nmv=($('#f_first')&&$('#f_first').value.trim())||'این فرد'; document.querySelectorAll('#pform .pn').forEach(e=>{ e.textContent=nmv; });
@@ -1977,6 +1995,12 @@ async function onPersonSubmit(){
   const payload={first,last,gender:g,bY:b.y,bM:b.m,bD:b.d,dead,dY:d.y,dM:d.m,dD:d.d,
     fatherId:fa_.id,fatherRef:fa_.ref,motherId:mo.id,motherRef:mo.ref,spouseId:sp0.id,spouseRef:sp0.ref,spouses:spl,marital:mar,
     kidNames:val('#f_kids'),place:'',birthPlace:canonVal('place',val('#f_bplace')),residence:canonVal('place',val('#f_resid')),job:canonVal('job',val('#f_job')),note:val('#f_note'),story:val('#f_story'),legacy:val('#f_legacy')};
+  if(S.missingOnly&&S.editId&&S.people[S.editId]){
+    const old=S.people[S.editId];
+    ['first','last','gender','bY','bM','bD','dY','dM','dD','fatherId','fatherRef','motherId','motherRef','spouseId','spouseRef','marital','kidNames','birthPlace','place','residence','job','note','story','legacy','photo'].forEach(k=>{ if((payload[k]===undefined||payload[k]===null||payload[k]===''||payload[k]===0)&&old[k]!==undefined&&old[k]!==null&&old[k]!=='') payload[k]=old[k]; });
+    if(!payload.spouses||!payload.spouses.length) payload.spouses=spListOf(old);
+    const firstSp=payload.spouses[0]||{}; payload.spouseId=firstSp.id||old.spouseId||''; payload.spouseRef=firstSp.ref||old.spouseRef||{};
+  }
   if(S.photoDirty) payload.photo=S.photo;
   if(!S.editId&&!S.editSub&&!S.dup){
     const nk=vKey(first+' '+last), dupE=Object.entries(S.people).find(([,p])=>{ const a=vKey(full(p)); return a&&a===nk&&(!p.bY||!b.y||Math.abs(p.bY-b.y)<=1); }), dup=dupE&&dupE[1];
@@ -2100,30 +2124,24 @@ document.addEventListener('click',async ev=>{
   else if(a==='rvok'){ S.rv=true; await onPersonSubmit(); }
   else if(a==='pgo'){ const n=+el.dataset.n; if(n>1&&!step1Ok()) return; if(n>2&&!step2Ok()) return; setStep(n); }
   else if(a==='logout'){
-    lsSet('shj_me',''); lsSet('shj_sess','');
+    lsSet('shj_me',''); lsSet(SESSION_KEY,'');
     SB.tok=null; SB.refresh=null; SB.email='';
-    S.me=null; S.loginPending=null; S.peopleLoaded=false; S.authed=false; S.isAdmin=false; S.adminLogin=false; S.loginErr='';
+    S.me=null; S.loginPending=null; S.peopleLoaded=false; S.loginSelected=null; S.loginNewName=false; S.loginResults=[]; S.loginSearchDone=false; S.loginDraft={first:'',last:''}; S.authed=false; S.isAdmin=false; S.adminLogin=false; S.loginErr='';
     S.subsOn=false; S.db=null; S.people={}; S.memories={}; S.subs={}; S.mySub=null; S.T=null; S.cacheSig=null; S.hadCache=false; setOffline(false); kv.del('col:people'); kv.del('col:memories');
     render();
   }
   else if(a==='toggleadmin'){ S.adminLogin=!S.adminLogin; S.loginErr=''; render(); }
-  else if(a==='loginsearch'){
-    const f=($('#li_first')||{}).value||'', l=($('#li_last')||{}).value||'';
-    if(!f.trim()||!l.trim()){ toast('نام و نام خانوادگی را کامل وارد کنید.'); return; }
-    S.loginPending={first:f.trim(),last:l.trim()}; render();
-  }
   else if(a==='loginpick'){
-    const p=S.people[el.dataset.id]; if(!p){ toast('این پرونده در فهرست پیدا نشد؛ دوباره بررسی کنید.'); return; }
-    S.me={first:p.first||'',last:p.last||''}; S.loginPending=null;
-    lsSet('shj_me',JSON.stringify(S.me)); lsSet('shj_mynew',''); lsSet('shj_myid',JSON.stringify({k:nn(S.me.first)+'|'+famKey(S.me.last),id:el.dataset.id}));
-    S.tab='home'; render();
+    const p=(S.loginResults||[]).find(x=>String(x.id)===String(el.dataset.id)); if(!p){ toast('این نام دیگر در فهرست پیدا نشد؛ دوباره جستجو کنید.'); return; }
+    S.loginSelected={id:p.id,first:p.first||'',last:p.last||'',father_name:p.father_name||'',spouse_name:p.spouse_name||''}; S.loginDraft={first:S.loginSelected.first,last:S.loginSelected.last}; S.loginNewName=false;
+    const f=$('#l_first'),l=$('#l_last'); if(f) f.value=S.loginSelected.first; if(l) l.value=S.loginSelected.last;
+    const b=$('#loginDirectory'); if(b) b.innerHTML=loginDirectoryHTML();
   }
   else if(a==='loginnew'){
-    const f=($('#li_first')||{}).value||((S.loginPending||{}).first||''), l=($('#li_last')||{}).value||((S.loginPending||{}).last||'');
-    if(!f.trim()||!l.trim()){ toast('نام و نام خانوادگی را کامل وارد کنید.'); return; }
-    S.me={first:f.trim(),last:l.trim()}; S.loginPending=null; lsSet('shj_me',JSON.stringify(S.me)); lsSet('shj_myid',''); lsSet('shj_mynew',nn(S.me.first)+'|'+famKey(S.me.last));
-    S.tab='home'; render();
+    const f=($('#l_first')||{}).value.trim(),l=($('#l_last')||{}).value.trim(); if(!f||!l){ toast('نام و نام خانوادگی را کامل وارد کنید.'); return; }
+    S.loginSelected=null; S.loginDraft={first:f,last:l}; S.loginNewName=true; const b=$('#loginDirectory'); if(b) b.innerHTML='<div class="note">نام جدید انتخاب شد. پس از ورود، این نام مبنای ثبت اطلاعات شما خواهد بود.</div>';
   }
+  else if(a==='loginchange'){ S.loginSelected=null; S.loginNewName=false; searchLoginDirectory(); }
   else if(a==='mode'){ S.mode=el.dataset.m; lsSet('shj_mode2',S.mode); renderView(); }
   else if(a==='zoom'){ setZoom(S.zoom+(+el.dataset.d)); }
   else if(a==='zoomreset'){ setZoom(1); }
@@ -2168,7 +2186,8 @@ document.addEventListener('submit',ev=>{
 });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
-  if(id==='f_dead'){ $('#deathWrap').hidden=!ev.target.checked; }
+  if(id==='l_first'||id==='l_last'){ S.loginDraft={first:(($('#l_first')||{}).value||''),last:(($('#l_last')||{}).value||'')}; S.loginSelected=null; S.loginNewName=false; S.loginSearchDone=false; S.loginResults=[]; S.loginSearchError=''; const box=$('#loginDirectory'); if(box) box.innerHTML='<p class=\"muted small\">برای بررسی، نام و نام خانوادگی را کامل وارد کنید.</p>'; clearTimeout(window.__loginSearchTimer); window.__loginSearchTimer=setTimeout(()=>searchLoginDirectory(),450); }
+  else   if(id==='f_dead'){ $('#deathWrap').hidden=!ev.target.checked; }
   else if(id==='f_first'||id==='f_last'){ S.dup=false; const d=$('#dupMsg'); if(d) d.innerHTML=''; }
   else if(ev.target.name==='m_kind'){ const t=$('#m_text'); if(t) t.placeholder=KINDS[ev.target.value][1]; }
   else if(ev.target.dataset&&ev.target.dataset.relq){ refillRel(ev.target.dataset.relq); }
@@ -2221,7 +2240,7 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
 const CFG=Object.assign({url:'',key:'',familyEmail:'',adminEmail:''},window.SHJ_CONFIG||{});
 const SB={tok:null,refresh:null,email:''};
 const sbReady=()=>!!(CFG.url&&CFG.key&&CFG.familyEmail&&CFG.adminEmail)&&!/PASTE/i.test(CFG.url+CFG.key+CFG.adminEmail);
-function sbSave(){ lsSet('shj_sess',JSON.stringify({r:SB.refresh,e:SB.email})); }
+function sbSave(){ lsSet(SESSION_KEY,JSON.stringify({r:SB.refresh,e:SB.email})); }
 async function sbAuth(body,grant){
   const r=await fetch(CFG.url+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:CFG.key,'Content-Type':'application/json'},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({})); if(!r.ok) throw {code:r.status,message:j.error_description||j.msg||j.message||'خطا'};
@@ -2304,25 +2323,27 @@ function startSubs(){
 }
 const enDigits=t=>String(t).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 async function doLogin(){
-  const f=$('#l_first').value.trim(), l=$('#l_last').value.trim(); if(!f||!l) return;
+  let f=($('#l_first')||{}).value.trim(), l=($('#l_last')||{}).value.trim(); if(!f||!l) return;
   const btn=document.querySelector('#loginForm button[type=submit]'); if(btn) btn.disabled=true;
   try{
     if(S.adminLogin){
       await sbAuth({email:$('#l_email').value.trim(),password:enDigits($('#l_pass').value)},'password');
-      if(SB.email.toLowerCase()!==CFG.adminEmail.toLowerCase()){ SB.tok=null; SB.refresh=null; lsSet('shj_sess',''); S.authed=false; throw {message:'این حساب مدیر نیست'}; }
-      S.isAdmin=true;
-    } else if(!S.authed){
-      await sbAuth({email:CFG.familyEmail,password:enDigits($('#l_code').value).trim()},'password'); S.isAdmin=false;
-    }
-    S.authed=true; S.loginErr=''; S.adminLogin=false;
-    if(S.isAdmin){
-      S.me={first:f,last:l}; lsSet('shj_me',JSON.stringify(S.me)); S.loginPending=null;
-      if(!S.db) startData(); else startSubs();
+      if(SB.email.toLowerCase()!==CFG.adminEmail.toLowerCase()){ SB.tok=null; SB.refresh=null; lsSet(SESSION_KEY,''); S.authed=false; throw {message:'این حساب مدیر نیست'}; }
+      S.isAdmin=true; S.me={first:f,last:l}; lsSet('shj_me',JSON.stringify(S.me));
     } else {
-      /* نام عضو تا زمان تطبیق با فهرست ثبت‌شده، هویت قطعی محسوب نمی‌شود */
-      S.me=null; S.peopleLoaded=false; S.loginPending={first:f,last:l};
-      if(!S.db) startData(); else { S.peopleLoaded=Object.keys(S.people).length>0; startSubs(); }
+      if(!S.loginSelected&&!S.loginNewName){
+        if(!S.loginSearchDone){ await searchLoginDirectory(); }
+        if(S.loginResults.length){ throw {message:'ابتدا پرونده متعلق به خودتان را از فهرست انتخاب کنید؛ اگر هیچ‌کدام شما نیستید، گزینه ثبت نام جدید را بزنید.'}; }
+        throw {message:'ابتدا نتیجه جستجوی فهرست را بررسی و گزینه «نام من در فهرست نیست» را انتخاب کنید.'};
+      }
+      if(S.loginSelected){ f=S.loginSelected.first; l=S.loginSelected.last; }
+      await sbAuth({email:CFG.familyEmail,password:enDigits($('#l_code').value).trim()},'password'); S.isAdmin=false;
+      S.me={first:f,last:l}; lsSet('shj_me',JSON.stringify(S.me));
+      if(S.loginSelected){ lsSet('shj_myid',JSON.stringify({k:nn(f)+'|'+famKey(l),id:S.loginSelected.id})); lsSet('shj_mynew',''); }
+      else { lsSet('shj_myid',''); lsSet('shj_mynew',nn(f)+'|'+famKey(l)); }
     }
+    S.authed=true; S.loginPending=null; S.loginErr=''; S.adminLogin=false; S.loginDraft={first:'',last:''}; S.loginSelected=null; S.loginResults=[]; S.loginNewName=false;
+    if(!S.db) startData(); else startSubs();
     render();
   }catch(e){ const em=String((e&&e.message)||''); const net=(e instanceof TypeError)||/Failed to fetch|NetworkError|Load failed|network/i.test(em);
     S.loginErr=net?'ارتباط با سرور برقرار نشد. اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.':(e&&e.code===400)?'رمز یا ایمیل درست نیست. رمز را با کیبورد انگلیسی بنویسید.':((e&&e.message&&e.code!==undefined&&typeof e.code==='number')?'ورود انجام نشد. اینترنت را بررسی کنید':(e&&e.message)||'ورود انجام نشد'); render(); }
@@ -2353,18 +2374,13 @@ function setupManifest(){
   }catch(e){}
 }
 async function boot(){ setTimeout(setupManifest,600);
-  /* نسخهٔ جدید ورود: هر مرورگر یک‌بار اطلاعات ورود/هویت قبلی را پاک می‌کند؛ داده‌های شجره‌نامه دست‌نخورده می‌ماند. */
-  const LOGIN_FLOW_VERSION='2026-11-12-identity-v2';
-  if(lsGet('shj_login_flow_version')!==LOGIN_FLOW_VERSION){
-    ['shj_me','shj_sess','shj_myid','shj_mynew'].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
-    lsSet('shj_login_flow_version',LOGIN_FLOW_VERSION);
-  }
+  if(lsGet('shj_login_flow_version')!==LOGIN_FLOW_VERSION){ lsSet('shj_sess',''); lsSet(SESSION_KEY,''); lsSet('shj_me',''); lsSet('shj_myid',''); lsSet('shj_mynew',''); kv.del('col:people'); kv.del('col:memories'); lsSet('shj_login_flow_version',LOGIN_FLOW_VERSION); }
   render();
   if(!sbReady()){ S.gate=true; S.ready=true; render(); return; }
   try{ const m=JSON.parse(lsGet('shj_me')||'null'); if(m&&m.first&&m.last) S.me=m; }catch(e){}
   S.uid=lsGet('shj_uid')||(()=>{ const a=new Uint8Array(8); crypto.getRandomValues(a); const u='u'+Array.from(a).map(x=>x.toString(16).padStart(2,'0')).join(''); lsSet('shj_uid',u); return u; })();
   try{ S.mySub=JSON.parse(lsGet('shj_mysub')||'null'); }catch(e){}
-  let ss=null; try{ ss=JSON.parse(lsGet('shj_sess')||'null'); }catch(e){}
+  let ss=null; try{ ss=JSON.parse(lsGet(SESSION_KEY)||'null'); }catch(e){}
   if(ss&&ss.r){
     SB.refresh=ss.r; SB.email=ss.e||'';
     let c1=null,c2=null; try{ const a=await kv.get('col:people'), b=await kv.get('col:memories'); c1=a&&JSON.parse(a); c2=b&&JSON.parse(b); }catch(e){}
@@ -2374,11 +2390,11 @@ async function boot(){ setTimeout(setupManifest,600);
       S.authed=true; S.isAdmin=SB.email.toLowerCase()===CFG.adminEmail.toLowerCase(); S.ready=true; render();
       (async()=>{ for(let k=0;;k++){
         try{ await sbRefresh(); startData(); setOffline(false); return; }
-        catch(e){ const c=e&&e.code; if(c===400||c===401||c===403){ lsSet('shj_sess',''); SB.refresh=null; S.authed=false; S.hadCache=false; S.people={}; S.memories={}; kv.del('col:people'); kv.del('col:memories'); render(); return; }
+        catch(e){ const c=e&&e.code; if(c===400||c===401||c===403){ lsSet(SESSION_KEY,''); SB.refresh=null; S.authed=false; S.hadCache=false; S.people={}; S.memories={}; kv.del('col:people'); kv.del('col:memories'); render(); return; }
           setOffline(true); await new Promise(r=>setTimeout(r,Math.min(60000,5000*(k+1)))); } } })();
       return;
     }
-    try{ await sbRefresh(); S.authed=true; S.isAdmin=SB.email.toLowerCase()===CFG.adminEmail.toLowerCase(); }catch(e){ const c=e&&e.code; if(c===400||c===401||c===403) lsSet('shj_sess',''); }
+    try{ await sbRefresh(); S.authed=true; S.isAdmin=SB.email.toLowerCase()===CFG.adminEmail.toLowerCase(); }catch(e){ const c=e&&e.code; if(c===400||c===401||c===403) lsSet(SESSION_KEY,''); }
   }
   S.ready=true;
   if(S.authed) startData();
