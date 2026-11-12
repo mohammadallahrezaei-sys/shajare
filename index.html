@@ -273,6 +273,19 @@ textarea{min-height:110px;resize:vertical}
 .tree-time-item button{border:0;background:none;color:var(--primary);padding:0;text-align:start;font-weight:700}
 @media(max-width:620px){.tree-explore{grid-template-columns:1fr}.tree-explore .wide{grid-column:auto}.tile{min-width:128px;max-width:178px;padding:6px}.tile .av{width:36px;height:36px}.chart-box{padding:14px 8px}.org ul{padding-top:16px}.tree-person-select{width:100%;min-width:0}.tree-mini-row{grid-template-columns:82px minmax(60px,1fr) 28px}}
 
+/* Dedicated family-tree workspace */
+#view.tree-page{width:100%;max-width:none;margin:0 auto}
+.tree-only{width:100%;max-width:1800px;margin:0 auto;gap:10px}
+.tree-toolbar,.tree-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tree-toolbar{padding:4px 0}
+.tree-toolbar .search{max-width:440px;flex:1 1 260px}
+.tree-canvas-area{width:100%;min-width:0}
+.tree-only .art-box,.tree-only .chart-box,.tree-only .outline{min-height:calc(100vh - 255px);max-height:calc(100vh - 230px);border-radius:14px}
+.tree-only .art-box{height:calc(100vh - 230px)}
+.tree-only .chart-box,.tree-only .outline{overflow:auto}
+.tree-help{margin:0;text-align:center}
+@media(max-width:620px){.tree-only .art-box,.tree-only .chart-box,.tree-only .outline{min-height:calc(100dvh - 300px);max-height:calc(100dvh - 270px)}.tree-only .art-box{height:calc(100dvh - 270px)}.tree-toolbar{align-items:stretch}.tree-toolbar .search{max-width:none;flex-basis:100%}.tree-toolbar>.row{width:100%}.tree-toolbar>.row .btn{flex:1}}
+
 .cbtn{display:block;margin:4px auto 0;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;line-height:1;padding:0;font-size:16px}
 .org li.col>ul{display:none}
 .chart-box{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:24px 16px}
@@ -931,30 +944,25 @@ function viewTree(){
   if(S.mode==='art') body=`<div class="art-box" id="artBox"><div class="wait">در حال کشیدن درخت…</div></div>`;
   else if(S.mode==='chart') body=`<div class="chart-box" id="chartBox"><div id="zoomer" style="zoom:${S.zoom}">${T.roots.map(r=>`<div class="tree-root org"><ul>${chartNode(r)}</ul></div>`).join('')}</div></div>`;
   else body=`<div class="outline"><div id="zoomer" style="zoom:${S.zoom}">${T.roots.map(r=>`<div class="tree-root">${outNode(r,0)}</div>`).join('')}</div></div>`;
-  const un='';
   const modeBtn=(m,l)=>`<button class="btn ${S.mode===m?'':'ghost'} sm" data-act="mode" data-m="${m}">${l}</button>`;
-  return `<div class="stack">
-   ${S.focus?`<div class="note gift row" style="justify-content:space-between"><span>نمایش فقط <b>${esc(T.focusTitle?T.focusTitle.replace('شجره‌نامه ',''):'یک شاخه')}</b></span><button class="btn sm" data-act="unfocus">نمایش کل درخت</button></div>`:''}
-   <div class="bar">
+  return `<section class="tree-only stack">
+   <div class="tree-toolbar">
      <div class="search"><input type="text" id="q" placeholder="جستجوی نام در شجره‌نامه…" value="${esc(S.q)}" autocomplete="off"><div class="results" id="qres" hidden></div></div>
-     <div class="row" style="gap:6px">${modeBtn('art','درخت تصویری')}${modeBtn('chart','نمودار')}${modeBtn('outline','فهرستی')}</div>
+     <div class="row" style="gap:6px">${modeBtn('art','درخت تصویری')}${modeBtn('chart','نمودار نسلی')}${modeBtn('outline','فهرستی')}</div>
    </div>
-   <div class="bar">
+   ${S.focus?`<div class="note gift row" style="justify-content:space-between"><span>نمایش شاخهٔ <b>${esc(T.focusTitle?T.focusTitle.replace('شجره‌نامه ',''):'انتخاب‌شده')}</b></span><button class="btn sm" data-act="unfocus">نمایش کل درخت</button></div>`:''}
+   <div class="tree-controls">
      <div class="row" style="gap:6px">
        ${S.mode!=='art'?`<button class="btn ghost sm" data-act="zoom" data-d="-0.15" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" id="zoomPct" data-act="zoomreset" title="بازنشانی اندازه">${fa(Math.round(S.zoom*100))}٪</button><button class="btn ghost sm" data-act="zoom" data-d="0.15" aria-label="بزرگ‌نمایی">+</button>`:''}
        ${S.mode==='chart'?`<button class="btn ghost sm" data-act="cexp" data-v="0">جمع شاخه‌ها</button><button class="btn ghost sm" data-act="cexp" data-v="1">باز کردن همه</button>`:''}
        ${S.mode==='art'?`<button class="btn ghost sm" data-act="artzoom" data-d="-0.25" aria-label="کوچک‌نمایی">−</button><button class="btn ghost sm" data-act="artzoom" data-d="0.25" aria-label="بزرگ‌نمایی">+</button><button class="btn ghost sm" data-act="artfit">کل درخت</button><button class="btn ghost sm" data-act="artauto">اندازهٔ خوانا</button>`:''}
      </div>
-     <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button><button class="btn ghost sm" data-act="booklet">📚 کتابچهٔ خانوادگی</button></div>
+     <div class="row" style="gap:6px"><button class="btn sm" data-act="savepng">ذخیره تصویر درخت</button><button class="btn ghost sm" data-act="savepdf">چاپ / PDF درخت</button></div>
    </div>
    ${branchSelHTML()}
-   ${treeExplorerHTML()}
-   ${treeHistoryHTML()}
-   ${treeVisualStatsHTML()}
-   ${relCardHTML()}
-   ${body}${un}
-   <p class="muted small" style="margin:0">برای دیدن اطلاعات و یادگارهای هر نفر روی نام او بزنید. کادر خط‌چین یعنی آن فرد فقط به‌عنوان پدر، مادر، همسر یا فرزند نام برده شده و هنوز اطلاعاتش ثبت نشده است.</p>
-  </div>`;
+   <div class="tree-canvas-area">${body}</div>
+   <p class="muted small tree-help">برای مشاهدهٔ پروندهٔ هر فرد، روی کارت یا نام او بزنید. با انتخاب یک شاخه می‌توانید همان بخش از درخت را جداگانه ببینید.</p>
+  </section>`;
 }
 
 /* ---------- stats ---------- */
@@ -2313,6 +2321,7 @@ function renderNav(){
 function renderView(){
   const v=$('#view'); if(!v) return;
   const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,tools:viewTools,growth:viewGrowth,life:viewLife,family:viewFamily,admin:viewAdmin}[S.tab]||viewHome;
+  v.classList.toggle('tree-page',S.tab==='tree');
   v.innerHTML=f();
   if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } }
 }
