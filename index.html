@@ -250,6 +250,29 @@ textarea{min-height:110px;resize:vertical}
 .chip:hover{border-color:var(--primary)}
 
 .chart-box,.outline,.art-box{touch-action:pan-x pan-y}
+/* Family tree responsive cards and exploration panels */
+.tile{min-width:142px;max-width:215px;padding:7px 10px;border-radius:13px;box-shadow:0 2px 8px rgba(20,48,42,.07);transition:transform .16s ease,box-shadow .16s ease}
+.tile:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(20,48,42,.13)}
+.tile .av{width:40px;height:40px;border:2px solid var(--line)}.tile .tt{min-width:0;gap:2px}
+.tile b{white-space:normal;overflow-wrap:anywhere;font-size:.98rem;line-height:1.35}.tile small{white-space:normal;line-height:1.35}
+.tile.dead{opacity:.88;background:var(--surface2)}
+.tree-explore{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tree-explore .wide{grid-column:1/-1}
+.tree-person-select{max-width:100%;min-width:220px}
+.tree-path{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:8px}
+.tree-path .path-person{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:7px 10px;max-width:100%;text-align:center}
+.tree-path .path-person b{display:block}.tree-path .path-person small{display:block;color:var(--muted)}
+.tree-path .path-arrow{color:var(--accent);font-weight:800}
+.tree-mini-bars{display:grid;gap:8px;margin-top:10px}
+.tree-mini-row{display:grid;grid-template-columns:minmax(85px,1fr) minmax(80px,2fr) 34px;gap:8px;align-items:center;font-size:.86rem}
+.tree-mini-track{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.tree-mini-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--primary))}
+.tree-timeline{display:grid;gap:8px;margin-top:10px}.tree-time-item{display:grid;grid-template-columns:62px 12px 1fr;gap:8px;align-items:start}
+.tree-time-item .yr{font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums}
+.tree-time-item .dot{width:10px;height:10px;margin-top:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--surface2)}
+.tree-time-item .event{border-bottom:1px solid var(--line);padding:2px 0 8px}
+.tree-time-item button{border:0;background:none;color:var(--primary);padding:0;text-align:start;font-weight:700}
+@media(max-width:620px){.tree-explore{grid-template-columns:1fr}.tree-explore .wide{grid-column:auto}.tile{min-width:128px;max-width:178px;padding:6px}.tile .av{width:36px;height:36px}.chart-box{padding:14px 8px}.org ul{padding-top:16px}.tree-person-select{width:100%;min-width:0}.tree-mini-row{grid-template-columns:82px minmax(60px,1fr) 28px}}
+
 .cbtn{display:block;margin:4px auto 0;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;line-height:1;padding:0;font-size:16px}
 .org li.col>ul{display:none}
 .chart-box{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:24px 16px}
@@ -568,7 +591,8 @@ function kinLine(id){
 }
 function tile(id,sp,badge){
   const p=EP()[id]; if(!p) return '';
-  return `<button class="tile ${p.gender==='m'?'m':p.gender==='f'?'f':''} ${p.dead?'dead':''} ${sp?'sp':''} ${p.virtual?'virt':''}" data-act="person" data-id="${esc(id)}">${avatar(p)}<span class="tt"><b>${esc(full(p))}</b>${lifeLine(p)?`<small>${esc(lifeLine(p))}</small>`:(p.virtual?'<small>ثبت‌نشده</small>':'')}${sp&&kinLine(id)?`<small>${esc(kinLine(id))}</small>`:''}${badge?`<small class="bdg">${esc(badge)}</small>`:''}</span></button>`;
+  const memN=Object.values(S.memories||{}).filter(x=>x.personId===id).length, place=p.residence||p.birthPlace||p.place||'';
+  return `<button class="tile ${p.gender==='m'?'m':p.gender==='f'?'f':''} ${p.dead?'dead':''} ${sp?'sp':''} ${p.virtual?'virt':''}" data-act="person" data-id="${esc(id)}" title="مشاهدهٔ پروندهٔ ${esc(full(p))}">${avatar(p)}<span class="tt"><b>${esc(full(p))}</b>${lifeLine(p)?`<small>${esc(lifeLine(p))}</small>`:(p.virtual?'<small>ثبت‌نشده</small>':'')}${sp&&kinLine(id)?`<small>${esc(kinLine(id))}</small>`:''}${place?`<small>⌖ ${esc(place)}</small>`:''}${memN?`<small>✦ ${fa(memN)} یادگار</small>`:''}${badge?`<small class="bdg">${esc(badge)}</small>`:''}</span></button>`;
 }
 function couple(n){ return `<span class="couple">${tile(n.id,false)}${n.spouses.map(q=>tile(q,true,stBadge(n.id,q))).join('')}</span>`; }
 function chartNode(n){ return `<li>${couple(n)}${n.kids.length?`<button type="button" class="cbtn" data-act="ctog" aria-label="جمع یا باز کردن شاخه">−</button><ul>${n.kids.map(chartNode).join('')}</ul>`:''}</li>`; }
@@ -866,6 +890,33 @@ function viewT(){
   const d0=n.depth-1, cl=m=>Object.assign({},m,{depth:m.depth-d0,kids:m.kids.map(cl)}), root=cl(n), flat=[], w=m=>{ flat.push(m); m.kids.forEach(w); }; w(root);
   return Object.assign({},T,{roots:[root],nodes:flat,focusTitle:'شجره‌نامه شاخهٔ '+full(T.P[n.id]),focusCount:n.set.size});
 }
+
+function treePersonOptions(){const P=EP();return Object.entries(P).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa')).map(([id,p])=>`<option value="${esc(id)}" ${S.treePerson===id?'selected':''}>${esc(full(p))}${p.bY?' · '+fa(p.bY):''}</option>`).join('');}
+function treeExplorerHTML(){
+ const P=viewT().P,id=S.treePerson&&P[S.treePerson]?S.treePerson:'',person=id?P[id]:null;
+ const picker=`<label class="f"><span>انتخاب عضو خانواده</span><select class="tree-person-select" id="treePerson"><option value="">انتخاب نام…</option>${treePersonOptions()}</select></label>`;
+ if(!person)return `<section class="card stack"><div class="row" style="justify-content:space-between"><h3>🧭 کاوش در نسل‌ها</h3><span class="muted small">مسیر اجداد و نوادگان</span></div>${picker}<p class="muted small" style="margin:0">با انتخاب یک نفر، نیاکان و نوادگان ثبت‌شدهٔ او نمایش داده می‌شوند.</p></section>`;
+ const chain=[],seen=new Set();let cur=person,curId=id,guard=0;
+ while(cur&&guard++<25&&!seen.has(curId)){seen.add(curId);chain.unshift({id:curId,p:cur});const pid=cur.fatherId&&P[cur.fatherId]?cur.fatherId:cur.motherId&&P[cur.motherId]?cur.motherId:'';curId=pid;cur=pid?P[pid]:null;}
+ const kids=pid=>Object.entries(P).filter(([cid,p])=>cid!==pid&&(p.fatherId===pid||p.motherId===pid)).sort((a,b)=>(a[1].bY||9999)-(b[1].bY||9999));
+ const desc=[];const walk=(pid,d)=>{if(d>12)return;kids(pid).forEach(([cid,p])=>{if(desc.some(x=>x.id===cid))return;desc.push({id:cid,p,d});walk(cid,d+1);});};walk(id,1);
+ const path=chain.map((x,i)=>`<span class="path-person"><b>${esc(full(x.p))}</b><small>${x.p.bY?fa(x.p.bY):'سال نامشخص'}</small></span>${i<chain.length-1?'<span class="path-arrow">←</span>':''}`).join('');
+ const children=desc.slice(0,30).map(x=>`<button class="path-person" data-act="treepick" data-id="${esc(x.id)}"><b>${esc(full(x.p))}</b><small>${x.p.bY?fa(x.p.bY):'—'} · نسل ${fa(x.d)}</small></button>`).join('');
+ return `<section class="card stack"><div class="row" style="justify-content:space-between"><h3>🧭 کاوش در نسل‌ها</h3><span class="muted small">مسیر اجداد و نوادگان</span></div>${picker}<div><b>نیاکان ثبت‌شده</b><div class="tree-path">${path||'<span class="muted">اطلاعات والدین ثبت نشده است.</span>'}</div><p class="muted small" style="margin:6px 0 0">در هر نسل نزدیک‌ترین والد ثبت‌شده نمایش داده می‌شود.</p></div><div><b>نوادگان ثبت‌شده · ${fa(desc.length)} نفر</b><div class="tree-path">${children||'<span class="muted">فرزندی ثبت نشده است.</span>'}</div>${desc.length>30?'<p class="muted small">۳۰ نفر نخست نمایش داده شده‌اند.</p>':''}</div></section>`;
+}
+function treeHistoryHTML(){
+ const rows=Object.entries(S.people), years=rows.filter(([,p])=>p.bY).sort((a,b)=>a[1].bY-b[1].bY),places={};
+ rows.forEach(([id,p])=>{const v=tidy(p.birthPlace||p.residence||p.place);if(v)places[v]=(places[v]||0)+1;});
+ const top=Object.entries(places).sort((a,b)=>b[1]-a[1]).slice(0,12),max=Math.max(1,...top.map(x=>x[1]));
+ return `<div class="tree-explore"><section class="card"><h3>⏳ خط زمانی خانواده</h3><p class="muted small">بر اساس سال تولد ثبت‌شده.</p><div class="tree-timeline">${years.slice(0,24).map(([id,p])=>`<div class="tree-time-item"><span class="yr">${fa(p.bY)}</span><span class="dot"></span><div class="event"><button data-act="person" data-id="${esc(id)}">${esc(full(p))}</button></div></div>`).join('')||'<span class="muted">سال تولدی ثبت نشده است.</span>'}</div>${years.length>24?`<p class="muted small">۲۴ رویداد نخست از ${fa(years.length)} مورد نمایش داده شده است.</p>`:''}</section><section class="card"><h3>📍 پراکندگی جغرافیایی</h3><p class="muted small">بر اساس محل تولد یا سکونت ثبت‌شده؛ موقعیت مکانی حدس زده نمی‌شود.</p><div class="tree-mini-bars">${top.map(([place,n])=>`<div class="tree-mini-row"><span>${esc(place)}</span><span class="tree-mini-track"><i style="width:${Math.round(n/max*100)}%"></i></span><b>${fa(n)}</b></div>`).join('')||'<span class="muted">محلی ثبت نشده است.</span>'}</div></section></div>`;
+}
+function treeVisualStatsHTML(){
+ const T=buildTree(),gens={};Object.entries(T.gen).forEach(([id,g])=>{if(T.P[id])gens[g]=(gens[g]||0)+1;});
+ const rows=Object.entries(gens).sort((a,b)=>+a[0]-+b[0]),max=Math.max(1,...rows.map(x=>x[1])),real=Object.values(S.people),pct=f=>real.length?Math.round(real.filter(f).length/real.length*100):0;
+ const complete=[['سال تولد',pct(p=>!!p.bY)],['عکس',pct(p=>!!p.photo)],['والدین',pct(p=>!!(p.fatherId||p.motherId))],['محل',pct(p=>!!(p.birthPlace||p.residence||p.place))]];
+ return `<section class="card"><div class="row" style="justify-content:space-between"><h3>📊 نمای تصویری خانواده</h3><span class="muted small">${fa(rows.length)} نسل</span></div><b class="small">تعداد اعضا در هر نسل</b><div class="tree-mini-bars">${rows.map(([g,n])=>`<div class="tree-mini-row"><span>نسل ${fa(g)}</span><span class="tree-mini-track"><i style="width:${Math.round(n/max*100)}%"></i></span><b>${fa(n)}</b></div>`).join('')}</div><div style="height:1px;background:var(--line);margin:14px 0"></div><b class="small">درصد تکمیل پرونده‌ها</b><div class="tree-mini-bars">${complete.map(([l,n])=>`<div class="tree-mini-row"><span>${l}</span><span class="tree-mini-track"><i style="width:${n}%"></i></span><b>${fa(n)}٪</b></div>`).join('')}</div></section>`;
+}
+
 function branchSelHTML(){
   const T0=buildTree(); if(!T0.roots.length) return '';
   const H=branchHeads(T0.roots).list, sub=H.flatMap(h=>h.kids.filter(k=>k.kids.length));
@@ -897,6 +948,9 @@ function viewTree(){
      <div class="row" style="gap:6px"><span class="muted small">ذخیره برای چاپ:</span><button class="btn sm" data-act="savepng">تصویر (PNG)</button><button class="btn ghost sm" data-act="savepdf">PDF</button><button class="btn ghost sm" data-act="booklet">📚 کتابچهٔ خانوادگی</button></div>
    </div>
    ${branchSelHTML()}
+   ${treeExplorerHTML()}
+   ${treeHistoryHTML()}
+   ${treeVisualStatsHTML()}
    ${relCardHTML()}
    ${body}${un}
    <p class="muted small" style="margin:0">برای دیدن اطلاعات و یادگارهای هر نفر روی نام او بزنید. کادر خط‌چین یعنی آن فرد فقط به‌عنوان پدر، مادر، همسر یا فرزند نام برده شده و هنوز اطلاعاتش ثبت نشده است.</p>
@@ -2481,6 +2535,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='noinst'){ lsSet('shj_noinst','1'); renderView(); }
   else if(a==='bdics'){ saveBlob('tavalod-khandan.ics',new Blob([icsBirthdays()],{type:'text/calendar;charset=utf-8'})); toast('فایل تقویم دانلود شد؛ آن را باز کنید تا به تقویم گوشی اضافه شود'); }
   else if(a==='bdsend'){ const p=EP()[el.dataset.id]; if(p){ const text='تولدت مبارک '+(p.first||'')+' جان 🎂🌹\nاز طرف '+fullName()+' و خانوادهٔ الله‌رضایی'; try{ if(navigator.share){ await navigator.share({text}); } else { window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank'); } }catch(e){} } }
+  else if(a==='treepick'){S.treePerson=el.dataset.id;renderView();}
   else if(a==='focus'){ S.focus=el.dataset.id; closeModal(); gotoTab('tree'); }
   else if(a==='unfocus'){ S.focus=''; renderView(); }
   else if(a==='bkjson'){ const d=new Date(); saveBlob('shajare-backup-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.json',new Blob([backupJSON()],{type:'application/json'})); toast('پشتیبان دانلود شد'); }
@@ -2587,7 +2642,7 @@ document.addEventListener('submit',ev=>{
   else if(id==='familyPostForm') submitFamilyPost().catch(e=>{console.error(e);toast('ارسال انجام نشد؛ اتصال یا دسترسی بارگذاری عکس را بررسی کنید.');});
 });
 document.addEventListener('change',ev=>{
-  if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
+  if(ev.target.id==='treePerson'){S.treePerson=ev.target.value;renderView();return;} if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
   if(id==='l_first'||id==='l_last'){ S.loginDraft={first:(($('#l_first')||{}).value||''),last:(($('#l_last')||{}).value||'')}; S.loginSelected=null; S.loginNewName=false; S.loginSearchDone=false; S.loginResults=[]; S.loginSearchError=''; const box=$('#loginDirectory'); if(box) box.innerHTML='<p class=\"muted small\">برای بررسی، نام و نام خانوادگی را کامل وارد کنید.</p>'; clearTimeout(window.__loginSearchTimer); window.__loginSearchTimer=setTimeout(()=>searchLoginDirectory(),450); }
