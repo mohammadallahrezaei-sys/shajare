@@ -2166,7 +2166,7 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=32, CW=164, GAP=188, MARGIN=88, TOP=190;
+  const P=T.P, R=34, CW=176, GAP=205, MARGIN=150, TOP=190, SIBLING_GAP=58, ROOT_GAP=112;
   const HUES=[145,198,344,28,263,174,12,92,316,48];
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   let bi=0; const brs=[];
@@ -2177,12 +2177,13 @@ function drawArt(T,imgs){
   BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>assign(q,bi,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
   const hue=ci=>(HUES[ci%HUES.length]+Math.floor(ci/HUES.length)*13)%360;
   const bcol=(n,dl)=>'hsl('+(27+(n.ci<0?0:(n.ci%5)*3))+','+(30+(dl||0))+'%,'+(31+Math.max(0,n.depth-2)*2)+'%)';
-  const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.kw=n.kids.reduce((a,k)=>a+k.aw,0);n.aw=Math.max(n.kw,n.cw+28);};
+  const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.kw=n.kids.reduce((a,k)=>a+k.aw,0)+SIBLING_GAP*Math.max(0,n.kids.length-1);n.aw=Math.max(n.kw,n.cw+64);};
   T.roots.forEach(lay);
-  const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+n.aw-(n.aw-n.kw)/2;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw;});};
-  const content=T.roots.reduce((a,r)=>a+r.aw,0)+74*Math.max(0,T.roots.length-1);
-  const W=Math.max(1120,content+MARGIN*2);
-  let x=W-(W-content)/2;T.roots.forEach(r=>{put(r,x-r.aw);x-=r.aw+42;});
+  // Each sibling group receives real horizontal breathing room; the parent stays centered over that group.
+  const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw+n.kw)/2;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw+SIBLING_GAP;});};
+  const content=T.roots.reduce((a,r)=>a+r.aw,0)+ROOT_GAP*Math.max(0,T.roots.length-1);
+  const W=Math.max(1500,content+MARGIN*2);
+  let x=W-(W-content)/2;T.roots.forEach(r=>{put(r,x-r.aw);x-=r.aw+ROOT_GAP;});
   const cyOf=n=>TOP+(maxD-n.depth)*GAP+R+28;
   const lowest=Math.max.apply(null,T.roots.map(n=>cyOf(n)));
   const groundY=lowest+R+150, H=groundY+145;
