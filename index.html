@@ -2176,15 +2176,15 @@ function drawArt(T,imgs){
   T.roots.forEach(trunkWalk);
   BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>assign(q,bi,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
   const hue=ci=>(HUES[ci%HUES.length]+Math.floor(ci/HUES.length)*13)%360;
-  const bcol=(n,dl)=>'hsl('+(27+(n.ci<0?0:(n.ci%5)*3))+','+(30+(dl||0))+'%,'+(31+Math.max(0,n.depth-2)*2)+'%)';
+  const bcol=(n,dl)=>n.ci<0?'#79563b':'hsl('+hue(n.ci)+','+(43+(dl||0))+'%,'+(38+Math.max(0,n.depth-2)*2)+'%)';
   const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.kw=n.kids.reduce((a,k)=>a+k.aw,0)+SIBLING_GAP*Math.max(0,n.kids.length-1);n.aw=Math.max(n.kw,n.cw+64);};
   T.roots.forEach(lay);
   // Large sibling groups are staggered inside a generation band, rather than forced onto one ruler-straight row.
   const rowPattern=[0,1,-1,2,-2,3,-3,4,-4];
-  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>3?rowPattern[i%rowPattern.length]*30:0;stagger(k);});};
+  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>3?rowPattern[i%rowPattern.length]*108:0;stagger(k);});};
   T.roots.forEach(n=>{n.rowOffset=0;stagger(n);});
   // Each sibling group receives real horizontal breathing room; the parent stays centered over that group.
-  const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw+n.kw)/2;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw+SIBLING_GAP;});};
+  const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw-n.kw)/2+n.kw;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw+SIBLING_GAP;});};
   const content=T.roots.reduce((a,r)=>a+r.aw,0)+ROOT_GAP*Math.max(0,T.roots.length-1);
   const W=Math.max(1500,content+MARGIN*2);
   let x=W-(W-content)/2;T.roots.forEach(r=>{put(r,x-r.aw);x-=r.aw+ROOT_GAP;});
@@ -2223,7 +2223,7 @@ function drawArt(T,imgs){
       c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
       c.strokeStyle='rgba(69,43,25,.20)';c.lineWidth=width+8;c.stroke();
       c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
-      c.strokeStyle='#755039';c.lineWidth=width;c.stroke();
+      c.strokeStyle=bcol(k,0);c.lineWidth=width;c.stroke();
       c.beginPath();c.moveTo(x1-width*.12,y1);c.bezierCurveTo(x2-width*.12,y2,x3-width*.12,y3,x4-width*.12,y4);c.strokeStyle='rgba(174,128,79,.55)';c.lineWidth=Math.max(1.2,width*.28);c.stroke();
       c.beginPath();c.moveTo(x1+width*.25,y1);c.bezierCurveTo(x2+width*.25,y2,x3+width*.25,y3,x4+width*.25,y4);c.strokeStyle='rgba(53,34,23,.20)';c.lineWidth=Math.max(1,width*.12);c.stroke();
       c.beginPath();c.moveTo(x1-width*.18,y1);c.bezierCurveTo(x2-width*.18,y2,x3-width*.18,y3,x4-width*.18,y4);
@@ -2362,7 +2362,7 @@ async function renderArt(){
   let cv; try{ cv=await makeArt(); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
   if(tok!==S.artTok||!$('#artBox')) return;
   S.artCanvas=cv; const natural=cv.width; const base=Math.max(300,box.clientWidth||natural);
-  if(!S.artZoomUser){ const tile=138*base/cv.__W; S.artZoom=Math.min(10,Math.max(2,Math.round(112/tile*4)/4)); }   // موبایل: اولویت با خوانایی چهره‌ها؛ حرکت افقی برای دیدن شاخه‌ها
+  if(!S.artZoomUser){ const tile=138*base/cv.__W; S.artZoom=Math.max(2,Math.round(112/tile*4)/4); }   // موبایل: اولویت با خوانایی چهره‌ها؛ حرکت افقی برای دیدن شاخه‌ها
   cv.style.width=Math.round(base*S.artZoom)+'px'; cv.style.height='auto';
   box.innerHTML=''; box.appendChild(cv);
   const hitAt=e=>{ const r=cv.getBoundingClientRect(); if(!r.width) return null; const x=(e.clientX-r.left)/r.width*cv.__W, y=(e.clientY-r.top)/r.height*cv.__H; const hs=cv.__hits||[]; for(let i=hs.length-1;i>=0;i--){ const h=hs[i]; if(x>=h.x1&&x<=h.x2&&y>=h.y1&&y<=h.y2) return h; } return null; };
@@ -2841,7 +2841,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='zoomreset'){ setZoom(1); }
   else if(a==='artfit'){ S.artZoomUser=true; S.artZoom=1; const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.max(300,box.clientWidth)+'px'; } }
   else if(a==='artauto'){ S.artZoomUser=false; renderArt(); }
-  else if(a==='artzoom'){ S.artZoomUser=true; S.artZoom=Math.min(6,Math.max(.5,S.artZoom+(+el.dataset.d))); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } }
+  else if(a==='artzoom'){ S.artZoomUser=true; S.artZoom=Math.max(.25,S.artZoom+(+el.dataset.d)); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } }
   else if(a==='savepng') saveArt('png');
   else if(a==='savepdf') saveArt('pdf');
   else if(a==='addnew'){ S.editSub=null; S.editId=null; S.prefill=null; S.missingOnly=false; resetPhoto(''); S.addTab='person'; gotoTab('add'); }
@@ -2929,7 +2929,7 @@ document.addEventListener('wheel',e=>{ if(!(e.ctrlKey||e.metaKey)||S.tab!=='tree
   let pin=null;
   const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
   const boxOf=e=>e.target.closest&&e.target.closest('#chartBox,.outline,#artBox');
-  const artSet=v=>{ S.artZoomUser=true; S.artZoom=Math.min(6,Math.max(.5,v)); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box) cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; };
+  const artSet=v=>{ S.artZoomUser=true; S.artZoom=Math.max(.25,v); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box) cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; };
   document.addEventListener('touchstart',e=>{ if(S.tab!=='tree'||e.touches.length!==2){ pin=null; return; } const b=boxOf(e); if(!b){ pin=null; return; } pin={d:dist(e.touches),art:b.id==='artBox',z:b.id==='artBox'?S.artZoom:S.zoom}; },{passive:true});
   document.addEventListener('touchmove',e=>{ if(!pin||e.touches.length!==2) return; e.preventDefault(); const k=dist(e.touches)/pin.d; if(pin.art) artSet(pin.z*k); else setZoom(pin.z*k); },{passive:false});
   const end=e=>{ if(e.touches.length<2) pin=null; };
