@@ -469,7 +469,7 @@ function effective(){
     const p=R[id], q=P[id], opp=p.gender==='m'?'f':p.gender==='f'?'m':'';
     q.fatherId=R[p.fatherId]?p.fatherId:resolve(p.fatherRef,'m',id);
     q.motherId=R[p.motherId]?p.motherId:resolve(p.motherRef,'f',id);
-    q.spl=spListOf(p).map(x=>({id:R[x.id]?x.id:resolve(x.ref,opp,id),st:x.st||'current',my:+x.my||0})).filter(x=>x.id&&x.id!==id);
+    q.spl=spListOf(p).map(x=>({id:R[x.id]?x.id:resolve(x.ref,opp,id),st:x.st||'current',my:+x.my||0,dt:x.dt||null})).filter(x=>x.id&&x.id!==id);
     q.spouseId=q.spl[0]?q.spl[0].id:'';
   });
   ids.forEach(id=>{
@@ -723,7 +723,7 @@ function viewHome(){
   const T=buildTree(), n=Object.keys(T.P).length, pend=S.isAdmin?pendingList().length:0;
   const fam=T.nodes.filter(x=>x.kids.length).length, gens=T.nodes.reduce((m,x)=>Math.max(m,x.depth),0);
   return `<div class="stack">
-  ${cpHTML()}${bdayHTML()}${fsHTML()}
+  ${cpHTML()}${bdayHTML()}${myMarriageHTML()}${fsHTML()}
   ${installCardHTML()}
   <section class="card hero herobg"><div class="hero-deco" aria-hidden="true">${LOGO.replace('width="40" height="40"','width="190" height="190"')}</div>
     <h2>سلام ${esc(S.me.first)} جان</h2>
@@ -967,19 +967,20 @@ function famMarriageStats(){
 function coupleStatsHTML(){
   const g=relGraph(), P=g.P, Y=TODAY.y, seen=new Set(), rows=[], dur=[], ages=[];
   g.ids.forEach(a=>g.sp[a].forEach(b=>{ const k=[a,b].sort().join('|'); if(seen.has(k)) return; seen.add(k);
-    const f=(P[a].spl||[]).find(x=>x.id===b)||(P[b].spl||[]).find(x=>x.id===a)||{}; rows.push({a,b,my:+f.my||0,st:f.st||'current'}); }));
+    const f=(P[a].spl||[]).find(x=>x.id===b)||(P[b].spl||[]).find(x=>x.id===a)||{}; rows.push({a,b,f,my:+f.my||0,st:f.st||'current'}); }));
   if(!rows.length) return '';
   const nm=r=>full(P[r.a])+' و '+(P[r.b].first||'');
   rows.forEach(r=>{ const A=P[r.a], B=P[r.b];
     if(r.my&&r.st!=='divorced'){ const ds=[A,B].filter(p=>p.dead&&p.dY).map(p=>p.dY); const end=ds.length?Math.min(...ds):Y; if(end>=r.my) dur.push({r,y:end-r.my}); }
     if(r.st==='current'&&!A.dead&&!B.dead&&A.bY&&B.bY&&!A.virtual&&!B.virtual) ages.push({r,v:Y-(A.bY+B.bY)/2}); });
-  const fact=(l,v)=>`<div class="fact"><b>${v}</b><span>${l}</span></div>`, y1=x=>fa(Math.round(x));
+  const fact=(l,v)=>`<div class="fact"><b>${v}</b><span>${l}</span></div>`, y1=x=>fa(Math.round(x)), dl=rows.filter(r=>dtParts(r.f).length).sort((a,b)=>(a.my||9999)-(b.my||9999));
   let h=fact('زوج‌های دارای سال ازدواج',fa(dur.length)+' از '+fa(rows.length));
   if(dur.length){ const tot=dur.reduce((t,x)=>t+x.y,0), mx=dur.slice().sort((a,b)=>b.y-a.y)[0];
     h+=fact('مجموع سال‌های زندگی مشترک',y1(tot)+' سال')+fact('میانگین زندگی مشترک',y1(tot/dur.length)+' سال')+fact('طولانی‌ترین زندگی مشترک: '+esc(nm(mx.r)),y1(mx.y)+' سال'); }
   if(ages.length){ ages.sort((a,b)=>a.v-b.v); const yo=ages[0], ol=ages[ages.length-1];
     h+=fact('جوان‌ترین زوج: '+esc(nm(yo.r)),'میانگین سنی '+y1(yo.v))+fact('مسن‌ترین زوج: '+esc(nm(ol.r)),'میانگین سنی '+y1(ol.v)); }
-  return `<section class="card"><h3>زندگی مشترک زوج‌ها</h3><div class="facts" style="margin-top:12px">${h}</div>${dur.length?'':'<p class="muted small" style="margin:10px 0 0">سال ازدواج را هنگام ثبت یا ویرایش همسر وارد کنید تا آمار مدت زندگی مشترک ساخته شود.</p>'}</section>`;
+  return `<section class="card"><h3>زندگی مشترک زوج‌ها</h3><div class="facts" style="margin-top:12px">${h}</div>${dur.length?'':'<p class="muted small" style="margin:10px 0 0">تاریخ ازدواج را هنگام ثبت یا ویرایش همسر وارد کنید (اختیاری) تا آمار مدت زندگی مشترک ساخته شود.</p>'}
+  ${dl.length?`<h4 style="margin:14px 0 6px">تاریخ نشان، عقد و عروسی زوج‌ها</h4><ul class="list">${dl.slice(0,40).map(r=>`<li><div style="flex:1 1 220px;min-width:0"><b>${esc(nm(r))}</b> <span class="muted small">${esc(dtParts(r.f).join('، '))}</span></div></li>`).join('')}</ul>${dl.length>40?`<p class="muted small" style="margin:6px 0 0">${fa(dl.length-40)} زوج دیگر هم هست.</p>`:''}`:''}</section>`;
 }
 function myRecId(){ const f=nn(S.me.first), l=famKey(S.me.last), ids=Object.keys(S.people).filter(i=>nn(S.people[i].first)===f&&famKey(S.people[i].last)===l); return ids.length===1?ids[0]:''; }
 function cpHTML(){
@@ -995,6 +996,23 @@ function cpHTML(){
   if(!p.job) f+=inp('job','شغل');
   if(!f) return '';
   return `<section class="card stack" style="border:2px solid #d9a441"><h3>⚠️ اطلاعات شما کامل نیست</h3><p class="muted small" style="margin:0">فقط همین موارد خالی مانده است؛ بقیهٔ اطلاعات شما کامل است. بعد از تأیید مدیر ثبت می‌شود.</p><div class="row" style="gap:10px">${f}</div><div class="row"><button type="button" class="btn" data-act="cpsave" data-id="${esc(id)}">ارسال اطلاعات</button></div></section>`;
+}
+function dtParts(x){ return x&&x.dt?[['nishan','نشان'],['aghd','عقد'],['aroosi','عروسی']].map(([n,l])=>{ const d=x.dt[n], t=d?dstr(d.y,d.m,d.d):''; return t?l+' '+t:''; }).filter(Boolean):[]; }
+function myMarriageHTML(){
+  if(!S.me) return ''; const id=myRecId(); if(!id) return '';
+  const g=relGraph(), P=g.P; if(!P[id]) return '';
+  const items=[...g.sp[id]].filter(q=>P[q]&&!P[q].virtual).map(q=>({q,x:(P[id].spl||[]).find(y=>y.id===q)||(P[q].spl||[]).find(y=>y.id===id)||{}}));
+  if(!items.length) return '';
+  const rows=items.map(({q,x})=>{ const t=dtParts(x), yrs=(+x.my&&x.st!=='divorced'&&!P[id].dead&&!P[q].dead)?TODAY.y-x.my:0;
+    return `<li><div style="flex:1 1 220px;min-width:0"><b>${esc(full(P[q]))}</b> <span class="muted small">${t.length?esc(t.join('، ')):'تاریخی ثبت نشده'}${yrs>0?' – '+fa(yrs)+' سال زندگی مشترک':''}</span></div></li>`; }).join('');
+  return `<section class="card stack"><h3>💍 زندگی مشترک شما</h3><ul class="list">${rows}</ul><div class="row"><button type="button" class="btn ghost sm" data-act="editp" data-id="${esc(id)}">ثبت یا ویرایش تاریخ‌ها (اختیاری)</button></div></section>`;
+}
+function annivHTML(){
+  const g=relGraph(), P=g.P, seen=new Set(), l=[];
+  g.ids.forEach(a=>g.sp[a].forEach(b=>{ const k=[a,b].sort().join('|'); if(seen.has(k)) return; seen.add(k);
+    const f=(P[a].spl||[]).find(x=>x.id===b)||(P[b].spl||[]).find(x=>x.id===a); const d=f&&f.dt&&f.dt.aroosi; if(!f||f.st==='divorced'||!d||+d.m!==+TODAY.m||!d.d||P[a].dead||P[b].dead||P[a].virtual||P[b].virtual) return; l.push({t:(P[a].first||'')+' و '+(P[b].first||''),d:d.d,n:d.y?TODAY.y-d.y:0}); }));
+  if(!l.length) return '';
+  return `<section class="card stack"><h3>💍 سالگرد عروسی این ماه</h3><div class="row" style="gap:8px;flex-wrap:wrap">${l.sort((a,b)=>a.d-b.d).slice(0,12).map(x=>`<span class="chip">${esc(x.t)} <span class="muted small">${fa(x.d)}${x.n>0?' – سال '+fa(x.n):''}</span></span>`).join('')}</div></section>`;
 }
 function bdayHTML(){
   const l=Object.values(S.people).filter(p=>!p.dead&&p.first&&+p.bM===+TODAY.m&&+p.bD).sort((a,b)=>a.bD-b.bD); if(!l.length) return '';
@@ -1149,7 +1167,9 @@ function spouseRows(v){
     const lab=i===0?'همسر':'همسر '+['','دوم','سوم','چهارم'][i];
     return `<div class="sprow" data-sp="${i}" ${i<shown?'':'hidden'}>${relBlock(k,lab,null,vv,lab+'ِ <b class="pn">این فرد</b> کیست؟')}
       <div class="row"><label class="f" style="flex:1 1 220px"><span>وضعیت ${lab}</span><select id="r_${k}_st">${Object.entries(ST_L).map(([sv,sl])=>`<option value="${sv}" ${(x.st||'current')===sv?'selected':''}>${sl}</option>`).join('')}</select></label>
-      <label class="f" style="flex:1 1 160px"><span>سال ازدواج (اختیاری)</span><input type="number" id="r_${k}_my" min="1250" max="${TODAY.y}" placeholder="مثلاً ۱۳۷۵" value="${x.my||''}"></label>
+      <details style="flex:1 1 100%" ${(x.dt||x.my)?'open':''}><summary>📅 تاریخ نشان، عقد و عروسی <span class="muted small">(اختیاری)</span></summary>
+        <p class="muted small" style="margin:6px 0">پر کردن این قسمت الزامی نیست؛ اگر دوست داشتید و به یاد دارید بنویسید. هر کدام را که نمی‌دانید خالی بگذارید.</p>
+        ${[['nishan','تاریخ نشان'],['aghd','تاریخ عقد'],['aroosi','تاریخ عروسی']].map(([n,l])=>`<div class="f"><span>${l}</span>${dateW('r_'+k+'_'+n,(x.dt&&x.dt[n])||(n==='aroosi'&&x.my?{y:+x.my}:{}))}</div>`).join('')}</details>
       ${i>0?`<button type="button" class="btn ghost sm" data-act="sprm" data-k="${k}">حذف این همسر</button>`:''}</div></div>`;
   }).join('');
   return rows+`<button type="button" class="btn ghost" id="spAdd" data-act="spadd" ${shown>=SP_KEYS.length?'hidden':''}>➕ افزودن همسر دیگر (همسر قبلی یا بعدی)</button>`;
@@ -1479,7 +1499,8 @@ function personSheet(id){
   const rows=[['پدر',P[p.fatherId]?[p.fatherId]:[]],['مادر',P[p.motherId]?[p.motherId]:[]],['همسر',[...spouses]],['فرزندان',kids],['برادر و خواهر',sib]].filter(r=>r[1].length);
   const mems=Object.entries(S.memories).filter(([,m])=>m.personId===id).sort((a,b)=>(a[1].at||0)-(b[1].at||0));
   const a=ageNow(p);
-  const info=[gLabel(p.gender),p.dead?'درگذشته':'در قید حیات',dstr(p.bY,p.bM,p.bD)?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead&&dstr(p.dY,p.dM,p.dD)?'درگذشت '+dstr(p.dY,p.dM,p.dD):'',a!=null?(p.dead?fa(a)+' سال عمر کرد':fa(a)+' ساله'):'',placeInfo(p),p.job].filter(Boolean);
+  const wed=[...spouses].flatMap(q=>{ const x=(P[id].spl||[]).find(y=>y.id===q)||(P[q].spl||[]).find(y=>y.id===id); if(!x||!x.dt) return []; const t=[['nishan','نشان'],['aghd','عقد'],['aroosi','عروسی']].map(([n,l])=>x.dt[n]&&dstr(x.dt[n].y,x.dt[n].m,x.dt[n].d)?l+' '+dstr(x.dt[n].y,x.dt[n].m,x.dt[n].d):'').filter(Boolean); return t.length?['همسر '+(P[q].first||'')+': '+t.join('، ')]:[]; });
+  const info=[...wed,gLabel(p.gender),p.dead?'درگذشته':'در قید حیات',dstr(p.bY,p.bM,p.bD)?'تولد '+dstr(p.bY,p.bM,p.bD):'',p.dead&&dstr(p.dY,p.dM,p.dD)?'درگذشت '+dstr(p.dY,p.dM,p.dD):'',a!=null?(p.dead?fa(a)+' سال عمر کرد':fa(a)+' ساله'):'',placeInfo(p),p.job].filter(Boolean);
   const cf=S.confirm;
   const memGroup=(k,title)=>{ const l=mems.filter(([,m])=>(m.kind||'memory')===k); if(!l.length) return ''; return `<div class="stack" style="gap:8px"><span class="kind">${title}</span>${l.map(([mid,m])=>`<div class="mem"><p>${esc(m.text)}</p><div class="row" style="justify-content:space-between"><span class="muted small">— ${esc(m.author||'')}</span>${S.isAdmin?`<span class="row" style="gap:6px"><button class="btn ghost sm" data-act="editmem" data-id="${esc(mid)}">ویرایش</button><button class="btn danger sm" data-act="delmem" data-id="${esc(mid)}">${cf==='m'+mid?'مطمئنم، حذف شود':'حذف'}</button></span>`:''}</div></div>`).join('')}</div>`; };
   return `<button class="btn ghost sm x" data-act="close">بستن</button>
@@ -1845,10 +1866,12 @@ function readRel(key){
   if(v==='__new'){ const dt=readDate('r_'+key); return {id:'',ref:{name:nn(val('#r_'+key+'_n'))?val('#r_'+key+'_n'):'',y:dt.y,m:dt.m,d:dt.d}}; }
   return {id:v,ref:{name:'',y:0,m:0,d:0}};
 }
+function mdOf(k){ const o={}; ['nishan','aghd','aroosi'].forEach(n=>{ if(!$('#r_'+k+'_'+n+'_y')) return; const d=readDate('r_'+k+'_'+n); if(d.y||d.m||d.d) o[n]=d; }); return Object.keys(o).length?o:null; }
+function mdY(k){ const o=mdOf(k); return o?((o.aroosi&&o.aroosi.y)||(o.aghd&&o.aghd.y)||(o.nishan&&o.nishan.y)||0):0; }
 function readSpouses(){
   if((document.querySelector('input[name=f_mar]:checked')||{}).value==='single') return [];
   const out=[];
-  SP_KEYS.forEach(k=>{ const row=$('#r_'+k); if(!row) return; const r=readRel(k); if(r.id||r.ref.name) out.push({id:r.id,ref:r.ref,st:val('#r_'+k+'_st')||'current',my:+val('#r_'+k+'_my')||0}); });
+  SP_KEYS.forEach(k=>{ const row=$('#r_'+k); if(!row) return; const r=readRel(k); if(r.id||r.ref.name) out.push({id:r.id,ref:r.ref,st:val('#r_'+k+'_st')||'current',my:mdY(k),dt:mdOf(k)}); });
   return out;
 }
 function step2Ok(){
