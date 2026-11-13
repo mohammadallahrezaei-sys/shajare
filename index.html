@@ -928,13 +928,11 @@ function viewHome(){
     <div class="home-shortcuts-grid home-shortcuts-compact">
       ${quick('🌳','شجره‌نامه','دیدن نسل‌ها و شاخه‌ها','tab','tree')}
       ${quick('✍️','ثبت اطلاعات','افزودن یا تکمیل پرونده','addme')}
-      ${quick('📚','دفتر زندگی','خاطرات و یادگارها','tab','tree')}
+      ${quick('📊','گزارش خانواده','آمار و روند نسل‌ها','tab','stats')}
     </div>
   </section>
-  ${myIdentityHTML()}
-  ${bdaySectionHTML()}
   ${S.isAdmin&&pendingList().length?`<section class="home-pending"><span>🔔</span><div><b>${fa(pendingList().length)} مورد منتظر بررسی شماست</b><small>درخواست‌های تازهٔ خانواده را بررسی کنید.</small></div><button class="btn sm" data-act="tab" data-tab="admin">بررسی درخواست‌ها</button></section>`:''}
-  <details class="home-more"><summary>بخش‌های شخصی و یادگاری‌های بیشتر</summary><div class="home-more-content">${myMarriageHTML()} ${fsHTML()} ${installCardHTML()} ${storyHomeHTML()} ${treeWarnHTML()}</div></details>
+  <details class="home-more"><summary>بخش‌های شخصی و یادگاری‌های بیشتر</summary><div class="home-more-content">${myIdentityHTML()} ${bdaySectionHTML()} ${myMarriageHTML()} ${fsHTML()} ${installCardHTML()} ${storyHomeHTML()} ${treeWarnHTML()}</div></details>
   </div>`;
 }
 
