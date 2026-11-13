@@ -2202,28 +2202,45 @@ function drawArt(T,imgs){
   // Natural curved branches: warm wood with a fine highlight and restrained lineage tint.
   const branchPaths=[];
   const bez=(t,a,b,d,e)=>{const u=1-t;return u*u*u*a+3*u*u*t*b+3*u*t*t*d+t*t*t*e;};
+  // Natural fork: a parent stem and a shared soft crossbar, with separate curved child limbs.
+  const strokeWood=(draw,color,width)=>{
+    c.save();c.lineCap='round';c.lineJoin='round';
+    c.beginPath();draw();c.strokeStyle='rgba(69,43,25,.20)';c.lineWidth=width+8;c.stroke();
+    c.beginPath();draw();c.strokeStyle=color;c.lineWidth=width;c.stroke();
+    c.beginPath();draw();c.strokeStyle='rgba(255,226,176,.58)';c.lineWidth=Math.max(1.2,width*.28);c.stroke();
+    c.beginPath();draw();c.strokeStyle='rgba(53,34,23,.18)';c.lineWidth=Math.max(1,width*.12);c.stroke();
+    c.restore();
+  };
   const branch=n=>{
-    const px=n.cx,py=cyOf(n);
-    n.kids.forEach(k=>{
-      const kx=k.cx,ky=cyOf(k),dx=kx-px;
-      const x1=px,y1=py+R*.86,x4=kx,y4=ky-R*.86;
-      const dy=ky-py;
-      const bend=(dx===0?((k.id.length%3)-1)*18:Math.sign(dx)*Math.min(54,Math.abs(dx)*.19))+((k.id.length%2)?9:-9);
-      const x2=px+dx*.14+bend,y2=py+dy*.30;
-      const x3=kx-dx*.14+bend*.62,y3=py+dy*.73;
-      const width=Math.max(4.5,Math.min(17,4+Math.sqrt(k.size||1)*2.15));
-      c.save();c.lineCap='round';c.lineJoin='round';
-      c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
-      c.strokeStyle='rgba(69,43,25,.20)';c.lineWidth=width+8;c.stroke();
-      c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
-      c.strokeStyle=bcol(k);c.lineWidth=width;c.stroke();
-      c.beginPath();c.moveTo(x1-width*.12,y1);c.bezierCurveTo(x2-width*.12,y2,x3-width*.12,y3,x4-width*.12,y4);c.strokeStyle='rgba(255,226,176,.58)';c.lineWidth=Math.max(1.2,width*.28);c.stroke();
-      c.beginPath();c.moveTo(x1+width*.25,y1);c.bezierCurveTo(x2+width*.25,y2,x3+width*.25,y3,x4+width*.25,y4);c.strokeStyle='rgba(53,34,23,.20)';c.lineWidth=Math.max(1,width*.12);c.stroke();
-      c.beginPath();c.moveTo(x1-width*.18,y1);c.bezierCurveTo(x2-width*.18,y2,x3-width*.18,y3,x4-width*.18,y4);
-      c.strokeStyle='rgba(226,190,137,.35)';c.lineWidth=Math.max(1,width*.10);c.stroke();c.restore();
-      branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
-      branch(k);
-    });
+    const px=n.cx,py=cyOf(n),kids=n.kids;
+    if(!kids.length)return;
+    if(kids.length===1){
+      const k=kids[0],kx=k.cx,ky=cyOf(k),dx=kx-px,dy=ky-py;
+      const x1=px,y1=py+R*.88,x4=kx,y4=ky-R*.88;
+      const bend=dx===0?0:Math.sign(dx)*Math.min(42,Math.abs(dx)*.12);
+      const x2=px+dx*.20+bend,y2=py+dy*.34,x3=kx-dx*.16+bend*.45,y3=py+dy*.72;
+      const width=Math.max(4.5,Math.min(15,4+Math.sqrt(k.size||1)*1.9));
+      const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);};
+      strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
+    }else{
+      const childTop=Math.min(...kids.map(k=>cyOf(k)-R*.9));
+      const busY=py+Math.max(58,Math.min(112,(childTop-(py+R))*.42));
+      const xs=kids.map(k=>k.cx),lo=Math.min(...xs),hi=Math.max(...xs);
+      const trunkWidth=Math.max(6,Math.min(16,5+Math.sqrt(kids.length)*2.1));
+      const trunk=()=>{c.moveTo(px,py+R*.88);c.bezierCurveTo(px,py+R+28,px,busY-22,px,busY);};
+      strokeWood(trunk,bcol(n),trunkWidth);
+      const bar=()=>{c.moveTo(lo,busY);c.bezierCurveTo(lo+(hi-lo)*.28,busY+3,lo+(hi-lo)*.72,busY+3,hi,busY);};
+      strokeWood(bar,'#9b7953',Math.max(4,trunkWidth*.68));
+      kids.forEach(k=>{
+        const kx=k.cx,ky=cyOf(k),dx=kx-px,x1=kx,y1=busY,x4=kx,y4=ky-R*.88;
+        const sway=Math.sign(dx||((k.id.length%2)?1:-1))*Math.min(28,Math.abs(dx)*.10);
+        const x2=kx+sway,y2=busY+(y4-busY)*.34,x3=kx-sway*.35,y3=busY+(y4-busY)*.72;
+        const width=Math.max(4.2,Math.min(13,3.8+Math.sqrt(k.size||1)*1.75));
+        const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);};
+        strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
+      });
+    }
+    kids.forEach(branch);
   };
   T.roots.forEach(branch);
   // Fine twigs and botanical leaf pairs around outer limbs, away from portrait labels.
