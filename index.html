@@ -2159,7 +2159,7 @@ function locatePerson(id){
 }
 function drawArt(T,imgs){
   const P=T.P, R=34, CW=176, GAP=270, MARGIN=150, TOP=190, SIBLING_GAP=78, ROOT_GAP=128;
-  const HUES=[145,198,344,28,263,174,12,92,316,48];
+  const BRANCH_COLORS=['#527f72','#a4774e','#6686a4','#a36578','#8b8957','#81709a','#b17b4c','#4c8990','#8b725f','#718b65'];
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   let bi=0; const brs=[];
   const assign=(n,ci,off)=>{n.ci=ci;n.off=off||0;n.kids.forEach(k=>assign(k,ci,off));};
@@ -2167,8 +2167,7 @@ function drawArt(T,imgs){
   const trunkWalk=n=>{if(headSet.has(n))return;n.ci=-1;n.kids.forEach(trunkWalk);};
   T.roots.forEach(trunkWalk);
   BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>assign(q,bi,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
-  const hue=ci=>(HUES[ci%HUES.length]+Math.floor(ci/HUES.length)*13)%360;
-  const bcol=(n,dl)=>n.ci<0?'#79563b':'hsl('+hue(n.ci)+','+(43+(dl||0))+'%,'+(38+Math.max(0,n.depth-2)*2)+'%)';
+  const bcol=n=>n.ci<0?'#806044':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
   const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.kw=n.kids.reduce((a,k)=>a+k.aw,0)+SIBLING_GAP*Math.max(0,n.kids.length-1);n.aw=Math.max(n.kw,n.cw+64);};
   T.roots.forEach(lay);
   // Large sibling groups are staggered inside a generation band, rather than forced onto one ruler-straight row.
@@ -2207,15 +2206,17 @@ function drawArt(T,imgs){
     const px=n.cx,py=cyOf(n);
     n.kids.forEach(k=>{
       const kx=k.cx,ky=cyOf(k),dx=kx-px;
-      const x1=px,y1=py-R*.62,x4=kx,y4=ky+R*.72;
+      const x1=px,y1=py+R*.86,x4=kx,y4=ky-R*.86;
       const dy=ky-py;
-      const x2=px+dx*.18,y2=py+dy*.34,x3=kx-dx*.18,y3=py+dy*.72;
+      const bend=(dx===0?((k.id.length%3)-1)*18:Math.sign(dx)*Math.min(54,Math.abs(dx)*.19))+((k.id.length%2)?9:-9);
+      const x2=px+dx*.14+bend,y2=py+dy*.30;
+      const x3=kx-dx*.14+bend*.62,y3=py+dy*.73;
       const width=Math.max(4.5,Math.min(17,4+Math.sqrt(k.size||1)*2.15));
       c.save();c.lineCap='round';c.lineJoin='round';
       c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
       c.strokeStyle='rgba(69,43,25,.20)';c.lineWidth=width+8;c.stroke();
       c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
-      c.strokeStyle=bcol(k,0);c.lineWidth=width;c.stroke();
+      c.strokeStyle=bcol(k);c.lineWidth=width;c.stroke();
       c.beginPath();c.moveTo(x1-width*.12,y1);c.bezierCurveTo(x2-width*.12,y2,x3-width*.12,y3,x4-width*.12,y4);c.strokeStyle='rgba(255,226,176,.58)';c.lineWidth=Math.max(1.2,width*.28);c.stroke();
       c.beginPath();c.moveTo(x1+width*.25,y1);c.bezierCurveTo(x2+width*.25,y2,x3+width*.25,y3,x4+width*.25,y4);c.strokeStyle='rgba(53,34,23,.20)';c.lineWidth=Math.max(1,width*.12);c.stroke();
       c.beginPath();c.moveTo(x1-width*.18,y1);c.bezierCurveTo(x2-width*.18,y2,x3-width*.18,y3,x4-width*.18,y4);
@@ -2264,7 +2265,7 @@ function drawArt(T,imgs){
   const person=(id,x,y,sp,node)=>{
     const p=P[id];if(!p)return;
     const gender=p.gender==='m'?'#397d9b':p.gender==='f'?'#a85e7b':'#7c8d83';
-    const ring=node.ci<0?'#9c865e':'hsl('+hue(node.ci)+',30%,54%)';
+    const ring=node.ci<0?'#9c865e':bcol(node);
     c.save();c.shadowColor='rgba(3,16,13,.38)';c.shadowBlur=13;c.shadowOffsetY=4;
     c.fillStyle='#f8f0df';c.beginPath();c.arc(x,y,R+8,0,Math.PI*2);c.fill();c.restore();
     c.save();c.beginPath();c.arc(x,y,R,0,Math.PI*2);c.clip();
@@ -2331,7 +2332,7 @@ function drawArt(T,imgs){
     for(const b of brs){
       const label='شاخهٔ '+full(P[b.k.id]),tw=c.measureText(label).width,wid=tw+34;
       if(lx-wid<150)break;
-      c.fillStyle=bcol(b.k,0);c.beginPath();c.arc(lx-7,ly,5,0,Math.PI*2);c.fill();
+      c.fillStyle=bcol(b.k);c.beginPath();c.arc(lx-7,ly,5,0,Math.PI*2);c.fill();
       c.fillStyle='#75654e';c.fillText(label,lx-18-tw/2,ly);lx-=wid+14;
     }
   }
