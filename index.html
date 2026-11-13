@@ -2166,7 +2166,7 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=34, CW=176, GAP=205, MARGIN=150, TOP=190, SIBLING_GAP=58, ROOT_GAP=112;
+  const P=T.P, R=34, CW=176, GAP=270, MARGIN=150, TOP=190, SIBLING_GAP=78, ROOT_GAP=128;
   const HUES=[145,198,344,28,263,174,12,92,316,48];
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   let bi=0; const brs=[];
@@ -2181,7 +2181,7 @@ function drawArt(T,imgs){
   T.roots.forEach(lay);
   // Large sibling groups are staggered inside a generation band, rather than forced onto one ruler-straight row.
   const rowPattern=[0,1,-1,2,-2,3,-3,4,-4];
-  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>3?rowPattern[i%rowPattern.length]*108:0;stagger(k);});};
+  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>3?rowPattern[i%rowPattern.length]*34:0;stagger(k);});};
   T.roots.forEach(n=>{n.rowOffset=0;stagger(n);});
   // Each sibling group receives real horizontal breathing room; the parent stays centered over that group.
   const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw-n.kw)/2+n.kw;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw+SIBLING_GAP;});};
@@ -2192,7 +2192,7 @@ function drawArt(T,imgs){
   const cyOf=n=>genY(n.depth)+(n.rowOffset||0);
   const lowest=Math.max.apply(null,T.nodes.map(n=>cyOf(n)));
   const groundY=lowest+R+150, H=groundY+145;
-  const sc=Math.min(1,7600/Math.max(W,H),Math.sqrt(42e6/(W*H)));
+  const sc=Math.min(1.5,Math.sqrt(100e6/(W*H)));
   const cv=document.createElement('canvas');cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);
   const c=cv.getContext('2d');c.scale(sc,sc);c.direction='rtl';c.textAlign='center';c.textBaseline='middle';
   const rr=(x,y,w,h,r)=>{c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h);};
@@ -2224,7 +2224,7 @@ function drawArt(T,imgs){
       c.strokeStyle='rgba(69,43,25,.20)';c.lineWidth=width+8;c.stroke();
       c.beginPath();c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);
       c.strokeStyle=bcol(k,0);c.lineWidth=width;c.stroke();
-      c.beginPath();c.moveTo(x1-width*.12,y1);c.bezierCurveTo(x2-width*.12,y2,x3-width*.12,y3,x4-width*.12,y4);c.strokeStyle='rgba(174,128,79,.55)';c.lineWidth=Math.max(1.2,width*.28);c.stroke();
+      c.beginPath();c.moveTo(x1-width*.12,y1);c.bezierCurveTo(x2-width*.12,y2,x3-width*.12,y3,x4-width*.12,y4);c.strokeStyle='rgba(255,226,176,.58)';c.lineWidth=Math.max(1.2,width*.28);c.stroke();
       c.beginPath();c.moveTo(x1+width*.25,y1);c.bezierCurveTo(x2+width*.25,y2,x3+width*.25,y3,x4+width*.25,y4);c.strokeStyle='rgba(53,34,23,.20)';c.lineWidth=Math.max(1,width*.12);c.stroke();
       c.beginPath();c.moveTo(x1-width*.18,y1);c.bezierCurveTo(x2-width*.18,y2,x3-width*.18,y3,x4-width*.18,y4);
       c.strokeStyle='rgba(226,190,137,.35)';c.lineWidth=Math.max(1,width*.10);c.stroke();c.restore();
