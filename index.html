@@ -726,7 +726,7 @@ const S={
   me:null,loginPending:null,peopleLoaded:false,loginResults:[],loginSelected:null,loginNewName:false,loginSearchError:'',loginSearchSeq:0,loginSearchDone:false,loginDraft:{first:'',last:''},tab:'home',people:{},memories:{},subs:{},mySub:null,imported:[],researchRows:[],auditRows:[],
   mode:lsGet('shj_mode2')||(window.innerWidth<760?'outline':'art'),
   addTab:'person',editId:null,marriageOnly:false,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
-  editSub:null,adq:'',famSel:{},cacheSig:null,hadCache:false,offline:false,cmpF:'all',bk:null,focus:'',relA:'',relB:'',relOpen:false,photo:'',photoDirty:false,photoMsg:'',prefill:null,missingOnly:false,T:null,artCanvas:null,growthChild:'',growthRows:[],growthBusy:false,familyPosts:[],graphMode:'hourglass',treePerson:'',timelinePerson:'',timelineScope:'all',timelinePlace:'',timelineZoom:1,treeAddDraft:null,kinMapPerson:'',kinMapYear:1400,kinMapImages:[],kinMapLayersLoaded:false
+  editSub:null,adq:'',famSel:{},cacheSig:null,hadCache:false,offline:false,cmpF:'all',bk:null,focus:'',relA:'',relB:'',relOpen:false,photo:'',photoDirty:false,photoMsg:'',prefill:null,missingOnly:false,T:null,artCanvas:null,growthChild:'',growthRows:[],growthBusy:false,familyPosts:[],graphMode:'fan',treePerson:'',timelinePerson:'',timelineScope:'all',timelinePlace:'',timelineZoom:1,treeAddDraft:null,kinMapPerson:'',kinMapYear:1400,kinMapImages:[],kinMapLayersLoaded:false
 };
 const fullName=()=>S.me?(S.me.first+' '+S.me.last).trim():'';
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>{t.hidden=true},3800);}
@@ -1452,10 +1452,10 @@ function applyKinMapOverlay(){
 }
 
 function treeAdvancedHTML(){
- const P=EP(),ids=Object.keys(P).filter(i=>!P[i].virtual),id=S.treePerson&&P[S.treePerson]?S.treePerson:(ids[0]||''),person=P[id];
+ const P=EP(),ids=Object.keys(P).filter(i=>!P[i].virtual),mainRoot=(buildTree().roots||[])[0]?.id||'',id=S.treePerson&&P[S.treePerson]?S.treePerson:(mainRoot||ids[0]||''),person=P[id];
  const modes=[['ancestor','نیاکان'],['descendant','نوادگان'],['hourglass','ساعت شنی'],['relations','روابط'],['fan','بادبزنی']];
  const picker='<label class="f"><span>فرد مرکزی نمودار</span><select id="treePerson" class="tree-person-select"><option value="">انتخاب فرد</option>'+ids.slice().sort((a,b)=>full(P[a]).localeCompare(full(P[b]),'fa')).map(i=>'<option value="'+esc(i)+'" '+(i===id?'selected':'')+'>'+esc(full(P[i]))+'</option>').join('')+'</select></label>';
- const mode=S.graphMode||'hourglass';
+ const mode=S.graphMode||'fan';
  const kids=x=>ids.filter(i=>P[i].fatherId===x||P[i].motherId===x).sort((a,b)=>(P[a].bY||9999)-(P[b].bY||9999));
  const parents=x=>[P[x]?.fatherId,P[x]?.motherId].filter(q=>q&&P[q]&&!P[q].virtual);
  const spouses=x=>{const a=(P[x]?.spl||[]).map(q=>q.id).filter(q=>P[q]);ids.forEach(q=>{if((P[q].spl||[]).some(z=>z.id===x)&&!a.includes(q))a.push(q);});return a;};
