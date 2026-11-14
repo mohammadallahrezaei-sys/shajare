@@ -399,8 +399,8 @@ textarea{min-height:110px;resize:vertical}
 .tree-toolbar{padding:4px 0}
 .tree-toolbar .search{max-width:440px;flex:1 1 260px}
 .tree-canvas-area{width:100%;min-width:0}
-.tree-only .art-box,.tree-only .chart-box,.tree-only .outline{min-height:calc(100vh - 255px);max-height:calc(100vh - 230px);border-radius:14px}
-.tree-only .art-box{height:calc(100vh - 230px)}
+ .tree-only .art-box,.tree-only .chart-box,.tree-only .outline{min-height:calc(100vh - 205px);max-height:calc(100vh - 180px);border-radius:14px}
+.tree-only .art-box{height:calc(100vh - 180px)}
 .tree-only .chart-box,.tree-only .outline{overflow:auto}
 .tree-help{margin:0;text-align:center}
 /* Compact tree controls: preserve every action without consuming the viewport */
@@ -420,7 +420,7 @@ textarea{min-height:110px;resize:vertical}
  .tree-compact-controls .tree-export-tools .btn{padding-inline:8px}
  .tree-toolbar .search input{min-height:36px}
 }
-@media(max-width:620px){.tree-only .art-box,.tree-only .chart-box,.tree-only .outline{min-height:calc(100dvh - 300px);max-height:calc(100dvh - 270px)}.tree-only .art-box{height:calc(100dvh - 270px)}.tree-toolbar{align-items:stretch}.tree-toolbar .search{max-width:none;flex-basis:100%}.tree-toolbar>.row{width:100%}.tree-toolbar>.row .btn{flex:1}}
+@media(max-width:620px){.tree-only .art-box,.tree-only .chart-box,.tree-only .outline{min-height:calc(100dvh - 260px);max-height:calc(100dvh - 230px)}.tree-only .art-box{height:calc(100dvh - 230px)}.tree-toolbar{align-items:stretch}.tree-toolbar .search{max-width:none;flex-basis:100%}.tree-toolbar>.row{width:100%}.tree-toolbar>.row .btn{flex:1}}
 
 .cbtn{display:block;margin:4px auto 0;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;line-height:1;padding:0;font-size:16px}
 .org li.col>ul{display:none}
@@ -3463,7 +3463,7 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=34, CW=176, GAP=270, MARGIN=150, TOP=190, SIBLING_GAP=78, ROOT_GAP=128;
+  const P=T.P, R=34, CW=164, GAP=330, MARGIN=110, TOP=190, SIBLING_GAP=52, ROOT_GAP=84;
   const BRANCH_COLORS=['#527f72','#a4774e','#6686a4','#a36578','#8b8957','#81709a','#b17b4c','#4c8990','#8b725f','#718b65'];
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   let bi=0; const brs=[];
@@ -3477,7 +3477,7 @@ function drawArt(T,imgs){
   T.roots.forEach(lay);
   // Large sibling groups are staggered inside a generation band, rather than forced onto one ruler-straight row.
   const rowPattern=[0,1,-1,2,-2,3,-3,4,-4];
-  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>3?rowPattern[i%rowPattern.length]*34:0;stagger(k);});};
+  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>3?rowPattern[i%rowPattern.length]*42:0;stagger(k);});};
   T.roots.forEach(n=>{n.rowOffset=0;stagger(n);});
   // Each sibling group receives real horizontal breathing room; the parent stays centered over that group.
   const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw-n.kw)/2+n.kw;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw+SIBLING_GAP;});};
