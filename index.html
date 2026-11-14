@@ -3430,8 +3430,14 @@ async function renderArt(){
   cv.addEventListener('click',e=>{ if(cv.__noclick){ cv.__noclick=false; return; } const h=hitAt(e); if(h) openModal(h.id); });
   cv.addEventListener('mousedown',e=>{ cv.__noclick=false; PAN={x:e.clientX,y:e.clientY,l:box.scrollLeft,t:box.scrollTop,m:false,box,cv}; });
   cv.addEventListener('mousemove',e=>{ cv.style.cursor=hitAt(e)?'pointer':'default'; });
-  if(S.artZoom>1) box.scrollLeft=Math.max(0,(box.scrollWidth-box.clientWidth)/2);
-  requestAnimationFrame(()=>{if(!box.isConnected)return;box.scrollTop=Math.max(0,box.scrollHeight-box.clientHeight);});
+  const placeRoot=()=>{
+    if(!box.isConnected||!cv.isConnected)return;
+    const maxTop=Math.max(0,box.scrollHeight-box.clientHeight);
+    const maxLeft=Math.max(0,box.scrollWidth-box.clientWidth);
+    box.scrollTop=maxTop; // In the illustrated tree, the oldest/root generation is drawn at the bottom.
+    box.scrollLeft=getComputedStyle(box).direction==='rtl'?0:maxLeft/2;
+  };
+  requestAnimationFrame(()=>requestAnimationFrame(placeRoot));
 }
 async function saveBlob(name,blob){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
@@ -3635,6 +3641,26 @@ function subnavHTML(){
   const g=groupOf(S.tab); if(!g||g.tabs.length<2) return '';
   return `<div class="subnav" role="group" aria-label="${g.label}">${g.tabs.map(([k,l])=>`<button type="button" data-act="tab" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}>${l}</button>`).join('')}</div>`;
 }
+function positionGenealogyRoot(){
+ const place=()=>{
+  if(S.tab==='tree'){
+   if(S.mode==='art')return; // renderArt positions the illustrated root after the canvas is attached.
+   const b=S.mode==='chart'?$('#chartBox'):$('.outline');
+   if(b){b.scrollTop=0;const max=Math.max(0,b.scrollWidth-b.clientWidth);b.scrollLeft=getComputedStyle(b).direction==='rtl'?-max/2:max/2;}
+  }else if(S.tab==='relations'){
+   const b=$('.kin-graph-scroll');if(!b)return;
+   b.scrollTop=0;
+   const fan=b.querySelector('.kin-fan-wrap');
+   if(fan){
+    const svg=fan.querySelector('svg');
+    if(svg){const max=Math.max(0,fan.scrollWidth-fan.clientWidth);fan.scrollLeft=getComputedStyle(fan).direction==='rtl'?-max/2:max/2;}
+   }else{
+    const max=Math.max(0,b.scrollWidth-b.clientWidth);b.scrollLeft=getComputedStyle(b).direction==='rtl'?-max/2:max/2;
+   }
+  }
+ };
+ requestAnimationFrame(()=>requestAnimationFrame(place));
+}
 function renderView(){
   if(S.tab==='research') S.tab='home';
   const v=$('#view'); if(!v) return;
@@ -3643,11 +3669,8 @@ function renderView(){
   v.innerHTML=subnavHTML()+f(); if(S.familyPosts&&(familyArchiveUI.openId||familyArchiveUI.editId)) v.insertAdjacentHTML('beforeend',familyOverlayHTML());
   if(S.tab==='family') updateFamilyContributionGuide();
   if(S.tab==='map'){if($('#familyPlacesMap'))initFamilyPlacesMap();if($('#kinMap'))initKinMap();}
-  if(S.tab==='tree'){
-   if(S.mode==='art') renderArt();
-   else if(S.mode==='chart'){const b=$('#chartBox');if(b){b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2;b.scrollTop=0;requestAnimationFrame(()=>{if(b.isConnected)b.scrollTop=0;});}}
-   else {const b=$('.outline');if(b){b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2;b.scrollTop=0;requestAnimationFrame(()=>{if(b.isConnected)b.scrollTop=0;});}}
- } 
+  if(S.tab==='tree'&&S.mode==='art') renderArt();
+  if(S.tab==='tree'||S.tab==='relations') positionGenealogyRoot();
 }
 let rq=0;
 function changed(){ S.T=null; if(rq) return; rq=requestAnimationFrame(()=>{ rq=0; if(S.loginPending){ if(S.peopleLoaded) render(); return; } if(!S.me||!S.ready) return; renderNav(); if(S.tab==='add') refreshAdd(); else renderView(); if(S.modal) $('#sheet').innerHTML=personSheet(S.modal); }); }
