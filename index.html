@@ -1556,7 +1556,7 @@ function relBlock(key,label,filter,v,q){
    <label class="f"><span class="muted small">یا از لیست انتخاب کنید:</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,true)}</select></label>
    <span class="muted small">در لیست نیست؟ اولین گزینهٔ لیست («✍️ در فهرست نیست») را بزنید و نامش را بنویسید.</span>
    <div id="r_${key}_new" ${sel==='__new'?'':'hidden'}><div class="fields">
-     <label class="f"><span>نام و نام خانوادگی ${esc(label)}</span><input type="text" id="r_${key}_n" placeholder="مثلاً: رضا احمدی" value="${esc(ref.name||'')}"></label>
+     <label class="f"><span>نام و نام خانوادگی ${esc(label)}</span><input type="text" id="r_${key}_n" placeholder="\${key==='father'?'مثلاً: محمد رضایی':key==='mother'?'مثلاً: فاطمه رضایی':SP_KEYS.includes(key)?(v.gender==='f'?'مثلاً: محمد رضایی':v.gender==='m'?'مثلاً: فاطمه رضایی':'نام و نام خانوادگی همسر'):'نام و نام خانوادگی'}" value="${esc(ref.name||'')}"></label>
      <div class="f"><span>تاریخ تولد ${esc(label)} (اگر می‌دانید)</span>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</div></div>
    </div></div>`;
 }
@@ -1574,7 +1574,7 @@ function stepperHTML(n,max){ max=max||maxPersonStep(); return STEP_T.slice(0,max
 function spouseRows(v){
   const list=spListOf(v), shown=Math.max(1,list.length);
   const rows=SP_KEYS.map((k,i)=>{
-    const x=list[i]||{id:'',ref:{},st:'current'}, vv={}; vv[k+'Id']=x.id||''; vv[k+'Ref']=x.ref||{};
+    const x=list[i]||{id:'',ref:{},st:'current'}, vv={}; vv[k+'Id']=x.id||''; vv[k+'Ref']=x.ref||{}; vv.gender=v.gender;
     const lab=i===0?'همسر':'همسر '+['','دوم','سوم','چهارم'][i];
     return `<div class="sprow" data-sp="${i}" ${i<shown?'':'hidden'} ${S.missingOnly&&(x.id||x.ref&&x.ref.name)?'hidden':''}>${relBlock(k,lab,null,vv,lab+'ِ <b class="pn">این فرد</b> کیست؟')}
       <div class="row"><label class="f" style="flex:1 1 220px"><span>وضعیت ${lab}</span><select id="r_${k}_st">${Object.entries(ST_L).map(([sv,sl])=>`<option value="${sv}" ${(x.st||'current')===sv?'selected':''}>${sl}</option>`).join('')}</select></label>
@@ -1639,7 +1639,7 @@ function personForm(){
    <div data-step="1" class="stack">
    <div class="qlab">این فرد کیست؟</div>
    <div class="fields">
-    <label class="f" ${hide(!!v.first)}><span>نام *</span><input type="text" id="f_first" placeholder="مثلاً: علی" value="${esc(v.first||'')}"></label>
+    <label class="f" ${hide(!!v.first)}><span>نام *</span><input type="text" id="f_first" placeholder="\${v.gender==='f'?'مثلاً: فاطمه':v.gender==='m'?'مثلاً: محمد':'نام کوچک فرد'}" value="${esc(v.first||'')}"></label>
     <label class="f" ${hide(!!v.last)}><span>نام خانوادگی *</span><input type="text" id="f_last" value="${esc(v.last||'الله‌رضایی')}"></label>
     <div class="f" ${hide(!!v.gender)}><span>جنسیت *</span><div class="seg">
       <label><input type="radio" name="f_g" value="m" ${v.gender==='m'?'checked':''}><span>آقا</span></label>
@@ -1660,7 +1660,7 @@ function personForm(){
       <label><input type="radio" name="f_mar" value="married" ${v.marital==='married'?'checked':''}><span>بله، همسر دارد یا داشته</span></label></div>
       <span class="muted small">اگر «مجرد» را بزنید بخش همسر برداشته می‌شود. اگر همسرش فوت کرده یا جدا شده، «بله» را بزنید و وضعیت همسر را انتخاب کنید.</span></div>
     <div class="wide stack" id="spouseWrap" ${hide(spListOf(v).some(x=>x.id||x.ref&&x.ref.name))} ${v.marital==='single'?'hidden':''}>${spouseRows(v)}</div>
-    <label class="f wide" ${hide(!!v.kidNames)}><span>فرزندان (اختیاری)</span><span class="muted small">اسم هر فرزند را در یک خط بنویسید.</span><textarea id="f_kids" style="min-height:70px" placeholder="مثلاً: علی الله‌رضایی">${esc(v.kidNames||'')}</textarea></label>
+    <label class="f wide" ${hide(!!v.kidNames)}><span>فرزندان (اختیاری)</span><span class="muted small">اسم هر فرزند را در یک خط بنویسید.</span><textarea id="f_kids" style="min-height:70px" placeholder="نام فرزندان را هر کدام در یک خط بنویسید">${esc(v.kidNames||'')}</textarea></label>
     ${kidsLinkBlock()}
    </div></div>
    <div data-step="3" class="stack" hidden>
@@ -1672,7 +1672,7 @@ function personForm(){
     <label class="f" ${hide(!!v.residence)}><span>محل سکونت (الان کجا زندگی می‌کند)</span><input type="text" id="f_resid" placeholder="مثلاً: اصفهان" value="${esc(v.residence||'')}"></label>
     <label class="f" ${hide(!!v.job)}><span>شغل</span><input type="text" id="f_job" placeholder="مثلاً: معلم" value="${esc(v.job||'')}"></label>
     <label class="f wide" ${hide(!!v.note)}><span>توضیح کوتاه (اختیاری)</span><input type="text" id="f_note" placeholder="مثلاً: عاشق باغبانی بود" value="${esc(v.note||'')}"></label>
-    <label class="f wide" ${hide(!!v.story)}><span>📖 سرگذشت زندگی (اختیاری)</span><span class="muted small hintbox">زندگی‌اش را همان‌طور که تعریف می‌کند بنویسید: کجا و در چه خانواده‌ای به دنیا آمد، کودکی و جوانی، درس و کار، ازدواج، خاطره‌ای که فراموش نمی‌کند، سختی‌ها و روزهای خوب. هر چقدر که دوست دارید.</span><textarea id="f_story" rows="8" style="min-height:160px" placeholder="مثلاً: در روستا به دنیا آمدم و ...">${esc(v.story||'')}</textarea></label>
+    <label class="f wide" ${hide(!!v.story)}><span>📖 سرگذشت زندگی (اختیاری)</span><span class="muted small hintbox">زندگی‌اش را همان‌طور که تعریف می‌کند بنویسید: کجا و در چه خانواده‌ای به دنیا آمد، کودکی و جوانی، درس و کار، ازدواج، خاطره‌ای که فراموش نمی‌کند، سختی‌ها و روزهای خوب. هر چقدر که دوست دارید.</span><textarea id="f_story" rows="8" style="min-height:160px" placeholder="محل تولد، خانواده، تحصیل، کار، ازدواج و خاطرات مهم زندگی را بنویسید.">${esc(v.story||'')}</textarea></label>
     <label class="f wide" ${hide(!!v.legacy)}><span>💌 یک جمله برای نسل‌های آینده (اختیاری)</span><span class="muted small hintbox">اگر فقط یک جمله می‌توانست به نوه‌ها و نتیجه‌هایش بگوید، چه می‌گفت؟</span><input type="text" id="f_legacy" maxlength="300" placeholder="مثلاً: همیشه کنار هم بمانید و از هم دست نکشید" value="${esc(v.legacy||'')}"></label>
    </div>${S.isAdmin?'':'<p class="muted small hintbox" style="margin:0">در مرحلهٔ بعد، برگهٔ اطلاعات را می‌بینید. بعد از تأیید شما، اطلاعات برای مدیر ارسال می‌شود و بعد از بررسی او در درخت اضافه می‌شود.</p>'}</div>
    <div data-step="4" class="stack" hidden>
