@@ -859,7 +859,7 @@ label.f>span,div.f>span{font-weight:600}
 .kin-rel-center>.kin-node{background:color-mix(in srgb,var(--primary) 8%,var(--surface2));border-color:var(--primary)}
 .kin-rel-note{max-width:760px;text-align:center;margin:4px auto}
 </style>
-</head>
+<style id="mouse-drag-pan-fix">#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track{cursor:grab}#artBox.is-mouse-panning,#chartBox.is-mouse-panning,.outline.is-mouse-panning,.kin-graph-scroll.is-mouse-panning,.kin-fan-wrap.is-mouse-panning,.family-map-box.is-mouse-panning,.timeline-track.is-mouse-panning{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important} .is-mouse-panning *{user-select:none!important;-webkit-user-select:none!important}</style></head>
 <body>
 <div class="wrap" id="root"></div>
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
@@ -4315,5 +4315,35 @@ boot();
  .home-shortcuts-compact .home-shortcut{min-height:64px}
 }
 .ancestor-portrait-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:20px 0}.ancestor-portrait-card{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:var(--surface2);break-inside:avoid}.ancestor-portrait-card>img{display:block;width:100%;height:190px;object-fit:cover;background:#eee}.ancestor-portrait-placeholder{height:150px;display:grid;place-items:center;font-size:42px;background:var(--surface2)}.ancestor-portrait-caption{padding:10px 12px;display:grid;gap:4px}.ancestor-portrait-caption b{font-size:15px}.ancestor-portrait-caption span,.ancestor-portrait-caption small{color:var(--muted);font-size:12px}.ancestor-portrait-caption p{font-size:13px;line-height:1.8;margin:4px 0 0}@media(max-width:600px){.ancestor-portrait-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ancestor-portrait-card>img{height:135px}.ancestor-portrait-caption{padding:8px}.ancestor-portrait-caption p{font-size:12px}}</style>
-</body>
+<script id="mouse-drag-pan-fix">
+(()=>{
+ const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track';
+ let drag=null,suppressClick=false;
+ document.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='mouse'||e.button!==0)return;
+  const el=e.target.closest(selector);if(!el||el.closest('.leaflet-container'))return;
+  drag={el,x:e.clientX,y:e.clientY,left:el.scrollLeft,top:el.scrollTop,moved:false};
+ },true);
+ document.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(!drag.moved&&Math.hypot(dx,dy)<5)return;
+  drag.moved=true;drag.el.classList.add('is-mouse-panning');
+  drag.el.scrollLeft=drag.left-dx;drag.el.scrollTop=drag.top-dy;
+  e.preventDefault();
+ },{capture:true,passive:false});
+ const finish=()=>{
+  if(!drag)return;
+  if(drag.moved){suppressClick=true;setTimeout(()=>{suppressClick=false;},0);}
+  drag.el.classList.remove('is-mouse-panning');drag=null;
+ };
+ document.addEventListener('pointerup',finish,true);
+ document.addEventListener('pointercancel',finish,true);
+ document.addEventListener('click',e=>{
+  if(!suppressClick)return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();suppressClick=false;
+ },true);
+ window.addEventListener('blur',finish);
+})();
+</script></body>
 </html>
