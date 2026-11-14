@@ -659,6 +659,8 @@ label.f>span,div.f>span{font-weight:600}
 /* Smart genealogy center and shared person photo archive */
 .smart-center{gap:14px}.smart-center-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.smart-center-head h3{margin:3px 0}.smart-center-head p{margin:3px 0}.smart-score{min-width:76px;height:76px;border-radius:50%;border:5px solid var(--primary);display:grid;align-content:center;justify-items:center}.smart-score b{font-size:20px;line-height:1.2;color:var(--primary)}.smart-score small{font-size:9px;color:var(--muted)}.smart-alert-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.smart-alert{display:flex;align-items:center;gap:9px;min-width:0;text-align:right;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg);color:var(--ink)}.smart-alert-icon{font-size:22px}.smart-alert-copy{display:grid;gap:1px;flex:1;min-width:0}.smart-alert-copy b{font-size:12px}.smart-alert-copy small{font-size:10px;color:var(--muted);line-height:1.5}.smart-alert>strong{font-size:17px;color:var(--primary)}.smart-subhead{display:flex;justify-content:space-between;gap:8px;align-items:center}.smart-timeline{display:grid;gap:5px;max-height:230px;overflow:auto}.smart-timeline button{display:flex;gap:12px;align-items:center;text-align:right;padding:7px 10px;border:0;border-right:3px solid var(--accent);background:var(--surface2);border-radius:8px;color:var(--ink)}.smart-timeline button b{min-width:42px;color:var(--primary)}.smart-timeline button span{font-size:12px}.smart-center-foot{display:flex;gap:8px;flex-wrap:wrap}.person-linked-gallery{display:grid;gap:8px}.person-linked-gallery h3{font-size:1rem}.person-linked-gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}.person-linked-photo{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface2);padding:0;text-align:right;color:var(--ink)}.person-linked-photo img{width:100%;height:120px;object-fit:cover;display:block}.person-linked-photo span{display:grid;padding:7px;gap:2px}.person-linked-photo b{font-size:11px}.person-linked-photo small{font-size:10px;color:var(--muted)}
 @media(max-width:600px){.smart-alert-grid{grid-template-columns:1fr}.smart-center-head{align-items:flex-start}.smart-score{min-width:66px;height:66px}.person-linked-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.face-tag-editor{display:grid;gap:9px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface2)}.face-tag-stage{position:relative;display:inline-block;max-width:100%;margin:auto;cursor:crosshair}.face-tag-stage img{display:block;max-width:100%;max-height:440px;object-fit:contain;border-radius:8px}.face-tag-dot{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;border:2px solid #fff;border-radius:50%;background:var(--bad);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:800;box-shadow:0 2px 8px #0008;pointer-events:none}.face-tag-list{display:grid;gap:5px}.face-tag-list>div{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:4px 0;font-size:12px}
 </style>
 </head>
 <body>
@@ -2257,7 +2259,7 @@ culture:{eyebrow:'زندگی روزمرهٔ نیاکان',title:'چیزهایی 
 };
 
 const FAMILY_CERTAINTY_LABELS={unverified:'نیازمند بررسی',oral:'روایت شفاهی خانواده',document:'دارای سند یا مدرک',verified:'بررسی و تأیید شده'};
-let familyArchiveUI={q:'',category:'all',village:'all',openId:''};
+let familyArchiveUI={q:'',category:'all',village:'all',openId:'',tagId:'',faceDraft:[]};
 function familyMeta(post){
   const raw=String(post.description||'');
   if(raw.startsWith(FAMILY_ARCHIVE_MARK)){
@@ -2391,9 +2393,20 @@ function familyArchiveCard(p,admin){
     </div>
   </article>`;
 }
+function familyFaceTagEditor(post,m,img){
+  if(!S.isAdmin||familyArchiveUI.tagId!==post.id||!img)return '';
+  const people=Object.entries(S.people||{}).filter(([,p])=>p&&!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
+  const tags=familyArchiveUI.faceDraft||[];
+  return `<section class="face-tag-editor"><b>🏷️ شناسایی و برچسب‌گذاری چهره‌ها</b><p class="muted small">یک شخص را انتخاب کنید و سپس روی محل چهره‌اش در عکس بزنید. هر نقطه به پروندهٔ همان شخص متصل می‌شود؛ می‌توانید چند نفر را روی یک عکس مشخص کنید.</p>
+    <label class="f"><span>شخص موردنظر</span><select id="facePersonSelect"><option value="">انتخاب شخص…</option>${people.map(([id,p])=>`<option value="${esc(id)}">${esc(full(p))}</option>`).join('')}</select></label>
+    <div class="face-tag-stage" data-act="faceplace"><img src="${esc(img)}" alt="برای ثبت محل چهره روی عکس کلیک کنید">${tags.map((t,i)=>{const p=S.people[t.person_id];return `<span class="face-tag-dot" style="left:${t.x}%;top:${t.y}%" title="${esc(p?full(p):'شخص')}">${fa(i+1)}</span>`;}).join('')}</div>
+    <div class="face-tag-list">${tags.map((t,i)=>`<div><span>${fa(i+1)} · ${esc(S.people[t.person_id]?full(S.people[t.person_id]):'شخص حذف‌شده')}</span><button type="button" class="btn ghost sm" data-act="faceremove" data-index="${i}">حذف</button></div>`).join('')||'<span class="muted small">هنوز چهره‌ای برچسب‌گذاری نشده است.</span>'}</div>
+    <div class="row"><button type="button" class="btn sm" data-act="facesave" data-id="${esc(post.id)}">ذخیرهٔ برچسب‌ها</button><button type="button" class="btn ghost sm" data-act="facecancel">انصراف</button></div>
+  </section>`;
+}
 function familyLightbox(post){
   if(!post)return '';
-  const m=familyMeta(post),img=familyMediaUrl(post);
+  const m=familyMeta(post),img=familyMediaUrl(post),faceTags=Array.isArray(m.face_tags)?m.face_tags:[];
   return `<div class="family-lightbox" role="dialog" aria-modal="true" aria-label="نمایش یادگار خانوادگی" data-act="familyclose">
     <div class="family-lightbox-inner" data-act="familystay">
       <button class="family-lightbox-close" type="button" data-act="familyclose" aria-label="بستن">×</button>
@@ -2402,6 +2415,8 @@ function familyLightbox(post){
         <h2>${esc(post.title)}</h2><p style="white-space:pre-wrap;line-height:2;margin:0">${esc(m.story||'توضیحی ثبت نشده است.')}</p>
         ${familyLinkedPeople(m).length?`<div><b>👥 افراد مرتبط:</b><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px">${familyLinkedPeople(m).map(x=>`<button class="link" type="button" data-act="person" data-id="${esc(x.id)}">${esc(full(x.person))}</button>`).join('')}</div></div>`:m.person_name?`<div>👤 <b>افراد مرتبط:</b> ${esc(m.person_name)}</div>`:''}
         ${m.people_names?`<div><b>افراد دیگر در عکس:</b> ${esc(m.people_names)}</div>`:''}
+        ${faceTags.length?`<div><b>🏷️ چهره‌های شناسایی‌شده:</b><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px">${faceTags.map(t=>S.people[t.person_id]? `<button class="link" type="button" data-act="person" data-id="${esc(t.person_id)}">${esc(full(S.people[t.person_id]))}</button>`:'').join('')}</div></div>`:''}
+        ${S.isAdmin&&img? (familyArchiveUI.tagId===post.id?familyFaceTagEditor(post,m,img):`<button type="button" class="btn ghost sm" data-act="facestart" data-id="${esc(post.id)}">🏷️ شناسایی و برچسب‌گذاری چهره‌ها</button>`):''}
         ${m.contributor?`<div>✍️ <b>ثبت‌کننده:</b> ${esc(m.contributor)}</div>`:''}
         <div class="muted small">ثبت در آرشیو: ${esc(new Date(post.created_at).toLocaleDateString('fa-IR'))}</div>
         ${m.source?`<div class="small"><b>منبع:</b> ${esc(m.source)}</div>`:''}<span class="pill">${esc(FAMILY_CERTAINTY_LABELS[m.certainty]||'نیازمند بررسی')}</span><span class="pill">${post.visibility==='public'?'قابل مشاهده برای همه':'ویژه اعضای خانواده'}</span>
@@ -3323,6 +3338,11 @@ document.addEventListener('click',async ev=>{
   else if(a==='familyapprove'){ await approveFamilyPost(el.dataset.id); }
   else if(a==='familyrestore'){ await restoreFamilyPost(el.dataset.id); }
   else if(a==='familyeditclose'){ familyArchiveUI.editId=''; renderView(); }
+  else if(a==='facestart'){ const post=(S.familyPosts||[]).find(x=>x.id===el.dataset.id); familyArchiveUI.tagId=el.dataset.id; familyArchiveUI.faceDraft=(post&&Array.isArray(familyMeta(post).face_tags)?familyMeta(post).face_tags:[]).map(x=>Object.assign({},x)); renderView(); }
+  else if(a==='facecancel'){ familyArchiveUI.tagId=''; familyArchiveUI.faceDraft=[]; renderView(); }
+  else if(a==='faceplace'){ const id=$('#facePersonSelect')?.value||''; if(!id){toast('ابتدا شخص را انتخاب کنید.');return;} const r=el.getBoundingClientRect(),x=Math.max(0,Math.min(100,(ev.clientX-r.left)/r.width*100)),y=Math.max(0,Math.min(100,(ev.clientY-r.top)/r.height*100)); familyArchiveUI.faceDraft=[...(familyArchiveUI.faceDraft||[]),{person_id:id,x:+x.toFixed(2),y:+y.toFixed(2)}]; renderView(); }
+  else if(a==='faceremove'){ const i=Number(el.dataset.index); familyArchiveUI.faceDraft=(familyArchiveUI.faceDraft||[]).filter((_,n)=>n!==i); renderView(); }
+  else if(a==='facesave'){ const post=(S.familyPosts||[]).find(x=>x.id===el.dataset.id); if(!post||!S.isAdmin)return; const meta=familyMeta(post),tags=familyArchiveUI.faceDraft||[],ids=[...new Set([...familyLinkedPersonIds(meta),...tags.map(t=>t.person_id).filter(id=>S.people[id])])]; meta.face_tags=tags;meta.person_ids=ids;meta.person_id=ids[0]||'';meta.person_name=ids.map(id=>full(S.people[id])).join('، '); await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(post.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta)})}); familyArchiveUI.tagId='';familyArchiveUI.faceDraft=[];await loadFamilyPosts();familyArchiveUI.openId=post.id;renderView();toast('برچسب چهره‌ها ذخیره شد و عکس به پروندهٔ همهٔ افراد متصل شد.'); }
   else if(a==='familyopen'){ familyArchiveUI.openId=el.dataset.id; renderView(); }
   else if(a==='familyclose'){ familyArchiveUI.openId=''; renderView(); }
   else if(a==='familystay'){ return; }
