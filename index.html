@@ -3462,8 +3462,8 @@ function renderView(){
   if(S.tab==='map'){if($('#familyPlacesMap'))initFamilyPlacesMap();if($('#kinMap'))initKinMap();}
   if(S.tab==='tree'){
    if(S.mode==='art') renderArt();
-   else if(S.mode==='chart'){const b=$('#chartBox');if(b){b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2;b.scrollTop=0;}}
-   else {const b=$('.outline');if(b){b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2;b.scrollTop=0;}}
+   else if(S.mode==='chart'){const b=$('#chartBox');if(b){b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2;b.scrollTop=0;requestAnimationFrame(()=>{if(b.isConnected)b.scrollTop=0;});}}
+   else {const b=$('.outline');if(b){b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2;b.scrollTop=0;requestAnimationFrame(()=>{if(b.isConnected)b.scrollTop=0;});}}
  } 
 }
 let rq=0;
@@ -3476,9 +3476,10 @@ function mainFamilyRootId(){
 }
 function gotoTab(t){
  if(t==='tree'||t==='relations'){
+   S.T=null;
    const root=mainFamilyRootId();
    if(root)S.treePerson=root;
-   if(t==='tree')S.focus=null;
+   if(t==='tree'){S.focus=null;S.q='';}
  }
  S.tab=t; S.code=null; closeModal(); renderNav(); renderView(); window.scrollTo(0,0);
 }
