@@ -2726,7 +2726,7 @@ async function onPhotoPicked(file){
 
 /* ================= render ================= */
 const LOGO='<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 36V20M20 20C20 13 10 14 10 6M20 20C20 13 30 14 30 6M20 27C20 23 14 23 14 18M20 27C20 23 26 23 26 18"/><circle cx="10" cy="6" r="2.2" fill="var(--accent)" stroke="none"/><circle cx="30" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>';
-const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['family','ثبت در موزه'],['book','کتابچهٔ ریشه‌ها'],['tools','ابزارها']];
+const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['family','ثبت در موزه'],['book','کتابچهٔ ریشه‌ها']];
 
 function loginCandidates(first,last){
   const f=nn(first).replace(/\s/g,''), l=famKey(last); if(!f||!l) return [];
