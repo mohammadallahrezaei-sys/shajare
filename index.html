@@ -3565,10 +3565,12 @@ function drawArt(T,imgs){
     kids.forEach((k,ki)=>{
       const kx=k.cx,ky=cyOf(k);
       // شاخه از بالای والد (پشت مدالیون) رشد می‌کند و با مماس شعاعی به فرزند می‌رسد؛ مثل دوشاخه‌شدن واقعی، نه خط راهنما.
-      const x1=px,y1=py-R*.3,x4=kx,y4=ky+R*.5;
-      const len=Math.hypot(x4-x1,y4-y1), h=Math.max(30,len*.42);
+      // اتصال شاخه از لبهٔ مدالیون والد تا لبهٔ مدالیون فرزند؛ مسیر زیر کارت‌ها پنهان نمی‌ماند.
+      const dx=kx-px,dy=ky-py,dist=Math.max(1,Math.hypot(dx,dy)),ux=dx/dist,uy=dy/dist;
+      const x1=px+ux*(R+7),y1=py+uy*(R+7),x4=kx-ux*(R+7),y4=ky-uy*(R+7);
+      const len=Math.hypot(x4-x1,y4-y1),h=Math.max(30,len*.42);
       const dkx=Math.sin(k.th),dky=-Math.cos(k.th);
-      const x2=x1+dpx*h,y2=y1+dpy*h,x3=x4-dkx*h*.6,y3=y4-dky*h*.6+ (y4-y1<0?0:0);
+      const x2=x1+dpx*h,y2=y1+dpy*h,x3=x4-dkx*h*.6,y3=y4-dky*h*.6;
       const width=Math.max(4.5,Math.min(23,3.8+Math.sqrt(k.size||1)*2.35));
       const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);};
       strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
