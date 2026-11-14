@@ -1398,7 +1398,7 @@ function persistentAuditHTML(){
 
 function viewRelations(){
  const root=mainFamilyRootId();if(root&&!S.treePerson)S.treePerson=root;
- return `<div class="stack"><section class="card"><span class="home-kicker">نمایش‌های گوناگون یک نمودار</span><h2>نمودار بادبزنی خانواده</h2><p class="muted small">این بخش یک نمودار واحد دارد؛ با انتخاب فیلترهای زیر، همان نمودار را به شکل نیاکان، نوادگان، ساعت‌شنی یا روابط نزدیک ببینید. فرد انتخاب‌شده در همه حالت‌ها مرکز بررسی است.</p></section>${treeAdvancedHTML()}</div>`;
+ return `<div class="stack"><section class="card"><span class="home-kicker">نمایش‌های گوناگون یک نمودار</span><h2>نمودار بادبزنی خانواده</h2><p class="muted small">این بخش یک نمودار واحد دارد؛ با انتخاب فیلترهای زیر، همان نمودار را به شکل نیاکان، نوادگان، ساعت‌شنی یا روابط نزدیک ببینید. فرد انتخاب‌شده در همه حالت‌ها مرکز بررسی است.</p></section>${treeAdvancedHTML()}${relCardHTML()}</div>`;
 }
 function viewTimeline(){return `<div class="stack"><section class="card"><span class="home-kicker">تاریخ خانواده</span><h2>خط زمانی رویدادهای خانوادگی</h2><p class="muted small">تولد، درگذشت، ازدواج و خاطرات دارای تاریخ در یک نمای مستقل گردآوری شده‌اند.</p></section>${familyTimelineHTML()}</div>`;}
 function viewMap(){return `<div class="stack"><section class="card"><span class="home-kicker">جغرافیای خانواده</span><h2>نقشه‌های خانوادگی و تاریخی</h2><p class="muted small">نقشه پراکندگی محل‌های تولد و سکونت، و نقشه مسیر زندگی و لایه‌های تاریخی در این بخش قرار دارند.</p></section>${familyPlacesMapHTML()}${kinMapHTML()}</div>`;}
