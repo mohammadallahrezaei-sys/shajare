@@ -3483,7 +3483,8 @@ function drawArt(T,imgs){
   const BH=branchHeads(T.roots), headSet=new Set(BH.list);
   const trunkWalk=n=>{if(headSet.has(n))return;n.ci=-1;n.kids.forEach(trunkWalk);};
   T.roots.forEach(trunkWalk);
-  BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>{q.off=Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10));});bi++;});
+  const setOff=(n,off)=>{n.off=off;n.kids.forEach(q=>setOff(q,off));};
+  BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>setOff(q,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
   const bcol=n=>n.ci<0?'#76543a':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
   // چیدمان بادبزنی (تاج درخت): ریشه پایین‌وسط است و هر نسل روی یک کمانِ بالاترِ هم‌مرکز قرار می‌گیرد؛ پهنا به جای یک ردیف افقیِ بسیار بلند، میان کمان‌ها و ارتفاع پخش می‌شود.
   const NB_T=-46, NB_B=112, PADX=13, RING=190, GAPX=16;
