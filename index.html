@@ -859,7 +859,13 @@ label.f>span,div.f>span{font-weight:600}
 .kin-rel-center>.kin-node{background:color-mix(in srgb,var(--primary) 8%,var(--surface2));border-color:var(--primary)}
 .kin-rel-note{max-width:760px;text-align:center;margin:4px auto}
 </style>
-<style id="mouse-drag-pan-fix">#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track{cursor:grab}#artBox.is-mouse-panning,#chartBox.is-mouse-panning,.outline.is-mouse-panning,.kin-graph-scroll.is-mouse-panning,.kin-fan-wrap.is-mouse-panning,.family-map-box.is-mouse-panning,.timeline-track.is-mouse-panning{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important} .is-mouse-panning *{user-select:none!important;-webkit-user-select:none!important}</style></head>
+<style id="mouse-drag-pan-fix">
+#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap{scrollbar-width:none!important;-ms-overflow-style:none!important;cursor:grab!important;touch-action:none;overscroll-behavior:contain}
+#artBox::-webkit-scrollbar,#chartBox::-webkit-scrollbar,.outline::-webkit-scrollbar,.kin-graph-scroll::-webkit-scrollbar,.kin-fan-wrap::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+#artBox.diagram-mouse-dragging,#chartBox.diagram-mouse-dragging,.outline.diagram-mouse-dragging,.kin-graph-scroll.diagram-mouse-dragging,.kin-fan-wrap.diagram-mouse-dragging{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.diagram-mouse-dragging *{user-select:none!important;-webkit-user-select:none!important}
+.diagram-mouse-dragging img,.diagram-mouse-dragging canvas,.diagram-mouse-dragging svg{-webkit-user-drag:none;user-drag:none}
+</style></head>
 <body>
 <div class="wrap" id="root"></div>
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
@@ -3415,9 +3421,7 @@ async function makeArt(){
   await Promise.all(Object.entries(T.P).map(async([id,p])=>{ if(p.photo) imgs[id]=await loadImg(p.photo); }));
   return drawArt(T,imgs);
 }
-let PAN=null;
-document.addEventListener('mousemove',e=>{ if(!PAN) return; const dx=e.clientX-PAN.x, dy=e.clientY-PAN.y; if(Math.abs(dx)+Math.abs(dy)>5) PAN.m=true; if(PAN.m){ PAN.box.scrollLeft=PAN.l-dx; PAN.box.scrollTop=PAN.t-dy; } });
-document.addEventListener('mouseup',()=>{ if(PAN&&PAN.m) PAN.cv.__noclick=true; PAN=null; });
+// Central pointer controller handles all diagram panning.
 async function renderArt(){
   const box=$('#artBox'); if(!box) return; const tok=++S.artTok;
   let cv; try{ cv=await makeArt(); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
@@ -3428,7 +3432,7 @@ async function renderArt(){
   box.innerHTML=''; box.appendChild(cv);
   const hitAt=e=>{ const r=cv.getBoundingClientRect(); if(!r.width) return null; const x=(e.clientX-r.left)/r.width*cv.__W, y=(e.clientY-r.top)/r.height*cv.__H; const hs=cv.__hits||[]; for(let i=hs.length-1;i>=0;i--){ const h=hs[i]; if(x>=h.x1&&x<=h.x2&&y>=h.y1&&y<=h.y2) return h; } return null; };
   cv.addEventListener('click',e=>{ if(cv.__noclick){ cv.__noclick=false; return; } const h=hitAt(e); if(h) openModal(h.id); });
-  cv.addEventListener('mousedown',e=>{ cv.__noclick=false; PAN={x:e.clientX,y:e.clientY,l:box.scrollLeft,t:box.scrollTop,m:false,box,cv}; });
+  cv.addEventListener('mousedown',()=>{cv.__noclick=false;});
   cv.addEventListener('mousemove',e=>{ cv.style.cursor=hitAt(e)?'pointer':'default'; });
   const placeRoot=()=>{
     if(!box.isConnected||!cv.isConnected)return;
@@ -4347,51 +4351,26 @@ boot();
 </style>
 <script id="mouse-drag-pan-fix">
 (()=>{
- const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track';
- let drag=null,suppressClick=false,clearClickTimer=0;
- const findViewport=target=>{
-  const candidates=[];
-  let n=target;
-  while(n&&n!==document.body){
-   if(n.matches&&n.matches(selector))candidates.push(n);
-   n=n.parentElement;
-  }
-  return candidates.find(el=>el.scrollWidth>el.clientWidth+2||el.scrollHeight>el.clientHeight+2)||candidates[0]||null;
- };
+ const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap';
+ let drag=null,suppressClickUntil=0;
+ const findSurface=target=>{let n=target;while(n&&n!==document.body){if(n.matches&&n.matches(selector))return n;n=n.parentElement;}return null;};
  document.addEventListener('pointerdown',e=>{
-  if(e.pointerType!=='mouse'||e.button!==0||e.target.closest('button,a,input,select,textarea,[contenteditable="true"],.leaflet-container'))return;
-  const el=findViewport(e.target);
-  if(!el)return;
-  drag={el,x:e.clientX,y:e.clientY,left:el.scrollLeft,top:el.scrollTop,moved:false};
+  if(e.pointerType!=='mouse'||e.button!==0||e.target.closest('button,a,input,select,textarea,[contenteditable="true"]'))return;
+  const surface=findSurface(e.target);if(!surface)return;
+  drag={surface,id:e.pointerId,x:e.clientX,y:e.clientY,left:surface.scrollLeft,top:surface.scrollTop,moved:false};
+  try{surface.setPointerCapture(e.pointerId);}catch(_){}
  },true);
  document.addEventListener('pointermove',e=>{
-  if(!drag)return;
+  if(!drag||e.pointerId!==drag.id)return;
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
-  if(!drag.moved&&Math.hypot(dx,dy)<4)return;
-  if(!drag.moved){drag.moved=true;drag.el.classList.add('mouse-pan-active');}
-  drag.el.scrollLeft=drag.left-dx;
-  drag.el.scrollTop=drag.top-dy;
-  e.preventDefault();
+  if(!drag.moved&&Math.hypot(dx,dy)<3)return;
+  drag.moved=true;drag.surface.classList.add('diagram-mouse-dragging');
+  drag.surface.scrollLeft=drag.left-dx;drag.surface.scrollTop=drag.top-dy;e.preventDefault();
  },{capture:true,passive:false});
- const finish=()=>{
-  if(!drag)return;
-  const el=drag.el;
-  if(drag.moved){
-   suppressClick=true;
-   clearTimeout(clearClickTimer);
-   clearClickTimer=setTimeout(()=>{suppressClick=false;},500);
-  }
-  el.classList.remove('mouse-pan-active');
-  drag=null;
- };
- document.addEventListener('pointerup',finish,true);
- document.addEventListener('pointercancel',finish,true);
- document.addEventListener('click',e=>{
-  if(!suppressClick)return;
-  suppressClick=false;clearTimeout(clearClickTimer);
-  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
- },true);
- window.addEventListener('blur',finish);
-})();
+ const finish=e=>{if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;d.surface.classList.remove('diagram-mouse-dragging');if(d.moved)suppressClickUntil=Date.now()+400;};
+ document.addEventListener('pointerup',finish,true);document.addEventListener('pointercancel',finish,true);
+ document.addEventListener('click',e=>{if(Date.now()>=suppressClickUntil)return;suppressClickUntil=0;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();},true);
+ window.addEventListener('blur',()=>{if(drag){drag.surface.classList.remove('diagram-mouse-dragging');drag=null;}});
+})();;
 </script></body>
 </html>
