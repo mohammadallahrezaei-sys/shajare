@@ -1404,7 +1404,7 @@ async function initKinMap(){
   if(!window.L){if(!window.__familyLeafletPromise)window.__familyLeafletPromise=new Promise((resolve,reject)=>{if(!document.querySelector('link[data-family-leaflet]')){const l=document.createElement('link');l.rel='stylesheet';l.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';l.dataset.familyLeaflet='1';document.head.appendChild(l);}const sc=document.createElement('script');sc.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc);});await window.__familyLeafletPromise;}
   if(!$('#kinMap'))return;
   if(kinMapInstance){try{kinMapInstance.remove();}catch(e){}}kinMapOverlays=[];kinMapMarkers=[];kinMapRoute=null;
-  if(!Array.isArray(S.kinMapImages)){try{S.kinMapImages=JSON.parse(lsGet('shj_kin_map_images_v1')||'[]')||[];}catch(e){S.kinMapImages=[];}}
+  if(!Array.isArray(S.kinMapImages)||!S.kinMapImages.length){try{const saved=JSON.parse(lsGet('shj_kin_map_images_v1')||'[]')||[];if(saved.length)S.kinMapImages=saved;else if(!Array.isArray(S.kinMapImages))S.kinMapImages=[];}catch(e){S.kinMapImages=[];}}
   const map=L.map('kinMap',{scrollWheelZoom:false}).setView([35.57,47.57],9);kinMapInstance=map;
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
   const P=EP(),p=P[S.kinMapPerson||''];if(!p){applyKinMapOverlay();status('یک فرد را انتخاب کنید تا مسیر زندگی او نمایش داده شود؛ نقشه تاریخی را می‌توانید مستقل از فرد نیز مشاهده کنید.');setTimeout(()=>map.invalidateSize(),120);return;}
@@ -1431,7 +1431,7 @@ async function initKinMap(){
 }
 function applyKinMapOverlay(){
  if(!kinMapInstance)return;
- if(!Array.isArray(S.kinMapImages)){try{S.kinMapImages=JSON.parse(lsGet('shj_kin_map_images_v1')||'[]')||[];}catch(e){S.kinMapImages=[];}}
+ if(!Array.isArray(S.kinMapImages)||!S.kinMapImages.length){try{const saved=JSON.parse(lsGet('shj_kin_map_images_v1')||'[]')||[];if(saved.length)S.kinMapImages=saved;else if(!Array.isArray(S.kinMapImages))S.kinMapImages=[];}catch(e){S.kinMapImages=[];}}
  kinMapOverlays.forEach(x=>{try{kinMapInstance.removeLayer(x);}catch(e){}});kinMapOverlays=[];
  const y=+(S.kinMapYear||1400);
  (S.kinMapImages||[]).filter(o=>y>=o.from&&y<=o.to).forEach(o=>{const layer=L.imageOverlay(o.url,[[o.south,o.west],[o.north,o.east]],{opacity:.62,interactive:false}).addTo(kinMapInstance);kinMapOverlays.push(layer);});
