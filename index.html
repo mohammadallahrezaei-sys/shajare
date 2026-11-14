@@ -3463,7 +3463,7 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=34, CW=172, MARGIN=110, TOP=158, SIBLING_GAP=92, ROOT_GAP=120;
+  const P=T.P, R=34, CW=134, MARGIN=90, TOP=158, SIBLING_GAP=92, ROOT_GAP=120;
   // عمق بیشتر خانواده، فاصله عمودی نسل‌ها را به‌صورت پویا فشرده می‌کند.
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   const GAP=Math.max(160,Math.min(250,1700/(maxD+1)));
@@ -3488,27 +3488,41 @@ function drawArt(T,imgs){
   const bcol=n=>n.ci<0?'#76543a':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
   // چیدمان بادبزنی (تاج درخت): ریشه پایین‌وسط است و هر نسل روی یک کمانِ بالاترِ هم‌مرکز قرار می‌گیرد؛ پهنا به جای یک ردیف افقیِ بسیار بلند، میان کمان‌ها و ارتفاع پخش می‌شود.
   // چیدمان نسل‌به‌نسل: هر نسل یک ردیف افقی است و هر خانواده بازهٔ افقی اختصاصی دارد؛ پس کارت‌ها و شاخه‌ها هرگز روی هم نمی‌افتند.
-  const NB_T=-46, NB_B=112, ROW=340, ZZ=178, SIB=40, RUNW=118;
+  const NB_T=-46, NB_B=112, ROW=590, ZZ=196, SIB=26, RUNW=84;
   const markLeaves=n=>{
-    n.cw=(1+n.spouses.length)*CW; n.zz=0;
-    let run=[]; const flush=()=>{ if(run.length>=3) run.forEach((k,i)=>{k.zz=i%2?1:0;k.inRun=true;}); run=[]; };
+    n.cw=(1+n.spouses.length)*CW; if(n.zz==null)n.zz=0;
+    let run=[]; const flush=()=>{ if(run.length>=3){ const rows=run.length>=5?3:2; run.forEach((k,i)=>{k.zz=i%rows;k.inRun=true;}); } run=[]; };
     n.kids.forEach(k=>{ if(!k.kids.length&&!k.spouses.length) run.push(k); else flush(); });
     flush(); n.kids.forEach(markLeaves);
   };
   T.roots.forEach(markLeaves);
   T.roots.forEach(markLeaves);
-  const sg=(a,b)=>(a.inRun&&b.inRun)?0:SIB;
-  const kidsW=n=>n.kids.reduce((s,k,i)=>s+k.wt+(i?sg(n.kids[i-1],k):0),0);
-  const wOf=n=>{ n.kids.forEach(wOf); n.wt=n.kids.length?Math.max(n.cw+28,kidsW(n)):(n.inRun?RUNW:n.cw+28); return n.wt; };
-  T.roots.forEach(wOf);
-  const rootsW=T.roots.reduce((a,r)=>a+r.wt,0)+ROOT_GAP*Math.max(0,T.roots.length-1);
-  const alloc=(n,u0)=>{
-    let u=u0+(n.wt-kidsW(n))/2;
-    n.kids.forEach((k,i)=>{ if(i) u+=sg(n.kids[i-1],k); k.par=n; alloc(k,u); u+=k.wt; });
-    n.u=u0+n.wt/2;
+  // بسته‌بندی سطحی: هر زیرشاخه فقط تا جایی از همسایه فاصله می‌گیرد که در همان ردیف (و ستون شاخه) برخورد نکند.
+  const LV=n=>n.depth*4+((n.inRun&&n.zz)?n.zz:0), HW=n=>n.cw/2+7, THIN=15;
+  const layout=n=>{
+    n.kids.forEach(layout);
+    const placed=new Map(), offs=[];
+    n.kids.forEach((k,i)=>{
+      let off=-1e9;
+      if(i===0) off=0;
+      else{
+        k.con.forEach((v,lv)=>{ const p=placed.get(lv); if(p) off=Math.max(off,p[1]-v[0]); });
+        off=Math.max(off,offs[i-1]+60);
+      }
+      offs.push(off);
+      k.con.forEach((v,lv)=>{ const q=placed.get(lv); placed.set(lv,[Math.min(q?q[0]:1e9,v[0]+off),Math.max(q?q[1]:-1e9,v[1]+off)]); });
+    });
+    const c=n.kids.length?(offs[0]+offs[offs.length-1])/2:0;
+    n.kidOff=offs.map(o=>o-c);
+    n.con=new Map(); n.con.set(LV(n),[-HW(n),HW(n)]);
+    placed.forEach((v,lv)=>{ const e=n.con.get(lv); n.con.set(lv,[Math.min(e?e[0]:1e9,v[0]-c),Math.max(e?e[1]:-1e9,v[1]-c)]); });
+    if(n.inRun&&n.zz) for(let q=0;q<n.zz;q++){ const lv=n.depth*4+q, e=n.con.get(lv); n.con.set(lv,[Math.min(e?e[0]:1e9,-THIN),Math.max(e?e[1]:-1e9,THIN)]); }
   };
-  {let u=0; T.roots.forEach((r,i)=>{alloc(r,u);u+=r.wt+(i<T.roots.length-1?ROOT_GAP:0);});}
-  T.nodes.forEach(n=>{ n.th=0; n.r=0; n.x=rootsW/2-n.u; n.y=-(n.depth-1)*ROW-((n.inRun&&n.zz)?ZZ:0); });
+  const V0={kids:T.roots,depth:0,cw:0,spouses:[],inRun:false,zz:0};
+  layout(V0);
+  const place=(n,x)=>{ n.xr=x; n.kids.forEach((k,i)=>place(k,x+n.kidOff[i])); };
+  place(V0,0);
+  T.nodes.forEach(n=>{ n.th=0; n.r=0; n.x=-n.xr; n.y=-(n.depth-1)*ROW-((n.inRun&&n.zz)?n.zz*ZZ:0); });
   let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
   T.nodes.forEach(n=>{minX=Math.min(minX,n.x-n.cw/2);maxX=Math.max(maxX,n.x+n.cw/2);minY=Math.min(minY,n.y+NB_T);maxY=Math.max(maxY,n.y+NB_B);});
   const content=maxX-minX;
@@ -3536,7 +3550,7 @@ function drawArt(T,imgs){
   const soil=c.createLinearGradient(0,groundY-12,0,H);soil.addColorStop(0,'rgba(145,125,83,.02)');soil.addColorStop(1,'rgba(145,125,83,.16)');c.fillStyle=soil;c.fillRect(0,groundY-12,W,H-groundY+12);
   c.strokeStyle='rgba(126,105,69,.30)';c.lineWidth=2;c.beginPath();c.moveTo(55,groundY+3);c.bezierCurveTo(W*.28,groundY-9,W*.72,groundY+12,W-55,groundY+1);c.stroke();
   // Natural curved branches: warm wood with a fine highlight and restrained lineage tint.
-  const branchPaths=[];
+  const branchPaths=[], brLines=[];
   const bez=(t,a,b,d,e)=>{const u=1-t;return u*u*u*a+3*u*u*t*b+3*u*t*t*d+t*t*t*e;};
   // Natural fork: a parent stem and a shared soft crossbar, with separate curved child limbs.
   const strokeWood=(draw,color,width)=>{
@@ -3559,6 +3573,7 @@ function drawArt(T,imgs){
       const width=Math.max(4.5,Math.min(21,3.8+Math.sqrt(k.size||1)*2.1));
       const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x1,y1-h,x4,yb+h,x4,yb);c.lineTo(x4,y4);};
       strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2:x1,y2:y1-h,x3:x4,y3:yb+h,x4,y4:yb,width});
+      {const pts=[];for(let q=0;q<=20;q++){const t=q/20;pts.push([bez(t,x1,x1,x4,x4),bez(t,y1,y1-h,yb+h,yb)]);}pts.push([x4,y4]);brLines.push({par:n.id,kid:k.id,w:width,pts});}
     });
     kids.forEach(branch);
   };
@@ -3685,7 +3700,7 @@ function drawArt(T,imgs){
   }
   // A barely-there outer keyline instead of the former heavy ornamental frame.
   c.strokeStyle='rgba(143,119,82,.26)';c.lineWidth=1.5;rr(22,22,W-44,H-44,22);c.stroke();
-  cv.__hits=hits;cv.__W=W;cv.__H=H;
+  cv.__hits=hits;cv.__br=brLines;cv.__W=W;cv.__H=H;
   return cv;
 }
 async function makeArt(){
