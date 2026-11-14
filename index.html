@@ -1125,10 +1125,10 @@ async function initFamilyPlacesMap(){
  const places={};
  Object.values(S.people||{}).forEach(p=>{
    if(p.virtual)return;
-   [['birthPlace','تولد'],['residence','سکونت'],['place','سایر']].forEach(([field,label])=>{
+   [['birthPlace','born'],['residence','lived'],['place','other']].forEach(([field,type])=>{
      const name=tidy(String(p[field]||''));if(!name)return;
-     const key=norm(name);if(!places[key])places[key]={name,born:0,lived:0,other:0,coords:known[name]||null};
-     if(field==='birthPlace')places[key].born++;else if(field==='residence')places[key].lived++;else places[key].other++;
+     const key=norm(name);if(!places[key])places[key]={name,born:[],lived:[],other:[],coords:known[name]||null};
+     places[key][type].push(full(p)||'نام ثبت نشده');
      if(!places[key].coords){const k=Object.keys(known).find(x=>norm(x)===key);if(k)places[key].coords=known[k];}
    });
  });
@@ -1160,13 +1160,14 @@ async function initFamilyPlacesMap(){
        await new Promise(resolve=>setTimeout(resolve,1100));
      }
      if(ll&&Number.isFinite(ll[0])&&Number.isFinite(ll[1])){
-       const total=p.born+p.lived+p.other;
+       const total=p.born.length+p.lived.length+p.other.length;
        const radius=n=>Math.max(7,Math.min(17,6+Math.sqrt(n)*2));
-       const popup='<b>'+esc(p.name)+'</b><br>تولد: '+fa(p.born)+'<br>سکونت: '+fa(p.lived)+(p.other?'<br>سایر: '+fa(p.other):'')+'<br>مجموع ثبت‌ها: '+fa(total);
-       // برای دیده‌شدن هر دو دسته در یک محل، نشانگرها اندکی در دو سوی مختصات قرار می‌گیرند.
-       if(p.born){const m=L.circleMarker([ll[0],ll[1]-0.00045],{radius:radius(p.born),color:'#fff',weight:2,fillColor:'#d97706',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · محل تولد</b><br>تعداد: '+fa(p.born)+'<hr>'+popup);}
-       if(p.lived){const m=L.circleMarker([ll[0],ll[1]+0.00045],{radius:radius(p.lived),color:'#fff',weight:2,fillColor:'#2563eb',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · محل سکونت</b><br>تعداد: '+fa(p.lived)+'<hr>'+popup);}
-       if(p.other){const m=L.circleMarker([ll[0]+0.00055,ll[1]],{radius:radius(p.other),color:'#fff',weight:2,fillColor:'#64748b',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · سایر محل‌ها</b><br>تعداد: '+fa(p.other)+'<hr>'+popup);}
+       const namesHTML=(arr)=>arr.length?'<div style="max-height:180px;overflow:auto;margin-top:6px"><ol style="margin:4px 18px 4px 0;padding:0">'+arr.slice().sort((a,b)=>a.localeCompare(b,'fa')).map(n=>'<li style="padding:2px 0">'+esc(n)+'</li>').join('')+'</ol></div>':'<span>موردی ثبت نشده</span>';
+       const summary='<hr><b>'+esc(p.name)+'</b><br>تولد: '+fa(p.born.length)+' نفر<br>سکونت: '+fa(p.lived.length)+' نفر'+(p.other.length?'<br>سایر: '+fa(p.other.length)+' نفر':'')+'<br>مجموع ثبت‌ها: '+fa(total);
+       // با کلیک روی هر نشانگر، فهرست نام‌های همان دسته نمایش داده می‌شود.
+       if(p.born.length){const m=L.circleMarker([ll[0],ll[1]-0.00045],{radius:radius(p.born.length),color:'#fff',weight:2,fillColor:'#d97706',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · محل تولد</b><br>تعداد: '+fa(p.born.length)+namesHTML(p.born)+summary,{maxWidth:300});}
+       if(p.lived.length){const m=L.circleMarker([ll[0],ll[1]+0.00045],{radius:radius(p.lived.length),color:'#fff',weight:2,fillColor:'#2563eb',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · محل سکونت</b><br>تعداد: '+fa(p.lived.length)+namesHTML(p.lived)+summary,{maxWidth:300});}
+       if(p.other.length){const m=L.circleMarker([ll[0]+0.00055,ll[1]],{radius:radius(p.other.length),color:'#fff',weight:2,fillColor:'#64748b',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · سایر محل‌ها</b><br>تعداد: '+fa(p.other.length)+namesHTML(p.other)+summary,{maxWidth:300});}
        points.push(ll);
      }else failed++;
      done++;setStatus('تعیین موقعیت محل‌ها: '+fa(done)+' از '+fa(rows.length));
