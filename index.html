@@ -772,7 +772,16 @@ label.f>span,div.f>span{font-weight:600}
 .marriage-photo-card b{overflow-wrap:anywhere}
 @media(max-width:600px){.marriage-photo-view{padding:24px 12px 16px}.marriage-photo-grid{grid-template-columns:1fr;gap:20px}.marriage-photo-card img{height:min(52vh,420px)}}
 </style>
-<style id="timeline-person-event-cards">
+<style id="timeline-related-event-navigation">
+.tl-event-card{border-top:1px solid var(--line);padding:0 8px 9px;scroll-margin:90px}
+.tl-event-card .tl-row{border-top:0;padding:10px 0 7px}
+.tl-related{display:flex;flex-wrap:wrap;gap:6px;padding:0 0 2px 30px}
+.tl-jump{border:1px solid color-mix(in srgb,var(--primary) 28%,var(--line));background:color-mix(in srgb,var(--primary) 7%,var(--surface));color:var(--primary);border-radius:999px;padding:5px 10px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.tl-jump:hover{background:color-mix(in srgb,var(--primary) 15%,var(--surface));border-color:var(--primary)}
+.tl-event-highlight{animation:tlEventPulse 2s ease}
+@keyframes tlEventPulse{0%,100%{background:transparent}25%,65%{background:color-mix(in srgb,var(--accent) 20%,var(--surface))}}
+@media(max-width:480px){.tl-related{padding-right:0;padding-left:0}.tl-jump{font-size:10px;padding:5px 8px}}
+</style><style id="timeline-person-event-cards">
 /* رویدادهای خط زمانی: پرتره‌های واقعی اعضای خانواده */
 .tl-row{grid-template-columns:88px 22px minmax(0,1fr);align-items:start}
 .tl-txt{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
@@ -1920,6 +1929,20 @@ function familyTimelineHTML(){
  const eventKinds={birth:{icon:'✦',name:'تولد'},marriage:{icon:'♥',name:'ازدواج'},death:{icon:'🕊️',name:'درگذشت'},memory:{icon:'▤',name:'خاطره و رویداد'},photo:{icon:'▧',name:'عکس تاریخی'}};
  const eventKind=e=>eventKinds[e.type]||eventKinds.memory;
  const tlDate=e=>e.dateText?esc(e.dateText):e.m?(e.d?fa(e.d)+' ':'')+MONTHS[e.m-1]+' '+fa(e.y):fa(e.y);
+ shown.forEach((e,i)=>e._tlid='tl-event-'+i);
+ const relatedButtons=e=>{
+  const people=new Set(e.type==='birth'?[...(e.people||[]),e.id].filter(Boolean):e.type==='marriage'?(e.people||[]):e.type==='photo'?(e.people||[]):[e.id].filter(Boolean));
+  const links=[];
+  people.forEach(pid=>{
+   const p=P[pid];if(!p)return;
+   const death=shown.find(x=>x.type==='death'&&x.id===pid);
+   if(death&&death!==e)links.push({id:death._tlid,label:'درگذشت '+(p.first||full(p))});
+   shown.filter(x=>x.type==='marriage'&&(x.people||[]).includes(pid)&&x!==e).forEach(x=>{const other=(x.people||[]).find(z=>z!==pid);links.push({id:x._tlid,label:'ازدواج'+(other&&P[other]?' با '+(P[other].first||full(P[other])):'')});});
+   shown.filter(x=>x.type==='birth'&&x.id!==pid&&((x.people||[]).includes(pid))&&x!==e).forEach(x=>{const child=P[x.id];links.push({id:x._tlid,label:'فرزند '+(child?(child.first||full(child)):'')});});
+  });
+  const unique=[...new Map(links.map(x=>[x.id,x])).values()];
+  return unique.length?'<span class="tl-related" aria-label="رویدادهای مرتبط">'+unique.map(x=>'<button type="button" class="tl-jump" data-act="timelinejump" data-target="'+x.id+'">'+esc(x.label)+'</button>').join('')+'</span>':'';
+ };
  const tlGroups={};shown.forEach(e=>{const dc=Math.floor(e.y/10)*10;(tlGroups[dc]=tlGroups[dc]||[]).push(e);});
  const tlOpen=events.length<=80;
  const tlHTML=Object.keys(tlGroups).sort((a,b)=>a-b).map(dc=>{const g=tlGroups[dc],cnt=t=>g.filter(e=>e.type===t).length;
@@ -1944,7 +1967,7 @@ function familyTimelineHTML(){
    const linkedNames=isPhoto?(e.people||[]).map(i=>P[i]?full(P[i]):'').filter(Boolean).join('، '):'';
    const media=isPhoto&&e.mediaUrl?'<img class="tl-photo-thumb" src="'+esc(e.mediaUrl)+'" alt="'+esc(e.desc)+'" loading="lazy">':'';
    const photoPeople=isPhoto&&linkedNames?'<small class="tl-photo-people">افراد مرتبط: '+esc(linkedNames)+'</small>':'';
-   return '<button type="button" class="tl-row tl-row--'+(e.type||'memory')+'" data-act="'+action+'" data-id="'+esc(target||'')+'"'+(isMarriage?' data-ids="'+esc((e.people||[]).join(','))+'"':'')+'><span class="tl-date">'+tlDate(e)+'</span><span class="tl-ic" aria-hidden="true">'+eventKind(e).icon+'</span><span class="tl-txt">'+(peopleVisual?peopleVisual:'')+(isPhoto?'<span class="tl-photo-content">'+media+'<span>':'')+'<b>'+esc(e.desc)+'</b>'+(e.loc?'<small class="muted">'+esc(e.loc)+'</small>':'')+(photoPeople?photoPeople:'')+(age?'<small class="muted">'+age+'</small>':'')+(isPhoto?'</span></span>':'')+'</span></button>';}).join('')+'</div></details>';}).join('');
+   return '<div class="tl-event-card" id="'+e._tlid+'"><button type="button" class="tl-row tl-row--'+(e.type||'memory')+'" data-act="'+action+'" data-id="'+esc(target||'')+'"'+(isMarriage?' data-ids="'+esc((e.people||[]).join(','))+'"':'')+'><span class="tl-date">'+tlDate(e)+'</span><span class="tl-ic" aria-hidden="true">'+eventKind(e).icon+'</span><span class="tl-txt">'+(peopleVisual?peopleVisual:'')+(isPhoto?'<span class="tl-photo-content">'+media+'<span>':'')+'<b>'+esc(e.desc)+'</b>'+(e.loc?'<small class="muted">'+esc(e.loc)+'</small>':'')+(photoPeople?photoPeople:'')+(age?'<small class="muted">'+age+'</small>':'')+(isPhoto?'</span></span>':'')+'</span></button>'+relatedButtons(e)+'</div>';}).join('')+'</div></details>';}).join('');
  return '<section class="card stack"><div class="row" style="justify-content:space-between"><h3>⏳ خط زمانی تاریخی خانواده</h3><span class="muted small">'+fa(events.length)+' رویداد</span></div><div class="timeline-filters"><label class="f"><span>فرد</span><select id="timelinePerson"><option value="">همه افراد</option>'+ids.slice().sort((a,b)=>full(P[a]).localeCompare(full(P[b]),'fa')).map(i=>'<option value="'+esc(i)+'" '+(selected===i?'selected':'')+'>'+esc(full(P[i]))+'</option>').join('')+'</select></label><label class="f"><span>دامنه</span><select id="timelineScope" '+(selected?'':'disabled')+'><option value="all" '+(scope==='all'?'selected':'')+'>همه خانواده</option><option value="person" '+(scope==='person'?'selected':'')+'>فقط همین فرد</option><option value="ancestors" '+(scope==='ancestors'?'selected':'')+'>نیاکان</option><option value="descendants" '+(scope==='descendants'?'selected':'')+'>نوادگان</option><option value="family" '+(scope==='family'?'selected':'')+'>شاخه خانوادگی</option></select>'+(selected?'':'<small class="muted">اول یک فرد را انتخاب کنید</small>')+'</label><label class="f"><span>محل</span><select id="timelinePlace"><option value="">همه مکان‌ها</option>'+locations.map(x=>'<option '+(place===x?'selected':'')+' value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label></div><div class="timeline-legend"><span class="timeline-legend--birth">✦ تولد</span><span class="timeline-legend--marriage">♥ ازدواج</span><span class="timeline-legend--death">🕊️ درگذشت</span><span class="timeline-legend--memory">▤ خاطره و رویداد</span><span class="timeline-legend--photo">▧ عکس تاریخی</span></div>'+(tlHTML||'<p class="muted">رویدادی برای نمایش نیست.</p>')+'<p class="muted small">بازه رویدادهای موجود: '+(events.length?fa(min)+' تا '+fa(max):'—')+'. رویدادها از تولد، درگذشت، تاریخ نشان و عقد و عروسی، خاطرات و عکس‌های آرشیوی تاریخ‌دار ساخته می‌شوند.'+(events.length>500?' <b>فقط '+fa(500)+' رویداد اول از '+fa(events.length)+' نمایش داده شد؛ با فیلتر فرد یا محل فهرست را محدودتر کنید.</b>':'')+'</p></section>';
 }
 function viewTree(){
@@ -4219,6 +4242,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='fanfocus'){ ev.preventDefault(); const id=el.dataset.id; if(!id||!EP()[id]||EP()[id].virtual){toast('برای این نام هنوز پرونده مستقل ثبت نشده است.');return;} S.treePerson=id; S.graphMode='fan'; renderView(); } 
   else if(a==='person'){ ev.preventDefault(); const r=$('#qres'); if(r) r.hidden=true; if(el.dataset.loc&&locatePerson(el.dataset.id)) return; openModal(el.dataset.id); }
   else if(a==='marriagephotos'){ ev.preventDefault(); openMarriagePhotos((el.dataset.ids||'').split(',').filter(Boolean)); }
+  else if(a==='timelinejump'){ev.preventDefault();const target=document.getElementById(el.dataset.target||'');if(!target){toast('رویداد مرتبط در فهرست فعلی نمایش داده نمی‌شود؛ فیلترها را بررسی کنید.');return;}let parent=target.parentElement;while(parent){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement;}target.scrollIntoView({behavior:'smooth',block:'center'});target.classList.remove('tl-event-highlight');void target.offsetWidth;target.classList.add('tl-event-highlight');setTimeout(()=>target.classList.remove('tl-event-highlight'),2200);}
   else if(a==='close') closeModal();
   else if(a==='pnext'){ if(S.pstep===1&&!step1Ok()) return; if(S.pstep===2&&!step2Ok()) return; setStep(Math.min(maxPersonStep(),(S.pstep||1)+1)); }
   else if(a==='spadd'){ const rows=[...document.querySelectorAll('#spouseWrap .sprow')], nx=rows.find(r=>r.hidden); if(nx) nx.hidden=false; if(!rows.some(r=>r.hidden)) el.hidden=true; }
