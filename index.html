@@ -865,6 +865,15 @@ label.f>span,div.f>span{font-weight:600}
 #artBox.diagram-mouse-dragging,#chartBox.diagram-mouse-dragging,.outline.diagram-mouse-dragging,.kin-graph-scroll.diagram-mouse-dragging,.kin-fan-wrap.diagram-mouse-dragging{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
 .diagram-mouse-dragging *{user-select:none!important;-webkit-user-select:none!important}
 .diagram-mouse-dragging img,.diagram-mouse-dragging canvas,.diagram-mouse-dragging svg{-webkit-user-drag:none;user-drag:none}
+</style><style id="force-physical-horizontal-pan">
+/* Normalize scroll coordinates so horizontal mouse dragging works in every browser. */
+#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap{
+ direction:ltr!important;
+ overflow-x:auto!important;
+ overflow-y:auto!important;
+}
+#chartBox>#zoomer,.outline>#zoomer,.kin-graph-scroll>.kin-graph{direction:rtl!important}
+.kin-fan-wrap svg{direction:rtl}
 </style></head>
 <body>
 <div class="wrap" id="root"></div>
@@ -3439,7 +3448,7 @@ async function renderArt(){
     const maxTop=Math.max(0,box.scrollHeight-box.clientHeight);
     const maxLeft=Math.max(0,box.scrollWidth-box.clientWidth);
     box.scrollTop=maxTop; // The oldest/root generation is drawn at the bottom.
-    box.scrollLeft=getComputedStyle(box).direction==='rtl'?-maxLeft/2:maxLeft/2;
+    box.scrollLeft=maxLeft/2;
   };
   requestAnimationFrame(()=>requestAnimationFrame(placeRoot));
 }
@@ -3650,16 +3659,16 @@ function positionGenealogyRoot(){
   if(S.tab==='tree'){
    if(S.mode==='art')return; // renderArt positions the illustrated root after the canvas is attached.
    const b=S.mode==='chart'?$('#chartBox'):$('.outline');
-   if(b){b.scrollTop=0;const max=Math.max(0,b.scrollWidth-b.clientWidth);b.scrollLeft=getComputedStyle(b).direction==='rtl'?-max/2:max/2;}
+   if(b){b.scrollTop=0;const max=Math.max(0,b.scrollWidth-b.clientWidth);b.scrollLeft=max/2;}
   }else if(S.tab==='relations'){
    const b=$('.kin-graph-scroll');if(!b)return;
    b.scrollTop=0;
    const fan=b.querySelector('.kin-fan-wrap');
    if(fan){
     const svg=fan.querySelector('svg');
-    if(svg){const max=Math.max(0,fan.scrollWidth-fan.clientWidth);fan.scrollLeft=getComputedStyle(fan).direction==='rtl'?-max/2:max/2;}
+    if(svg){const max=Math.max(0,fan.scrollWidth-fan.clientWidth);fan.scrollLeft=max/2;}
    }else{
-    const max=Math.max(0,b.scrollWidth-b.clientWidth);b.scrollLeft=getComputedStyle(b).direction==='rtl'?-max/2:max/2;
+    const max=Math.max(0,b.scrollWidth-b.clientWidth);b.scrollLeft=max/2;
    }
   }
  };
@@ -4127,9 +4136,8 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
  const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap';
  let drag=null,suppressClickUntil=0;
  const findSurface=target=>{let n=target;while(n&&n!==document.body){if(n.matches&&n.matches(selector))return n;n=n.parentElement;}return null;};
- const rtl=el=>getComputedStyle(el).direction==='rtl';
- const readX=el=>rtl(el)?-el.scrollLeft:el.scrollLeft;
- const writeX=(el,x)=>{el.scrollLeft=rtl(el)?-x:x;};
+ const readX=el=>el.scrollLeft;
+ const writeX=(el,x)=>{el.scrollLeft=x;};
  document.addEventListener('pointerdown',e=>{
   if(e.pointerType!=='mouse'||e.button!==0)return;
   if(e.target.closest('button,a,input,select,textarea,[contenteditable="true"],.leaflet-control'))return;
