@@ -702,6 +702,21 @@ label.f>span,div.f>span{font-weight:600}
 .kin-fan-wrap svg g[data-act="person"]:hover path{filter:brightness(.96);stroke:#334e9b;stroke-width:3}
 @media(max-width:650px){.kin-graph-scroll{padding:14px 10px}.kin-node{width:142px;flex-basis:142px}.kin-modebar .btn{padding:7px 10px;font-size:11px}.kin-fan-wrap{padding:8px}}
 </style>
+<style id="home-museum-and-nav-refresh">
+.nav{display:flex;flex-wrap:wrap;gap:7px;overflow:visible;padding-block:8px 14px}
+.nav button{flex:none}
+.nav-more-toggle,.nav-more-items{display:none!important}
+.home-museum-feature{width:100%;display:flex;align-items:center;gap:16px;text-align:right;padding:18px 22px;border:1px solid #cbd8c8;border-radius:19px;background:linear-gradient(110deg,#f1f7ed 0%,#fffdf5 58%,#f5f0df 100%);color:#294536;cursor:pointer;box-shadow:0 7px 22px #29453610;transition:transform .18s,box-shadow .18s,border-color .18s}
+.home-museum-feature:hover{transform:translateY(-2px);border-color:#91ad91;box-shadow:0 10px 26px #2945361c}
+.home-museum-icon{width:58px;height:58px;min-width:58px;display:grid;place-items:center;border-radius:17px;background:#e0eadb;font-size:30px}
+.home-museum-copy{display:grid;gap:5px;flex:1}
+.home-museum-copy b{font-size:16px;color:#294536}
+.home-museum-copy small{font-size:11px;line-height:1.9;color:#687968;max-width:700px}
+.home-museum-action{display:flex;align-items:center;gap:10px;white-space:nowrap;border-radius:999px;padding:10px 15px;background:#355b43;color:#fff;font-size:11px;font-weight:800}
+.home-museum-action b{font-size:17px}
+@media(max-width:650px){.nav{gap:6px}.nav button{padding:6px 11px;font-size:11px}.home-museum-feature{gap:10px;padding:14px}.home-museum-icon{width:46px;height:46px;min-width:46px;font-size:24px}.home-museum-copy b{font-size:14px}.home-museum-action{font-size:10px;padding:8px 10px}}
+@media(max-width:430px){.home-museum-feature{flex-wrap:wrap}.home-museum-action{margin-right:56px}}
+</style>
 </head>
 <body>
 <div class="wrap" id="root"></div>
@@ -1248,6 +1263,11 @@ function viewHome(){
       </div>
       <div class="home-hero-note"><span>یک خانواده،</span><b>هزاران خاطره</b></div>
     </section>
+    <button type="button" class="home-museum-feature" data-act="tab" data-tab="family">
+      <span class="home-museum-icon" aria-hidden="true">🏛️</span>
+      <span class="home-museum-copy"><b>موزه خانواده</b><small>عکس‌های قدیمی، اسناد، خاطرات و یادگارهای خانوادگی را ثبت کنید تا در کتابچه و پرونده افراد ماندگار شوند.</small></span>
+      <span class="home-museum-action">ورود به موزه <b>←</b></span>
+    </button>
     ${n===0?`<section class="card empty"><h3>اولین برگ این درخت را ثبت کنیم</h3><p class="muted" style="margin:0">${S.isAdmin?'از خودتان یا بزرگ‌ترین فرد خاندان شروع کنید.':'به محض ثبت اولین افراد، شجره‌نامه شکل می‌گیرد.'}</p><button class="btn" data-act="addnew">ثبت اولین نفر</button></section>`
     :`<section class="home-family-strip" aria-label="خلاصه خانواده">
       <div><span>اعضای ثبت‌شده</span><b>${fa(n)}</b></div><i></i><div><span>نسل‌های شناسایی‌شده</span><b>${fa(gens)}</b></div>
@@ -1259,7 +1279,6 @@ function viewHome(){
         ${quick('🌳','شجره‌نامه','مشاهده نسل‌ها و پیوندهای خانوادگی','tab','tree')}
         ${quick('✍️','ثبت اطلاعات','افزودن یا تکمیل پرونده افراد','addme')}
         ${quick('📊','گزارش خانواده','آمار و وضعیت اطلاعات ثبت‌شده','tab','stats')}
-        ${quick('🏛️','موزه خانواده','ثبت عکس، سند و یادگارها','tab','family')}
         ${quick('📖','کتابچه ریشه‌ها','مطالعه تاریخ و روایت‌های خانواده','tab','book')}
         ${quick('🧰','ابزارهای شخصی','دفتر زندگی و امکانات مرتبط','tab','tools')}
       </div>
@@ -3384,12 +3403,10 @@ function render(){
 function renderNav(){
   const nav=$('#nav'); if(!nav) return;
   const all=TABS.slice(); if(S.isAdmin) all.push(['audit','تاریخچه تغییرات'],['admin','مدیریت']);
-  const primaryKeys=new Set(['home','tree','book','add']),primary=all.filter(([k])=>primaryKeys.has(k)),more=all.filter(([k])=>!primaryKeys.has(k));
   const pc=S.isAdmin?pendingList().length+(S.claims||[]).length+(S.reports||[]).length:0;
-  const ICO={home:'🏠',tree:'🌳',relations:'🧬',timeline:'⏳',map:'🗺️',smart:'🧠',research:'🔎',stats:'📊',add:'➕',family:'✍️',book:'📖',tools:'🧰',audit:'🧾',admin:'⚙️'};
-  const expanded=!!S.navMoreOpen||more.some(([k])=>S.tab===k);
+  const ICO={home:'🏠',tree:'🌳',relations:'🧬',timeline:'⏳',map:'🗺️',smart:'🧠',research:'🔎',stats:'📊',add:'➕',family:'🏛️',book:'📖',tools:'🧰',audit:'🧾',admin:'⚙️'};
   const btn=([k,l])=>`<button type="button" data-act="tab" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}><span class="ni" aria-hidden="true">${ICO[k]||''}</span><span>${l}</span>${k==='admin'&&pc?`<span class="badge">${fa(pc)}</span>`:''}</button>`;
-  nav.innerHTML=primary.map(btn).join('')+`<button type="button" class="nav-more-toggle" data-act="navmore" aria-expanded="${expanded}"><span aria-hidden="true">☰</span><span>${expanded?'بستن':'بیشتر'}</span><span aria-hidden="true">${expanded?'▴':'▾'}</span></button>`+(expanded?`<span class="nav-more-items" aria-label="بخش‌های بیشتر">${more.map(btn).join('')}</span>`:'');
+  nav.innerHTML=all.map(btn).join('');
 }
 function renderView(){
   if(S.tab==='research') S.tab='home';
