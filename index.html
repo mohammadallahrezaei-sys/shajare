@@ -874,6 +874,11 @@ label.f>span,div.f>span{font-weight:600}
 }
 #chartBox>#zoomer,.outline>#zoomer,.kin-graph-scroll>.kin-graph{direction:rtl!important}
 .kin-fan-wrap svg{direction:rtl}
+</style><style id="fan-chart-horizontal-pan-fix">
+/* Put the wide fan SVG in the OUTER scroll viewport; the inner wrapper must not clip it. */
+.kin-graph-scroll:has(.kin-fan-wrap){direction:ltr!important;overflow-x:auto!important;overflow-y:auto!important;max-width:100%;min-width:0}
+.kin-graph-scroll .kin-fan-wrap{width:max-content!important;min-width:100%!important;max-width:none!important;overflow:visible!important;direction:rtl!important}
+.kin-graph-scroll .kin-fan-wrap svg{display:block!important;max-width:none!important;margin:0!important}
 </style></head>
 <body>
 <div class="wrap" id="root"></div>
@@ -4135,7 +4140,15 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
 (function(){
  const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap';
  let drag=null,suppressClickUntil=0;
- const findSurface=target=>{let n=target;while(n&&n!==document.body){if(n.matches&&n.matches(selector))return n;n=n.parentElement;}return null;};
+ const findSurface=target=>{
+  let n=target,fan=null;
+  while(n&&n!==document.body){
+   if(n.matches&&n.matches('.kin-fan-wrap'))fan=n;
+   if(n.matches&&n.matches('#artBox,#chartBox,.outline,.kin-graph-scroll'))return n;
+   n=n.parentElement;
+  }
+  return fan;
+ };
  const readX=el=>el.scrollLeft;
  const writeX=(el,x)=>{el.scrollLeft=x;};
  document.addEventListener('pointerdown',e=>{
