@@ -1624,7 +1624,7 @@ async function downloadVaultFile(path,name){
  let r=await go();if(r.status===401&&SB.refresh){await sbRefresh();r=await go();}
  if(!r.ok)throw new Error('دریافت سند انجام نشد ('+r.status+')');
  let blob=await r.blob(),fileName=name||'document';
- const pass=window.prompt('برای بازکردن سند، رمز عبور رمزنگاری را وارد کن. برای اسناد قدیمیِ رمزنگاری‌نشده، لغو را بزن و دریافت مستقیم را انتخاب کن.');
+ const pass=window.prompt('اگر سند جدید و رمزنگاری‌شده است، رمز عبور را وارد کن. اگر سند قدیمی و رمزنگاری‌نشده است، این کادر را خالی بگذار. لغو = انصراف از دریافت.');
  if(pass===null)return;
  if(pass!==''){
   const out=await vaultDecryptBlob(blob,pass);
