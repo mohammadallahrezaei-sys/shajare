@@ -1742,7 +1742,7 @@ function histPush(label,entries){ try{ const h=JSON.parse(lsGet('shj_hist')||'[]
 function histHTML(){
   let h=[]; try{ h=JSON.parse(lsGet('shj_hist')||'[]'); }catch(e){}
   return `<section class="card stack"><h3>تاریخچهٔ تغییرات</h3><p class="muted small" style="margin:0">تغییرهای گروهی و تأییدهایی که با این دستگاه انجام داده‌اید. با «برگرداندن»، مقدار قبلی برمی‌گردد. این فهرست فقط روی همین دستگاه ذخیره می‌شود.</p>
-  ${h.length?`<ul class="list">${h.slice(0,15).map(x=>`<li><div style="flex:1 1 200px;min-width:0"><b>${esc(x.label)}</b> <span class="muted small">${esc(new Date(x.at).toLocaleString('fa-IR'))}${x.entries.length?' – '+fa(x.entries.length)+' نفر':''}${x.undone?' – برگردانده شد':''}</span></div>${x.entries.length&&!x.undone?`<button class="btn ghost sm" data-act="hundo" data-at="${x.at}">برگرداندن</button>`:''}</li>`).join('')}</ul>`:'<p class="muted small" style="margin:0">هنوز تغییری ثبت نشده است.</p>'}</section>`;
+  ${h.length?`<ul class="list">${h.slice(0,15).map(x=>`<li><div style="flex:1 1 200px;min-width:0"><b>${esc(x.label)}</b> <span class="muted small">${esc(new Date(x.at).toLocaleString('fa-IR-u-ca-persian'))}${x.entries.length?' – '+fa(x.entries.length)+' نفر':''}${x.undone?' – برگردانده شد':''}</span></div>${x.entries.length&&!x.undone?`<button class="btn ghost sm" data-act="hundo" data-at="${x.at}">برگرداندن</button>`:''}</li>`).join('')}</ul>`:'<p class="muted small" style="margin:0">هنوز تغییری ثبت نشده است.</p>'}</section>`;
 }
 function applyFS(){ const k=+lsGet('shj_fs')||1; document.documentElement.style.fontSize=(16*k)+'px'; if(document.body) document.body.style.fontSize=(15*k)+'px'; }
 function fsHTML(){ const k=+lsGet('shj_fs')||1; const b=(v,l)=>`<button type="button" class="btn ${k===v?'':'ghost'} sm" data-act="fs" data-v="${v}">${l}</button>`; return `<section class="card"><div class="row" style="gap:8px;align-items:center"><span class="muted small">اندازهٔ متن:</span>${b(.9,'کوچک')}${b(1,'متوسط')}${b(1.2,'بزرگ')}${b(1.4,'خیلی بزرگ')}</div></section>`; }
@@ -2095,7 +2095,7 @@ function pendCard(it){
   } else {
     body=`<b>${KINDS[it.payload.kind||'memory'][0]} دربارهٔ ${esc(nameOf(it.payload.personId))}</b><div class="mem"><p>${esc(it.payload.text)}</p></div>`;
   }
-  return `<li style="align-items:flex-start"><div class="stack" style="gap:6px;flex:1 1 280px;min-width:0">${body}<span class="muted small">از طرف ${esc(it.by||'ناشناس')} – ${new Date(it.at).toLocaleDateString('fa-IR')}${it.uid==='__import'?' – وارد شده از متن':''}</span></div>
+  return `<li style="align-items:flex-start"><div class="stack" style="gap:6px;flex:1 1 280px;min-width:0">${body}<span class="muted small">از طرف ${esc(it.by||'ناشناس')} – ${new Date(it.at).toLocaleDateString('fa-IR-u-ca-persian')}${it.uid==='__import'?' – وارد شده از متن':''}</span></div>
    <div class="row" style="gap:6px"><button class="btn sm" data-act="approve" data-k="${esc(k)}">تأیید</button>${it.kind==='person'?`<button class="btn ghost sm" data-act="editsub" data-k="${esc(k)}">ویرایش</button>`:''}<button class="btn danger sm" data-act="reject" data-k="${esc(k)}">رد</button></div></li>`;
 }
 function treeWarnHTML(){
@@ -2122,7 +2122,7 @@ function backupJSON(){ return JSON.stringify({app:'shajare-allahrezaei',version:
 function backupAgeText(){
   const t=+lsGet('shj_lastbackup')||0; if(!t) return 'هنوز روی این دستگاه پشتیبان گرفته نشده است. پشتیبان شامل افراد، خاطره‌ها و یادگارهای موزه (متن و لینک فایل‌ها) است؛ خود فایل عکس‌ها در Supabase Storage می‌مانند.';
   const days=Math.floor((Date.now()-t)/864e5);
-  return 'آخرین پشتیبان روی این دستگاه: '+new Date(t).toLocaleDateString('fa-IR')+(days>30?' — بیش از یک ماه گذشته؛ بهتر است پشتیبان تازه بگیرید.':'')+' · شامل یادگارهای موزه (متن و لینک فایل‌ها).';
+  return 'آخرین پشتیبان روی این دستگاه: '+new Date(t).toLocaleDateString('fa-IR-u-ca-persian')+(days>30?' — بیش از یک ماه گذشته؛ بهتر است پشتیبان تازه بگیرید.':'')+' · شامل یادگارهای موزه (متن و لینک فایل‌ها).';
 }
 function gedcomExport(){
   const T=buildTree(), P=T.P, ids=Object.keys(P), idx={}; ids.forEach((i,k)=>{ idx[i]=k+1; });
@@ -2698,7 +2698,7 @@ function familyArchiveCard(p,admin){
       <div class="family-card-story">${esc(story)}</div>
       ${m.person_name?`<div class="small muted">👤 مرتبط با: ${esc(m.person_name)}</div>`:''}
       ${m.people_names?`<div class="small muted">همراهان عکس: ${esc(m.people_names)}</div>`:''}
-      <div class="family-card-foot"><span class="muted small">${esc(stat)} · ${esc(new Date(p.created_at).toLocaleDateString('fa-IR'))}</span>
+      <div class="family-card-foot"><span class="muted small">${esc(stat)} · ${esc(new Date(p.created_at).toLocaleDateString('fa-IR-u-ca-persian'))}</span>
       ${admin&&p.status==='rejected'?`<span class="family-review"><button class="btn sm" data-act="familyrestore" data-id="${esc(p.id)}">بازگردانی به در انتظار</button></span>`:''}${admin&&p.status!=='rejected'?`<span class="family-review">${p.status==='pending'?`<button class="btn sm" data-act="familyapprove" data-id="${esc(p.id)}">تأیید انتشار</button>`:''}<button class="btn sm" data-act="familyedit" data-id="${esc(p.id)}">اصلاح</button><button class="btn danger sm" data-act="familycancel" data-id="${esc(p.id)}">${p.status==='pending'?'رد و حذف فایل':'لغو انتشار'}</button></span>`:''}</div>
     </div>
   </article>`;
@@ -2729,7 +2729,7 @@ function familyLightbox(post){
         ${faceTags.length?`<div><b>🏷️ چهره‌های شناسایی‌شده:</b><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px">${faceTags.map(t=>S.people[t.person_id]? `<button class="link" type="button" data-act="person" data-id="${esc(t.person_id)}">${esc(full(S.people[t.person_id]))}</button>`:'').join('')}</div></div>`:''}
         ${S.isAdmin&&img? (familyArchiveUI.tagId===post.id?familyFaceTagEditor(post,m,img):`<button type="button" class="btn ghost sm" data-act="facestart" data-id="${esc(post.id)}">🏷️ شناسایی و برچسب‌گذاری چهره‌ها</button>`):''}
         ${m.contributor?`<div>✍️ <b>ثبت‌کننده:</b> ${esc(m.contributor)}</div>`:''}
-        <div class="muted small">ثبت در آرشیو: ${esc(new Date(post.created_at).toLocaleDateString('fa-IR'))}</div>
+        <div class="muted small">ثبت در آرشیو: ${esc(new Date(post.created_at).toLocaleDateString('fa-IR-u-ca-persian'))}</div>
         ${m.source?`<div class="small"><b>منبع:</b> ${esc(m.source)}</div>`:''}<span class="pill">${esc(FAMILY_CERTAINTY_LABELS[m.certainty]||'نیازمند بررسی')}</span><span class="pill">${post.visibility==='public'?'قابل مشاهده برای همه':'ویژه اعضای خانواده'}</span>
       </div>
     </div>
@@ -2890,7 +2890,7 @@ async function submitFamilyContribution(){
 }
 function familyDigitalBookPages(){
   const approved=(S.familyPosts||[]).filter(p=>p.status==='approved');
-  const pages=[{title:'روی جلد',eyebrow:'میراث خانوادگی',html:`<div class="digital-book-cover"><div class="book-cover-kicker">میراث خانوادگی · نسخهٔ زنده</div><h1>ریشه‌ها</h1><p>چنگ‌الماس و روستاهای بودلا، خودلان، زرین‌آباد و خسروآباد</p><div class="book-cover-art">🌄 🏡 🌳</div><p>این کتاب با ثبت اطلاعات تازه، فصل به فصل کامل‌تر می‌شود.</p><small>آخرین بازسازی: ${new Date().toLocaleDateString('fa-IR')}</small></div>` }];
+  const pages=[{title:'روی جلد',eyebrow:'میراث خانوادگی',html:`<div class="digital-book-cover"><div class="book-cover-kicker">میراث خانوادگی · نسخهٔ زنده</div><h1>ریشه‌ها</h1><p>چنگ‌الماس و روستاهای بودلا، خودلان، زرین‌آباد و خسروآباد</p><div class="book-cover-art">🌄 🏡 🌳</div><p>این کتاب با ثبت اطلاعات تازه، فصل به فصل کامل‌تر می‌شود.</p><small>آخرین بازسازی: ${new Date().toLocaleDateString('fa-IR-u-ca-persian')}</small></div>` }];
   const galleryImages=[
     ['نمای قدیمی شهر بیجار','حدود ۱۹۱۷–۱۹۱۸؛ چشم‌انداز شهر از تپهٔ مجاور. منبع: Australian War Memorial، شماره J01278.','https://s3-ap-southeast-2.amazonaws.com/awm-media/collection/J01278/screen/7747723.JPG','https://www.awm.gov.au/collection/C2441','نمای شهر بیجار از تپه‌ای نزدیک، حدود جنگ جهانی اول'],
     ['پاک‌کردن و بوجاری گندم در بیجار','حدود ۱۹۱۷–۱۹۱۸؛ تصویری از کار روزمره و فرآوری غلات. منبع: Australian War Memorial، شماره J01254.','https://s3-ap-southeast-2.amazonaws.com/awm-media/collection/J01254/screen/4025723.JPG','https://www.awm.gov.au/collection/C2417','بوجاری و پاک کردن گندم در حیاطی در بیجار، حدود ۱۹۱۷ تا ۱۹۱۸'],
@@ -3864,6 +3864,7 @@ document.addEventListener('change',ev=>{
   else if(t.id==='f_photo'){ onPhotoPicked(t.files&&t.files[0]); }
 });
 document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&S.modal) closeModal(); });
+document.addEventListener('keydown',ev=>{if((ev.key==='Enter'||ev.key===' ')&&ev.target&&ev.target.matches&&ev.target.matches('g[data-act="graphperson"]')){ev.preventDefault();ev.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
 function setZoom(v){ S.zoom=Math.min(2.5,Math.max(.3,Math.round(v*100)/100)); const z=$('#zoomer'); if(z) z.style.zoom=S.zoom; const b=$('#zoomPct'); if(b) b.textContent=fa(Math.round(S.zoom*100))+'٪'; }
 applyFS(); document.addEventListener('DOMContentLoaded',applyFS);
 document.addEventListener('focusin',e=>{ const t=e.target, m={f_last:'last',f_bplace:'birthPlace',f_resid:'residence',f_job:'job',cp_birthPlace:'birthPlace',cp_residence:'residence',cp_job:'job'}[t.id]; if(!m) return;
