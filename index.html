@@ -1585,7 +1585,7 @@ function familyTimelineHTML(){
  if(p.bY)addEvent({y:+p.bY,id,label:'تولد',desc:'تولد '+full(p),loc:p.birthPlace||loc});
  if(p.dead&&p.dY)addEvent({y:+p.dY,id,label:'درگذشت',desc:'درگذشت '+full(p),loc:p.residence||loc});
  Object.values(S.memories||{}).filter(m=>m.personId===id&&+m.eventYear>0).forEach(m=>addEvent({y:+m.eventYear,id,label:(KINDS[m.kind]&&KINDS[m.kind][0])||'خاطره',desc:m.text||'رویداد ثبت‌شده',loc:m.eventPlace||loc}));
- (p.spl||[]).forEach(sp=>{if(!P[sp.id]||!sp.dt)return;[['nishan','نشان'],['aghd','عقد'],['aroosi','عروسی']].forEach(([k,l])=>{const y=sp.dt[k]?.y;if(y)addEvent({y:+y,id,label:l,desc:l+' · '+full(p)+' و '+full(P[sp.id]),loc});});});
+ (p.spl||[]).forEach(sp=>{if(!P[sp.id]||!sp.dt)return;[['aroosi','ازدواج']].forEach(([k,l])=>{const y=sp.dt[k]?.y;if(y)addEvent({y:+y,id,label:l,desc:l+' · '+full(p)+' و '+full(P[sp.id]),loc});});});
  });
  events.sort((a,b)=>a.y-b.y||a.desc.localeCompare(b.desc,'fa'));const years=events.map(e=>e.y),min=years.length?Math.min(...years):0,max=years.length?Math.max(...years):0,zoom=Math.max(1,Math.min(4,+S.timelineZoom||1)),shown=events.slice(0,500);
  const locations=[...new Set(ids.flatMap(i=>[P[i].birthPlace,P[i].residence,P[i].place]).concat(Object.values(S.memories||{}).map(m=>m.eventPlace)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
