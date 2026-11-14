@@ -347,6 +347,17 @@ textarea{min-height:110px;resize:vertical}
 .tree-time-item button{border:0;background:none;color:var(--primary);padding:0;text-align:start;font-weight:700}
 @media(max-width:620px){.tree-explore{grid-template-columns:1fr}.tree-explore .wide{grid-column:auto}.tile{min-width:128px;max-width:178px;padding:6px}.tile .av{width:36px;height:36px}.chart-box{padding:14px 8px}.org ul{padding-top:16px}.tree-person-select{width:100%;min-width:0}.tree-mini-row{grid-template-columns:82px minmax(60px,1fr) 28px}}
 
+/* Dynamic family roots overview */
+.tree-roots-panel{border:1px solid var(--line);border-radius:15px;background:var(--surface);padding:13px 15px;display:grid;gap:10px}
+.tree-roots-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.tree-roots-head h3{margin:0;font-size:1rem}
+.tree-roots-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.tree-root-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:right;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);color:var(--ink);cursor:pointer;min-width:0}
+.tree-root-chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.tree-root-chip b{overflow-wrap:anywhere}.tree-root-chip small{display:block;color:var(--muted);font-size:.76rem;margin-top:2px}
+.tree-roots-unlinked{border-top:1px dashed var(--line);padding-top:9px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tree-roots-unlinked button{border:1px solid var(--line);border-radius:20px;padding:4px 9px;background:transparent;color:var(--ink);font-size:.78rem;cursor:pointer}
+
 /* Dedicated family-tree workspace */
 #view.tree-page{width:100%;max-width:none;margin:0 auto}
 .tree-only{width:100%;max-width:1800px;margin:0 auto;gap:10px}
@@ -1164,6 +1175,22 @@ function branchSelHTML(){
   const opt=n=>`<option value="${esc(n.id)}" ${S.focus===n.id?'selected':''}>${esc(full(T0.P[n.id]))}${n.spouses.length&&T0.P[n.spouses[0]]?' و '+esc(T0.P[n.spouses[0]].first||''):''} (${fa(n.size)} نفر)</option>`;
   return `<div class="bar"><label class="row" style="gap:8px"><span class="muted small">نمایش فقط یک شاخه:</span><select id="brSel" style="max-width:340px"><option value="">کل درخت</option><optgroup label="شاخه‌های اصلی">${H.map(opt).join('')}</optgroup>${sub.length?`<optgroup label="زیرشاخه‌ها">${sub.map(opt).join('')}</optgroup>`:''}</select></label></div>`;
 }
+function treeRootsOverviewHTML(T){
+  const roots=T.roots||[],P=T.P||{};
+  if(!roots.length)return '';
+  const rootCards=roots.map(r=>{
+    const p=P[r.id];if(!p)return '';
+    const spouse=r.spouses.map(id=>P[id]).filter(Boolean).map(x=>x.first||'').filter(Boolean);
+    return `<button type="button" class="tree-root-chip" data-act="rootfocus" data-id="${esc(r.id)}"><span><b>🌱 ${esc(full(p))}${spouse.length?' و '+esc(spouse.join(' و ')):''}</b><small>شاخهٔ ریشه · ${fa(r.size)} نفر</small></span><span aria-hidden="true">←</span></button>`;
+  }).join('');
+  const unlinked=(T.lost||[]).filter(id=>P[id]);
+  return `<section class="tree-roots-panel">
+    <div class="tree-roots-head"><h3>🌳 ریشه‌های شجره‌نامه</h3><span class="muted small">${fa(roots.length)} ریشهٔ شناسایی‌شده · ${fa(Object.keys(P).length)} پرونده</span></div>
+    <div class="tree-roots-list">${rootCards}</div>
+    ${unlinked.length?`<div class="tree-roots-unlinked"><b class="small">افرادی که هنوز به شاخه‌ای پیوند ندارند:</b>${unlinked.slice(0,12).map(id=>`<button type="button" data-act="person" data-id="${esc(id)}">${esc(full(P[id]))}</button>`).join('')}${unlinked.length>12?`<span class="muted small">و ${fa(unlinked.length-12)} نفر دیگر</span>`:''}</div>`:''}
+    <p class="muted small" style="margin:0">این فهرست از رابطه‌های والد–فرزند ثبت‌شده ساخته می‌شود و با تکمیل یا اصلاح پرونده‌ها خودکار به‌روزرسانی خواهد شد.</p>
+  </section>`;
+}
 function viewTree(){
   const T=viewT(), n=Object.keys(T.P).length;
   if(!n) return `<div class="card empty"><h3>شجره‌نامه هنوز خالی است</h3><p class="muted" style="margin:0">اولین نفر را ثبت کنید تا درخت ساخته شود.</p><button class="btn" data-act="addnew">ثبت یک نفر</button></div>`;
@@ -1186,6 +1213,7 @@ function viewTree(){
      </div>
      <div class="row tree-export-tools" style="gap:4px"><button class="btn sm" data-act="savepng">PNG</button><button class="btn ghost sm" data-act="savepdf">PDF / چاپ</button></div>
    </div>
+   ${treeRootsOverviewHTML(T)}
    ${branchSelHTML()}
    <div class="tree-canvas-area">${body}</div>
    <p class="muted small tree-help">برای مشاهدهٔ پروندهٔ هر فرد، روی کارت یا نام او بزنید. با انتخاب یک شاخه می‌توانید همان بخش از درخت را جداگانه ببینید.</p>
@@ -3003,6 +3031,8 @@ document.addEventListener('click',async ev=>{
   const a=el.dataset.act;
   try{
   if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||(el.dataset.tab==='admin'&&S.isAdmin)){ await loadFamilyPosts(); if(el.dataset.tab==='family') await loadFamilyBook(); } }
+  else if(a==='rootfocus'){S.focus=el.dataset.id||'';renderView();}
+  else if(a==='rootshowall'){S.focus='';renderView();}
   else if(a==='familybookupload'){ const inp=$('#familyBookFile');if(inp)inp.click(); }
   else if(a==='familybookprev'){familyBookState.page=Math.max(1,familyBookState.page-1);renderView();$('#familyBookReader')?.scrollIntoView({behavior:'smooth',block:'start'});}
   else if(a==='familybooknext'){familyBookState.page=Math.min(10,familyBookState.page+1);renderView();$('#familyBookReader')?.scrollIntoView({behavior:'smooth',block:'start'});}
