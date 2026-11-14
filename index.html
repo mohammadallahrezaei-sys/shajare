@@ -729,6 +729,9 @@ label.f>span,div.f>span{font-weight:600}
 .kin-graph-help{display:grid;gap:7px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:var(--surface);font-size:12px;line-height:1.9;color:var(--muted)}
 .kin-graph-help b{color:var(--text);font-size:13px}
 .kin-graph-help span:before{content:"•";color:var(--accent);font-weight:900;margin-left:7px}
+</style><style id="root-first-tree-position">
+#artBox{scroll-behavior:smooth}
+#chartBox,.outline{scroll-behavior:smooth}
 </style></head>
 <body>
 <div class="wrap" id="root"></div>
@@ -1251,7 +1254,10 @@ function persistentAuditHTML(){
  </section>`;
 }
 
-function viewRelations(){return `<div class="stack"><section class="card"><span class="home-kicker">ابزارهای تخصصی شجره‌نامه</span><h2>کاوش در نیاکان، نوادگان و روابط</h2><p class="muted small">فرد مرکزی را انتخاب کنید و نمودار مناسب را ببینید. این بخش جدا از نمای اصلی شجره‌نامه است.</p></section>${treeAdvancedHTML()}</div>`;}
+function viewRelations(){
+ const root=mainFamilyRootId();if(root&&!S.treePerson)S.treePerson=root;
+ return `<div class="stack"><section class="card"><span class="home-kicker">ابزارهای تخصصی شجره‌نامه</span><h2>کاوش در نیاکان، نوادگان و روابط</h2><p class="muted small">با ورود به این بخش، نمودار از ریشهٔ اصلی خانواده آغاز می‌شود. سپس می‌توانید هر فرد دیگری را انتخاب کنید.</p></section>${treeAdvancedHTML()}</div>`;
+}
 function viewTimeline(){return `<div class="stack"><section class="card"><span class="home-kicker">تاریخ خانواده</span><h2>خط زمانی رویدادهای خانوادگی</h2><p class="muted small">تولد، درگذشت، ازدواج و خاطرات دارای تاریخ در یک نمای مستقل گردآوری شده‌اند.</p></section>${familyTimelineHTML()}</div>`;}
 function viewMap(){return `<div class="stack"><section class="card"><span class="home-kicker">جغرافیای خانواده</span><h2>نقشه‌های خانوادگی و تاریخی</h2><p class="muted small">نقشه پراکندگی محل‌های تولد و سکونت، و نقشه مسیر زندگی و لایه‌های تاریخی در این بخش قرار دارند.</p></section>${familyPlacesMapHTML()}${kinMapHTML()}</div>`;}
 function viewSmart(){return `<div class="stack"><section class="card"><span class="home-kicker">بررسی کیفیت داده‌ها</span><h2>مرکز هوشمندی خانواده</h2><p class="muted small">یافتن پرونده‌های ناقص، موارد ناسازگار و عکس‌های بدون پیوند؛ موارد پیشنهادی را پیش از اصلاح بررسی کنید.</p></section>${smartCenterHTML()}</div>`;}
@@ -3259,6 +3265,7 @@ async function renderArt(){
   cv.addEventListener('mousedown',e=>{ cv.__noclick=false; PAN={x:e.clientX,y:e.clientY,l:box.scrollLeft,t:box.scrollTop,m:false,box,cv}; });
   cv.addEventListener('mousemove',e=>{ cv.style.cursor=hitAt(e)?'pointer':'default'; });
   if(S.artZoom>1) box.scrollLeft=Math.max(0,(box.scrollWidth-box.clientWidth)/2);
+  requestAnimationFrame(()=>{if(!box.isConnected)return;box.scrollTop=Math.max(0,box.scrollHeight-box.clientHeight);});
 }
 async function saveBlob(name,blob){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
@@ -3449,13 +3456,28 @@ function renderView(){
   v.innerHTML=f(); if(S.familyPosts&&(familyArchiveUI.openId||familyArchiveUI.editId)) v.insertAdjacentHTML('beforeend',familyOverlayHTML());
   if(S.tab==='family') updateFamilyContributionGuide();
   if(S.tab==='map'){if($('#familyPlacesMap'))initFamilyPlacesMap();if($('#kinMap'))initKinMap();}
-  if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } } 
+  if(S.tab==='tree'){
+   if(S.mode==='art') renderArt();
+   else if(S.mode==='chart'){const b=$('#chartBox');if(b){b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2;b.scrollTop=0;}}
+   else {const b=$('.outline');if(b){b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2;b.scrollTop=0;}}
+ } 
 }
 let rq=0;
 function changed(){ S.T=null; if(rq) return; rq=requestAnimationFrame(()=>{ rq=0; if(S.loginPending){ if(S.peopleLoaded) render(); return; } if(!S.me||!S.ready) return; renderNav(); if(S.tab==='add') refreshAdd(); else renderView(); if(S.modal) $('#sheet').innerHTML=personSheet(S.modal); }); }
 
 /* ================= actions ================= */
-function gotoTab(t){ S.tab=t; S.code=null; closeModal(); renderNav(); renderView(); window.scrollTo(0,0); }
+function mainFamilyRootId(){
+ const roots=buildTree().roots||[];
+ return roots[0]?.id||Object.keys(EP()).find(id=>!EP()[id].virtual)||'';
+}
+function gotoTab(t){
+ if(t==='tree'||t==='relations'){
+   const root=mainFamilyRootId();
+   if(root)S.treePerson=root;
+   if(t==='tree')S.focus=null;
+ }
+ S.tab=t; S.code=null; closeModal(); renderNav(); renderView(); window.scrollTo(0,0);
+}
 const val=id=>{ const e=$(id); return e?e.value.trim():''; };
 function resetPhoto(from){ S.photo=from||''; S.photoDirty=false; S.photoMsg=''; }
 
