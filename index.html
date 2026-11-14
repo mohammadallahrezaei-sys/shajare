@@ -1559,7 +1559,7 @@ const VAULT_BUCKET='shj-admin-vault';
 const VAULT_CATS={documents:'اسناد عمومی',legal:'اسناد حقوقی',identity:'اسناد هویتی',financial:'اسناد مالی',historical:'اسناد تاریخی',other:'سایر'};
 function vaultPath(p){return String(p||'').split('/').map(encodeURIComponent).join('/');}
 function vaultName(r){return String(r.name||'').replace(/^(?:vault\/)?(?:documents|legal|identity|financial|historical|other)_\d+_/,'').replace(/_/g,' ');}
-function vaultCategoryLabel(r){const m=String(r.name||'').match(/^(?:vault\\/)?(documents|legal|identity|financial|historical|other)_/);return m?VAULT_CATS[m[1]]:'سایر';}
+function vaultCategoryLabel(r){const m=String(r.name||'').match(/^(documents|legal|identity|financial|historical|other)_/);return m?VAULT_CATS[m[1]]:'سایر';}
 function vaultRowHTML(r){
  const name=vaultName(r),size=r.metadata&&r.metadata.size?Math.round(r.metadata.size/1024)+' KB':'—';
  const date=r.created_at?new Date(r.created_at).toLocaleDateString('fa-IR'):'';
