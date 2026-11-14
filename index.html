@@ -2143,11 +2143,32 @@ const FAMILY_SECTIONS=[
  {id:'culture',title:'فرهنگ و زندگی گذشتگان',icon:'🧵',desc:'گویش، پوشش، کشاورزی، شغل‌ها، مراسم، خوراک و مهاجرت',prompt:'یک رسم، واژه، خاطره یا شیوهٔ زندگی قدیمی را با زمان و محل تقریبی آن توضیح دهید.'}
 ];
 const FAMILY_SECTION_LABELS=Object.fromEntries(FAMILY_SECTIONS.map(x=>[x.id,x.title]));
+const FAMILY_ENTRY_GUIDE={
+ land:{title:'فصل سرزمین و ریشه‌ها',text:'اطلاعات جغرافیایی و تاریخی منطقه: نام قدیمی آبادی‌ها، تغییر نام، مسیرها، فاصله‌ها و تقسیمات کشوری. اگر چیزی قطعی نیست، آن را به‌عنوان شنیده یا احتمال مشخص کنید و منبع را بنویسید.'},
+ villages:{title:'فصل روستاها',text:'اطلاعات مربوط به یک مکان: خانه و محلهٔ قدیمی، قبرستان، زمین، قنات، مدرسه، مسجد یا خانواده‌های ساکن. روستای مربوط را انتخاب کنید؛ اگر در فهرست نیست «سایر» را بزنید و نام را در شرح بیاورید.'},
+ documents:{title:'فصل اسناد و دست‌نوشته‌ها',text:'برای شناسنامه، دفتر ثبت‌احوال، قباله، نامه یا دست‌نوشته. تاریخ سند، نام‌ها دقیقاً همان‌طور که خوانده می‌شوند و محل درج‌شده روی سند را بنویسید. خوانش قطعی را از حدس جدا کنید و اطلاعات حساس افراد زنده را بپوشانید.'},
+ genealogy:{title:'فصل شجره و نسل‌ها',text:'اطلاعات یک شخص یا نسبت خانوادگی: نام، نام پدر و مادر یا همسر، سال تولد/وفات و نسبت با فرد شناخته‌شده. منبع نسبت را مشخص کنید؛ اگر نسبت معلوم نیست، حدس را به‌عنوان واقعیت ثبت نکنید.'},
+ culture:{title:'فصل فرهنگ و زندگی گذشتگان',text:'رسم‌ها، گویش و واژه‌های محلی، پوشش، خوراک، کشاورزی، شغل‌ها، مراسم و مهاجرت. نام راوی، روستا و دورهٔ زمانی تقریبی را بنویسید.'}
+};
+const FAMILY_CATEGORY_GUIDE={
+ portrait:'عکس یک یا چند فرد؛ نام افراد، نسبتشان با خانواده و حدود سال عکس را بنویسید.',
+ village:'عکس یا یادداشت دربارهٔ خود روستا، خانه، محله یا چشم‌انداز آن؛ محل دقیق را مشخص کنید.',
+ ceremony:'عروسی، عزا، جشن یا دیدوبازدید؛ نوع مراسم، تاریخ تقریبی و افراد حاضر را ذکر کنید.',
+ documents:'مدرک مکتوب مانند شناسنامه، دفتر، قباله یا نامه؛ تاریخ، نام‌ها و محل ثبت‌شده را عیناً وارد کنید.',
+ daily:'تصویر یا خاطره از کار، پوشش، خوراک، کشاورزی و زندگی روزمره؛ زمان و مکان را بنویسید.',
+ other:'موضوعی که در دسته‌های دیگر جا نمی‌گیرد؛ موضوع را روشن و دقیق توضیح دهید.'
+};
+function updateFamilyContributionGuide(){
+ const section=$('#fc_section')?.value||'land',category=$('#fc_category')?.value||'other',box=$('#fc_guide');
+ if(!box)return;const g=FAMILY_ENTRY_GUIDE[section]||FAMILY_ENTRY_GUIDE.land;
+ box.innerHTML='<strong>'+g.title+'</strong><p>'+g.text+'</p><p><strong>نوع یادگار:</strong> '+(FAMILY_CATEGORY_GUIDE[category]||FAMILY_CATEGORY_GUIDE.other)+'</p>';
+}
+
 
 const FAMILY_EDITORIAL_CONTENT={
 land:{eyebrow:'جغرافیای ریشه‌ها',title:'چهار روستا در یک جغرافیای مشترک',text:'این چهار روستا در دهستان خسروآباد، بخش چنگ‌الماس از شهرستان بیجار در استان کردستان قرار دارند. نقشهٔ زیر بازطراحیِ نقشهٔ صفحهٔ چهارم کتابچهٔ اصلی است؛ جای نسبی روستاها و فاصله‌های هوایی مطابق همان منبع نگه داشته شده است.',stats:[['۵٫۶ کیلومتر','بودلا تا خودلان'],['۶٫۲ کیلومتر','بودلا تا زرین‌آباد'],['۵٫۱ کیلومتر','بودلا تا خسروآباد']],census:[['باباراشانی (دهستان)','۳٬۱۷۸','۲٬۸۸۶','۲٬۰۵۰'],['خسروآباد (دهستان)','۴٬۳۱۹','۳٬۷۴۱','۳٬۱۳۴'],['پیرتاج (دهستان)','۶٬۳۷۹','۵٬۹۳۷','۳٬۸۴۵'],['باباراشانی (شهر)','۴۸۱','۵۷۳','۵۰۹'],['پیرتاج (شهر)','—','—','۱٬۱۹۹'],['کل بخش','۱۴٬۳۵۷','۱۳٬۱۳۷','۱۰٬۷۳۷']],note:'آمار جمعیت بخش از سرشماری‌های ۱۳۸۵، ۱۳۹۰ و ۱۳۹۵ نقل شده است. پیرتاج پس از سرشماری ۱۳۹۰ از روستا به شهر تبدیل شد؛ بنابراین ردیف شهری آن فقط در ستون ۱۳۹۵ مقدار دارد. فاصله‌ها هوایی‌اند، نه فاصلهٔ جاده‌ای.'},
 villages:{eyebrow:'چهار ایستگاه در نقشهٔ خانواده',title:'روستاها و ردپای خانواده در هرکدام',text:'اطلاعات زیر از صفحات روستاهای کتابچهٔ اصلی بازنویسی شده است. سال سرشماری کنار هر آمار آمده تا داده‌های سال‌های متفاوت با هم اشتباه نشوند.',villages:[['بودلا','۱۸۴ نفر','سرشماری ۱۳۸۵ · ۴۲ خانوار','روستای کوچک و قدیمی‌ترین نقطهٔ ثبت‌شدهٔ خانواده؛ در برگه‌های ۱۳۰۹ فرج‌الله و گلناز ساکن «قریهٔ بولدلا» نوشته شده‌اند. زادگاه فرج‌الله و محل سکونت عزت‌الله نیز بودلا ثبت شده است.'],['خودلان','۳۶۸ نفر','سرشماری ۱۳۸۵ · ۸۵ خانوار','از بودلا بزرگ‌تر است. نصرالله در شجره‌نامه با محل سکونت «خودلان – زرین‌آباد» ثبت شده؛ خدیجه عباسی خودلان نیز همسر عزت‌الله بوده است.'],['زرین‌آباد','۱۷۴ نفر','سرشماری ۱۳۸۵ · ۳۵ خانوار','کوچک‌ترین روستای این کتابچه؛ در شجره‌نامه فقط یک‌بار و در کنار خودلان، در محل سکونت نصرالله، دیده می‌شود.'],['خسروآباد','۴۳۲ نفر','سرشماری ۱۳۹۵ · ۱۴۸ خانوار','بزرگ‌ترین روستای این کتابچه و مرکز دهستان. جمعیت آن در ۱۳۸۵ حدود ۵۱۰ نفر و در ۱۳۹۰ حدود ۵۱۴ نفر بوده است؛ در نسخهٔ شجره‌نامهٔ بررسی‌شده هنوز فرد یا سندی از آن ثبت نشده است.']] ,note:'آمار بودلا، خودلان و زرین‌آباد مربوط به سرشماری ۱۳۸۵ است؛ آمار خسروآباد مربوط به ۱۳۹۵ است. دربارهٔ نسبت خانوادگی احتمالی با خسروآباد، منبع اصلی فقط پیشنهاد پرس‌وجو از بزرگ‌ترها را مطرح می‌کند.'},
-documents:{eyebrow:'ردپاهای مکتوب',title:'یک دفتر قدیمی؛ سرنخ چند نسل',text:'دو منبع اصلی کتابچه، اطلاعات شجره‌نامهٔ خانوادگی و برگه‌های ثبت‌احوال سال ۱۳۰۹ است که خانواده نگه داشته است. بخشی از دست‌خط قدیمی هنوز نیازمند بازخوانی از روی اصل سند است.',bullets:['نام فرج‌الله و گلناز در برگه‌های ۱۳۰۹ و محل سکونت «قریهٔ بولدلا»','در شناسنامه‌ها عبارت «بخش هفت‌الیان» و شهرستان بیجار (گروس) خوانده شده، اما قطعی نیست','در دفتر ۱۳۰۹ یک نفر بین فرج‌الله و گلناز ثبت شده که هویتش هنوز روشن نیست'],note:'تصویر سند را با حفظ حریم خصوصی بارگذاری کنید؛ شماره‌ها و اطلاعات حساس افراد زنده را پیش از انتشار بپوشانید.'},
+documents:{eyebrow:'ردپاهای مکتوب',title:'یک دفتر قدیمی؛ سرنخ چند نسل',text:'دو منبع اصلی کتابچه، اطلاعات شجره‌نامهٔ خانوادگی و برگه‌های ثبت‌احوال سال ۱۳۰۹ است که خانواده نگه داشته است. بخشی از دست‌خط قدیمی هنوز نیازمند بازخوانی از روی اصل سند است.',bullets:['در برگه‌های ۱۳۰۹، نام‌های فرج‌الله و گلناز و محل سکونت «قریهٔ بولدلا» (بودلا) ثبت شده است.','عبارت «بخش هفت‌الیان» و شهرستان بیجار (گروس) در شناسنامه‌ها خوانده شده، اما این خوانش قطعی نیست؛ بخش چنگ‌الماس، محل صحیح در تقسیمات منطقه است.'],note:'تصویر سند را با حفظ حریم خصوصی بارگذاری کنید؛ شماره‌ها و اطلاعات حساس افراد زنده را پیش از انتشار بپوشانید.'},
 genealogy:{eyebrow:'شش نسل در یک نگاه',title:'از نام‌های روی برگهٔ ۱۳۰۹ تا نسل امروز',text:'شجره‌نامه شش نسل را ثبت کرده است. پدر و مادر فرج‌الله (هادی و رعنا) و پدر و مادر گلناز (کاکاخان و ماه‌جهان) فقط از برگه‌های ۱۳۰۹ شناخته می‌شوند و هنوز جزئیات زندگی‌شان روشن نیست.',bullets:['فرج‌الله؛ زادگاه ثبت‌شده: بودلا؛ تاریخ تولد در شجره‌نامه ۱۲۶۹','گلناز؛ تاریخ تولد ثبت‌شده: ۷ مهر ۱۲۷۰','فرزندان ثبت‌شده: عزت‌الله (۱۳۰۰)، نصرالله (۱۳۰۵)، ملیحه و طلیعه (آذر ۱۳۰۹)'],note:'برای مشاهدهٔ پیوندها و افراد ثبت‌شده، شجره‌نامهٔ اصلی برنامه را باز کنید؛ این بخش خلاصهٔ مستندات کتابچه است.'},
 culture:{eyebrow:'زندگی روزمرهٔ نیاکان',title:'چیزهایی که باید از زبان خانواده ثبت شوند',text:'نسخهٔ فعلی کتابچه دربارهٔ رسم‌ها، گویش، پوشش، خوراک، کشاورزی و مشاغل اطلاعات کافی ارائه نمی‌کند. این فصل برای روایت‌های شفاهی و عکس‌های واقعی خانواده باز گذاشته شده است.',bullets:['نام‌های محلی و واژه‌هایی که در خانه و روستا به کار می‌رفت','کارهای فصلی، کشاورزی، دامداری و پیشه‌های قدیمی','مراسم عروسی، سوگواری، مهمانی‌ها و خوراک‌های محلی','مهاجرت‌ها، مسیر رفت‌وآمد و خاطرات خانه‌های قدیمی'],note:'هر خاطره را با نام راوی، روستا و دورهٔ تقریبی ثبت کنید تا بعدها روایت‌ها قابل مقایسه باشند.'},
 };
@@ -2275,11 +2296,12 @@ function viewFamily(){
       <h3>ثبت یادگار خانوادگی</h3>
       <label class="f"><span>عنوان *</span><input id="fc_title" required maxlength="160" placeholder="مثلاً: عکس قدیمی خانواده در زرین‌آباد"></label>
       <div class="grid2">
-        <label class="f"><span>فصل کتابچه</span><select id="fc_section">${FAMILY_SECTIONS.map(x=>`<option value="${x.id}">${esc(x.title)}</option>`).join('')}</select></label>
-        <label class="f"><span>نوع یادگار</span><select id="fc_category">${categoryOptions}</select></label>
-        <label class="f"><span>روستا / محل</span><select id="fc_village"><option value="">انتخاب کنید</option>${villageOptions}</select></label>
-        <label class="f"><span>سال تقریبی</span><input id="fc_year" inputmode="numeric" placeholder="مثلاً ۱۳۴۵"></label>
+        <label class="f"><span>فصل کتابچه (موضوع اصلی اطلاعات)</span><select id="fc_section">${FAMILY_SECTIONS.map(x=>`<option value="${x.id}">${esc(x.title)}</option>`).join('')}</select></label>
+        <label class="f"><span>نوع یادگار (جنس مدرک یا محتوا)</span><select id="fc_category">${categoryOptions}</select></label>
+        <label class="f"><span>روستا / محل مرتبط</span><select id="fc_village"><option value="">انتخاب کنید</option>${villageOptions}</select></label>
+        <label class="f"><span>سال تقریبی رخداد یا تهیهٔ سند</span><input id="fc_year" inputmode="numeric" placeholder="مثلاً ۱۳۴۵"></label>
       </div>
+      <div id="fc_guide" class="notice" style="margin:0 0 10px"></div>
       <label class="f"><span>نام افراد مرتبط</span><input id="fc_people" placeholder="نام افراد حاضر در عکس یا روایت"></label>
       <label class="f"><span>منبع یا نام راوی</span><input id="fc_source" placeholder="مثلاً: دفترچه خانوادگی، روایت ..."></label>
       <label class="f"><span>شرح خاطره یا توضیحات *</span><textarea id="fc_story" required rows="5" placeholder="هرچه درباره این عکس، سند یا خاطره می‌دانید بنویسید..."></textarea></label>
@@ -3179,6 +3201,7 @@ document.addEventListener('submit',ev=>{
   else if(id==='familyPostForm') submitFamilyPost().catch(e=>{console.error(e);toast('ارسال انجام نشد؛ اتصال یا دسترسی بارگذاری عکس را بررسی کنید.');});
 });
 document.addEventListener('change',ev=>{
+  if(ev.target.id==='fc_section'||ev.target.id==='fc_category') updateFamilyContributionGuide();
   if(ev.target.id==='digitalBookJump'){familyDigitalState.page=Math.max(0,Number(ev.target.value)||0);renderView();return;}
   if(ev.target.id==='familyBookFile'){const file=ev.target.files&&ev.target.files[0];if(file)uploadFamilyBook(file).catch(e=>{console.error(e);toast('بارگذاری انجام نشد: '+(e.message||'دسترسی یا فضای ذخیره‌سازی را بررسی کنید.'));});ev.target.value='';return;}
   if(ev.target.id==='fp_section'){familyArchiveUI.section=ev.target.value;const sec=FAMILY_SECTIONS.find(x=>x.id===ev.target.value);const hint=$('#fp_section_hint');if(hint&&sec)hint.textContent=sec.prompt;const lab=$('#familyComposeSection');if(lab&&sec)lab.textContent=sec.title;return;} if(ev.target.id==='treePerson'){S.treePerson=ev.target.value;renderView();return;} if(ev.target.id==='familyCategory'){familyArchiveUI.category=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='familyVillage'){familyArchiveUI.village=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
