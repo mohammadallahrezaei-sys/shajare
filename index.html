@@ -167,6 +167,34 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
   @page{size:A4;margin:16mm}
   @page treepg{size:A4 landscape;margin:8mm}
 }
+
+/* Living family archive */
+.family-hero{position:relative;overflow:hidden;border-radius:20px;padding:24px;background:linear-gradient(125deg,#153d35,#276b59 58%,#b27a35);color:#fff;box-shadow:0 14px 36px #153d3528}
+.family-hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #ffffff30;border-radius:50%;inset-inline-end:-70px;top:-100px;box-shadow:0 0 0 28px #ffffff0c,0 0 0 58px #ffffff08}
+.family-hero>*{position:relative;z-index:1}.family-hero h2{font-size:clamp(1.5rem,4vw,2.2rem);color:#fff}.family-hero p{max-width:650px;color:#e7f1eb;margin:8px 0 0}
+.family-hero .family-mark{font-size:2.5rem;margin-bottom:6px}.family-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:20px;max-width:560px}.family-stat{background:#ffffff18;border:1px solid #ffffff35;border-radius:13px;padding:9px 12px;backdrop-filter:blur(5px)}.family-stat b{display:block;font-size:1.45rem;color:#fff}.family-stat span{font-size:.78rem;color:#e6f0e9}
+.family-intro{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.family-intro>div{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px}.family-intro b{display:block;margin:4px 0}.family-intro span{font-size:.83rem;color:var(--muted)}
+.family-compose{border:1px solid var(--line);border-radius:18px;background:var(--surface);overflow:hidden}.family-compose-head{padding:16px 18px;background:linear-gradient(120deg,var(--surface2),var(--surface));border-bottom:1px solid var(--line)}.family-compose-body{padding:18px}
+.family-drop{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;min-height:130px;border:2px dashed var(--line);border-radius:14px;background:var(--bg);padding:16px;text-align:center;cursor:pointer}.family-drop input{max-width:100%}.family-drop strong{color:var(--primary)}
+.family-gallery-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap}.family-filters{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:8px}
+.family-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.family-card{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:15px;background:var(--surface);transition:transform .18s,box-shadow .18s}
+.family-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px #14302a15}
+.family-card-media{width:100%;aspect-ratio:4/3;display:block;position:relative;background:linear-gradient(135deg,var(--surface2),var(--bg));overflow:hidden;border:0;padding:0;cursor:zoom-in}
+.family-card-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}.family-card:hover .family-card-media img{transform:scale(1.035)}
+.family-card-placeholder{height:100%;display:grid;place-items:center;color:var(--muted);font-size:2.5rem}
+.family-card-body{padding:12px;display:flex;flex-direction:column;gap:6px}.family-card-title{font-weight:800;line-height:1.5}.family-card-story{font-size:.86rem;color:var(--muted);line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.family-tags{display:flex;gap:5px;flex-wrap:wrap}.family-tag{border-radius:99px;background:var(--surface2);padding:2px 8px;font-size:.73rem;color:var(--muted)}
+.family-card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:8px;margin-top:3px}
+.family-pending{border:2px solid var(--warn)}.family-review{display:flex;gap:8px;flex-wrap:wrap}
+.family-lightbox{position:fixed;inset:0;z-index:120;background:#07130feF;display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.family-lightbox-inner{width:min(100%,980px);max-height:94vh;overflow:auto;background:var(--surface);color:var(--ink);border-radius:16px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,1fr);position:relative}
+.family-lightbox-photo{background:#07130f;display:grid;place-items:center;min-height:240px}.family-lightbox-photo img{display:block;max-width:100%;max-height:88vh;object-fit:contain}
+.family-lightbox-info{padding:20px;display:flex;flex-direction:column;gap:10px}.family-lightbox-close{position:absolute;top:10px;inset-inline-end:10px;z-index:2;border:0;border-radius:50%;width:38px;height:38px;background:var(--surface);color:var(--ink);font-size:1.25rem}
+.family-empty{border:1px dashed var(--line);border-radius:16px;padding:34px 16px;text-align:center;background:var(--surface)}
+@media(max-width:760px){.family-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.family-intro{grid-template-columns:1fr}.family-lightbox-inner{grid-template-columns:1fr}.family-lightbox-photo img{max-height:58vh}}
+@media(max-width:440px){.family-gallery{grid-template-columns:1fr}.family-filters{grid-template-columns:1fr}.family-stats{grid-template-columns:repeat(3,1fr)}.family-hero{padding:18px}}
+
 .offbar{position:sticky;top:0;z-index:60;background:var(--bad);color:#fff;text-align:center;padding:8px 12px;font-size:.85rem;line-height:1.6}
 .muted{color:var(--muted)}
 .small{font-size:.85rem}
@@ -2019,53 +2047,163 @@ async function approveLife(id){
 }
 
 /* ---------- family photos and memories ---------- */
+
+/* ---------- موزه زنده خاندان الله‌رضایی ---------- */
+const FAMILY_ARCHIVE_MARK='SHJ_ARCHIVE_V1:';
+const FAMILY_CATEGORIES={portrait:'چهره‌ها و بزرگان',village:'روستا و زادگاه',ceremony:'مراسم و دورهمی',documents:'اسناد و دست‌نوشته‌ها',daily:'زندگی روزمره',other:'سایر یادگارها'};
+const FAMILY_VILLAGES=['بودلا','خودلان','زرین‌آباد','خسروآباد','چنگ‌الماس','سایر'];
+let familyArchiveUI={q:'',category:'all',village:'all',openId:''};
+function familyMeta(post){
+  const raw=String(post.description||'');
+  if(raw.startsWith(FAMILY_ARCHIVE_MARK)){
+    try{return Object.assign({story:'',category:'other',village:'',photo_year:'',person_id:'',person_name:'',contributor:''},JSON.parse(raw.slice(FAMILY_ARCHIVE_MARK.length)));}
+    catch(e){}
+  }
+  return {story:raw,category:'other',village:'',photo_year:'',person_id:'',person_name:'',contributor:''};
+}
+function familyMetaText(meta){
+  const parts=[FAMILY_CATEGORIES[meta.category]||'یادگار خانوادگی',meta.village||'',meta.photo_year||'',meta.person_name||'',meta.contributor||''];
+  return parts.filter(Boolean).join(' · ');
+}
 function familyMediaUrl(post){
   if(!post.media_path) return '';
   if(post.status==='approved'&&post.visibility==='public') return CFG.url+'/storage/v1/object/public/shj-family-public/'+post.media_path.split('/').map(encodeURIComponent).join('/');
   return post.media_url||'';
 }
 async function loadFamilyPosts(){
-  const rows=await sbFetch('/rest/v1/shj_family_posts?select=id,title,description,media_path,visibility,status,created_at&order=created_at.desc&limit=100');
+  const rows=await sbFetch('/rest/v1/shj_family_posts?select=id,title,description,media_path,visibility,status,created_at&order=created_at.desc&limit=200');
   const list=Array.isArray(rows)?rows:[];
   for(const p of list){
     p.media_url='';
     if(p.media_path&&!(p.status==='approved'&&p.visibility==='public')){
-      try{const r=await sbFetch('/storage/v1/object/sign/shj-family-pending/'+p.media_path.split('/').map(encodeURIComponent).join('/'),{method:'POST',body:JSON.stringify({expiresIn:3600})}); p.media_url=r&&r.signedURL?(String(r.signedURL).startsWith('http')?r.signedURL:CFG.url+'/storage/v1'+r.signedURL):'';}catch(e){}
+      try{const r=await sbFetch('/storage/v1/object/sign/shj-family-pending/'+p.media_path.split('/').map(encodeURIComponent).join('/'),{method:'POST',body:JSON.stringify({expiresIn:3600})});p.media_url=r&&r.signedURL?(String(r.signedURL).startsWith('http')?r.signedURL:CFG.url+'/storage/v1'+r.signedURL):'';}catch(e){}
     }
   }
-  S.familyPosts=list; if(S.tab==='family'||S.tab==='tools'||S.tab==='admin') renderView();
+  S.familyPosts=list;
+  if(S.tab==='family'||S.tab==='tools'||S.tab==='admin') renderView();
 }
-function familyPostCard(p,admin){
-  const img=familyMediaUrl(p); const stat=p.status==='pending'?'در انتظار تأیید':p.status==='approved'?'تأییدشده':'ردشده';
-  return `<article class="card stack" style="gap:8px">${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy" style="width:100%;max-height:360px;object-fit:contain;border-radius:12px;background:var(--bg)">`:''}<div class="row" style="justify-content:space-between"><b>${esc(p.title)}</b><span class="chip">${p.visibility==='public'?'عمومی':'فقط اعضای خانواده'}</span></div>${p.description?`<p style="margin:0;white-space:pre-wrap">${esc(p.description)}</p>`:''}<div class="row" style="justify-content:space-between"><span class="muted small">${stat} · ${esc(new Date(p.created_at).toLocaleDateString('fa-IR'))}</span>${admin&&p.status==='pending'?`<span class="row"><button class="btn sm" data-act="familyapprove" data-id="${esc(p.id)}">تأیید و انتشار</button><button class="btn danger sm" data-act="familyreject" data-id="${esc(p.id)}">رد</button></span>`:''}</div></article>`;
+function familyArchiveCard(p,admin){
+  const m=familyMeta(p),img=familyMediaUrl(p),stat=p.status==='pending'?'در انتظار بررسی':p.status==='approved'?'تأییدشده':'ردشده';
+  const story=m.story||'برای این یادگار هنوز توضیحی ثبت نشده است.';
+  const search=[p.title,story,m.person_name,m.village,m.photo_year,FAMILY_CATEGORIES[m.category]||''].join(' ').toLowerCase();
+  return `<article class="family-card ${p.status==='pending'?'family-pending':''}" data-family-card data-search="${esc(search)}" data-category="${esc(m.category||'other')}" data-village="${esc(m.village||'')}">
+    <button class="family-card-media" type="button" data-act="familyopen" data-id="${esc(p.id)}" aria-label="نمایش ${esc(p.title)}">
+      ${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:'<span class="family-card-placeholder">📜</span>'}
+    </button>
+    <div class="family-card-body">
+      <div class="family-tags"><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
+      <div class="family-card-title">${esc(p.title)}</div>
+      <div class="family-card-story">${esc(story)}</div>
+      ${m.person_name?`<div class="small muted">👤 مرتبط با: ${esc(m.person_name)}</div>`:''}
+      <div class="family-card-foot"><span class="muted small">${esc(stat)} · ${esc(new Date(p.created_at).toLocaleDateString('fa-IR'))}</span>
+      ${admin&&p.status==='pending'?`<span class="family-review"><button class="btn sm" data-act="familyapprove" data-id="${esc(p.id)}">تأیید</button><button class="btn danger sm" data-act="familyreject" data-id="${esc(p.id)}">رد</button></span>`:''}</div>
+    </div>
+  </article>`;
+}
+function familyLightbox(post){
+  if(!post)return '';
+  const m=familyMeta(post),img=familyMediaUrl(post);
+  return `<div class="family-lightbox" role="dialog" aria-modal="true" aria-label="نمایش یادگار خانوادگی" data-act="familyclose">
+    <div class="family-lightbox-inner" onclick="event.stopPropagation()">
+      <button class="family-lightbox-close" type="button" data-act="familyclose" aria-label="بستن">×</button>
+      <div class="family-lightbox-photo">${img?`<img src="${esc(img)}" alt="${esc(post.title)}">`:'<div style="font-size:5rem">📜</div>'}</div>
+      <div class="family-lightbox-info"><div class="family-tags"><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
+        <h2>${esc(post.title)}</h2><p style="white-space:pre-wrap;line-height:2;margin:0">${esc(m.story||'توضیحی ثبت نشده است.')}</p>
+        ${m.person_name?`<div>👤 <b>شخص مرتبط:</b> ${esc(m.person_name)}</div>`:''}
+        ${m.contributor?`<div>✍️ <b>ثبت‌کننده:</b> ${esc(m.contributor)}</div>`:''}
+        <div class="muted small">ثبت در آرشیو: ${esc(new Date(post.created_at).toLocaleDateString('fa-IR'))}</div>
+        <span class="pill">${post.visibility==='public'?'قابل مشاهده برای همه':'ویژه اعضای خانواده'}</span>
+      </div>
+    </div>
+  </div>`;
+}
+function familyApplyFilters(){
+  const q=(familyArchiveUI.q||'').trim().toLowerCase();
+  document.querySelectorAll('[data-family-card]').forEach(card=>{
+    const okQ=!q||(card.dataset.search||'').includes(q);
+    const okC=familyArchiveUI.category==='all'||card.dataset.category===familyArchiveUI.category;
+    const okV=familyArchiveUI.village==='all'||card.dataset.village===familyArchiveUI.village;
+    card.hidden=!(okQ&&okC&&okV);
+  });
 }
 function viewFamily(){
-  const posts=S.familyPosts||[], approved=posts.filter(p=>p.status==='approved'), pending=S.isAdmin?posts.filter(p=>p.status==='pending'):[];
-  return `<div class="stack"><section class="card stack"><h2>🖼️ عکس‌ها و خاطره‌های خانوادگی</h2><p class="muted small" style="margin:0">عکس یا خاطره را ارسال کنید؛ مدیر پیش از نمایش آن را بررسی می‌کند. موارد عمومی پس از تأیید برای همه قابل مشاهده می‌شوند و موارد خانوادگی فقط برای اعضای واردشده نمایش داده می‌شوند.</p><form id="familyPostForm" class="stack" style="gap:10px"><label class="f"><span>عنوان *</span><input id="fp_title" maxlength="120" required placeholder="مثلاً دورهمی نوروز ۱۴۰۵"></label><label class="f"><span>توضیح یا خاطره</span><textarea id="fp_desc" rows="3" maxlength="3000" placeholder="چند خط دربارهٔ عکس یا خاطره…"></textarea></label><label class="f"><span>انتخاب عکس (اختیاری، حداکثر ۸ مگابایت)</span><input id="fp_file" type="file" accept="image/jpeg,image/png,image/webp"></label><label class="f"><span>نحوهٔ نمایش</span><select id="fp_visibility"><option value="public">عمومی (پس از تأیید مدیر)</option><option value="private">فقط اعضای خانواده (پس از تأیید مدیر)</option></select></label><button class="btn" type="submit">ارسال برای بررسی مدیر</button></form></section>
-  ${pending.length?`<section class="stack"><h3>در انتظار بررسی مدیر</h3>${pending.map(p=>familyPostCard(p,true)).join('')}</section>`:''}
-  <section class="stack"><h3>یادگارهای تأییدشده</h3>${approved.length?approved.map(p=>familyPostCard(p,false)).join(''):'<section class="card muted">هنوز عکس یا خاطره‌ای تأیید و منتشر نشده است.</section>'}</section></div>`;
+  const posts=S.familyPosts||[],approved=posts.filter(p=>p.status==='approved'),pending=S.isAdmin?posts.filter(p=>p.status==='pending'):[];
+  const allPeople=Object.entries(S.people||{}).filter(([id,p])=>!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
+  const linkedOptions=allPeople.map(([id,p])=>`<option value="${esc(id)}">${esc(full(p))}</option>`).join('');
+  const imageCount=approved.filter(p=>p.media_path).length;
+  const opened=familyArchiveUI.openId?posts.find(p=>p.id===familyArchiveUI.openId):null;
+  const categoryOptions=Object.entries(FAMILY_CATEGORIES).map(([k,v])=>`<option value="${k}" ${familyArchiveUI.category===k?'selected':''}>${v}</option>`).join('');
+  const villageOptions=FAMILY_VILLAGES.map(v=>`<option value="${esc(v)}" ${familyArchiveUI.village===v?'selected':''}>${esc(v)}</option>`).join('');
+  return `<div class="stack">
+    <section class="family-hero">
+      <div class="family-mark">🏛️</div><h2>موزه‌ی زنده‌ی خاندان الله‌رضایی</h2>
+      <p>هر عکس، یک چهره؛ هر خاطره، پلی میان نسل‌ها. با کمک هم، گذشته‌ی خانواده را زنده و برای آیندگان نگهداری می‌کنیم.</p>
+      <div class="family-stats"><div class="family-stat"><b>${fa(approved.length)}</b><span>یادگار ثبت‌شده</span></div><div class="family-stat"><b>${fa(imageCount)}</b><span>تصویر آرشیوی</span></div><div class="family-stat"><b>${fa(pending.length)}</b><span>در انتظار بررسی</span></div></div>
+    </section>
+    <section class="family-intro">
+      <div>📷 <b>عکس‌های قدیمی</b><span>چهره‌ها، خانه‌ها، کوچه‌ها و روستاها</span></div>
+      <div>📝 <b>روایت و خاطره</b><span>نام افراد، زمان و داستان پشت هر تصویر</span></div>
+      <div>🌳 <b>پیوند با شجره‌نامه</b><span>اتصال یادگارها به افراد و نسل‌های خانواده</span></div>
+    </section>
+    <section class="family-compose">
+      <div class="family-compose-head"><h3>✨ یک یادگار به موزه اضافه کنید</h3><p class="muted small" style="margin:3px 0 0">عکس قدیمی یا خاطره‌ای که ارزش ماندن دارد، اینجا ثبت کنید. موارد پس از بررسی مدیر وارد آرشیو می‌شوند.</p></div>
+      <div class="family-compose-body">
+        <form id="familyPostForm" class="stack" style="gap:12px">
+          <div class="fields">
+            <label class="f"><span>عنوان یادگار *</span><input id="fp_title" maxlength="120" required placeholder="مثلاً: خانه‌ی قدیمی فرج‌الله در بودلا"></label>
+            <label class="f"><span>نوع یادگار</span><select id="fp_category">${categoryOptions}</select></label>
+            <label class="f"><span>روستا یا محل مرتبط</span><select id="fp_village"><option value="">انتخاب محل</option>${villageOptions}</select></label>
+            <label class="f"><span>حدود سال ثبت عکس</span><input id="fp_year" type="text" inputmode="numeric" maxlength="12" placeholder="مثلاً ۱۳۴۵ یا حدود ۱۳۵۰"></label>
+            <label class="f"><span>فرد مرتبط در شجره‌نامه</span><select id="fp_person"><option value="">بدون اتصال به فرد مشخص</option>${linkedOptions}</select></label>
+            <label class="f"><span>نام افراد دیگر داخل عکس (اختیاری)</span><input id="fp_people" maxlength="250" placeholder="نام افراد، با ویرگول جدا کنید"></label>
+            <label class="f wide"><span>داستان عکس یا خاطره‌ی همراه آن</span><textarea id="fp_desc" rows="3" maxlength="1800" placeholder="چه کسانی در عکس هستند؟ کجا و چه مناسبتی؟ چه چیزی از آن روز به یاد مانده؟"></textarea></label>
+          </div>
+          <label class="family-drop"><span style="font-size:2rem">📤</span><strong>افزودن تصویر قدیمی</strong><span class="muted small">JPG، PNG یا WebP · حداکثر ۸ مگابایت · انتخاب عکس اختیاری است</span><input id="fp_file" type="file" accept="image/jpeg,image/png,image/webp"></label>
+          <div class="fields">
+            <label class="f"><span>نحوه‌ی نمایش</span><select id="fp_visibility"><option value="private">فقط اعضای خانواده (پس از تأیید)</option><option value="public">عمومی (پس از تأیید مدیر)</option></select></label>
+          </div>
+          <button class="btn big" type="submit">ثبت یادگار در موزه‌ی خانواده</button>
+          <p class="muted small" style="margin:0">نام ارسال‌کننده به‌عنوان ثبت‌کننده‌ی یادگار ذخیره می‌شود. انتشار عمومی فقط پس از تأیید مدیر انجام خواهد شد.</p>
+        </form>
+      </div>
+    </section>
+    ${pending.length?`<section class="stack"><h3>📥 یادگارهای در انتظار بررسی مدیر</h3><div class="family-gallery">${pending.map(p=>familyArchiveCard(p,true)).join('')}</div></section>`:''}
+    <section class="stack">
+      <div class="family-gallery-head"><div><h3>📚 گنجینه‌ی تصویری خانواده</h3><p class="muted small" style="margin:2px 0 0">یادگارهای تأییدشده، به ترتیب تازه‌ترین ثبت</p></div><span class="pill">${fa(approved.length)} مورد</span></div>
+      <div class="family-filters">
+        <input id="familySearch" type="text" placeholder="جست‌وجو در نام‌ها، خاطرات و مکان‌ها…" value="${esc(familyArchiveUI.q)}">
+        <select id="familyCategory"><option value="all">همه‌ی دسته‌ها</option>${categoryOptions}</select>
+        <select id="familyVillage"><option value="all">همه‌ی روستاها</option>${villageOptions}</select>
+      </div>
+      ${approved.length?`<div class="family-gallery" id="familyGallery">${approved.map(p=>familyArchiveCard(p,false)).join('')}</div><div id="familyNoFilter" class="family-empty" hidden>با این فیلترها یادگاری پیدا نشد.</div>`:'<div class="family-empty"><div style="font-size:3rem">🌿</div><h3>صفحه‌ی اول موزه هنوز خالی است</h3><p class="muted">اولین عکس قدیمی یا خاطره‌ی خانوادگی را شما اضافه کنید؛ این گنجینه با مشارکت همه ساخته می‌شود.</p></div>'}
+    </section>
+    ${opened?familyLightbox(opened):''}
+  </div>`;
 }
 async function submitFamilyPost(){
-  const title=val('#fp_title'), description=val('#fp_desc'), visibility=val('#fp_visibility'), file=$('#fp_file')?.files?.[0]||null;
-  if(!title){toast('عنوان را وارد کنید.');return;}
+  const title=val('#fp_title'),story=val('#fp_desc'),visibility=val('#fp_visibility'),file=$('#fp_file')?.files?.[0]||null;
+  const category=val('#fp_category')||'other',village=val('#fp_village'),photo_year=val('#fp_year'),person_id=val('#fp_person'),person_name=person_id&&S.people[person_id]?full(S.people[person_id]):'',people_names=val('#fp_people');
+  if(!title){toast('عنوان یادگار را وارد کنید.');return;}
   if(file&&(!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size>8*1024*1024)){toast('فقط عکس JPG، PNG یا WebP تا حجم ۸ مگابایت پذیرفته می‌شود.');return;}
   let media_path=null;
   if(file){
     const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
     media_path='family/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;
     const up=await fetch(CFG.url+'/storage/v1/object/shj-family-pending/'+media_path.split('/').map(encodeURIComponent).join('/'),{method:'POST',headers:{apikey:CFG.key,Authorization:'Bearer '+SB.tok,'Content-Type':file.type,'x-upsert':'false'},body:file});
-    if(!up.ok) throw new Error(await up.text().catch(()=>'upload_failed'));
+    if(!up.ok)throw new Error(await up.text().catch(()=>'upload_failed'));
   }
-  await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({title,description:description||null,media_path,visibility,status:'pending'})});
-  toast('ارسال شد و پس از بررسی مدیر نمایش داده می‌شود.'); await loadFamilyPosts();
+  const description=FAMILY_ARCHIVE_MARK+JSON.stringify({v:1,story,category,village,photo_year,person_id,person_name,people_names,contributor:fullName()});
+  await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({title,description,media_path,visibility,status:'pending'})});
+  familyArchiveUI.q='';familyArchiveUI.category='all';familyArchiveUI.village='all';
+  toast('یادگار شما ثبت شد و پس از بررسی مدیر در موزه نمایش داده می‌شود.');await loadFamilyPosts();
 }
 async function moderateFamilyPost(id,approve){
-  const post=(S.familyPosts||[]).find(p=>p.id===id); if(!post)return;
+  const post=(S.familyPosts||[]).find(p=>p.id===id);if(!post)return;
   if(approve&&post.media_path&&post.visibility==='public'){
-    const mv=await sbFetch('/storage/v1/object/move',{method:'POST',body:JSON.stringify({bucketId:'shj-family-pending',sourceKey:post.media_path,destinationBucket:'shj-family-public',destinationKey:post.media_path})});
+    await sbFetch('/storage/v1/object/move',{method:'POST',body:JSON.stringify({bucketId:'shj-family-pending',sourceKey:post.media_path,destinationBucket:'shj-family-public',destinationKey:post.media_path})});
   }
   await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:approve?'approved':'rejected',updated_at:new Date().toISOString()})});
-  toast(approve?'مورد تأیید شد.':'مورد رد شد.'); await loadFamilyPosts();
+  toast(approve?'یادگار به موزه اضافه شد.':'این مورد رد شد.');await loadFamilyPosts();
 }
 
 function viewAdmin(){
@@ -2492,7 +2630,7 @@ async function onPhotoPicked(file){
 
 /* ================= render ================= */
 const LOGO='<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 36V20M20 20C20 13 10 14 10 6M20 20C20 13 30 14 30 6M20 27C20 23 14 23 14 18M20 27C20 23 26 23 26 18"/><circle cx="10" cy="6" r="2.2" fill="var(--accent)" stroke="none"/><circle cx="30" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>';
-const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['tools','ابزارها']];
+const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['family','موزه خانواده'],['tools','ابزارها']];
 
 function loginCandidates(first,last){
   const f=nn(first).replace(/\s/g,''), l=famKey(last); if(!f||!l) return [];
@@ -2558,7 +2696,7 @@ function renderNav(){
   const nav=$('#nav'); if(!nav) return;
   const tabs=TABS.slice(); if(S.isAdmin) tabs.push(['admin','مدیریت']);
   const pc=S.isAdmin?pendingList().length+(S.claims||[]).length+(S.reports||[]).length:0;
-  const ICO={home:'🏠',tree:'🌳',stats:'📊',add:'➕',tools:'🧰',admin:'⚙️'};
+  const ICO={home:'🏠',tree:'🌳',stats:'📊',add:'➕',family:'🏛️',tools:'🧰',admin:'⚙️'};
   nav.innerHTML=tabs.map(([k,l])=>`<button data-act="tab" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}><span class="ni" aria-hidden="true">${ICO[k]||''}</span><span>${l}</span>${k==='admin'&&pc?`<span class="badge">${fa(pc)}</span>`:''}</button>`).join('');
 }
 function renderView(){
@@ -2754,6 +2892,9 @@ document.addEventListener('click',async ev=>{
   if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||(el.dataset.tab==='admin'&&S.isAdmin)) await loadFamilyPosts(); }
   else if(a==='familyapprove'){ await moderateFamilyPost(el.dataset.id,true); }
   else if(a==='familyreject'){ await moderateFamilyPost(el.dataset.id,false); }
+  else if(a==='familyopen'){ familyArchiveUI.openId=el.dataset.id; renderView(); }
+  else if(a==='familyclose'){ familyArchiveUI.openId=''; renderView(); }
+  else if(a==='familyfilterclear'){ familyArchiveUI.q='';familyArchiveUI.category='all';familyArchiveUI.village='all';renderView(); }
   else if(a==='growthpin'){ await verifyGrowthPin(); }
   else if(a==='growthlock'){ sessionStorage.removeItem('shj_parent_token'); sessionStorage.removeItem('shj_parent_exp'); S.growthRows=[]; S.growthChild=''; renderView(); }
   else if(a==='growthrefresh'){ await loadGrowth(); }
@@ -2894,9 +3035,10 @@ document.addEventListener('submit',ev=>{
   else if(id==='familyPostForm') submitFamilyPost().catch(e=>{console.error(e);toast('ارسال انجام نشد؛ اتصال یا دسترسی بارگذاری عکس را بررسی کنید.');});
 });
 document.addEventListener('change',ev=>{
-  if(ev.target.id==='treePerson'){S.treePerson=ev.target.value;renderView();return;} if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
+  if(ev.target.id==='treePerson'){S.treePerson=ev.target.value;renderView();return;} if(ev.target.id==='familyCategory'){familyArchiveUI.category=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='familyVillage'){familyArchiveUI.village=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
+  if(id==='familySearch'){familyArchiveUI.q=ev.target.value;familyApplyFilters();const no=$('#familyNoFilter');const cards=[...document.querySelectorAll('[data-family-card]')];if(no)no.hidden=!cards.length||cards.some(c=>!c.hidden);return;}
   if(id==='l_first'||id==='l_last'){ S.loginDraft={first:(($('#l_first')||{}).value||''),last:(($('#l_last')||{}).value||'')}; S.loginSelected=null; S.loginNewName=false; S.loginSearchDone=false; S.loginResults=[]; S.loginSearchError=''; const box=$('#loginDirectory'); if(box) box.innerHTML='<p class=\"muted small\">برای بررسی، نام و نام خانوادگی را کامل وارد کنید.</p>'; clearTimeout(window.__loginSearchTimer); window.__loginSearchTimer=setTimeout(()=>searchLoginDirectory(),450); }
   else   if(id==='f_dead'){ $('#deathWrap').hidden=!ev.target.checked; }
   else if(id==='f_first'||id==='f_last'){ S.dup=false; const d=$('#dupMsg'); if(d) d.innerHTML=''; }
