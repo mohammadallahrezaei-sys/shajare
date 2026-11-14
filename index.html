@@ -706,14 +706,18 @@ label.f>span,div.f>span{font-weight:600}
 .nav{display:flex;flex-wrap:wrap;gap:7px;overflow:visible;padding-block:8px 14px}
 .nav button{flex:none}
 .nav-more-toggle,.nav-more-items{display:none!important}
-.home-museum-feature{width:100%;display:flex;align-items:center;gap:16px;text-align:right;padding:18px 22px;border:1px solid #cbd8c8;border-radius:19px;background:linear-gradient(110deg,#f1f7ed 0%,#fffdf5 58%,#f5f0df 100%);color:#294536;cursor:pointer;box-shadow:0 7px 22px #29453610;transition:transform .18s,box-shadow .18s,border-color .18s}
-.home-museum-feature:hover{transform:translateY(-2px);border-color:#91ad91;box-shadow:0 10px 26px #2945361c}
-.home-museum-icon{width:58px;height:58px;min-width:58px;display:grid;place-items:center;border-radius:17px;background:#e0eadb;font-size:30px}
+.home-museum-feature{position:relative;isolation:isolate;overflow:hidden;width:100%;display:flex;align-items:center;gap:16px;text-align:right;padding:20px 22px;border:2px solid #d49a36;border-radius:19px;background:linear-gradient(112deg,#fff0c2 0%,#ffe0a0 48%,#fff6dc 100%);color:#633516;cursor:pointer;box-shadow:0 0 0 3px #e8b84b30,0 9px 28px #a85b1838;animation:museumBeacon 2.2s ease-in-out infinite;transition:transform .18s,box-shadow .18s}
+.home-museum-feature:before{content:"";position:absolute;inset:0 auto 0 -45%;width:35%;background:linear-gradient(90deg,transparent,#ffffffa8,transparent);transform:skewX(-18deg);animation:museumShimmer 3.8s ease-in-out infinite;pointer-events:none;z-index:-1}
+.home-museum-feature:hover{transform:translateY(-3px);box-shadow:0 0 0 5px #e8b84b55,0 14px 32px #a85b1850}
+.home-museum-icon{width:62px;height:62px;min-width:62px;display:grid;place-items:center;border-radius:17px;background:#f3bd51;color:#633516;font-size:32px;box-shadow:inset 0 0 0 1px #c98b28}
 .home-museum-copy{display:grid;gap:5px;flex:1}
-.home-museum-copy b{font-size:16px;color:#294536}
-.home-museum-copy small{font-size:11px;line-height:1.9;color:#687968;max-width:700px}
-.home-museum-action{display:flex;align-items:center;gap:10px;white-space:nowrap;border-radius:999px;padding:10px 15px;background:#355b43;color:#fff;font-size:11px;font-weight:800}
-.home-museum-action b{font-size:17px}
+.home-museum-copy b{font-size:17px;color:#71380f}
+.home-museum-copy small{font-size:12px;line-height:1.95;color:#704c2d;max-width:760px}
+.home-museum-action{display:flex;align-items:center;gap:10px;white-space:nowrap;border-radius:999px;padding:11px 16px;background:#8f351f;color:#fff;font-size:12px;font-weight:900;box-shadow:0 4px 12px #71301435}
+.home-museum-action b{font-size:18px}
+@keyframes museumBeacon{0%,100%{border-color:#d49a36;box-shadow:0 0 0 2px #e8b84b22,0 8px 24px #a85b1828}50%{border-color:#a83e20;box-shadow:0 0 0 6px #e8a32b55,0 12px 32px #a85b1850}}
+@keyframes museumShimmer{0%,65%,100%{left:-45%}85%{left:115%}}
+@media(prefers-reduced-motion:reduce){.home-museum-feature,.home-museum-feature:before{animation:none}}
 @media(max-width:650px){.nav{gap:6px}.nav button{padding:6px 11px;font-size:11px}.home-museum-feature{gap:10px;padding:14px}.home-museum-icon{width:46px;height:46px;min-width:46px;font-size:24px}.home-museum-copy b{font-size:14px}.home-museum-action{font-size:10px;padding:8px 10px}}
 @media(max-width:430px){.home-museum-feature{flex-wrap:wrap}.home-museum-action{margin-right:56px}}
 </style>
@@ -1284,8 +1288,8 @@ function viewHome(){
     </section>
     <button type="button" class="home-museum-feature" data-act="tab" data-tab="family">
       <span class="home-museum-icon" aria-hidden="true">🏛️</span>
-      <span class="home-museum-copy"><b>موزه خانواده</b><small>عکس‌های قدیمی، اسناد، خاطرات و یادگارهای خانوادگی را ثبت کنید تا در کتابچه و پرونده افراد ماندگار شوند.</small></span>
-      <span class="home-museum-action">ورود به موزه <b>←</b></span>
+      <span class="home-museum-copy"><b>موزه خانواده | یادگارهای نسل‌های گذشته را زنده نگه داریم</b><small>یک عکس قدیمی، یک سند، یک روایت یا حتی یک خاطره کوتاه از خانواده‌تان را ثبت کنید؛ شاید همین یادگار کوچک، تنها نشانی باشد که نسل‌های بعد از گذشته ما خواهند داشت. شما هم سهمی در کامل شدن گنجینه تاریخ خانواده داشته باشید.</small></span>
+      <span class="home-museum-action">یادگارم را ثبت می‌کنم <b>←</b></span>
     </button>
     ${n===0?`<section class="card empty"><h3>اولین برگ این درخت را ثبت کنیم</h3><p class="muted" style="margin:0">${S.isAdmin?'از خودتان یا بزرگ‌ترین فرد خاندان شروع کنید.':'به محض ثبت اولین افراد، شجره‌نامه شکل می‌گیرد.'}</p><button class="btn" data-act="addnew">ثبت اولین نفر</button></section>`
     :`<section class="home-family-strip" aria-label="خلاصه خانواده">
