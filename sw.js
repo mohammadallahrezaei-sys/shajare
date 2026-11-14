@@ -1,6 +1,6 @@
 /* Service worker: فقط «پوستهٔ اپ» را کش می‌کند تا آفلاین هم باز شود.
    درخواست‌های Supabase (داده، عکس، احراز هویت) هرگز کش نمی‌شوند. */
-const VERSION = 'shj-v2';
+const VERSION = 'shj-v3';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
