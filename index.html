@@ -844,8 +844,8 @@ label.f>span,div.f>span{font-weight:600}
 
 <style id="mouse-drag-pan-styles">
 /* کشیدن نمودارها با ماوس، مشابه حرکت با انگشت در گوشی */
-#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box{cursor:grab;touch-action:pan-x pan-y;overscroll-behavior:contain;}
-#artBox:active,#chartBox:active,.outline:active,.kin-graph-scroll:active,.kin-fan-wrap:active,.family-map-box:active{cursor:grabbing;}
+#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track{cursor:grab;touch-action:pan-x pan-y;overscroll-behavior:contain;}
+#artBox:active,#chartBox:active,.outline:active,.kin-graph-scroll:active,.kin-fan-wrap:active,.family-map-box:active,.timeline-track:active{cursor:grabbing;}
 .diagram-mouse-dragging{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important;}
 .diagram-mouse-dragging *{user-select:none!important;-webkit-user-select:none!important;}
 </style>
@@ -4074,7 +4074,7 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
 
 /* Drag-to-pan: mouse on desktop, native touch gestures on mobile */
 (function(){
- const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box';
+ const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track';
  let drag=null,suppressClickUntil=0;
  const findSurface=t=>t&&t.closest?t.closest(selector):null;
  document.addEventListener('pointerdown',e=>{
