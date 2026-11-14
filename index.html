@@ -168,6 +168,16 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
   @page treepg{size:A4 landscape;margin:8mm}
 }
 
+/* Prebuilt family history chapters */
+.family-sections-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.family-section-card{min-width:0;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:15px;display:flex;flex-direction:column;gap:10px}
+.family-section-top{display:flex;align-items:flex-start;gap:10px}.family-section-icon{width:42px;height:42px;flex:none;border-radius:12px;background:var(--surface2);display:grid;place-items:center;font-size:1.45rem}
+.family-section-copy{min-width:0;flex:1}.family-section-copy h3{font-size:1.02rem}.family-section-copy p{font-size:.82rem;color:var(--muted);margin:3px 0 0;line-height:1.8}
+.family-section-actions{display:flex;gap:7px;flex-wrap:wrap}.family-section-empty{border-top:1px dashed var(--line);padding-top:9px;color:var(--muted);font-size:.83rem}.family-section-empty span{display:block}
+.family-section-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.family-section-gallery .family-card-media{aspect-ratio:5/3}.family-section-gallery .family-card-body{padding:8px}.family-section-gallery .family-card-foot{font-size:.75rem}
+.family-compose>summary{list-style:none;cursor:pointer}.family-compose>summary::-webkit-details-marker{display:none}.family-compose>summary h3{display:inline}
+.family-compose[open]>summary{border-bottom:1px solid var(--line)}
+@media(max-width:760px){.family-sections-grid{grid-template-columns:1fr}.family-section-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Living family archive */
 .family-hero{position:relative;overflow:hidden;border-radius:20px;padding:24px;background:linear-gradient(125deg,#153d35,#276b59 58%,#b27a35);color:#fff;box-shadow:0 14px 36px #153d3528}
 .family-hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #ffffff30;border-radius:50%;inset-inline-end:-70px;top:-100px;box-shadow:0 0 0 28px #ffffff0c,0 0 0 58px #ffffff08}
@@ -2052,14 +2062,23 @@ async function approveLife(id){
 const FAMILY_ARCHIVE_MARK='SHJ_ARCHIVE_V1:';
 const FAMILY_CATEGORIES={portrait:'چهره‌ها و بزرگان',village:'روستا و زادگاه',ceremony:'مراسم و دورهمی',documents:'اسناد و دست‌نوشته‌ها',daily:'زندگی روزمره',other:'سایر یادگارها'};
 const FAMILY_VILLAGES=['بودلا','خودلان','زرین‌آباد','خسروآباد','چنگ‌الماس','سایر'];
+const FAMILY_SECTIONS=[
+ {id:'land',title:'سرزمین و ریشه‌ها',icon:'🗺️',desc:'چنگ‌الماس، بیجار، موقعیت منطقه، راه‌ها و پیوند روستاها',prompt:'اطلاعاتی دربارهٔ منطقه، نام‌های قدیمی، مسیرها یا موقعیت روستاها ثبت کنید.'},
+ {id:'villages',title:'چهار روستای ریشه‌ها',icon:'🏡',desc:'بودلا، خودلان، زرین‌آباد و خسروآباد؛ خانه‌ها، کوچه‌ها و قبرستان‌ها',prompt:'نام محل را انتخاب کنید و از خانه‌های قدیمی، محله‌ها، زمین‌ها یا خانواده‌های ساکن بگویید.'},
+ {id:'documents',title:'اسناد و دست‌نوشته‌ها',icon:'📜',desc:'برگه‌های ثبت‌احوال ۱۳۰۹، شناسنامه‌ها، قباله‌ها و نامه‌های خانوادگی',prompt:'تصویر سند را بارگذاری کنید و در صورت امکان تاریخ، نام اشخاص و محل نگهداری اصل سند را بنویسید.'},
+ {id:'genealogy',title:'شجره و نسل‌ها',icon:'🌳',desc:'فرج‌الله و گلناز، فرزندان، نسل‌ها، زندگی‌نامه‌ها و پیوندهای خانوادگی',prompt:'اطلاعات فرد یا رابطهٔ خانوادگی را با ذکر منبع یا نام بزرگ‌تری که روایت کرده ثبت کنید.'},
+ {id:'culture',title:'فرهنگ و زندگی گذشتگان',icon:'🧵',desc:'گویش، پوشش، کشاورزی، شغل‌ها، مراسم، خوراک و مهاجرت',prompt:'یک رسم، واژه، خاطره یا شیوهٔ زندگی قدیمی را با زمان و محل تقریبی آن توضیح دهید.'},
+ {id:'questions',title:'پرسش‌های باز تاریخی',icon:'🔎',desc:'موضوعاتی که هنوز پاسخ قطعی ندارند و باید با کمک بزرگ‌ترها بررسی شوند',prompt:'پاسخ احتمالی یا شاهد تازه‌ای برای یکی از پرسش‌های تاریخی ثبت کنید؛ میزان اطمینان را مشخص کنید.'}
+];
+const FAMILY_SECTION_LABELS=Object.fromEntries(FAMILY_SECTIONS.map(x=>[x.id,x.title]));
 let familyArchiveUI={q:'',category:'all',village:'all',openId:''};
 function familyMeta(post){
   const raw=String(post.description||'');
   if(raw.startsWith(FAMILY_ARCHIVE_MARK)){
-    try{return Object.assign({story:'',category:'other',village:'',photo_year:'',person_id:'',person_name:'',contributor:''},JSON.parse(raw.slice(FAMILY_ARCHIVE_MARK.length)));}
+    try{return Object.assign({story:'',category:'other',village:'',photo_year:'',person_id:'',person_name:'',contributor:'',section:'documents',certainty:'unverified',source:''},JSON.parse(raw.slice(FAMILY_ARCHIVE_MARK.length)));}
     catch(e){}
   }
-  return {story:raw,category:'other',village:'',photo_year:'',person_id:'',person_name:'',contributor:''};
+  return {story:raw,category:'other',village:'',photo_year:'',person_id:'',person_name:'',contributor:'',section:'documents',certainty:'unverified',source:''};
 }
 function familyMetaText(meta){
   const parts=[FAMILY_CATEGORIES[meta.category]||'یادگار خانوادگی',meta.village||'',meta.photo_year||'',meta.person_name||'',meta.contributor||''];
@@ -2085,13 +2104,13 @@ async function loadFamilyPosts(){
 function familyArchiveCard(p,admin){
   const m=familyMeta(p),img=familyMediaUrl(p),stat=p.status==='pending'?'در انتظار بررسی':p.status==='approved'?'تأییدشده':'ردشده';
   const story=m.story||'برای این یادگار هنوز توضیحی ثبت نشده است.';
-  const search=[p.title,story,m.person_name,m.village,m.photo_year,FAMILY_CATEGORIES[m.category]||''].join(' ').toLowerCase();
-  return `<article class="family-card ${p.status==='pending'?'family-pending':''}" data-family-card data-search="${esc(search)}" data-category="${esc(m.category||'other')}" data-village="${esc(m.village||'')}">
+  const search=[p.title,story,m.person_name,m.village,m.photo_year,FAMILY_CATEGORIES[m.category]||'',FAMILY_SECTION_LABELS[m.section]||''].join(' ').toLowerCase();
+  return `<article class="family-card ${p.status==='pending'?'family-pending':''}" data-family-card data-search="${esc(search)}" data-category="${esc(m.category||'other')}" data-village="${esc(m.village||'')}" data-section="${esc(m.section||'documents')}">
     <button class="family-card-media" type="button" data-act="familyopen" data-id="${esc(p.id)}" aria-label="نمایش ${esc(p.title)}">
       ${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:'<span class="family-card-placeholder">📜</span>'}
     </button>
     <div class="family-card-body">
-      <div class="family-tags"><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
+      <div class="family-tags"><span class="family-tag">${esc(FAMILY_SECTION_LABELS[m.section]||'اسناد و دست‌نوشته‌ها')}</span><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
       <div class="family-card-title">${esc(p.title)}</div>
       <div class="family-card-story">${esc(story)}</div>
       ${m.person_name?`<div class="small muted">👤 مرتبط با: ${esc(m.person_name)}</div>`:''}
@@ -2136,57 +2155,58 @@ function viewFamily(){
   const imageCount=approved.filter(p=>p.media_path).length;
   const opened=familyArchiveUI.openId?posts.find(p=>p.id===familyArchiveUI.openId):null;
   const categoryOptions=Object.entries(FAMILY_CATEGORIES).map(([k,v])=>`<option value="${k}" ${familyArchiveUI.category===k?'selected':''}>${v}</option>`).join('');
-  const villageOptions=FAMILY_VILLAGES.map(v=>`<option value="${esc(v)}" ${familyArchiveUI.village===v?'selected':''}>${esc(v)}</option>`).join('');
+  const villageOptions=FAMILY_VILLAGES.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  const sectionCards=FAMILY_SECTIONS.map(sec=>{
+    const items=approved.filter(p=>familyMeta(p).section===sec.id),n=items.length;
+    return `<section class="family-section-card" id="family-section-${sec.id}">
+      <div class="family-section-top"><div class="family-section-icon">${sec.icon}</div><div class="family-section-copy"><h3>${sec.title}</h3><p>${sec.desc}</p></div><span class="pill">${fa(n)} مورد</span></div>
+      <div class="family-section-actions"><button class="btn sm" type="button" data-act="familyadd" data-section="${sec.id}">＋ من هم اطلاعاتی دارم</button><button class="btn ghost sm" type="button" data-act="familysectionfilter" data-section="${sec.id}">مشاهدهٔ مطالب این بخش</button></div>
+      ${n?`<div class="family-gallery family-section-gallery">${items.slice(0,3).map(p=>familyArchiveCard(p,false)).join('')}</div>${n>3?`<p class="small muted">و ${fa(n-3)} مورد دیگر در این بخش</p>`:''}`:`<div class="family-section-empty">هنوز مطلبی در این بخش ثبت نشده است. <span>اولین مشارکت می‌تواند یک عکس، سند یا روایت کوتاه باشد.</span></div>`}
+    </section>`;
+  }).join('');
   return `<div class="stack">
-    <section class="family-hero">
-      <div class="family-mark">🏛️</div><h2>موزه‌ی زنده‌ی خاندان الله‌رضایی</h2>
-      <p>هر عکس، یک چهره؛ هر خاطره، پلی میان نسل‌ها. با کمک هم، گذشته‌ی خانواده را زنده و برای آیندگان نگهداری می‌کنیم.</p>
-      <div class="family-stats"><div class="family-stat"><b>${fa(approved.length)}</b><span>یادگار ثبت‌شده</span></div><div class="family-stat"><b>${fa(imageCount)}</b><span>تصویر آرشیوی</span></div><div class="family-stat"><b>${fa(pending.length)}</b><span>در انتظار بررسی</span></div></div>
+    <section class="family-hero"><div class="family-mark">📖</div><h2>کتابخانهٔ زندهٔ تاریخ خاندان الله‌رضایی</h2>
+      <p>این کتابخانه بر اساس فصل‌های «کتابچهٔ ریشه‌ها» از پیش چیده شده است. هر عضو خانواده می‌تواند دانسته، سند، عکس یا روایت خود را به فصل درست اضافه کند؛ مطالب پس از بررسی و مشخص‌شدن اعتبار، در تاریخچهٔ خانواده ثبت می‌شوند.</p>
+      <div class="family-stats"><div class="family-stat"><b>${fa(approved.length)}</b><span>مطلب تأییدشده</span></div><div class="family-stat"><b>${fa(imageCount)}</b><span>تصویر و سند تصویری</span></div><div class="family-stat"><b>${fa(pending.length)}</b><span>در انتظار بررسی</span></div></div>
     </section>
-    <section class="family-intro">
-      <div>📷 <b>عکس‌های قدیمی</b><span>چهره‌ها، خانه‌ها، کوچه‌ها و روستاها</span></div>
-      <div>📝 <b>روایت و خاطره</b><span>نام افراد، زمان و داستان پشت هر تصویر</span></div>
-      <div>🌳 <b>پیوند با شجره‌نامه</b><span>اتصال یادگارها به افراد و نسل‌های خانواده</span></div>
-    </section>
-    <section class="family-compose">
-      <div class="family-compose-head"><h3>✨ یک یادگار به موزه اضافه کنید</h3><p class="muted small" style="margin:3px 0 0">عکس قدیمی یا خاطره‌ای که ارزش ماندن دارد، اینجا ثبت کنید. موارد پس از بررسی مدیر وارد آرشیو می‌شوند.</p></div>
+    <section class="family-intro"><div>🧭 <b>ساختار از پیش آماده</b><span>فصل‌ها و موضوع‌ها مشخص‌اند؛ نیازی به ساخت صفحه از صفر نیست.</span></div><div>🧾 <b>منبع و اعتبار</b><span>روایت شفاهی، سند خانوادگی و اطلاعات تأییدشده از هم تفکیک می‌شوند.</span></div><div>🌳 <b>پیوند با شجره‌نامه</b><span>مطالب را می‌توان به افراد و نسل‌های ثبت‌شده وصل کرد.</span></div></section>
+    <section class="family-sections-head"><div><h3>فصل‌های کتابخانه</h3><p class="muted small">هر فصل یک جای مشخص برای تکمیل تاریخ خانواده دارد.</p></div></section>
+    <div class="family-sections-grid">${sectionCards}</div>
+    <details class="family-compose" id="familyCompose" ${familyArchiveUI.formOpen?'open':''}>
+      <summary class="family-compose-head"><h3>✍️ ثبت اطلاعات در کتابخانه</h3><p class="muted small" style="margin:3px 0 0">فصل انتخاب‌شده: <b id="familyComposeSection">${esc(FAMILY_SECTION_LABELS[familyArchiveUI.section]||'ابتدا فصل را انتخاب کنید')}</b></p></summary>
       <div class="family-compose-body">
         <form id="familyPostForm" class="stack" style="gap:12px">
           <div class="fields">
-            <label class="f"><span>عنوان یادگار *</span><input id="fp_title" maxlength="120" required placeholder="مثلاً: خانه‌ی قدیمی فرج‌الله در بودلا"></label>
-            <label class="f"><span>نوع یادگار</span><select id="fp_category">${categoryOptions}</select></label>
+            <label class="f"><span>فصل مرتبط *</span><select id="fp_section" required>${FAMILY_SECTIONS.map(x=>`<option value="${x.id}" ${familyArchiveUI.section===x.id?'selected':''}>${x.title}</option>`).join('')}</select></label>
+            <label class="f"><span>عنوان مطلب *</span><input id="fp_title" maxlength="120" required placeholder="مثلاً: روایت خانهٔ قدیمی فرج‌الله در بودلا"></label>
+            <label class="f"><span>نوع محتوا</span><select id="fp_category">${categoryOptions}</select></label>
             <label class="f"><span>روستا یا محل مرتبط</span><select id="fp_village"><option value="">انتخاب محل</option>${villageOptions}</select></label>
-            <label class="f"><span>حدود سال ثبت عکس</span><input id="fp_year" type="text" inputmode="numeric" maxlength="12" placeholder="مثلاً ۱۳۴۵ یا حدود ۱۳۵۰"></label>
+            <label class="f"><span>سال یا دورهٔ تقریبی</span><input id="fp_year" type="text" maxlength="30" placeholder="مثلاً ۱۳۴۵ یا حدود دههٔ ۱۳۳۰"></label>
             <label class="f"><span>فرد مرتبط در شجره‌نامه</span><select id="fp_person"><option value="">بدون اتصال به فرد مشخص</option>${linkedOptions}</select></label>
-            <label class="f"><span>نام افراد دیگر داخل عکس (اختیاری)</span><input id="fp_people" maxlength="250" placeholder="نام افراد، با ویرگول جدا کنید"></label>
-            <label class="f wide"><span>داستان عکس یا خاطره‌ی همراه آن</span><textarea id="fp_desc" rows="3" maxlength="1800" placeholder="چه کسانی در عکس هستند؟ کجا و چه مناسبتی؟ چه چیزی از آن روز به یاد مانده؟"></textarea></label>
+            <label class="f"><span>افراد دیگر مرتبط (اختیاری)</span><input id="fp_people" maxlength="250" placeholder="نام افراد، با ویرگول جدا کنید"></label>
+            <label class="f"><span>وضعیت اعتبار اطلاعات</span><select id="fp_certainty"><option value="unverified">نیازمند بررسی</option><option value="oral">روایت شفاهی خانواده</option><option value="document">دارای سند یا مدرک</option><option value="verified">بررسی و تأیید شده</option></select></label>
+            <label class="f wide"><span>منبع یا گویندهٔ اطلاعات</span><input id="fp_source" maxlength="250" placeholder="مثلاً دفتر ثبت ۱۳۰۹، نام بزرگ‌تر خانواده، پشت عکس یا سند"></label>
+            <label class="f wide"><span>شرح، روایت یا توضیحات *</span><textarea id="fp_desc" rows="4" maxlength="3500" placeholder="آنچه می‌دانید را بنویسید؛ اگر بخشی از اطلاعات قطعی نیست، همان‌جا ذکر کنید."></textarea></label>
           </div>
-          <label class="family-drop"><span style="font-size:2rem">📤</span><strong>افزودن تصویر قدیمی</strong><span class="muted small">JPG، PNG یا WebP · حداکثر ۸ مگابایت · انتخاب عکس اختیاری است</span><input id="fp_file" type="file" accept="image/jpeg,image/png,image/webp"></label>
-          <div class="fields">
-            <label class="f"><span>نحوه‌ی نمایش</span><select id="fp_visibility"><option value="private">فقط اعضای خانواده (پس از تأیید)</option><option value="public">عمومی (پس از تأیید مدیر)</option></select></label>
-          </div>
-          <button class="btn big" type="submit">ثبت یادگار در موزه‌ی خانواده</button>
-          <p class="muted small" style="margin:0">نام ارسال‌کننده به‌عنوان ثبت‌کننده‌ی یادگار ذخیره می‌شود. انتشار عمومی فقط پس از تأیید مدیر انجام خواهد شد.</p>
+          <label class="family-drop"><span style="font-size:2rem">📤</span><strong>افزودن عکس یا تصویر سند</strong><span class="muted small">JPG، PNG یا WebP · حداکثر ۸ مگابایت · اختیاری</span><input id="fp_file" type="file" accept="image/jpeg,image/png,image/webp"></label>
+          <label class="f"><span>نحوهٔ نمایش پس از تأیید</span><select id="fp_visibility"><option value="private">فقط اعضای خانواده</option><option value="public">عمومی</option></select></label>
+          <div class="row"><button class="btn big" type="submit">ثبت در فصل انتخاب‌شده</button><button class="btn ghost" type="button" data-act="familyformclose">انصراف</button></div>
+          <p class="muted small" style="margin:0">مطالب تازه ابتدا در وضعیت «در انتظار بررسی» می‌مانند. برچسب اعتبار، منبع و نام ثبت‌کننده همراه مطلب نگهداری می‌شود.</p>
         </form>
       </div>
-    </section>
-    ${pending.length?`<section class="stack"><h3>📥 یادگارهای در انتظار بررسی مدیر</h3><div class="family-gallery">${pending.map(p=>familyArchiveCard(p,true)).join('')}</div></section>`:''}
-    <section class="stack">
-      <div class="family-gallery-head"><div><h3>📚 گنجینه‌ی تصویری خانواده</h3><p class="muted small" style="margin:2px 0 0">یادگارهای تأییدشده، به ترتیب تازه‌ترین ثبت</p></div><span class="pill">${fa(approved.length)} مورد</span></div>
-      <div class="family-filters">
-        <input id="familySearch" type="text" placeholder="جست‌وجو در نام‌ها، خاطرات و مکان‌ها…" value="${esc(familyArchiveUI.q)}">
-        <select id="familyCategory"><option value="all">همه‌ی دسته‌ها</option>${categoryOptions}</select>
-        <select id="familyVillage"><option value="all">همه‌ی روستاها</option>${villageOptions}</select>
-      </div>
-      ${approved.length?`<div class="family-gallery" id="familyGallery">${approved.map(p=>familyArchiveCard(p,false)).join('')}</div><div id="familyNoFilter" class="family-empty" hidden>با این فیلترها یادگاری پیدا نشد.</div>`:'<div class="family-empty"><div style="font-size:3rem">🌿</div><h3>صفحه‌ی اول موزه هنوز خالی است</h3><p class="muted">اولین عکس قدیمی یا خاطره‌ی خانوادگی را شما اضافه کنید؛ این گنجینه با مشارکت همه ساخته می‌شود.</p></div>'}
+    </details>
+    ${pending.length?`<section class="stack"><h3>📥 مطالب در انتظار بررسی مدیر</h3><div class="family-gallery">${pending.map(p=>familyArchiveCard(p,true)).join('')}</div></section>`:''}
+    <section class="stack"><div class="family-gallery-head"><div><h3>📚 همهٔ مطالب تأییدشده</h3><p class="muted small" style="margin:2px 0 0">جست‌وجو و فیلتر در فصل‌ها و یادگارهای ثبت‌شده</p></div><span class="pill">${fa(approved.length)} مورد</span></div>
+      <div class="family-filters"><input id="familySearch" type="text" placeholder="جست‌وجو در نام‌ها، خاطرات، سندها و مکان‌ها…" value="${esc(familyArchiveUI.q)}"><select id="familyCategory"><option value="all">همهٔ انواع محتوا</option>${categoryOptions}</select><select id="familyVillage"><option value="all">همهٔ روستاها</option>${villageOptions}</select></div>
+      ${approved.length?`<div class="family-gallery" id="familyGallery">${approved.map(p=>familyArchiveCard(p,false)).join('')}</div><div id="familyNoFilter" class="family-empty" hidden>با این فیلترها مطلبی پیدا نشد.</div>`:'<div class="family-empty">هنوز مطلب تأییدشده‌ای ثبت نشده است؛ از یکی از فصل‌های بالا شروع کنید.</div>'}
     </section>
     ${opened?familyLightbox(opened):''}
   </div>`;
 }
 async function submitFamilyPost(){
   const title=val('#fp_title'),story=val('#fp_desc'),visibility=val('#fp_visibility'),file=$('#fp_file')?.files?.[0]||null;
-  const category=val('#fp_category')||'other',village=val('#fp_village'),photo_year=val('#fp_year'),person_id=val('#fp_person'),person_name=person_id&&S.people[person_id]?full(S.people[person_id]):'',people_names=val('#fp_people');
-  if(!title){toast('عنوان یادگار را وارد کنید.');return;}
+  const section=val('#fp_section')||'documents',category=val('#fp_category')||'other',village=val('#fp_village'),photo_year=val('#fp_year'),person_id=val('#fp_person'),person_name=person_id&&S.people[person_id]?full(S.people[person_id]):'',people_names=val('#fp_people'),certainty=val('#fp_certainty')||'unverified',source=val('#fp_source');
+  if(!title||!story.trim()){toast('عنوان و شرح مطلب را وارد کنید.');return;}
   if(file&&(!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size>8*1024*1024)){toast('فقط عکس JPG، PNG یا WebP تا حجم ۸ مگابایت پذیرفته می‌شود.');return;}
   let media_path=null;
   if(file){
@@ -2195,9 +2215,9 @@ async function submitFamilyPost(){
     const up=await fetch(CFG.url+'/storage/v1/object/shj-family-pending/'+media_path.split('/').map(encodeURIComponent).join('/'),{method:'POST',headers:{apikey:CFG.key,Authorization:'Bearer '+SB.tok,'Content-Type':file.type,'x-upsert':'false'},body:file});
     if(!up.ok)throw new Error(await up.text().catch(()=>'upload_failed'));
   }
-  const description=FAMILY_ARCHIVE_MARK+JSON.stringify({v:1,story,category,village,photo_year,person_id,person_name,people_names,contributor:fullName()});
+  const description=FAMILY_ARCHIVE_MARK+JSON.stringify({v:2,section,story,category,village,photo_year,person_id,person_name,people_names,certainty,source,contributor:fullName()});
   await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({title,description,media_path,visibility,status:'pending'})});
-  familyArchiveUI.q='';familyArchiveUI.category='all';familyArchiveUI.village='all';
+  familyArchiveUI.q='';familyArchiveUI.category='all';familyArchiveUI.village='all';familyArchiveUI.section='all';familyArchiveUI.formOpen=false;
   toast('یادگار شما ثبت شد و پس از بررسی مدیر در موزه نمایش داده می‌شود.');await loadFamilyPosts();
 }
 async function moderateFamilyPost(id,approve){
@@ -2893,6 +2913,9 @@ document.addEventListener('click',async ev=>{
   const a=el.dataset.act;
   try{
   if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||(el.dataset.tab==='admin'&&S.isAdmin)) await loadFamilyPosts(); }
+  else if(a==='familyadd'){ familyArchiveUI.section=el.dataset.section||'documents';familyArchiveUI.formOpen=true;renderView();setTimeout(()=>{const c=$('#familyCompose');if(c)c.scrollIntoView({behavior:'smooth',block:'center'});const t=$('#fp_title');if(t)t.focus();},80); }
+  else if(a==='familysectionfilter'){ familyArchiveUI.section=el.dataset.section||'all';familyArchiveUI.q='';familyArchiveUI.category='all';familyArchiveUI.village='all';const f=$('#familySearch');if(f)f.value='';familyApplyFilters();const g=$('#familyGallery');if(g)g.scrollIntoView({behavior:'smooth',block:'start'}); }
+  else if(a==='familyformclose'){familyArchiveUI.formOpen=false;renderView();}
   else if(a==='familyapprove'){ await moderateFamilyPost(el.dataset.id,true); }
   else if(a==='familyreject'){ await moderateFamilyPost(el.dataset.id,false); }
   else if(a==='familyopen'){ familyArchiveUI.openId=el.dataset.id; renderView(); }
