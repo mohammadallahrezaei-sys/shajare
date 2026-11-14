@@ -170,11 +170,11 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
 
 
 /* Dynamic family book pages */
-.digital-book-shell{gap:14px}.digital-book-page{box-sizing:border-box;background:#fffdf7;color:#342f27;border:1px solid #ded5c2;border-radius:12px;box-shadow:0 10px 28px #20190d12;padding:clamp(16px,3vw,34px);width:min(100%,calc(78vh * .707));aspect-ratio:210 / 297;height:auto;min-height:0;max-width:760px;margin:0 auto;line-height:1.72;overflow:hidden;position:relative}
+.digital-book-shell{gap:14px}.digital-book-page{box-sizing:border-box;background:#fffdf7;color:#342f27;border:1px solid #ded5c2;border-radius:12px;box-shadow:0 10px 28px #20190d12;padding:clamp(16px,2.4vw,30px);width:min(100%,calc(78vh * 1.414));aspect-ratio:297 / 210;height:auto;min-height:0;max-width:1100px;margin:0 auto;line-height:1.62;overflow:hidden;position:relative}
 .digital-book-page h1,.digital-book-page h2,.digital-book-page h3{color:#314b3c}.digital-book-cover{box-sizing:border-box;height:100%;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:clamp(14px,3vw,30px);background:linear-gradient(145deg,#f5ebd5,#e5d8b9);border:7px double #9c8860;border-radius:8px}.digital-book-cover h1{font-size:clamp(2.5rem,7vw,4.5rem);margin:12px 0;color:#38513d}.digital-book-cover p{max-width:600px}.digital-book-cover .book-cover-art{font-size:clamp(2rem,7vw,4rem);padding:18px}
 .digital-book-page .digital-book-intro{max-width:none}.digital-book-page .family-village-facts article{padding:10px}.digital-book-page .family-source-map{margin:10px 0!important}.digital-book-page .family-source-map svg{max-height:55%;width:auto!important;max-width:100%;margin:auto}.digital-book-page .digital-book-entry{grid-template-columns:minmax(80px,34%) 1fr;gap:10px;padding:8px 0}.digital-book-page .digital-book-entry img{max-height:170px}.digital-book-page p{margin:.55em 0}.digital-book-page h2{font-size:1.25rem;margin:.4em 0}.digital-book-page h3{font-size:1.05rem}
 .digital-book-intro{max-width:850px;margin:auto}.digital-book-entries{display:grid;gap:16px;margin-top:26px}.digital-book-entry{display:grid;grid-template-columns:minmax(120px,220px) 1fr;gap:18px;padding:16px 0;border-top:1px solid #e4ddcf;align-items:start}.digital-book-entry img{width:100%;max-height:210px;object-fit:contain;border-radius:8px;background:#eee8dc}.digital-book-entry h3{margin:6px 0}.digital-book-entry p{white-space:pre-wrap}.digital-book-roots{padding-right:22px}
-@media(max-width:600px){.digital-book-entry{grid-template-columns:1fr}.digital-book-entry img{max-height:250px}.digital-book-page{padding:16px;min-height:55vh}}
+@media(max-width:600px){.digital-book-entry{grid-template-columns:1fr}.digital-book-entry img{max-height:250px}.digital-book-page{width:100%;aspect-ratio:297 / 210;padding:12px;min-height:0}.digital-book-page h2{font-size:1.05rem}}
 
 /* Original 10-page family booklet reader */
 .family-book-reader{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);box-shadow:0 10px 30px #172b2410}
@@ -2225,6 +2225,23 @@ async function loadFamilyPosts(){
   S.familyPosts=list;
   if(S.tab==='family'||S.tab==='tools'||S.tab==='admin') renderView();
 }
+async function editFamilyPost(id){
+  if(!S.isAdmin)throw new Error('فقط مدیر می‌تواند یادگارها را اصلاح کند.');
+  const post=(S.familyPosts||[]).find(x=>x.id===id);if(!post)return;
+  const meta=familyMeta(post);
+  const title=prompt('عنوان یادگار را اصلاح کنید:',post.title||'');if(title===null)return;
+  const story=prompt('شرح یادگار را اصلاح کنید:',meta.story||'');if(story===null)return;
+  if(!title.trim()||!story.trim()){toast('عنوان و شرح نمی‌توانند خالی باشند.');return;}
+  meta.story=story.trim();
+  await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({title:title.trim(),description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta)})});
+  await loadFamilyPosts();toast('یادگار اصلاح شد.');
+}
+async function cancelFamilyPost(id){
+  if(!S.isAdmin)throw new Error('فقط مدیر می‌تواند انتشار را لغو کند.');
+  if(!confirm('این یادگار از کتابچه و نمایش عمومی خارج شود؟'))return;
+  await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'rejected'})});
+  await loadFamilyPosts();toast('انتشار یادگار لغو شد؛ اطلاعات آن در آرشیو مدیر باقی ماند.');
+}
 function familyArchiveCard(p,admin){
   const m=familyMeta(p),img=familyMediaUrl(p),stat=p.status==='pending'?'در انتظار بررسی':p.status==='approved'?'تأییدشده':'ردشده';
   const story=m.story||'برای این یادگار هنوز توضیحی ثبت نشده است.';
@@ -2240,7 +2257,7 @@ function familyArchiveCard(p,admin){
       ${m.person_name?`<div class="small muted">👤 مرتبط با: ${esc(m.person_name)}</div>`:''}
       ${m.people_names?`<div class="small muted">همراهان عکس: ${esc(m.people_names)}</div>`:''}
       <div class="family-card-foot"><span class="muted small">${esc(stat)} · ${esc(new Date(p.created_at).toLocaleDateString('fa-IR'))}</span>
-      ${admin&&p.status==='pending'?`<span class="family-review"><button class="btn sm" data-act="familyapprove" data-id="${esc(p.id)}">تأیید</button><button class="btn danger sm" data-act="familyreject" data-id="${esc(p.id)}">رد</button></span>`:''}</div>
+      ${admin?`<span class="family-review"><button class="btn sm" data-act="familyedit" data-id="${esc(p.id)}">اصلاح</button><button class="btn danger sm" data-act="familycancel" data-id="${esc(p.id)}">لغو انتشار</button></span>`:''}</div>
     </div>
   </article>`;
 }
@@ -2316,12 +2333,12 @@ function viewFamily(){
     <section class="family-preface">
       <div class="book-section-label">مشارکت در تاریخ خانواده</div>
       <h2>یک عکس، سند یا خاطره را به کتابچه اضافه کنید</h2>
-      <p>قرار نیست متن تاریخی بنویسید؛ هرچه از یک عکس یا خاطره می‌دانید ساده و به زبان خودتان ثبت کنید. ما پس از بررسی، آن را مرتب می‌کنیم و در فصل مناسب کتابچه قرار می‌دهیم.</p>
+      <p>قرار نیست متن تاریخی بنویسید؛ هرچه از یک عکس یا خاطره می‌دانید ساده و به زبان خودتان ثبت کنید. مطلب بلافاصله در فصل مربوط کتابچه دیده می‌شود و مدیر بعداً می‌تواند آن را اصلاح یا از انتشار خارج کند.</p>
       <div class="grid2" style="margin:16px 0">
         <article class="family-step"><b>۱ · شما چه می‌کنید؟</b><p>نوع یادگار را انتخاب می‌کنید، چند مشخصه می‌نویسید و در صورت داشتن، عکس یا فایل را می‌فرستید.</p></article>
-        <article class="family-step"><b>۲ · بعد از ثبت چه می‌شود؟</b><p>یادگار ابتدا برای بررسی مدیر ذخیره می‌شود؛ تا زمان تأیید، وارد کتابچهٔ اصلی نمی‌شود.</p></article>
+        <article class="family-step"><b>۲ · بعد از ثبت چه می‌شود؟</b><p>یادگار بلافاصله منتشر می‌شود و در کتابچه قرار می‌گیرد؛ مدیر در صورت نیاز می‌تواند آن را اصلاح یا لغو کند.</p></article>
         <article class="family-step"><b>۳ · خروجی شما چیست؟</b><p>یک صفحه یا کارت در فصل مرتبط کتابچه، با عنوان، عکس، توضیح، نام افراد و محل/سال (هرکدام را داشته باشید).</p></article>
-        <article class="family-step"><b>۴ · کجا می‌بینید؟</b><p>از دکمهٔ «دیدن کتابچه» می‌توانید نسخهٔ به‌روز را ورق بزنید. مطالب تأییدشده به آن اضافه می‌شوند.</p></article>
+        <article class="family-step"><b>۴ · کجا می‌بینید؟</b><p>پس از ثبت، مستقیماً به صفحهٔ یادگار خودتان در کتابچه منتقل می‌شوید؛ شماره و عنوان صفحه نیز مشخص است.</p></article>
       </div>
       <div class="row" style="flex-wrap:wrap;align-items:center">
         <button class="btn" type="button" data-act="tab" data-tab="book">📖 دیدن کتابچه و خروجی نهایی</button>
@@ -2355,9 +2372,9 @@ function viewFamily(){
         <label class="f"><span>شرح یادگار *</span><textarea id="fc_story" required rows="5" placeholder="این عکس یا سند کجا و چه زمانی تهیه شده؟ چه کسانی در آن هستند؟ این ماجرا را از چه کسی شنیده‌اید؟ هرچه می‌دانید بنویسید."></textarea><small class="muted">اگر بخشی از روایت قطعی نیست، آن را با عبارت «احتمالاً» یا «نقل شده است» مشخص کنید.</small></label>
         <label class="f"><span>راوی یا منبع اطلاعات (اختیاری)</span><input id="fc_source" placeholder="مثلاً نقل از مادربزرگ، پشت‌نویسی عکس، دفتر خانوادگی"></label>
       </section>
-      <div class="note" style="margin:0"><b>انتشار در موزهٔ خانوادگی</b><p style="margin:5px 0 0">همهٔ یادگارهای تأییدشده در کتابچه و موزه برای همهٔ بازدیدکنندگان قابل مشاهده خواهند بود؛ دیگر نیازی به انتخاب سطح دسترسی نیست.</p></div>
-      <button class="btn big" type="submit">ثبت یادگار و ارسال برای بررسی</button>
-      <p class="muted small" style="margin:0">پس از ثبت، پیام نتیجه نمایش داده می‌شود و وضعیت یادگار در همین صفحه قابل پیگیری است. انتشار در کتابچه فقط بعد از تأیید مدیر انجام می‌شود.</p>
+      <div class="note" style="margin:0"><b>انتشار در موزهٔ خانوادگی</b><p style="margin:5px 0 0">همهٔ یادگارها بلافاصله پس از ثبت برای همهٔ بازدیدکنندگان قابل مشاهده‌اند. مدیر می‌تواند بعداً مطلب را اصلاح یا لغو انتشار کند.</p></div>
+      <button class="btn big" type="submit">ثبت و مشاهده در کتابچه</button>
+      <p class="muted small" style="margin:0">پس از ثبت، کتابچه باز می‌شود و شما را مستقیماً به صفحهٔ مطلبتان می‌برد.</p>
     </form>
     <section class="card stack">
       <div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap"><div><h3 style="margin:0">یادگارهای ثبت‌شده</h3><p class="muted small" style="margin:4px 0 0">نمونهٔ خروجی‌ها و وضعیت بررسی آن‌ها</p></div><span class="pill">${fa(posts.length)} مورد</span></div>
@@ -2377,16 +2394,21 @@ async function submitFamilyContribution(){
       if(file.size>20*1024*1024)throw new Error('حجم فایل نباید بیشتر از ۲۰ مگابایت باشد.');
       const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase()||'jpg';
       media_path='family/'+id+'.'+ext;
-      await sbFetch('/storage/v1/object/shj-family-pending/'+media_path,{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream','x-upsert':'true'},body:file});
+      await sbFetch('/storage/v1/object/shj-family-public/'+media_path,{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream','x-upsert':'true'},body:file});
     }
-    await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({id,title,description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta),media_path,visibility:'public',status:'pending'})});
-    toast('یادگار شما برای بررسی مدیر ثبت شد.');
-    await loadFamilyPosts(); renderView();
+    await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({id,title,description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta),media_path,visibility:'public',status:'approved'})});
+    await loadFamilyPosts();
+    S.tab='book';
+    const bookPages=familyDigitalBookPages();
+    const target=bookPages.findIndex(pg=>pg.html.includes(esc(title)));
+    familyDigitalState.page=target>=0?target:1;
+    renderView();
+    toast('یادگار منتشر شد؛ صفحهٔ مربوط در کتابچه باز شد.');
   }catch(e){console.error(e);toast('ثبت انجام نشد: '+(e.message||'دسترسی پایگاه داده یا فضای ذخیره‌سازی را بررسی کنید.'));}
 }
 function familyDigitalBookPages(){
   const approved=(S.familyPosts||[]).filter(p=>p.status==='approved');
-  const pages=[{title:'روی جلد',eyebrow:'میراث خانوادگی',html:`<div class="digital-book-cover"><div class="book-cover-kicker">میراث خانوادگی · نسخهٔ زنده</div><h1>ریشه‌ها</h1><p>چنگ‌الماس و روستاهای بودلا، خودلان، زرین‌آباد و خسروآباد</p><div class="book-cover-art">🌄 🏡 🌳</div><p>این کتاب با ثبت و تأیید اطلاعات تازه، فصل به فصل کامل‌تر می‌شود.</p><small>آخرین بازسازی: ${new Date().toLocaleDateString('fa-IR')}</small></div>` }];
+  const pages=[{title:'روی جلد',eyebrow:'میراث خانوادگی',html:`<div class="digital-book-cover"><div class="book-cover-kicker">میراث خانوادگی · نسخهٔ زنده</div><h1>ریشه‌ها</h1><p>چنگ‌الماس و روستاهای بودلا، خودلان، زرین‌آباد و خسروآباد</p><div class="book-cover-art">🌄 🏡 🌳</div><p>این کتاب با ثبت اطلاعات تازه، فصل به فصل کامل‌تر می‌شود.</p><small>آخرین بازسازی: ${new Date().toLocaleDateString('fa-IR')}</small></div>` }];
   for(const sec of FAMILY_SECTIONS){
     const base=FAMILY_EDITORIAL_CONTENT[sec.id]||{};
     const items=approved.filter(p=>familyMeta(p).section===sec.id);
@@ -2414,31 +2436,31 @@ function familyDigitalBookPages(){
   galleryImages.forEach((g,i)=>pages.push({title:'عکس تاریخی '+(i+1),eyebrow:'آلبوم تصویری بیجار · ۱۹۱۷ تا ۱۹۱۸',html:`<div class="digital-book-intro"><h2>${esc(g[0])}</h2><figure style="margin:12px 0;text-align:center"><img src="${g[2]}" alt="${esc(g[4])}" loading="lazy" style="display:block;width:100%;max-height:52%;height:auto;object-fit:contain;margin:auto;border-radius:10px"><figcaption style="font-size:.82rem;line-height:1.8;margin-top:12px">${esc(g[1])}<br><a href="${g[3]}" target="_blank" rel="noopener">مشاهدهٔ شناسنامهٔ عکس در آرشیو</a></figcaption></figure><p class="muted small" style="line-height:1.8;padding:10px;background:var(--surface-2);border-radius:8px">این تصویر از بیجار و مسیرهای پیرامون آن است، نه عکس مستند از خودِ روستاهای بودلا، خودلان، زرین‌آباد یا خسروآباد. آرشیو Australian War Memorial وضعیت مالکیت عمومی (Public Domain) را برای این عکس اعلام کرده است.</p></div>`}));
   const T=buildTree(), roots=(T.roots||[]).map(r=>{const p=T.P[r.id];return p?`<li><b>${esc(full(p))}</b> · ${fa(r.size)} نفر در شاخه</li>`:''}).join('');
   pages.push({title:'شجره و ریشه‌های زنده',eyebrow:'پیوند نسل‌ها',html:`<div class="digital-book-intro"><h2>ریشه‌های ثبت‌شده در شجره‌نامه</h2><p>این صفحه مستقیماً از رابطه‌های والد و فرزند در شجره‌نامه ساخته می‌شود؛ با ثبت افراد و اصلاح نسبت‌ها، ریشه‌ها و تعداد اعضای شاخه‌ها خودکار تغییر می‌کنند.</p><p><b>${fa(Object.keys(T.P||{}).length)}</b> فرد · <b>${fa((T.roots||[]).length)}</b> ریشهٔ شناسایی‌شده</p><ul class="digital-book-roots">${roots||'<li>هنوز ریشه‌ای ثبت نشده است.</li>'}</ul>${treeRootsOverviewHTML(T)}</div>`});
-  // گالری تاریخی پس از جلد و پیش از فصل‌های محتوایی قرار می‌گیرد.
+  // تمام صفحات گالری (معرفی و سه عکس) بلافاصله پس از جلد قرار می‌گیرند.
   const galleryIndex=pages.findIndex(p=>p.title==='گالری تاریخی بیجار و گروس');
-  if(galleryIndex>1){const gallery=pages.splice(galleryIndex,1)[0];pages.splice(1,0,gallery);}
+  if(galleryIndex>1){const galleryPages=pages.splice(galleryIndex,4);pages.splice(1,0,...galleryPages);}
   return pages;
 }
 function viewFamilyBook(){
   const pages=familyDigitalBookPages(),max=pages.length;
   familyDigitalState.page=Math.max(0,Math.min(familyDigitalState.page,max-1));
   const p=pages[familyDigitalState.page];
-  return `<div class="stack digital-book-shell"><div class="family-book-reader-head"><div><h2>📖 کتابچهٔ زندهٔ «ریشه‌ها»</h2><p>فصل‌ها و تعداد صفحات با اطلاعات تأییدشده به‌روز می‌شوند.</p></div><button class="btn sm" data-act="tab" data-tab="family">＋ ثبت مطلب تازه</button></div><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>صفحهٔ قبل</button><span class="family-book-page-count">${fa(familyDigitalState.page+1)} از ${fa(max)}</span><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>صفحهٔ بعد</button><select id="digitalBookJump" aria-label="رفتن به فصل">${pages.map((x,i)=>`<option value="${i}" ${i===familyDigitalState.page?'selected':''}>${esc(x.title)}</option>`).join('')}</select></div><article class="digital-book-page"><div class="book-section-label">${esc(p.eyebrow)}</div>${p.html}</article><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>قبلی</button><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>بعدی</button><span class="muted small">با هر مطلب تأییدشده، صفحات مرتبط به‌طور خودکار تکمیل می‌شوند.</span></div></div>`;
+  return `<div class="stack digital-book-shell"><div class="family-book-reader-head"><div><h2>📖 کتابچهٔ زندهٔ «ریشه‌ها»</h2><p>فصل‌ها و تعداد صفحات با ثبت مطالب تازه به‌روز می‌شوند.</p></div><button class="btn sm" data-act="tab" data-tab="family">＋ ثبت مطلب تازه</button></div><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>صفحهٔ قبل</button><span class="family-book-page-count">${fa(familyDigitalState.page+1)} از ${fa(max)}</span><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>صفحهٔ بعد</button><select id="digitalBookJump" aria-label="رفتن به فصل">${pages.map((x,i)=>`<option value="${i}" ${i===familyDigitalState.page?'selected':''}>${esc(x.title)}</option>`).join('')}</select></div><article class="digital-book-page"><div class="book-section-label">${esc(p.eyebrow)}</div>${p.html}</article><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>قبلی</button><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>بعدی</button><span class="muted small">با هر مطلب تأییدشده، صفحات مرتبط به‌طور خودکار تکمیل می‌شوند.</span></div></div>`;
 }
 
 function viewAdmin(){
   if(!S.isAdmin) return '<div class="note bad">این بخش فقط برای مدیر است.</div>';
-  const pl=pendingList(), fposts=(S.familyPosts||[]).filter(p=>p.status==='pending');
+  const pl=pendingList(), fposts=(S.familyPosts||[]);
   const nG=lastGroups().length+['place','job'].reduce((t,k)=>t+Object.values(valGroups(k)).filter(v=>Object.keys(v).length>1).length,0);
   const parents=Object.entries(S.people).filter(([id,p])=>!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
   const real=parents.length, pendingTotal=pl.length+fposts.length+(S.claims||[]).length+(S.reports||[]).length;
   return `<div class="stack">
   <section class="card stack"><div class="row" style="justify-content:space-between"><div><h2>🧭 میزکار مدیریت</h2><p class="muted small" style="margin:0">برای خلوت ماندن صفحه، هر بخش را فقط هنگام نیاز باز کنید.</p></div><span class="pill adm">مدیر</span></div>
-  <div class="admin-overview"><div class="kpi"><b>${fa(real)}</b><span>پروندهٔ اعضا</span></div><div class="kpi"><b>${fa(pendingTotal)}</b><span>موارد نیازمند بررسی</span></div><div class="kpi"><b>${fa(nG)}</b><span>گروه نیازمند یکسان‌سازی</span></div><div class="kpi"><b>${fa(fposts.length)}</b><span>عکس و خاطرهٔ جدید</span></div></div>
+  <div class="admin-overview"><div class="kpi"><b>${fa(real)}</b><span>پروندهٔ اعضا</span></div><div class="kpi"><b>${fa(pendingTotal)}</b><span>موارد نیازمند بررسی</span></div><div class="kpi"><b>${fa(nG)}</b><span>گروه نیازمند یکسان‌سازی</span></div><div class="kpi"><b>${fa(fposts.length)}</b><span>یادگارهای موزه</span></div></div>
   <p class="small muted" style="margin:0">${pendingTotal?'ابتدا بخش «بررسی و تأیید» را باز کنید.':'در حال حاضر مورد فوری برای بررسی ندارید.'}</p></section>
   <details class="admin-group" ${pendingTotal?'open':''}><summary>📥 بررسی و تأیید <span class="pill">${fa(pendingTotal)}</span></summary><div class="admin-group-body">
     ${reportsHTML()}${claimsHTML()}
-    ${fposts.length?`<section class="card stack"><h3>عکس‌ها و خاطره‌های خانوادگی در انتظار تأیید</h3>${fposts.map(p=>familyPostCard(p,true)).join('')}</section>`:''}
+    ${fposts.length?`<section class="card stack"><h3>مدیریت عکس‌ها و خاطره‌های خانوادگی</h3>${fposts.map(p=>familyArchiveCard(p,true)).join('')}</section>`:''}
     <section class="card"><div class="row" style="justify-content:space-between"><h3>اطلاعات ثبت‌شده در انتظار تأیید (${fa(pl.length)})</h3>${pl.length>1?'<button class="btn sm" data-act="approveall">تأیید همه</button>':''}</div>${pl.length?`<ul class="list" style="margin-top:12px">${pl.map(pendCard).join('')}</ul>`:'<p class="muted" style="margin-bottom:0">موردی در انتظار نیست.</p>'}</section>
   </div></details>
   <details class="admin-group"><summary>👨‍👩‍👧 اعضا و دسترسی‌ها</summary><div class="admin-group-body">
@@ -3123,8 +3145,8 @@ document.addEventListener('click',async ev=>{
   else if(a==='familyadd'){ familyArchiveUI.section=el.dataset.section||'documents';familyArchiveUI.formOpen=true;renderView();setTimeout(()=>{const c=$('#familyCompose');if(c)c.scrollIntoView({behavior:'smooth',block:'center'});const t=$('#fp_title');if(t)t.focus();},80); }
   else if(a==='familysectionfilter'){ familyArchiveUI.section=el.dataset.section||'all';familyArchiveUI.q='';familyArchiveUI.category='all';familyArchiveUI.village='all';const f=$('#familySearch');if(f)f.value='';familyApplyFilters();const g=$('#familyGallery');if(g)g.scrollIntoView({behavior:'smooth',block:'start'}); }
   else if(a==='familyformclose'){familyArchiveUI.formOpen=false;renderView();}
-  else if(a==='familyapprove'){ await moderateFamilyPost(el.dataset.id,true); }
-  else if(a==='familyreject'){ await moderateFamilyPost(el.dataset.id,false); }
+  else if(a==='familyedit'){ await editFamilyPost(el.dataset.id); }
+  else if(a==='familycancel'){ await cancelFamilyPost(el.dataset.id); }
   else if(a==='familyopen'){ familyArchiveUI.openId=el.dataset.id; renderView(); }
   else if(a==='familyclose'){ familyArchiveUI.openId=''; renderView(); }
   else if(a==='familystay'){ return; }
