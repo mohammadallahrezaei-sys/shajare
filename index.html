@@ -3475,9 +3475,9 @@ function drawArt(T,imgs){
   const bcol=n=>n.ci<0?'#806044':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
   const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.kw=n.kids.reduce((a,k)=>a+k.aw,0)+SIBLING_GAP*Math.max(0,n.kids.length-1);n.aw=Math.max(n.kw,n.cw+64);};
   T.roots.forEach(lay);
-  // Large sibling groups are staggered inside a generation band, rather than forced onto one ruler-straight row.
-  const rowPattern=[0,1,-1,2,-2,3,-3,4,-4];
-  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>3?rowPattern[i%rowPattern.length]*42:0;stagger(k);});};
+  // Siblings sit at subtly different heights, like a natural branching tree, not on rigid generation-wide rows.
+  const rowOffsetFor=i=>(i===0?0:(i%2?1:-1)*Math.ceil(i/2)*48);
+  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>1?rowOffsetFor(i):0;stagger(k);});};
   T.roots.forEach(n=>{n.rowOffset=0;stagger(n);});
   // Each sibling group receives real horizontal breathing room; the parent stays centered over that group.
   const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw-n.kw)/2+n.kw;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw+SIBLING_GAP;});};
