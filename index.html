@@ -3290,7 +3290,25 @@ function drawArt(T,imgs){
     c.save();c.beginPath();c.arc(x,y,R,0,Math.PI*2);c.clip();
     const im=imgs[id];
     if(im){const sz=Math.max(2*R/im.width,2*R/im.height),iw=im.width*sz,ih=im.height*sz;if(p.dead){try{c.filter='grayscale(1)';}catch(e){}}c.drawImage(im,x-iw/2,y-ih/2,iw,ih);}
-    else{c.fillStyle=gender+'22';c.fillRect(x-R,y-R,2*R,2*R);c.fillStyle=gender;c.font='700 36px Vazirmatn, Tahoma, sans-serif';c.fillText((p.first||'؟').trim()[0]||'؟',x,y+1);}
+    else{
+      const ink=gender, bg=p.gender==='m'?'#e7f0f4':p.gender==='f'?'#f3e9ee':'#edf0eb';
+      c.fillStyle=bg;c.fillRect(x-R,y-R,2*R,2*R);
+      c.save();c.translate(x,y);c.fillStyle=ink;
+      // شمایل جنسیت‌محور؛ مرد با موی کوتاه و زن با موی بلند
+      if(p.gender==='f'){
+        c.beginPath();c.moveTo(-23,-7);c.quadraticCurveTo(-25,-34,0,-35);c.quadraticCurveTo(25,-34,23,-7);c.lineTo(21,25);c.quadraticCurveTo(16,32,11,24);c.lineTo(9,2);c.lineTo(-9,2);c.lineTo(-11,24);c.quadraticCurveTo(-17,32,-21,25);c.closePath();c.fill();
+        c.beginPath();c.arc(0,-12,14,0,Math.PI*2);c.fillStyle=bg;c.fill();
+        c.fillStyle=ink;c.beginPath();c.moveTo(-30,36);c.quadraticCurveTo(-27,9,-10,8);c.lineTo(10,8);c.quadraticCurveTo(27,9,30,36);c.closePath();c.fill();
+      }else if(p.gender==='m'){
+        c.beginPath();c.arc(0,-12,14,0,Math.PI*2);c.fill();
+        c.beginPath();c.moveTo(-15,-14);c.quadraticCurveTo(-17,-33,0,-33);c.quadraticCurveTo(17,-33,15,-14);c.quadraticCurveTo(7,-21,0,-21);c.quadraticCurveTo(-8,-21,-15,-14);c.fill();
+        c.beginPath();c.moveTo(-29,36);c.quadraticCurveTo(-26,8,-10,8);c.lineTo(10,8);c.quadraticCurveTo(26,8,29,36);c.closePath();c.fill();
+      }else{
+        c.beginPath();c.arc(0,-12,14,0,Math.PI*2);c.fill();
+        c.beginPath();c.moveTo(-29,36);c.quadraticCurveTo(-26,8,-10,8);c.lineTo(10,8);c.quadraticCurveTo(26,8,29,36);c.closePath();c.fill();
+      }
+      c.restore();
+    }
     c.restore();
     c.strokeStyle='#f8f0df';c.lineWidth=8;c.beginPath();c.arc(x,y,R+2,0,Math.PI*2);c.stroke();
     // Uneven hand-inked medallion rim instead of a mechanical dotted border.
