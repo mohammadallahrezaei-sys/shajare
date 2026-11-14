@@ -4123,9 +4123,13 @@ function renderView(){
   if(S.tab==='research') S.tab='home';
   trackView();
   const v=$('#view'); if(!v) return;
+  // Keep expanded admin accordion panels open when an action refreshes the admin view.
+  const adminGroupsOpen=S.tab==='admin'?Array.from(v.querySelectorAll('.admin-group'),el=>el.open):null;
   const f={home:viewHome,tree:viewTree,relations:viewRelations,timeline:viewTimeline,map:viewMap,smart:viewSmart,research:viewResearch,audit:viewAudit,stats:viewStats,add:viewAdd,tools:viewTools,growth:viewGrowth,life:viewLife,family:viewFamily,book:viewFamilyBook,admin:viewAdmin,archive:viewPrivateArchive}[S.tab]||viewHome;
   v.classList.toggle('tree-page',S.tab==='tree');
-  v.innerHTML=subnavHTML()+f(); if(S.familyPosts&&(familyArchiveUI.openId||familyArchiveUI.editId)) v.insertAdjacentHTML('beforeend',familyOverlayHTML());
+  v.innerHTML=subnavHTML()+f();
+  if(adminGroupsOpen){v.querySelectorAll('.admin-group').forEach((el,i)=>{if(i<adminGroupsOpen.length)el.open=adminGroupsOpen[i];});}
+  if(S.familyPosts&&(familyArchiveUI.openId||familyArchiveUI.editId)) v.insertAdjacentHTML('beforeend',familyOverlayHTML());
   if(S.tab==='family') updateFamilyContributionGuide();
   if(S.tab==='map'){if($('#familyPlacesMap'))initFamilyPlacesMap();if($('#kinMap'))initKinMap();}
   if(S.tab==='tree'&&S.mode==='art') renderArt();
