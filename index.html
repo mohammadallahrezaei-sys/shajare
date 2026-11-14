@@ -3475,7 +3475,7 @@ function drawArt(T,imgs){
     let childCi=ci;
     if(n.spouses&&n.spouses.length&&n.kids.length){
       childCi=bi++;
-      if(childCi%BRANCH_COLORS.length===ci%BRANCH_COLORS.length) childCi++;
+      if(childCi%BRANCH_COLORS.length===ci%BRANCH_COLORS.length) childCi=bi++;
       brs.push({k:n,ci:childCi,married:true});
     }
     n.kids.forEach(k=>assign(k,childCi,off));
