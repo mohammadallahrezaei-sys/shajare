@@ -808,6 +808,18 @@ label.f>span,div.f>span{font-weight:600}
 .timeline-ring{flex:0 0 30px;display:flex;align-items:center;justify-content:center;align-self:center;margin:0 -3px;font-size:23px;line-height:1;filter:drop-shadow(0 2px 2px #0002);z-index:2}
 .timeline-event--marriage .timeline-ring{transform:rotate(-12deg)}
 @media(max-width:600px){.timeline-couple .timeline-person{flex-basis:70px;max-width:70px}.timeline-couple .timeline-person img,.timeline-couple .timeline-person .timeline-avatar{width:52px;height:52px}.timeline-ring{font-size:21px;flex-basis:26px}}
+</style><style id="timeline-event-symbols">
+/* Replace generic timeline dots with event-specific symbols */
+.timeline-event i.timeline-point{top:-29px;right:calc(50% - 15px);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);font-style:normal;font-size:17px;line-height:1;border:2px solid var(--line);box-shadow:0 2px 7px #0002;z-index:4}
+.timeline-event i.timeline-point:before{display:block}
+.timeline-event--birth i.timeline-point{border-color:#c58a32;color:#a56c18;background:var(--surface)}
+.timeline-event--birth i.timeline-point:before{content:"✦"}
+.timeline-event--marriage i.timeline-point{border-color:#b85e7d;color:#a34466;background:var(--surface);font-size:16px}
+.timeline-event--marriage i.timeline-point:before{content:"💍"}
+.timeline-event--death i.timeline-point{border-color:#718096;color:#64748b;background:var(--surface)}
+.timeline-event--death i.timeline-point:before{content:"✝"}
+.timeline-event--memory i.timeline-point{border-color:#4b91a5;color:#357b90;background:var(--surface)}
+.timeline-event--memory i.timeline-point:before{content:"▤"}
 </style></head>
 <body>
 <div class="wrap" id="root"></div>
