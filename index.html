@@ -3348,6 +3348,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='lifeprint'){ window.print(); }
   else if(a==='setparentpin'){ await adminSetParentPin(el.dataset.id); }
   else if(a==='revokeparent'){ await adminRevokeParent(el.dataset.id); }
+  else if(a==='smartalert'){ const ids=(el.dataset.ids||'').split(',').filter(x=>S.people[x]); if(ids.length)openModal(ids[0]); else gotoTab('family'); }
   else if(a==='person'){ ev.preventDefault(); const r=$('#qres'); if(r) r.hidden=true; if(el.dataset.loc&&locatePerson(el.dataset.id)) return; openModal(el.dataset.id); }
   else if(a==='close') closeModal();
   else if(a==='pnext'){ if(S.pstep===1&&!step1Ok()) return; if(S.pstep===2&&!step2Ok()) return; setStep(Math.min(maxPersonStep(),(S.pstep||1)+1)); }
