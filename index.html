@@ -4142,7 +4142,7 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
   if(e.pointerType!=='mouse'||e.button!==0)return;
   if(e.target.closest('button,a,input,select,textarea,[contenteditable="true"],.leaflet-control'))return;
   const surface=findSurface(e.target);if(!surface)return;
-  drag={surface,id:e.pointerId,x:e.clientX,y:e.clientY,left:readX(surface),top:surface.scrollTop,moved:false};
+  drag={surface,id:e.pointerId,x:e.clientX,y:e.clientY,left:readX(surface),top:surface.scrollTop,pageLeft:window.scrollX,pageTop:window.scrollY,moved:false};
   // Do not capture the pointer on the scroll surface: SVG person clicks must retain their true target.
  },true);
  document.addEventListener('pointermove',e=>{
@@ -4150,8 +4150,12 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
   if(!drag.moved&&Math.hypot(dx,dy)<3)return;
   drag.moved=true;drag.surface.classList.add('diagram-mouse-dragging');
-  writeX(drag.surface,drag.left-dx);
-  drag.surface.scrollTop=drag.top-dy;
+  const sx=drag.surface.scrollWidth>drag.surface.clientWidth+2;
+  const sy=drag.surface.scrollHeight>drag.surface.clientHeight+2;
+  if(sx)writeX(drag.surface,drag.left-dx);
+  if(sy)drag.surface.scrollTop=drag.top-dy;
+  if(!sx&&Math.abs(dx)>Math.abs(dy))window.scrollTo(drag.pageLeft-dx,window.scrollY);
+  if(!sy&&Math.abs(dy)>=Math.abs(dx))window.scrollTo(window.scrollX,drag.pageTop-dy);
   e.preventDefault();
  },{capture:true,passive:false});
  const finish=e=>{
