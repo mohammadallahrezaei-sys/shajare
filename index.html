@@ -612,6 +612,14 @@ label.f>span,div.f>span{font-weight:600}
 
 .skip-link{position:fixed;top:8px;right:8px;z-index:120;transform:translateY(-160%);background:var(--ink);color:var(--surface);padding:9px 14px;border-radius:10px;font-weight:700;text-decoration:none;box-shadow:var(--elev-2)}
 .skip-link:focus{transform:translateY(0)}
+
+.fc-select-group{align-self:start;gap:7px}
+.fc-select-group>label{font-weight:700;color:var(--text);font-size:.9rem}
+.fc-guide{background:var(--soft,rgba(30,91,80,.08));border:1px solid var(--line);border-right:4px solid var(--accent,var(--primary));border-radius:9px;padding:10px 12px;color:var(--text);font-size:.84rem;line-height:1.9;min-height:68px}
+.fc-guide-kicker{display:block;font-size:.72rem;font-weight:800;color:var(--primary);margin-bottom:2px}
+.fc-guide strong{display:block;font-size:.9rem;margin-bottom:2px}
+.fc-guide p{margin:0}
+@media(max-width:600px){.fc-guide{font-size:.82rem;padding:9px 10px}}
 </style>
 </head>
 <body>
@@ -2159,9 +2167,11 @@ const FAMILY_CATEGORY_GUIDE={
  other:'موضوعی که در دسته‌های دیگر جا نمی‌گیرد؛ موضوع را روشن و دقیق توضیح دهید.'
 };
 function updateFamilyContributionGuide(){
- const section=$('#fc_section')?.value||'land',category=$('#fc_category')?.value||'other',box=$('#fc_guide');
- if(!box)return;const g=FAMILY_ENTRY_GUIDE[section]||FAMILY_ENTRY_GUIDE.land;
- box.innerHTML='<strong>'+g.title+'</strong><p>'+g.text+'</p><p><strong>نوع یادگار:</strong> '+(FAMILY_CATEGORY_GUIDE[category]||FAMILY_CATEGORY_GUIDE.other)+'</p>';
+ const section=$('#fc_section')?.value||'land',category=$('#fc_category')?.value||'other';
+ const sectionBox=$('#fc_section_guide'),categoryBox=$('#fc_category_guide');
+ const g=FAMILY_ENTRY_GUIDE[section]||FAMILY_ENTRY_GUIDE.land;
+ if(sectionBox)sectionBox.innerHTML='<span class="fc-guide-kicker">راهنمای این فصل</span><strong>'+g.title+'</strong><p>'+g.text+'</p>';
+ if(categoryBox)categoryBox.innerHTML='<span class="fc-guide-kicker">راهنمای نوع یادگار</span><p>'+(FAMILY_CATEGORY_GUIDE[category]||FAMILY_CATEGORY_GUIDE.other)+'</p>';
 }
 
 
@@ -2296,12 +2306,11 @@ function viewFamily(){
       <h3>ثبت یادگار خانوادگی</h3>
       <label class="f"><span>عنوان *</span><input id="fc_title" required maxlength="160" placeholder="مثلاً: عکس قدیمی خانواده در زرین‌آباد"></label>
       <div class="grid2">
-        <label class="f"><span>فصل کتابچه (موضوع اصلی اطلاعات)</span><select id="fc_section">${FAMILY_SECTIONS.map(x=>`<option value="${x.id}">${esc(x.title)}</option>`).join('')}</select></label>
-        <label class="f"><span>نوع یادگار (جنس مدرک یا محتوا)</span><select id="fc_category">${categoryOptions}</select></label>
+        <div class="f fc-select-group"><label for="fc_section">فصل کتابچه (موضوع اصلی اطلاعات)</label><select id="fc_section">${FAMILY_SECTIONS.map(x=>`<option value="${x.id}">${esc(x.title)}</option>`).join('')}</select><div id="fc_section_guide" class="fc-guide" aria-live="polite"></div></div>
+        <div class="f fc-select-group"><label for="fc_category">نوع یادگار (جنس مدرک یا محتوا)</label><select id="fc_category">${categoryOptions}</select><div id="fc_category_guide" class="fc-guide" aria-live="polite"></div></div>
         <label class="f"><span>روستا / محل مرتبط</span><select id="fc_village"><option value="">انتخاب کنید</option>${villageOptions}</select></label>
         <label class="f"><span>سال تقریبی رخداد یا تهیهٔ سند</span><input id="fc_year" inputmode="numeric" placeholder="مثلاً ۱۳۴۵"></label>
       </div>
-      <div id="fc_guide" class="notice" style="margin:0 0 10px"></div>
       <label class="f"><span>نام افراد مرتبط</span><input id="fc_people" placeholder="نام افراد حاضر در عکس یا روایت"></label>
       <label class="f"><span>منبع یا نام راوی</span><input id="fc_source" placeholder="مثلاً: دفترچه خانوادگی، روایت ..."></label>
       <label class="f"><span>شرح خاطره یا توضیحات *</span><textarea id="fc_story" required rows="5" placeholder="هرچه درباره این عکس، سند یا خاطره می‌دانید بنویسید..."></textarea></label>
@@ -2861,6 +2870,7 @@ function renderView(){
   const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,tools:viewTools,growth:viewGrowth,life:viewLife,family:viewFamily,book:viewFamilyBook,admin:viewAdmin}[S.tab]||viewHome;
   v.classList.toggle('tree-page',S.tab==='tree');
   v.innerHTML=f();
+  if(S.tab==='family') updateFamilyContributionGuide();
   if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } }
 }
 let rq=0;
