@@ -1931,7 +1931,7 @@ function familyTimelineHTML(){
  const tlDate=e=>e.dateText?esc(e.dateText):e.m?(e.d?fa(e.d)+' ':'')+MONTHS[e.m-1]+' '+fa(e.y):fa(e.y);
  shown.forEach((e,i)=>e._tlid='tl-event-'+i);
  const relatedButtons=e=>{
-  const people=new Set(e.type==='birth'?[...(e.people||[]),e.id].filter(Boolean):e.type==='marriage'?(e.people||[]):e.type==='photo'?(e.people||[]):[e.id].filter(Boolean));
+  const people=new Set(e.type==='marriage'?(e.people||[]):e.type==='photo'?(e.people||[]):[e.id].filter(Boolean));
   const links=[];
   people.forEach(pid=>{
    const p=P[pid];if(!p)return;
