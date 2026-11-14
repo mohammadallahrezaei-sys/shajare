@@ -2095,6 +2095,7 @@ function familyArchiveCard(p,admin){
       <div class="family-card-title">${esc(p.title)}</div>
       <div class="family-card-story">${esc(story)}</div>
       ${m.person_name?`<div class="small muted">👤 مرتبط با: ${esc(m.person_name)}</div>`:''}
+      ${m.people_names?`<div class="small muted">همراهان عکس: ${esc(m.people_names)}</div>`:''}
       <div class="family-card-foot"><span class="muted small">${esc(stat)} · ${esc(new Date(p.created_at).toLocaleDateString('fa-IR'))}</span>
       ${admin&&p.status==='pending'?`<span class="family-review"><button class="btn sm" data-act="familyapprove" data-id="${esc(p.id)}">تأیید</button><button class="btn danger sm" data-act="familyreject" data-id="${esc(p.id)}">رد</button></span>`:''}</div>
     </div>
@@ -2109,7 +2110,8 @@ function familyLightbox(post){
       <div class="family-lightbox-photo">${img?`<img src="${esc(img)}" alt="${esc(post.title)}">`:'<div style="font-size:5rem">📜</div>'}</div>
       <div class="family-lightbox-info"><div class="family-tags"><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
         <h2>${esc(post.title)}</h2><p style="white-space:pre-wrap;line-height:2;margin:0">${esc(m.story||'توضیحی ثبت نشده است.')}</p>
-        ${m.person_name?`<div>👤 <b>شخص مرتبط:</b> ${esc(m.person_name)}</div>`:''}
+        ${m.person_name?`<div>👤 <b>شخص مرتبط:</b> ${esc(m.person_name)} ${m.person_id&&S.people[m.person_id]?`<button class="link" type="button" data-act="person" data-id="${esc(m.person_id)}">مشاهده در شجره‌نامه</button>`:''}</div>`:''}
+        ${m.people_names?`<div><b>افراد دیگر در عکس:</b> ${esc(m.people_names)}</div>`:''}
         ${m.contributor?`<div>✍️ <b>ثبت‌کننده:</b> ${esc(m.contributor)}</div>`:''}
         <div class="muted small">ثبت در آرشیو: ${esc(new Date(post.created_at).toLocaleDateString('fa-IR'))}</div>
         <span class="pill">${post.visibility==='public'?'قابل مشاهده برای همه':'ویژه اعضای خانواده'}</span>
@@ -2125,6 +2127,7 @@ function familyApplyFilters(){
     const okV=familyArchiveUI.village==='all'||card.dataset.village===familyArchiveUI.village;
     card.hidden=!(okQ&&okC&&okV);
   });
+  const no=$('#familyNoFilter');const cards=[...document.querySelectorAll('[data-family-card]')];if(no)no.hidden=!cards.length||cards.some(c=>!c.hidden);
 }
 function viewFamily(){
   const posts=S.familyPosts||[],approved=posts.filter(p=>p.status==='approved'),pending=S.isAdmin?posts.filter(p=>p.status==='pending'):[];
