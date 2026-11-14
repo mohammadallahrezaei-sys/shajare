@@ -1205,7 +1205,7 @@ function viewHome(){
     <div><span>اعضای ثبت‌شده</span><b>${fa(n)}</b></div><i></i><div><span>نسل‌های شناسایی‌شده</span><b>${fa(gens)}</b></div>
     <button class="home-text-link" data-act="tab" data-tab="stats">جزئیات خانواده ←</button>
   </section>`}
-  ${n?smartCenterHTML()+researchHTML()+familyPlacesMapHTML()+(S.isAdmin?persistentAuditHTML():''):''}
+  ${n?smartCenterHTML()+familyPlacesMapHTML()+(S.isAdmin?persistentAuditHTML():''):''}
   <section class="home-shortcuts-section"><div class="home-overview-heading"><div><span class="home-kicker">دسترسی سریع</span><h3>چه کاری می‌خواهید انجام دهید؟</h3></div></div>
     <div class="home-shortcuts-grid home-shortcuts-compact">
       ${quick('🌳','شجره‌نامه','دیدن نسل‌ها و شاخه‌ها','tab','tree')}
