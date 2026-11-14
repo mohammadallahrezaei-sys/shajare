@@ -2234,6 +2234,14 @@ function familyMeta(post){
   }
   return {story:raw,category:'other',village:'',photo_year:'',person_id:'',person_name:'',contributor:'',section:'documents',certainty:'unverified',source:''};
 }
+function familyLinkedPersonIds(meta){
+  const ids=Array.isArray(meta.person_ids)?meta.person_ids.filter(Boolean):[];
+  if(!ids.length&&meta.person_id)ids.push(meta.person_id);
+  return [...new Set(ids)];
+}
+function familyLinkedPeople(meta){
+  return familyLinkedPersonIds(meta).map(id=>({id,person:S.people[id]})).filter(x=>x.person);
+}
 function familyMetaText(meta){
   const parts=[FAMILY_CATEGORIES[meta.category]||'یادگار خانوادگی',meta.village||'',meta.photo_year||'',meta.person_name||'',meta.contributor||''];
   return parts.filter(Boolean).join(' · ');
@@ -2335,7 +2343,7 @@ async function approveFamilyPost(id){
 function familyArchiveCard(p,admin){
   const m=familyMeta(p),img=familyMediaUrl(p),stat=p.status==='pending'?'در انتظار بررسی':p.status==='approved'?'تأییدشده':'ردشده';
   const story=m.story||'برای این یادگار هنوز توضیحی ثبت نشده است.';
-  const search=[p.title,story,m.person_name,m.village,m.photo_year,FAMILY_CATEGORIES[m.category]||'',FAMILY_SECTION_LABELS[m.section]||''].join(' ').toLowerCase();
+  const search=[p.title,story,m.person_name,...familyLinkedPeople(m).map(x=>full(x.person)),m.village,m.photo_year,FAMILY_CATEGORIES[m.category]||'',FAMILY_SECTION_LABELS[m.section]||''].join(' ').toLowerCase();
   return `<article class="family-card ${p.status==='pending'?'family-pending':''}" data-family-card data-search="${esc(search)}" data-category="${esc(m.category||'other')}" data-village="${esc(m.village||'')}" data-section="${esc(m.section||'documents')}">
     <button class="family-card-media" type="button" data-act="familyopen" data-id="${esc(p.id)}" aria-label="نمایش ${esc(p.title)}">
       ${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:'<span class="family-card-placeholder">📜</span>'}
@@ -2360,7 +2368,7 @@ function familyLightbox(post){
       <div class="family-lightbox-photo">${img?`<img src="${esc(img)}" alt="${esc(post.title)}">`:'<div style="font-size:5rem">📜</div>'}</div>
       <div class="family-lightbox-info"><div class="family-tags"><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
         <h2>${esc(post.title)}</h2><p style="white-space:pre-wrap;line-height:2;margin:0">${esc(m.story||'توضیحی ثبت نشده است.')}</p>
-        ${m.person_name?`<div>👤 <b>شخص مرتبط:</b> ${esc(m.person_name)} ${m.person_id&&S.people[m.person_id]?`<button class="link" type="button" data-act="person" data-id="${esc(m.person_id)}">مشاهده در شجره‌نامه</button>`:''}</div>`:''}
+        ${familyLinkedPeople(m).length?`<div><b>👥 افراد مرتبط:</b><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px">${familyLinkedPeople(m).map(x=>`<button class="link" type="button" data-act="person" data-id="${esc(x.id)}">${esc(full(x.person))}</button>`).join('')}</div></div>`:m.person_name?`<div>👤 <b>افراد مرتبط:</b> ${esc(m.person_name)}</div>`:''}
         ${m.people_names?`<div><b>افراد دیگر در عکس:</b> ${esc(m.people_names)}</div>`:''}
         ${m.contributor?`<div>✍️ <b>ثبت‌کننده:</b> ${esc(m.contributor)}</div>`:''}
         <div class="muted small">ثبت در آرشیو: ${esc(new Date(post.created_at).toLocaleDateString('fa-IR'))}</div>
@@ -2455,9 +2463,9 @@ function viewFamily(){
       </section>
       <section class="fc-form-section">
         <div class="fc-step-head"><span>۳</span><div><b>افراد و مستندات</b><small>هر اطلاعاتی که به شناسایی بهتر یادگار کمک می‌کند.</small></div></div>
-        <label class="f"><span>این یادگار به کدام عضو شجره مربوط است؟ (اختیاری)</span><select id="fc_person"><option value="">— انتخاب نشده —</option>${Object.entries(S.people||{}).filter(([,q])=>q&&!q.virtual).sort((x,y)=>full(x[1]).localeCompare(full(y[1]),'fa')).map(([k,q])=>`<option value="${esc(k)}">${esc(full(q))}</option>`).join('')}</select></label>
-        <label class="f"><span>نام افراد دیگر یا توضیح نسبت (اختیاری)</span><input id="fc_people" placeholder="نام افراد حاضر در عکس یا سند (در صورت اطلاع)"></label>
-        <label class="f"><span>عکس، سند یا فایل پیوست</span><input id="fc_file" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,image/jpeg,image/png,image/webp,image/gif,application/pdf"><small class="muted">اختیاری · JPG، PNG، WebP، GIF یا PDF · حداکثر ۲۰ مگابایت</small></label>
+        <label class="f"><span>این عکس یا یادگار مربوط به کدام افراد است؟ (امکان انتخاب چند نفر)</span><select id="fc_persons" multiple size="6" style="min-height:150px">${Object.entries(S.people||{}).filter(([,q])=>q&&!q.virtual).sort((x,y)=>full(x[1]).localeCompare(full(y[1]),'fa')).map(([k,q])=>`<option value="${esc(k)}">${esc(full(q))}</option>`).join('')}</select><small class="muted">برای انتخاب چند نفر، در رایانه کلید Ctrl و در مک کلید Command را نگه دارید. یک عکس می‌تواند به چند پروندهٔ شجره‌نامه متصل باشد.</small></label>
+        <label class="f"><span>نام افراد دیگر یا توضیح نسبت (اختیاری)</span><input id="fc_people" placeholder="نام افراد حاضر که هنوز در شجره‌نامه نیستند"></label>
+                <label class="f"><span>عکس، سند یا فایل پیوست</span><input id="fc_file" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,image/jpeg,image/png,image/webp,image/gif,application/pdf"><small class="muted">اختیاری · JPG، PNG، WebP، GIF یا PDF · حداکثر ۲۰ مگابایت</small></label>
       </section>
       <section class="fc-form-section">
         <div class="fc-step-head"><span>۴</span><div><b>روایت و توضیحات</b><small>دو سه جملهٔ ساده هم برای ثبت در تاریخ خانواده ارزشمند است.</small></div></div>
@@ -2490,10 +2498,11 @@ async function submitFamilyContribution(){
   const title=($('#fc_title')?.value||'').trim(),story=($('#fc_story')?.value||'').trim();
   if(!title||!story){toast('عنوان و شرح یادگار را وارد کنید.');return;}
   if(!$('#fc_consent')?.checked){toast('لطفاً تأیید انتشار را بزنید.');return;}
-  const pid=($('#fc_person')?.value||''),typed=($('#fc_people')?.value||'').trim(),yr=($('#fc_year')?.value||'').trim();
+  const pids=Array.from($('#fc_persons')?.selectedOptions||[]).map(o=>o.value).filter(id=>S.people[id]),pid=pids[0]||'',typed=($('#fc_people')?.value||'').trim(),yr=($('#fc_year')?.value||'').trim();
   if(yr&&!/[0-9۰-۹٠-٩]/.test(yr)){toast('سال را با عدد بنویسید؛ مثلاً ۱۳۴۵ یا دههٔ ۱۳۲۰.');return;}
   if($('#fc_village')?.value==='سایر'&&!($('#fc_village_other')?.value||'').trim()){toast('نام روستا یا محل را بنویسید.');return;}
-  const meta={story,person_id:pid,section:$('#fc_section').value,category:$('#fc_category').value,village:($('#fc_village').value==='سایر'?($('#fc_village_other').value||'').trim():$('#fc_village').value),photo_year:($('#fc_year').value||'').trim(),person_name:pid?full(S.people[pid]):typed,people_names:pid?typed:'',source:($('#fc_source').value||'').trim(),certainty:'unverified',consent:true,contributor:fullName()};
+  const linkedNames=pids.map(id=>full(S.people[id]));
+  const meta={story,person_ids:pids,person_id:pid,section:$('#fc_section').value,category:$('#fc_category').value,village:($('#fc_village').value==='سایر'?($('#fc_village_other').value||'').trim():$('#fc_village').value),photo_year:($('#fc_year').value||'').trim(),person_name:linkedNames.join('، '),people_names:typed,source:($('#fc_source').value||'').trim(),certainty:'unverified',consent:true,contributor:fullName()};
   const id=(crypto.randomUUID?crypto.randomUUID():('f'+Date.now()+Math.random().toString(16).slice(2)));
   const isAdm=!!S.isAdmin,bucket=isAdm?'shj-family-public':'shj-family-pending';
   let media_path=null; const file=$('#fc_file')?.files?.[0];
@@ -2533,11 +2542,11 @@ function familyDigitalBookPages(){
   pages.push({title:'بیجار؛ دروازهٔ ورود به جغرافیای ریشه‌ها',eyebrow:'شهرستان بیجار · گروس تاریخی',html:`<div class="digital-book-intro"><h2>بیجار؛ سرزمین گستردهٔ آبادی‌ها و تاریخ گروس</h2><p>شهرستان بیجار در شمال‌شرق استان کردستان و در پهنهٔ تاریخی گروس قرار دارد. این شهرستان سه بخش اداری دارد و شهر بیجار مرکز شهرستان است. گروس در گذشته نامی شناخته‌شده برای این پهنهٔ تاریخی بوده و هنوز در حافظه و روایت مردم منطقه زنده است.</p><p>بیجار فقط شهر بیجار نیست؛ مجموعه‌ای از آبادی‌ها و دهستان‌هاست که هرکدام تاریخ، زبان، شیوهٔ معیشت و پیوندهای خانوادگی خود را دارند. در این کتابچه ابتدا تصویر کلی شهرستان را می‌بینیم و سپس به چنگ‌الماس و روستاهای مرتبط با خانواده می‌رسیم.</p><h3>سه بخش شهرستان بیجار</h3><div class="family-village-facts"><article><b>بخش مرکزی</b><span>دهستان‌های حومه، خورخوره، سیلتان، نجف‌آباد و سیاه‌منصور</span></article><article><b>بخش چنگ‌الماس</b><span>دهستان‌های بابارشانی، پیرتاج و خسروآباد</span></article><article><b>بخش کرانی</b><span>دهستان‌های طغامین، کرانی و گرگین</span></article></div><h3>شهرهای شهرستان و جایگاه آن‌ها</h3><div class="family-village-facts"><article><b>بخش مرکزی</b><span>بیجار · توپ‌آغاج</span></article><article><b>بخش چنگ‌الماس</b><span>بابارشانی · پیرتاج</span></article><article><b>بخش کرانی</b><span>یاسوکند</span></article></div><h3>۱۱ دهستان شهرستان</h3><div class="family-village-facts"><article><b>مرکزی</b><span>حومه · خورخوره · سیلتان · نجف‌آباد · سیاه‌منصور</span></article><article><b>چنگ‌الماس</b><span>بابارشانی · پیرتاج · خسروآباد</span></article><article><b>کرانی</b><span>طغامین · کرانی · گرگین</span></article></div><h3>فهرست روستاهای شهرستان</h3><p>در فهرست برخط ایران‌گاه ۲۵۲ مدخل روستایی برای شهرستان بیجار ثبت شده است. صفحهٔ معرفی شهرستان در همان پایگاه، ۱۳۸ آبادی در ۱۱ دهستان را گزارش می‌کند؛ به‌دلیل تفاوت دامنه و شیوهٔ شمارش این دو صفحه، این ارقام را نباید معادل یکدیگر دانست. فهرست نامی و جزئیات هر روستا از پیوند زیر قابل مشاهده است.</p><p><a href="https://irangaah.ir/villages/bijar" target="_blank" rel="noopener" style="display:inline-block;padding:10px 14px;border-radius:10px;background:var(--surface2);font-weight:700">مشاهدهٔ فهرست کامل ۲۵۲ مدخل روستایی شهرستان بیجار ↗</a></p><h3>چهار روستای محور روایت خانوادگی</h3><div class="family-village-facts"><article><b>بودلا</b><span>قریهٔ بولدلا در اسناد خانوادگی سال ۱۳۰۹</span></article><article><b>خودلان</b><span>از محل‌های ثبت‌شده در روایت و شجرهٔ خانواده</span></article><article><b>زرین‌آباد</b><span>در کنار خودلان در نشانی محل سکونت خانوادگی</span></article><article><b>خسروآباد</b><span>مرکز دهستان خسروآباد و بخشی از محدودهٔ بررسی</span></article></div><p class="muted small">منبع ساختار تقسیمات و دهستان‌ها: معرفی شهرستان بیجار در ایران‌گاه؛ فهرست اسامی: درگاه روستاهای شهرستان بیجار در همان پایگاه. داده‌ها ممکن است با تغییرات تقسیمات کشوری به‌روزرسانی شوند.</p></div>`});
   const familyAlbumPosts=approved.filter(p=>{
     const m=familyMeta(p),isImage=/\\.(jpe?g|png|webp|gif|avif)$/i.test(String(p.media_path||''));
-    return isImage&&(m.category==='portrait'||!!m.person_id||!!m.person_name||['ceremony','daily'].includes(m.category));
+    return isImage&&(m.category==='portrait'||familyLinkedPersonIds(m).length>0||!!m.person_name||['ceremony','daily'].includes(m.category));
   });
   const familyAlbumPostIds=new Set(familyAlbumPosts.map(p=>p.id));
   if(familyAlbumPosts.length){
-    const portraitCards=familyAlbumPosts.map(p=>{const m=familyMeta(p),img=familyMediaUrl(p);return `<article class="ancestor-portrait-card">${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:'<div class="ancestor-portrait-placeholder">🖼️</div>'}<div class="ancestor-portrait-caption"><b>${esc(p.title)}</b>${m.person_name?`<span>${esc(m.person_name)}</span>`:''}<small>${[m.village,m.photo_year].filter(Boolean).map(esc).join(' · ')}</small>${m.story?`<p>${esc(m.story)}</p>`:''}</div></article>`;}).join('');
+    const portraitCards=familyAlbumPosts.map(p=>{const m=familyMeta(p),img=familyMediaUrl(p);return `<article class="ancestor-portrait-card">${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:'<div class="ancestor-portrait-placeholder">🖼️</div>'}<div class="ancestor-portrait-caption"><b>${esc(p.title)}</b>${familyLinkedPeople(m).length?`<span>${familyLinkedPeople(m).map(x=>esc(full(x.person))).join('، ')}</span>`:m.person_name?`<span>${esc(m.person_name)}</span>`:''}<small>${[m.village,m.photo_year].filter(Boolean).map(esc).join(' · ')}</small>${m.story?`<p>${esc(m.story)}</p>`:''}</div></article>`;}).join('');
     pages.push({title:'آلبوم چهره‌ها و خاطرات خانوادگی',eyebrow:'آلبوم تصویری · اشخاص و نسل‌ها',html:`<div class="digital-book-intro"><span class="book-section-label">آلبوم اشخاص</span><h2>آلبوم چهره‌ها و خاطرات خانوادگی</h2><p>عکس‌های اشخاص، پرتره‌ها، تصاویر خانوادگی و عکس‌های مراسم و زندگی روزمره که به افراد خانواده مربوط‌اند، در این آلبوم کنار هم نمایش داده می‌شوند.</p><div class="ancestor-portrait-gallery">${portraitCards}</div></div>`});
   }
   const _ord=['land','villages','genealogy','documents','culture'];
