@@ -841,6 +841,14 @@ label.f>span,div.f>span{font-weight:600}
 #view .subnav button[aria-current="page"]{background:var(--soft);color:var(--primary);border-bottom-color:var(--primary);font-weight:950;}
 @media(max-width:520px){#view .subnav{gap:3px;padding:4px 3px 0}#view .subnav button{padding:11px 10px;font-size:14px}}
 </style>
+
+<style id="mouse-drag-pan-styles">
+/* کشیدن نمودارها با ماوس، مشابه حرکت با انگشت در گوشی */
+#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box{cursor:grab;touch-action:pan-x pan-y;overscroll-behavior:contain;}
+#artBox:active,#chartBox:active,.outline:active,.kin-graph-scroll:active,.kin-fan-wrap:active,.family-map-box:active{cursor:grabbing;}
+.diagram-mouse-dragging{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important;}
+.diagram-mouse-dragging *{user-select:none!important;-webkit-user-select:none!important;}
+</style>
 </head>
 <body>
 <div class="wrap" id="root"></div>
@@ -4062,6 +4070,31 @@ document.addEventListener('wheel',e=>{ if(!(e.ctrlKey||e.metaKey)||S.tab!=='tree
   document.addEventListener('touchend',end,{passive:true}); document.addEventListener('touchcancel',end,{passive:true});
 })();
 window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(()=>{ if(S.tab==='tree'&&S.mode==='art'&&S.artCanvas){ const box=$('#artBox'),cv=S.artCanvas; if(box&&cv.parentElement===box) cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } },200); });
+
+
+/* Drag-to-pan: mouse on desktop, native touch gestures on mobile */
+(function(){
+ const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box';
+ let drag=null,suppressClickUntil=0;
+ const findSurface=t=>t&&t.closest?t.closest(selector):null;
+ document.addEventListener('pointerdown',e=>{
+   if(e.pointerType!=='mouse'||e.button!==0)return;
+   const surface=findSurface(e.target);if(!surface||e.target.closest('button,a,input,select,textarea,[contenteditable="true"],.leaflet-control'))return;
+   drag={surface,id:e.pointerId,x:e.clientX,y:e.clientY,left:surface.scrollLeft,top:surface.scrollTop,moved:false};
+   try{surface.setPointerCapture(e.pointerId);}catch(_){ }
+ },{passive:true});
+ document.addEventListener('pointermove',e=>{
+   if(!drag||e.pointerId!==drag.id)return;
+   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+   if(!drag.moved&&Math.hypot(dx,dy)<4)return;
+   drag.moved=true;drag.surface.classList.add('diagram-mouse-dragging');
+   drag.surface.scrollLeft=drag.left-dx;drag.surface.scrollTop=drag.top-dy;
+   e.preventDefault();
+ },{passive:false});
+ const finish=e=>{if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;d.surface.classList.remove('diagram-mouse-dragging');if(d.moved)suppressClickUntil=Date.now()+350;};
+ document.addEventListener('pointerup',finish,{passive:true});document.addEventListener('pointercancel',finish,{passive:true});
+ document.addEventListener('click',e=>{if(Date.now()<suppressClickUntil){e.preventDefault();e.stopPropagation();suppressClickUntil=0;}},true);
+})();
 
 /* ================= Supabase layer ================= */
 const CFG=Object.assign({url:'',key:'',familyEmail:'',adminEmail:''},window.SHJ_CONFIG||{});
