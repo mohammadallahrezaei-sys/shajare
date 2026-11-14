@@ -2071,6 +2071,7 @@ const FAMILY_SECTIONS=[
  {id:'questions',title:'پرسش‌های باز تاریخی',icon:'🔎',desc:'موضوعاتی که هنوز پاسخ قطعی ندارند و باید با کمک بزرگ‌ترها بررسی شوند',prompt:'پاسخ احتمالی یا شاهد تازه‌ای برای یکی از پرسش‌های تاریخی ثبت کنید؛ میزان اطمینان را مشخص کنید.'}
 ];
 const FAMILY_SECTION_LABELS=Object.fromEntries(FAMILY_SECTIONS.map(x=>[x.id,x.title]));
+const FAMILY_CERTAINTY_LABELS={unverified:'نیازمند بررسی',oral:'روایت شفاهی خانواده',document:'دارای سند یا مدرک',verified:'بررسی و تأیید شده'};
 let familyArchiveUI={q:'',category:'all',village:'all',openId:''};
 function familyMeta(post){
   const raw=String(post.description||'');
@@ -2110,7 +2111,7 @@ function familyArchiveCard(p,admin){
       ${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:'<span class="family-card-placeholder">📜</span>'}
     </button>
     <div class="family-card-body">
-      <div class="family-tags"><span class="family-tag">${esc(FAMILY_SECTION_LABELS[m.section]||'اسناد و دست‌نوشته‌ها')}</span><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
+      <div class="family-tags"><span class="family-tag">${esc(FAMILY_SECTION_LABELS[m.section]||'اسناد و دست‌نوشته‌ها')}</span><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span><span class="family-tag">${esc(FAMILY_CERTAINTY_LABELS[m.certainty]||'نیازمند بررسی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
       <div class="family-card-title">${esc(p.title)}</div>
       <div class="family-card-story">${esc(story)}</div>
       ${m.person_name?`<div class="small muted">👤 مرتبط با: ${esc(m.person_name)}</div>`:''}
@@ -2133,7 +2134,7 @@ function familyLightbox(post){
         ${m.people_names?`<div><b>افراد دیگر در عکس:</b> ${esc(m.people_names)}</div>`:''}
         ${m.contributor?`<div>✍️ <b>ثبت‌کننده:</b> ${esc(m.contributor)}</div>`:''}
         <div class="muted small">ثبت در آرشیو: ${esc(new Date(post.created_at).toLocaleDateString('fa-IR'))}</div>
-        <span class="pill">${post.visibility==='public'?'قابل مشاهده برای همه':'ویژه اعضای خانواده'}</span>
+        ${m.source?`<div class="small"><b>منبع:</b> ${esc(m.source)}</div>`:''}<span class="pill">${esc(FAMILY_CERTAINTY_LABELS[m.certainty]||'نیازمند بررسی')}</span><span class="pill">${post.visibility==='public'?'قابل مشاهده برای همه':'ویژه اعضای خانواده'}</span>
       </div>
     </div>
   </div>`;
@@ -2177,7 +2178,7 @@ function viewFamily(){
       <div class="family-compose-body">
         <form id="familyPostForm" class="stack" style="gap:12px">
           <div class="fields">
-            <label class="f"><span>فصل مرتبط *</span><select id="fp_section" required>${FAMILY_SECTIONS.map(x=>`<option value="${x.id}" ${familyArchiveUI.section===x.id?'selected':''}>${x.title}</option>`).join('')}</select></label>
+            <label class="f"><span>فصل مرتبط *</span><select id="fp_section" required>${FAMILY_SECTIONS.map(x=>`<option value="${x.id}" ${familyArchiveUI.section===x.id?'selected':''}>${x.title}</option>`).join('')}</select></label><p class="note wide" id="fp_section_hint" style="margin:0">${esc((FAMILY_SECTIONS.find(x=>x.id===familyArchiveUI.section)||FAMILY_SECTIONS[2]).prompt)}</p>
             <label class="f"><span>عنوان مطلب *</span><input id="fp_title" maxlength="120" required placeholder="مثلاً: روایت خانهٔ قدیمی فرج‌الله در بودلا"></label>
             <label class="f"><span>نوع محتوا</span><select id="fp_category">${categoryOptions}</select></label>
             <label class="f"><span>روستا یا محل مرتبط</span><select id="fp_village"><option value="">انتخاب محل</option>${villageOptions}</select></label>
@@ -3062,7 +3063,7 @@ document.addEventListener('submit',ev=>{
   else if(id==='familyPostForm') submitFamilyPost().catch(e=>{console.error(e);toast('ارسال انجام نشد؛ اتصال یا دسترسی بارگذاری عکس را بررسی کنید.');});
 });
 document.addEventListener('change',ev=>{
-  if(ev.target.id==='treePerson'){S.treePerson=ev.target.value;renderView();return;} if(ev.target.id==='familyCategory'){familyArchiveUI.category=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='familyVillage'){familyArchiveUI.village=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
+  if(ev.target.id==='fp_section'){familyArchiveUI.section=ev.target.value;const sec=FAMILY_SECTIONS.find(x=>x.id===ev.target.value);const hint=$('#fp_section_hint');if(hint&&sec)hint.textContent=sec.prompt;const lab=$('#familyComposeSection');if(lab&&sec)lab.textContent=sec.title;return;} if(ev.target.id==='treePerson'){S.treePerson=ev.target.value;renderView();return;} if(ev.target.id==='familyCategory'){familyArchiveUI.category=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='familyVillage'){familyArchiveUI.village=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
   if(id==='familySearch'){familyArchiveUI.q=ev.target.value;familyApplyFilters();const no=$('#familyNoFilter');const cards=[...document.querySelectorAll('[data-family-card]')];if(no)no.hidden=!cards.length||cards.some(c=>!c.hidden);return;}
