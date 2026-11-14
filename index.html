@@ -717,7 +717,12 @@ label.f>span,div.f>span{font-weight:600}
 @media(max-width:650px){.nav{gap:6px}.nav button{padding:6px 11px;font-size:11px}.home-museum-feature{gap:10px;padding:14px}.home-museum-icon{width:46px;height:46px;min-width:46px;font-size:24px}.home-museum-copy b{font-size:14px}.home-museum-action{font-size:10px;padding:8px 10px}}
 @media(max-width:430px){.home-museum-feature{flex-wrap:wrap}.home-museum-action{margin-right:56px}}
 </style>
-</head>
+<style id="residence-history-style">
+.residence-history-editor{padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.residence-row{border:1px solid var(--line);border-radius:12px}
+.residence-row input[type=number]{max-width:100%}
+.residence-row input[type=checkbox]{width:16px;height:16px}
+</style></head>
 <body>
 <div class="wrap" id="root"></div>
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
@@ -1152,12 +1157,13 @@ function familyPlacesMapHTML(){
  const places={};
  Object.entries(S.people||{}).forEach(([id,p])=>{
    if(p.virtual)return;
-   [['birthPlace','born'],['residence','lived'],['place','other']].forEach(([field,type])=>{
+   [['birthPlace','born'],['place','other']].forEach(([field,type])=>{
      const name=tidy(String(p[field]||''));if(!name)return;
-     const key=norm(name);if(!places[key])places[key]={name, born:new Set(),lived:new Set(),other:new Set(),coords:known[name]||null};
-     places[key][type].add(id);
-     if(!places[key].coords){const k=Object.keys(known).find(x=>norm(x)===key);if(k)places[key].coords=known[k];}
+     const key=norm(name);if(!places[key])places[key]={name,born:new Set(),lived:new Set(),other:new Set(),coords:known[name]||null};
+     places[key][type].add(id);if(!places[key].coords){const k=Object.keys(known).find(x=>norm(x)===key);if(k)places[key].coords=known[k];}
    });
+   const stays=Array.isArray(p.residences)&&p.residences.length?p.residences:(p.residence?[{place:p.residence}]:[]);
+   stays.forEach(r=>{const name=tidy(String(r.place||''));if(!name)return;const key=norm(name);if(!places[key])places[key]={name,born:new Set(),lived:new Set(),other:new Set(),coords:known[name]||null};places[key].lived.add(id);if(!places[key].coords){const k=Object.keys(known).find(x=>norm(x)===key);if(k)places[key].coords=known[k];}});
  });
  const rows=Object.values(places).sort((a,b)=>a.name.localeCompare(b.name,'fa'));
  const mapped=rows.filter(x=>x.coords);
@@ -1938,6 +1944,25 @@ function showReview(){
   const dm=$('#dupMsg'); if(dm) dm.innerHTML='';
   box.scrollIntoView({behavior:'smooth',block:'start'});
 }
+function residenceRowsHTML(v){
+ const rows=Array.isArray(v.residences)&&v.residences.length?v.residences:[...(v.residence?[{place:v.residence,current:true}]:[])];
+ const row=(r={},i)=>`<div class="residence-row card" data-residence-row style="padding:12px;background:var(--bg);gap:9px">
+ <div class="row" style="justify-content:space-between"><b>محل زندگی ${fa(i+1)}</b>${i?'<button type="button" class="btn ghost sm" data-act="residenceremove">حذف</button>':''}</div>
+ <label class="f"><span>شهر، روستا یا محل سکونت *</span><input type="text" data-rplace maxlength="120" placeholder="مثلاً: خسروآباد، بیجار" value="${esc(r.place||'')}"></label>
+ <div class="fields">
+ <label class="f"><span>از سال</span><input type="number" data-rfrom min="1" max="1600" placeholder="مثلاً ۱۳۷۰" value="${r.fromYear||''}"></label>
+ <label class="f"><span>تا سال</span><input type="number" data-rto min="1" max="1600" placeholder="خالی = هنوز ساکن است" value="${r.toYear||''}"></label>
+ </div>
+ <label class="row small" style="gap:7px"><input type="checkbox" data-rcurrent ${r.current?'checked':''}> هنوز در این محل زندگی می‌کند</label>
+ <label class="row small" style="gap:7px"><input type="checkbox" data-rapprox ${r.approx?'checked':''}> تاریخ‌ها تقریبی هستند (حدودی وارد شده‌اند)</label>
+ <small class="muted">اگر ماه یا روز را نمی‌دانید، فقط سال را وارد کنید؛ اگر سال هم دقیق نیست، گزینهٔ تقریبی را فعال کنید.</small>
+ </div>`;
+ return '<div class="stack" id="residenceHistoryRows" style="gap:10px">'+rows.map(row).join('')+'</div><button type="button" class="btn ghost sm" data-act="residenceadd">+ افزودن محل زندگی دیگر</button>';
+}
+function readResidenceHistory(){
+ const rows=[...document.querySelectorAll('#residenceHistoryRows [data-residence-row]')].map(el=>({place:(el.querySelector('[data-rplace]')?.value||'').trim(),fromYear:Math.max(0,Math.min(1600,parseInt(el.querySelector('[data-rfrom]')?.value||'0',10)||0)),toYear:Math.max(0,Math.min(1600,parseInt(el.querySelector('[data-rto]')?.value||'0',10)||0)),current:!!el.querySelector('[data-rcurrent]')?.checked,approx:!!el.querySelector('[data-rapprox]')?.checked})).filter(r=>r.place);
+ return rows.map(r=>{if(r.current)r.toYear=0;return r;});
+}
 function personForm(){
   const okMsg=S.okMsg; S.okMsg=null; S.pstep=1; S.rv=false;
   const e=S.editId&&S.people[S.editId]?S.people[S.editId]:null, sub=S.isAdmin?S.editSub:null, v=sub?Object.assign({},e||{},sub.payload):(e||S.prefill||{});
@@ -1981,7 +2006,7 @@ function personForm(){
    <div class="fields">
     ${S.missingOnly&&v.photo?'':photoBlock()}
     <label class="f" ${hide(!!(v.birthPlace||v.place))}><span>محل تولد</span><input type="text" id="f_bplace" placeholder="مثلاً: تهران" value="${esc(v.birthPlace||v.place||'')}"></label>
-    <label class="f" ${hide(!!v.residence)}><span>محل سکونت (الان کجا زندگی می‌کند)</span><input type="text" id="f_resid" placeholder="مثلاً: اصفهان" value="${esc(v.residence||'')}"></label>
+    <div class="f wide stack residence-history-editor"><b>📍 محل‌های زندگی در طول عمر</b><p class="muted small" style="margin:0">همه شهرها و روستاهایی را که این فرد در آن‌ها زندگی کرده ثبت کنید؛ از محل کودکی تا محل فعلی. ترتیب زمانی مهم است، اما اگر تاریخ دقیق را نمی‌دانید حدودی بنویسید.</p>${residenceRowsHTML(v)}</div>
     <label class="f" ${hide(!!v.job)}><span>شغل</span><input type="text" id="f_job" placeholder="مثلاً: معلم" value="${esc(v.job||'')}"></label>
     <label class="f wide" ${hide(!!v.note)}><span>توضیح کوتاه (اختیاری)</span><input type="text" id="f_note" placeholder="مثلاً: عاشق باغبانی بود" value="${esc(v.note||'')}"></label>
     <label class="f wide" ${hide(!!v.story)}><span>📖 سرگذشت زندگی (اختیاری)</span><span class="muted small hintbox">زندگی‌اش را همان‌طور که تعریف می‌کند بنویسید: کجا و در چه خانواده‌ای به دنیا آمد، کودکی و جوانی، درس و کار، ازدواج، خاطره‌ای که فراموش نمی‌کند، سختی‌ها و روزهای خوب. هر چقدر که دوست دارید.</span><textarea id="f_story" rows="8" style="min-height:160px" placeholder="محل تولد، خانواده، تحصیل، کار، ازدواج و خاطرات مهم زندگی را بنویسید.">${esc(v.story||'')}</textarea></label>
@@ -3523,10 +3548,10 @@ async function onPersonSubmit(){
   const fa_=readRel('father'), mo=readRel('mother'), spl=readSpouses(), sp0=spl[0]||{id:'',ref:{name:'',y:0,m:0,d:0}}, mar=(document.querySelector('input[name=f_mar]:checked')||{}).value||'';
   const payload={first,last,gender:g,bY:b.y,bM:b.m,bD:b.d,dead,dY:d.y,dM:d.m,dD:d.d,
     fatherId:fa_.id,fatherRef:fa_.ref,motherId:mo.id,motherRef:mo.ref,spouseId:sp0.id,spouseRef:sp0.ref,spouses:spl,marital:mar,
-    kidNames:val('#f_kids'),place:'',birthPlace:canonVal('place',val('#f_bplace')),residence:canonVal('place',val('#f_resid')),job:canonVal('job',val('#f_job')),note:val('#f_note'),story:val('#f_story'),legacy:val('#f_legacy')};
+    kidNames:val('#f_kids'),place:'',birthPlace:canonVal('place',val('#f_bplace')),residences:readResidenceHistory().map(r=>Object.assign({},r,{place:canonVal('place',r.place)})),residence:(readResidenceHistory().filter(r=>r.current).slice(-1)[0]||readResidenceHistory().slice(-1)[0]||{}).place||'',job:canonVal('job',val('#f_job')),note:val('#f_note'),story:val('#f_story'),legacy:val('#f_legacy')};
   if(S.missingOnly&&S.editId&&S.people[S.editId]){
     const old=S.people[S.editId];
-    ['first','last','gender','bY','bM','bD','dY','dM','dD','fatherId','fatherRef','motherId','motherRef','spouseId','spouseRef','marital','kidNames','birthPlace','place','residence','job','note','story','legacy','photo'].forEach(k=>{ if((payload[k]===undefined||payload[k]===null||payload[k]===''||payload[k]===0)&&old[k]!==undefined&&old[k]!==null&&old[k]!=='') payload[k]=old[k]; });
+    ['first','last','gender','bY','bM','bD','dY','dM','dD','fatherId','fatherRef','motherId','motherRef','spouseId','spouseRef','marital','kidNames','birthPlace','place','residence','residences','job','note','story','legacy','photo'].forEach(k=>{ if((payload[k]===undefined||payload[k]===null||payload[k]===''||payload[k]===0)&&old[k]!==undefined&&old[k]!==null&&old[k]!=='') payload[k]=old[k]; });
     if(!payload.spouses||!payload.spouses.length) payload.spouses=spListOf(old);
     const firstSp=payload.spouses[0]||{}; payload.spouseId=firstSp.id||old.spouseId||''; payload.spouseRef=firstSp.ref||old.spouseRef||{};
   }
@@ -3606,6 +3631,8 @@ document.addEventListener('click',async ev=>{
   try{
   if(a==='navmore'){S.navMoreOpen=!S.navMoreOpen;renderNav();}
   else if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||el.dataset.tab==='book'||(el.dataset.tab==='admin'&&S.isAdmin)){ await loadFamilyPosts(); } }
+  else if(a==='residenceadd'){const box=$('#residenceHistoryRows');if(box){const n=box.querySelectorAll('[data-residence-row]').length;box.insertAdjacentHTML('beforeend',residenceRowsHTML({residences:[{}]}).replace('id="residenceHistoryRows"','').replace(/<button[^>]*data-act="residenceadd"[\\s\\S]*?<\\/button>/,'' ).replace('محل زندگی ۱','محل زندگی '+fa(n+1)));}}
+  else if(a==='residenceremove'){el.closest('[data-residence-row]')?.remove();}
   else if(a==='rootfocus'){S.focus=el.dataset.id||'';renderView();}
   else if(a==='rootshowall'){S.focus='';renderView();}
   else if(a==='digitalbookprev'){familyDigitalState.page=Math.max(0,familyDigitalState.page-1);renderView();}
