@@ -270,6 +270,10 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
 .nav{display:flex;gap:6px;overflow-x:auto;padding-block:8px 14px;scrollbar-width:thin}
 .nav button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 16px;display:flex;gap:6px;align-items:center}
 .nav button[aria-current="page"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.nav-more-toggle{font-weight:700;border-style:dashed!important}
+.nav-more-items{display:contents}
+@media(max-width:700px){.nav{flex-wrap:wrap;overflow:visible}.nav-more-items{display:flex;flex-wrap:wrap;gap:6px;width:100%;padding-top:4px}}
+
 .badge{background:var(--accent);color:#1d1400;border-radius:99px;font-size:.75rem;padding:0 7px;line-height:1.6}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
@@ -3345,10 +3349,13 @@ function render(){
 }
 function renderNav(){
   const nav=$('#nav'); if(!nav) return;
-  const tabs=TABS.slice(); if(S.isAdmin) tabs.push(['audit','تاریخچه تغییرات'],['admin','مدیریت']);
+  const all=TABS.slice(); if(S.isAdmin) all.push(['audit','تاریخچه تغییرات'],['admin','مدیریت']);
+  const primaryKeys=new Set(['home','tree','book','add']),primary=all.filter(([k])=>primaryKeys.has(k)),more=all.filter(([k])=>!primaryKeys.has(k));
   const pc=S.isAdmin?pendingList().length+(S.claims||[]).length+(S.reports||[]).length:0;
   const ICO={home:'🏠',tree:'🌳',relations:'🧬',timeline:'⏳',map:'🗺️',smart:'🧠',research:'🔎',stats:'📊',add:'➕',family:'✍️',book:'📖',tools:'🧰',audit:'🧾',admin:'⚙️'};
-  nav.innerHTML=tabs.map(([k,l])=>`<button data-act="tab" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}><span class="ni" aria-hidden="true">${ICO[k]||''}</span><span>${l}</span>${k==='admin'&&pc?`<span class="badge">${fa(pc)}</span>`:''}</button>`).join('');
+  const expanded=!!S.navMoreOpen||more.some(([k])=>S.tab===k);
+  const btn=([k,l])=>`<button type="button" data-act="tab" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}><span class="ni" aria-hidden="true">${ICO[k]||''}</span><span>${l}</span>${k==='admin'&&pc?`<span class="badge">${fa(pc)}</span>`:''}</button>`;
+  nav.innerHTML=primary.map(btn).join('')+`<button type="button" class="nav-more-toggle" data-act="navmore" aria-expanded="${expanded}"><span aria-hidden="true">☰</span><span>${expanded?'بستن':'بیشتر'}</span><span aria-hidden="true">${expanded?'▴':'▾'}</span></button>`+(expanded?`<span class="nav-more-items" aria-label="بخش‌های بیشتر">${more.map(btn).join('')}</span>`:'');
 }
 function renderView(){
   if(S.tab==='research') S.tab='home';
@@ -3546,7 +3553,8 @@ document.addEventListener('click',async ev=>{
   if(el===null){ if(ev.target.id==='modal') closeModal(); if(!ev.target.closest('.search')){ const r=$('#qres'); if(r) r.hidden=true; } return; }
   const a=el.dataset.act;
   try{
-  if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||el.dataset.tab==='book'||(el.dataset.tab==='admin'&&S.isAdmin)){ await loadFamilyPosts(); } }
+  if(a==='navmore'){S.navMoreOpen=!S.navMoreOpen;renderNav();}
+  else if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||el.dataset.tab==='book'||(el.dataset.tab==='admin'&&S.isAdmin)){ await loadFamilyPosts(); } }
   else if(a==='rootfocus'){S.focus=el.dataset.id||'';renderView();}
   else if(a==='rootshowall'){S.focus='';renderView();}
   else if(a==='digitalbookprev'){familyDigitalState.page=Math.max(0,familyDigitalState.page-1);renderView();}
