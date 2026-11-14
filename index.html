@@ -3463,7 +3463,7 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=34, CW=164, MARGIN=70, TOP=150, SIBLING_GAP=38, ROOT_GAP=58;
+  const P=T.P, R=34, CW=164, MARGIN=70, TOP=150, SIBLING_GAP=26, ROOT_GAP=48;
   // عمق بیشتر خانواده، فاصله عمودی نسل‌ها را به‌صورت پویا فشرده می‌کند.
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   const GAP=Math.max(105,Math.min(250,1700/(maxD+1)));
@@ -3475,21 +3475,39 @@ function drawArt(T,imgs){
   T.roots.forEach(trunkWalk);
   BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>assign(q,bi,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
   const bcol=n=>n.ci<0?'#806044':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
-  const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.kw=n.kids.reduce((a,k)=>a+k.aw,0)+SIBLING_GAP*Math.max(0,n.kids.length-1);n.aw=Math.max(n.kw,n.cw+64);};
+  // فرزندانِ بدون همسر و بدون فرزند (پشت‌سر‌هم، به ترتیب سال تولد از راست به چپ) روی چند ردیف نزدیک به هم چیده می‌شوند تا درخت عریض نشود.
+  const LANE=66, TIER=165, STACK_MIN=4; let extraTiers=0;
+  const stackable=k=>!k.kids.length&&!k.spouses.length;
+  const unitsOf=n=>{
+    const out=[]; let run=[];
+    const flush=()=>{
+      if(run.length>=STACK_MIN){const rows=run.length<=6?2:run.length<=10?3:4;out.push({leaves:run,rows,aw:(run.length-1)*LANE+96});extraTiers=Math.max(extraTiers,rows-1);}
+      else run.forEach(k=>out.push({k,aw:k.aw}));
+      run=[];
+    };
+    n.kids.forEach(k=>{ if(stackable(k)) run.push(k); else { flush(); out.push({k,aw:k.aw}); } });
+    flush(); return out;
+  };
+  const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.units=unitsOf(n);n.kw=n.units.reduce((a,u)=>a+u.aw,0)+SIBLING_GAP*Math.max(0,n.units.length-1);n.aw=Math.max(n.kw,n.cw+40);};
   T.roots.forEach(lay);
   // Siblings sit at subtly different heights, like a natural branching tree, not on rigid generation-wide rows.
-  const rowOffsetFor=i=>(i===0?0:(i%2?1:-1)*Math.ceil(i/2)*48);
+  const rowOffsetFor=i=>[0,48,-48,96,-96][i%5]; // الگوی تکرارشونده؛ برای خانواده‌های پرفرزند ارتفاع بی‌نهایت زیاد نمی‌شود
   const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>1?rowOffsetFor(i):0;stagger(k);});};
   T.roots.forEach(n=>{n.rowOffset=0;stagger(n);});
   // Each sibling group receives real horizontal breathing room; the parent stays centered over that group.
-  const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw-n.kw)/2+n.kw;n.kids.forEach(k=>{put(k,x-k.aw);x-=k.aw+SIBLING_GAP;});};
+  const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw-n.kw)/2+n.kw;
+    n.units.forEach(u=>{
+      if(u.k) put(u.k,x-u.k.aw);
+      else u.leaves.forEach((k,i)=>{k.cx=x-48-i*LANE;k.rowOffset=-(i%u.rows)*TIER;});
+      x-=u.aw+SIBLING_GAP;
+    });};
   const content=T.roots.reduce((a,r)=>a+r.aw,0)+ROOT_GAP*Math.max(0,T.roots.length-1);
   const W=Math.max(1500,content+MARGIN*2);
   let x=W-(W-content)/2;T.roots.forEach(r=>{put(r,x-r.aw);x-=r.aw+ROOT_GAP;});
-  const genY=d=>TOP+(maxD-d)*GAP+R+28;
+  const genY=d=>TOP+extraTiers*TIER+(maxD-d)*GAP+R+28;
   const cyOf=n=>genY(n.depth)+(n.rowOffset||0);
   const lowest=Math.max.apply(null,T.nodes.map(n=>cyOf(n)));
-  const groundY=lowest+R+150, H=groundY+145;
+  const groundY=lowest+R+95, H=groundY+100;
   // Keep the complete bitmap below browser canvas dimension limits, even for very wide generations.
   const sc=Math.min(1.5,Math.sqrt(40e6/(W*H)),12000/Math.max(W,H));
   const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(W*sc));cv.height=Math.max(1,Math.round(H*sc));
@@ -3701,7 +3719,8 @@ async function renderArt(){
   // Fit the complete tree inside both viewport dimensions; never force a minimum zoom.
   if(!S.artZoomUser){
     const fit=Math.min(1,(base-28)/cv.width,(availableH-28)/cv.height);
-    S.artZoom=Math.max(.06,fit);
+    const sc0=cv.width/(cv.__W||cv.width), readable=Math.min(1,.7/sc0);
+    S.artZoom=S.artFitAll?Math.max(.06,fit):Math.max(fit,readable);
   }
   cv.style.width=Math.max(1,Math.round(cv.width*S.artZoom))+'px';
   cv.style.height='auto';
@@ -4362,8 +4381,8 @@ document.addEventListener('click',async ev=>{
   else if(a==='treeadd'){const id=el.dataset.id,role=el.dataset.role,p=EP()[id];if(!p)return;const labels={father:'پدر',mother:'مادر',child:'فرزند',spouse:'همسر'};if(S.isAdmin){S.treeAddDraft={id,role,label:labels[role]||'عضو جدید'};renderView();}else{S.editSub=null;S.editId=null;S.missingOnly=false;S.addTab='person';S.prefill=null;resetPhoto('');if(role==='child')S.prefill={first:'',last:p.last||'الله‌رضایی',fatherId:p.gender==='m'?id:'',motherId:p.gender==='f'?id:''};else if(role==='spouse')S.prefill={first:'',last:p.last||'الله‌رضایی',gender:p.gender==='m'?'f':'m',spouses:[{id,ref:{},st:'current'}]};else{S.editId=id;}gotoTab('add');if(role==='father'||role==='mother')setTimeout(()=>setStep(2),80);}}
   else if(a==='zoom'){ setZoom(S.zoom+(+el.dataset.d)); }
   else if(a==='zoomreset'){ setZoom(1); }
-  else if(a==='artfit'){ S.artZoomUser=false; renderArt(); }
-  else if(a==='artauto'){ S.artZoomUser=false; renderArt(); }
+  else if(a==='artfit'){ S.artZoomUser=false; S.artFitAll=true; renderArt(); }
+  else if(a==='artauto'){ S.artZoomUser=false; S.artFitAll=false; renderArt(); }
   else if(a==='artzoom'){ S.artZoomUser=true; S.artZoom=Math.max(.12,Math.min(3,S.artZoom+(+el.dataset.d))); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(cv.width*S.artZoom)+'px'; } }
   else if(a==='savepng') saveArt('png');
   else if(a==='savepdf') saveArt('pdf');
