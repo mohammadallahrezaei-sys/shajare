@@ -1095,14 +1095,34 @@ function researchHTML(){
 }
 function familyPlacesMapHTML(){
  const coords={'بودلا':[35.53970204,47.57059851],'خودلان':[35.57583,47.52778],'زرین‌آباد':[35.59596019,47.57756835],'خسروآباد':[35.51839211,47.62154169]};
- const rows=Object.entries(coords).map(([name,ll])=>({name,ll,people:Object.entries(S.people||{}).filter(([id,p])=>!p.virtual&&[p.birthPlace,p.residence,p.place].some(v=>v&&vKey(v).includes(vKey(name))))}));
- const all=Object.values(S.people||{}).filter(p=>!p.virtual),known=all.filter(p=>p.birthPlace||p.residence||p.place);
- const pts=rows.map((r,i)=>{const x=100+(r.ll[1]-47.52)*5600,y=35+(35.61-r.ll[0])*4400;return {...r,x,y};});
- return `<section class="card stack"><div><span class="home-kicker">جغرافیای خاندان</span><h3>🗺️ نقشهٔ پراکندگی نسل‌ها</h3><p class="muted small">تعداد افراد دارای محل تولد یا سکونت ثبت‌شده در چهار آبادی اصلی. مکان‌های دیگر نیز در فهرست پایین نمایش داده می‌شوند؛ برای آن‌ها مختصات حدس زده نمی‌شود.</p></div>
- <div class="family-map-box"><svg viewBox="0 0 760 470" role="img" aria-label="نقشه نسبی پراکندگی افراد در چهار روستای خانواده"><rect x="8" y="8" width="744" height="454" rx="18" fill="#e8e0c8"/><path d="M40 370 Q180 300 250 330 T470 250 T720 100" fill="none" stroke="#b4c7a0" stroke-width="30" opacity=".65"/><path d="M40 100 Q210 190 360 170 T700 350" fill="none" stroke="#c9b995" stroke-width="4" stroke-dasharray="12 9"/>${pts.map((p,i)=>`<g><circle cx="${p.x}" cy="${p.y}" r="${Math.max(13,Math.min(34,13+p.people.length*2))}" fill="#397c69" fill-opacity=".82" stroke="#fff" stroke-width="3"/><text x="${p.x}" y="${p.y+5}" text-anchor="middle" fill="#fff" font-size="17" font-weight="bold">${p.people.length}</text><text x="${p.x}" y="${p.y-25}" text-anchor="middle" fill="#24352e" font-size="20" font-weight="bold">${p.name}</text></g>`).join('')}</svg><small>نمای نسبی موقعیت آبادی‌ها؛ اندازهٔ نشانگر متناسب با تعداد افراد ثبت‌شده است.</small></div>
- <div class="grid2">${rows.map(r=>`<a class="map-place-card" href="https://www.google.com/maps/@${r.ll[0]},${r.ll[1]},14z" target="_blank" rel="noopener"><b>${r.name}</b><span>${fa(r.people.length)} نفر با محل ثبت‌شده</span><small>بازکردن نقشه و فهرست افراد ↗</small></a>`).join('')}</div>
- <details><summary>محل‌های دیگر ثبت‌شده</summary><div class="stack small">${(()=>{const g={};known.forEach(p=>[p.birthPlace,p.residence,p.place].filter(Boolean).forEach(v=>{const k=tidy(v);if(!Object.keys(coords).some(n=>vKey(k).includes(vKey(n))))g[k]=(g[k]||0)+1;}));return Object.entries(g).sort((a,b)=>b[1]-a[1]).map(([n,c])=>`<div class="row" style="justify-content:space-between"><span>${esc(n)}</span><b>${fa(c)} ثبت</b></div>`).join('')||'<span class="muted">محل دیگری ثبت نشده است.</span>';})()}</div></details>
- <p class="muted small">دارای محل تولد یا سکونت: ${fa(known.length)} از ${fa(all.length)} پرونده. محل‌های بدون مختصات در نقشه نقطه‌گذاری نشده‌اند.</p></section>`;
+ const norm=v=>vKey(tidy(String(v||''))).replace(/[يى]/g,'ی').replace(/ك/g,'ک').trim();
+ const all=Object.entries(S.people||{}).filter(([id,p])=>!p.virtual);
+ const placeOf=(p,k)=>tidy(String(p[k]||''));
+ const rows=Object.entries(coords).map(([name,ll])=>{
+   const key=norm(name), born=[], lived=[], other=[];
+   all.forEach(([id,p])=>{
+     if(norm(placeOf(p,'birthPlace'))===key)born.push({id,p});
+     if(norm(placeOf(p,'residence'))===key)lived.push({id,p});
+     if(norm(placeOf(p,'place'))===key)other.push({id,p});
+   });
+   const people=new Map();[...born,...lived,...other].forEach(x=>people.set(x.id,x));
+   return {name,ll,born,lived,other,people:[...people.values()]};
+ });
+ const pts=rows.map(r=>{const x=100+(r.ll[1]-47.52)*5600,y=35+(35.61-r.ll[0])*4400;return {...r,x,y};});
+ const otherPlaces={};
+ all.forEach(([id,p])=>['birthPlace','residence','place'].forEach(k=>{
+   const v=placeOf(p,k);if(!v)return;
+   const match=rows.some(r=>norm(r.name)===norm(v));
+   if(!match){const key=norm(v);if(!otherPlaces[key])otherPlaces[key]={name:v,born:new Set(),lived:new Set(),other:new Set()};
+     otherPlaces[key][k==='birthPlace'?'born':k==='residence'?'lived':'other'].add(id);}
+ }));
+ const uniqueKnown=new Set();all.forEach(([id,p])=>{if(p.birthPlace||p.residence||p.place)uniqueKnown.add(id);});
+ const otherHTML=Object.values(otherPlaces).sort((a,b)=>(b.born.size+b.lived.size+b.other.size)-(a.born.size+a.lived.size+a.other.size)).map(x=>`<div class="row" style="justify-content:space-between;gap:12px"><span>${esc(x.name)}</span><span class="small">تولد: ${fa(x.born.size)} · سکونت: ${fa(x.lived.size)}${x.other.size?' · سایر: '+fa(x.other.size):''}</span></div>`).join('');
+ return `<section class="card stack"><div><span class="home-kicker">جغرافیای خاندان</span><h3>🗺️ پراکندگی بر پایهٔ اطلاعات ثبت‌شده</h3><p class="muted small">نقشه از روی پرونده‌های اشخاص ساخته می‌شود؛ شمار تولد و محل سکونتِ ثبت‌شده جداست. این اطلاعات به معنی سکونت فعلی افراد در آن آبادی‌ها نیست. با ثبت یا ویرایش پرونده‌ها، آمار به‌روزرسانی می‌شود.</p></div>
+ <div class="family-map-box"><svg viewBox="0 0 760 470" role="img" aria-label="نقشه نسبی محل‌های تولد و سکونت ثبت‌شده خانواده"><rect x="8" y="8" width="744" height="454" rx="18" fill="#e8e0c8"/><path d="M40 370 Q180 300 250 330 T470 250 T720 100" fill="none" stroke="#b4c7a0" stroke-width="30" opacity=".65"/><path d="M40 100 Q210 190 360 170 T700 350" fill="none" stroke="#c9b995" stroke-width="4" stroke-dasharray="12 9"/> ${pts.map(p=>`<g><circle cx="${p.x}" cy="${p.y}" r="${Math.max(13,Math.min(34,13+p.people.length*2))}" fill="#397c69" fill-opacity=".82" stroke="#fff" stroke-width="3"/><text x="${p.x}" y="${p.y+5}" text-anchor="middle" fill="#fff" font-size="17" font-weight="bold">${p.people.length}</text><text x="${p.x}" y="${p.y-25}" text-anchor="middle" fill="#24352e" font-size="20" font-weight="bold">${p.name}</text></g>`).join('')}</svg><small>عدد داخل نشانگر: تعداد افراد یکتایی که دست‌کم یکی از محل‌های ثبت‌شده‌شان با این آبادی منطبق است؛ موقعیت‌ها نمای نسبی‌اند.</small></div>
+ <div class="grid2">${rows.map(r=>`<article class="map-place-card"><b>${r.name}</b><span>تولد: ${fa(r.born.length)} نفر · سکونت ثبت‌شده: ${fa(r.lived.length)} نفر</span><small>مجموع افراد یکتا: ${fa(r.people.length)}</small><a href="https://www.google.com/maps/@${r.ll[0]},${r.ll[1]},14z" target="_blank" rel="noopener">مشاهده موقعیت ↗</a></article>`).join('')}</div>
+ <details><summary>سایر محل‌های ثبت‌شده در پرونده‌ها</summary><div class="stack small">${otherHTML||'<span class="muted">محل دیگری ثبت نشده است.</span>'}</div></details>
+ <p class="muted small">دارای دست‌کم یک محل ثبت‌شده: ${fa(uniqueKnown.size)} از ${fa(all.length)} پرونده. این آمار فقط از داده‌های ثبت‌شده در پرونده‌ها محاسبه می‌شود و محل‌های دیگر تا زمان تعیین مختصات در فهرست باقی می‌مانند.</p></section>`;
 }
 function persistentAuditHTML(){
  const rows=S.auditRows||[];
