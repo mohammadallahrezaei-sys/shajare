@@ -2331,7 +2331,7 @@ function viewFamily(){
       <label class="f"><span>عکس یا سند را اضافه کنید</span><input id="fc_file" type="file" accept="image/*,.pdf"><small class="muted">اختیاری · عکس قدیمی، شناسنامه، نامه، قباله یا فایل PDF · حداکثر ۲۰ مگابایت</small></label>
       <label class="f"><span>۴. توضیح کوتاه؛ چه چیزی درباره‌اش می‌دانید؟ *</span><textarea id="fc_story" required rows="4" placeholder="مثلاً این عکس در خانهٔ قدیمی بودلا گرفته شده. افراد داخل عکس ... هستند. این خاطره را از ... شنیده‌ام."></textarea><small class="muted">حتی دو سه جمله کافی است. اگر چیزی را مطمئن نیستید، بنویسید «حدسی است».</small></label>
       <label class="f"><span>نام راوی یا منبع (اختیاری)</span><input id="fc_source" placeholder="مثلاً: نقل از مادربزرگ، پشت‌نویسی عکس، دفتر خانوادگی"></label>
-      <label class="f"><span>چه کسانی پس از تأیید بتوانند آن را ببینند؟</span><select id="fc_visibility"><option value="family">فقط اعضای خانواده</option><option value="public">عمومی</option></select></label>
+      <div class="note" style="margin:0"><b>انتشار در موزهٔ خانوادگی</b><p style="margin:5px 0 0">همهٔ یادگارهای تأییدشده در کتابچه و موزه برای همهٔ بازدیدکنندگان قابل مشاهده خواهند بود؛ دیگر نیازی به انتخاب سطح دسترسی نیست.</p></div>
       <button class="btn big" type="submit">ثبت یادگار و ارسال برای بررسی</button>
       <p class="muted small" style="margin:0">پس از ثبت، پیام نتیجه نمایش داده می‌شود و وضعیت یادگار در همین صفحه قابل پیگیری است. انتشار در کتابچه فقط بعد از تأیید مدیر انجام می‌شود.</p>
     </form>
@@ -2355,7 +2355,7 @@ async function submitFamilyContribution(){
       media_path='family/'+id+'.'+ext;
       await sbFetch('/storage/v1/object/shj-family-pending/'+media_path,{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream','x-upsert':'true'},body:file});
     }
-    await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({id,title,description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta),media_path,visibility:$('#fc_visibility').value,status:'pending'})});
+    await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({id,title,description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta),media_path,visibility:'public',status:'pending'})});
     toast('یادگار شما برای بررسی مدیر ثبت شد.');
     await loadFamilyPosts(); renderView();
   }catch(e){console.error(e);toast('ثبت انجام نشد: '+(e.message||'دسترسی پایگاه داده یا فضای ذخیره‌سازی را بررسی کنید.'));}
