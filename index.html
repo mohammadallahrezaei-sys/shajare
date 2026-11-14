@@ -1409,10 +1409,14 @@ async function initKinMap(){
   const known={'بودلا':[35.53970204,47.57059851],'خودلان':[35.57583,47.52778],'زرین‌آباد':[35.59596019,47.57756835],'خسروآباد':[35.51839211,47.62154169]};
   let cache={};try{cache=JSON.parse(localStorage.getItem('shajare_place_geocodes_v1')||'{}')||{};}catch(e){}
   const norm=v=>vKey(tidy(String(v||''))).replace(/[يى]/g,'ی').replace(/ك/g,'ک');
-  const places=[['تولد',p.birthPlace],['سکونت',p.residence],['سایر محل',p.place]].filter(x=>x[1]).filter((x,i,a)=>a.findIndex(y=>norm(y[1])===norm(x[1]))===i);
-  const points=[];
-  for(const [label,name] of places){let ll=known[name]||cache[norm(name)];if(!ll){try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(name+', Iran'),{headers:{'Accept-Language':'fa'}});const d=r.ok?await r.json():[];if(d[0]){ll=[+d[0].lat,+d[0].lon];cache[norm(name)]=ll;}}catch(e){}}
-   if(ll&&Number.isFinite(ll[0])&&Number.isFinite(ll[1])){points.push(ll);const m=L.marker(ll).addTo(map).bindPopup('<b>'+esc(label)+'</b><br>'+esc(name)+'<br>'+esc(full(p)));kinMapMarkers.push(m);}await new Promise(r=>setTimeout(r,1050));
+  const journey=[];
+  if(p.birthPlace)journey.push({label:'تولد',name:p.birthPlace,year:+p.bY||0});
+  Object.values(S.memories||{}).filter(m=>m.personId===S.kinMapPerson&&m.eventPlace).forEach(m=>journey.push({label:(KINDS[m.kind]&&KINDS[m.kind][0])||'رویداد',name:m.eventPlace,year:+m.eventYear||0,desc:m.text||''}));
+  if(p.residence)journey.push({label:'سکونت',name:p.residence,year:0});if(p.place)journey.push({label:'سایر محل',name:p.place,year:0});
+  journey.sort((a,b)=>(a.year||99999)-(b.year||99999));
+  const places=journey.filter((x,i,a)=>a.findIndex(y=>norm(y.name)===norm(x.name))===i);const points=[];
+  for(const item of places){const label=item.label,name=item.name;let ll=known[name]||cache[norm(name)];if(!ll){try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(name+', Iran'),{headers:{'Accept-Language':'fa'}});const d=r.ok?await r.json():[];if(d[0]){ll=[+d[0].lat,+d[0].lon];cache[norm(name)]=ll;}}catch(e){}}
+   if(ll&&Number.isFinite(ll[0])&&Number.isFinite(ll[1])){points.push(ll);const m=L.marker(ll).addTo(map).bindPopup('<b>'+esc(label)+(item.year?' · '+fa(item.year):'')+'</b><br>'+esc(name)+'<br>'+esc(full(p))+(item.desc?'<br>'+esc(item.desc):''));kinMapMarkers.push(m);}await new Promise(r=>setTimeout(r,1050));
   }
   try{localStorage.setItem('shajare_place_geocodes_v1',JSON.stringify(cache));}catch(e){}
   if(points.length>1){kinMapRoute=L.polyline(points,{color:'#7c3aed',weight:4,dashArray:'7 7'}).addTo(map);map.fitBounds(kinMapRoute.getBounds(),{padding:[25,25]});}
@@ -1456,8 +1460,9 @@ function familyTimelineHTML(){
  const descendants=id=>{const out=new Set(),q=[id];while(q.length){const x=q.shift();ids.filter(i=>P[i].fatherId===x||P[i].motherId===x).forEach(y=>{if(!out.has(y)){out.add(y);q.push(y);}});}return out;};
  let allowed=null;if(selected&&scope==='person')allowed=new Set([selected]);else if(selected&&scope==='ancestors')allowed=ancestors(selected);else if(selected&&scope==='descendants')allowed=descendants(selected);else if(selected&&scope==='family'){allowed=ancestors(selected);descendants(selected).forEach(x=>allowed.add(x));allowed.add(selected);}
  const events=[];ids.forEach(id=>{const p=P[id];if(allowed&&!allowed.has(id))return;const loc=p.birthPlace||p.residence||p.place||'';if(place&&loc!==place)return;
- if(p.bY)events.push({y:+p.bY,id,label:'تولد',desc:'تولد '+full(p),loc});
- if(p.dead&&p.dY)events.push({y:+p.dY,id,label:'درگذشت',desc:'درگذشت '+full(p),loc});
+ if(p.bY)events.push({y:+p.bY,id,label:'تولد',desc:'تولد '+full(p),loc:p.birthPlace||loc});
+ if(p.dead&&p.dY)events.push({y:+p.dY,id,label:'درگذشت',desc:'درگذشت '+full(p),loc:p.residence||loc});
+ Object.values(S.memories||{}).filter(m=>m.personId===id&&+m.eventYear>0).forEach(m=>events.push({y:+m.eventYear,id,label:(KINDS[m.kind]&&KINDS[m.kind][0])||'خاطره',desc:m.text||'رویداد ثبت‌شده',loc:m.eventPlace||loc}));
  (p.spl||[]).forEach(sp=>{if(!P[sp.id]||!sp.dt)return;[['nishan','نشان'],['aghd','عقد'],['aroosi','عروسی']].forEach(([k,l])=>{const y=sp.dt[k]?.y;if(y)events.push({y:+y,id,label:l,desc:l+' · '+full(p)+' و '+full(P[sp.id]),loc});});});
  });
  events.sort((a,b)=>a.y-b.y||a.desc.localeCompare(b.desc,'fa'));const years=events.map(e=>e.y),min=years.length?Math.min(...years):0,max=years.length?Math.max(...years):0,zoom=Math.max(1,Math.min(4,+S.timelineZoom||1)),shown=events.slice(0,500);
@@ -1924,7 +1929,8 @@ function memoryForm(){
    <label class="f"><span>دربارهٔ چه کسی؟ *</span><select id="m_person"><option value="">— انتخاب کنید —</option>${arr.map(([id,r])=>`<option value="${esc(id)}" ${id===S.memFor?'selected':''}>${esc(pickLabel(id,r))}</option>`).join('')}</select></label>
    <div class="f"><span>چه می‌نویسید؟</span><div class="seg">${Object.entries(KINDS).map(([k,[l]],i)=>`<label><input type="radio" name="m_kind" value="${k}" ${i===0?'checked':''}><span>${l}</span></label>`).join('')}</div></div>
    <label class="f"><span>متن *</span><textarea id="m_text" placeholder="${esc(KINDS.memory[1])}" required></textarea></label>
-   <p class="muted small" style="margin:0">پس از تأیید مدیر، کنار نام آن فرد نمایش داده می‌شود.</p>
+   <div class="fields"><label class="f"><span>سال وقوع خاطره / رویداد (شمسی، اختیاری)</span><input id="m_eventYear" type="number" min="1" max="1600" placeholder="مثلاً ۱۳۴۲"></label><label class="f"><span>محل وقوع (اختیاری)</span><input id="m_eventPlace" type="text" placeholder="نام روستا، شهر یا محل"></label></div>
+   <p class="muted small" style="margin:0">با ثبت سال و محل، این خاطره در تایم‌لاین و مسیر جغرافیایی زندگی فرد نیز نمایش داده می‌شود. پس از تأیید مدیر، کنار نام آن فرد نمایش داده می‌شود.</p>
    <div class="row"><button class="btn" type="submit">${S.isAdmin?'ثبت':'ارسال برای تأیید مدیر'}</button></div>
   </form>`;
 }
@@ -3474,7 +3480,8 @@ async function onMemorySubmit(){
   const pid=val('#m_person'), text=val('#m_text'), kind=(document.querySelector('input[name=m_kind]:checked')||{}).value||'memory';
   if(!pid){ toast('فرد مورد نظر را انتخاب کنید'); return; }
   if(!text){ toast('متن را بنویسید'); return; }
-  const payload={personId:pid,text,kind,author:S.isAdmin?fullName():''};
+  const eventYear=Math.max(0,Math.min(1600,parseInt(val('#m_eventYear')||'0',10)||0)),eventPlace=val('#m_eventPlace');
+  const payload={personId:pid,text,kind,author:S.isAdmin?fullName():'',eventYear,eventPlace};
   const btn=$('#mform button[type=submit]'); btn.disabled=true;
   try{
     if(S.isAdmin){ await S.db.doc('memories/'+newId('m')).set(Object.assign({at:Date.now()},payload)); toast('ثبت شد'); }
