@@ -1070,8 +1070,8 @@ function smartCenterHTML(){
     item('👥','افراد مشابه احتمالی',a.duplicates.length,'نام‌های یکسان؛ پیش از ادغام، هویت را بررسی کنید',a.duplicates.flat()),
     item('🖼️','عکس بدون افراد شناسایی‌شده',a.noSource.length,'تصاویر آرشیوی که هنوز به هیچ پرونده‌ای متصل نیستند',[])
   ];
-  const timeline=a.timeline.length?`<div class="smart-timeline">${a.timeline.map(x=>`<button type="button" data-act="person" data-id="${esc(x.id)}"><b>${fa(x.y)}</b><span>${esc(x.label)}</span></button>`).join('')}</div>`:'<p class="muted small">با ثبت تاریخ تولد و درگذشت، خط زمانی خانواده شکل می‌گیرد.</p>';
-  return `<section class="smart-center card stack"><div class="smart-center-head"><div><span class="home-kicker">مرکز هوشمندی خانواده</span><h3>سلامت و تکمیل شجره‌نامه</h3><p class="muted small">بررسی خودکار داده‌های ثبت‌شده؛ موارد نامعلوم الزاماً خطا نیستند.</p></div><div class="smart-score"><b>${fa(avg)}٪</b><small>میانگین تکمیل</small></div></div><div class="cmpbar"><div style="width:${avg}%"></div></div><div class="smart-alert-grid">${rows.join('')}</div><div class="smart-subhead"><b>🗓️ خط زمانی ثبت‌شده</b><span class="muted small">رویدادهای دارای سال مشخص</span></div>${timeline}<div class="smart-center-foot"><button class="btn sm" type="button" data-act="tab" data-tab="stats">گزارش کامل تکمیل پرونده‌ها</button><button class="btn ghost sm" type="button" data-act="tab" data-tab="family">مدیریت عکس‌ها و اسناد</button></div></section>`;
+  const timeline=`<div class="smart-center-foot"><span class="muted small">رویدادهای زندگی در صفحه مستقل خط زمانی نمایش داده می‌شوند.</span><button class="btn ghost sm" type="button" data-act="tab" data-tab="timeline">مشاهده خط زمانی خانواده</button></div>`;
+  return `<section class="smart-center card stack"><div class="smart-center-head"><div><span class="home-kicker">مرکز هوشمندی خانواده</span><h3>سلامت و تکمیل شجره‌نامه</h3><p class="muted small">بررسی خودکار داده‌های ثبت‌شده؛ موارد نامعلوم الزاماً خطا نیستند.</p></div><div class="smart-score"><b>${fa(avg)}٪</b><small>میانگین تکمیل</small></div></div><div class="cmpbar"><div style="width:${avg}%"></div></div><div class="smart-alert-grid">${rows.join('')}</div>${timeline}<div class="smart-center-foot"><button class="btn sm" type="button" data-act="tab" data-tab="stats">گزارش کامل تکمیل پرونده‌ها</button><button class="btn ghost sm" type="button" data-act="tab" data-tab="family">مدیریت عکس‌ها و اسناد</button></div></section>`;
 }
 
 // ---------- مرکز تحقیقات تاریخی خانواده ----------
@@ -1185,6 +1185,12 @@ function persistentAuditHTML(){
  </section>`;
 }
 
+function viewRelations(){return `<div class="stack"><section class="card"><span class="home-kicker">ابزارهای تخصصی شجره‌نامه</span><h2>کاوش در نیاکان، نوادگان و روابط</h2><p class="muted small">فرد مرکزی را انتخاب کنید و نمودار مناسب را ببینید. این بخش جدا از نمای اصلی شجره‌نامه است.</p></section>${treeAdvancedHTML()}</div>`;}
+function viewTimeline(){return `<div class="stack"><section class="card"><span class="home-kicker">تاریخ خانواده</span><h2>خط زمانی رویدادهای خانوادگی</h2><p class="muted small">تولد، درگذشت، ازدواج و خاطرات دارای تاریخ در یک نمای مستقل گردآوری شده‌اند.</p></section>${familyTimelineHTML()}</div>`;}
+function viewMap(){return `<div class="stack"><section class="card"><span class="home-kicker">جغرافیای خانواده</span><h2>نقشه‌های خانوادگی و تاریخی</h2><p class="muted small">نقشه پراکندگی محل‌های تولد و سکونت، و نقشه مسیر زندگی و لایه‌های تاریخی در این بخش قرار دارند.</p></section>${familyPlacesMapHTML()}${kinMapHTML()}</div>`;}
+function viewSmart(){return `<div class="stack"><section class="card"><span class="home-kicker">بررسی کیفیت داده‌ها</span><h2>مرکز هوشمندی خانواده</h2><p class="muted small">یافتن پرونده‌های ناقص، موارد ناسازگار و عکس‌های بدون پیوند؛ موارد پیشنهادی را پیش از اصلاح بررسی کنید.</p></section>${smartCenterHTML()}</div>`;}
+function viewResearch(){return `<div class="stack"><section class="card"><span class="home-kicker">پژوهش و مستندسازی</span><h2>تحقیقات تاریخی خانواده</h2><p class="muted small">پرسش‌ها، سرنخ‌ها و نتیجه بررسی‌های تاریخی در این صفحه نگهداری می‌شوند.</p></section>${researchHTML()}</div>`;}
+function viewAudit(){if(!S.isAdmin)return `<section class="card"><p>این بخش فقط برای مدیر در دسترس است.</p></section>`;return `<div class="stack"><section class="card"><span class="home-kicker">سوابق مدیریتی</span><h2>تاریخچه تغییرات پرونده‌ها</h2><p class="muted small">ثبت و مرور تغییرات انجام‌شده روی پرونده اشخاص.</p></section>${persistentAuditHTML()}</div>`;}
 function viewHome(){
   const T=buildTree(), n=Object.keys(T.P).length, gens=T.nodes.reduce((m,x)=>Math.max(m,x.depth),0);
   const mid=myRecId(), me=mid?S.people[mid]:null;
@@ -1513,9 +1519,6 @@ function viewTree(){
    ${branchSelHTML()}
    <div class="tree-canvas-area">${body}</div>
    <p class="muted small tree-help">برای مشاهدهٔ پروندهٔ هر فرد، روی کارت یا نام او بزنید. با انتخاب یک شاخه می‌توانید همان بخش از درخت را جداگانه ببینید.</p>
-   ${treeAdvancedHTML()}
-   ${familyTimelineHTML()}
-   ${kinMapHTML()}
   </section>`;
 }
 
@@ -3277,7 +3280,7 @@ async function onPhotoPicked(file){
 
 /* ================= render ================= */
 const LOGO='<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 36V20M20 20C20 13 10 14 10 6M20 20C20 13 30 14 30 6M20 27C20 23 14 23 14 18M20 27C20 23 26 23 26 18"/><circle cx="10" cy="6" r="2.2" fill="var(--accent)" stroke="none"/><circle cx="30" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>';
-const TABS=[['home','خانه'],['tree','شجره‌نامه'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['family','ثبت در موزه'],['book','کتابچهٔ ریشه‌ها']];
+const TABS=[['home','خانه'],['tree','شجره‌نامه'],['relations','کاوش روابط'],['timeline','خط زمانی'],['map','نقشه خانواده'],['smart','مرکز هوشمندی'],['research','تحقیقات تاریخی'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['family','ثبت در موزه'],['book','کتابچهٔ ریشه‌ها']];
 
 function loginCandidates(first,last){
   const f=nn(first).replace(/\s/g,''), l=famKey(last); if(!f||!l) return [];
@@ -3341,19 +3344,19 @@ function render(){
 }
 function renderNav(){
   const nav=$('#nav'); if(!nav) return;
-  const tabs=TABS.slice(); if(S.isAdmin) tabs.push(['admin','مدیریت']);
+  const tabs=TABS.slice(); if(S.isAdmin) tabs.push(['audit','تاریخچه تغییرات'],['admin','مدیریت']);
   const pc=S.isAdmin?pendingList().length+(S.claims||[]).length+(S.reports||[]).length:0;
-  const ICO={home:'🏠',tree:'🌳',stats:'📊',add:'➕',family:'✍️',book:'📖',tools:'🧰',admin:'⚙️'};
+  const ICO={home:'🏠',tree:'🌳',relations:'🧬',timeline:'⏳',map:'🗺️',smart:'🧠',research:'🔎',stats:'📊',add:'➕',family:'✍️',book:'📖',tools:'🧰',audit:'🧾',admin:'⚙️'};
   nav.innerHTML=tabs.map(([k,l])=>`<button data-act="tab" data-tab="${k}" ${S.tab===k?'aria-current="page"':''}><span class="ni" aria-hidden="true">${ICO[k]||''}</span><span>${l}</span>${k==='admin'&&pc?`<span class="badge">${fa(pc)}</span>`:''}</button>`).join('');
 }
 function renderView(){
   const v=$('#view'); if(!v) return;
-  const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,tools:viewTools,growth:viewGrowth,life:viewLife,family:viewFamily,book:viewFamilyBook,admin:viewAdmin}[S.tab]||viewHome;
+  const f={home:viewHome,tree:viewTree,relations:viewRelations,timeline:viewTimeline,map:viewMap,smart:viewSmart,research:viewResearch,audit:viewAudit,stats:viewStats,add:viewAdd,tools:viewTools,growth:viewGrowth,life:viewLife,family:viewFamily,book:viewFamilyBook,admin:viewAdmin}[S.tab]||viewHome;
   v.classList.toggle('tree-page',S.tab==='tree');
   v.innerHTML=f(); if(S.familyPosts&&(familyArchiveUI.openId||familyArchiveUI.editId)) v.insertAdjacentHTML('beforeend',familyOverlayHTML());
   if(S.tab==='family') updateFamilyContributionGuide();
-  if(S.tab==='home'&&$('#familyPlacesMap')) initFamilyPlacesMap();
-  if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } } if(S.tab==='tree'&&$('#kinMap'))initKinMap();
+  if(S.tab==='map'){if($('#familyPlacesMap'))initFamilyPlacesMap();if($('#kinMap'))initKinMap();}
+  if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } } 
 }
 let rq=0;
 function changed(){ S.T=null; if(rq) return; rq=requestAnimationFrame(()=>{ rq=0; if(S.loginPending){ if(S.peopleLoaded) render(); return; } if(!S.me||!S.ready) return; renderNav(); if(S.tab==='add') refreshAdd(); else renderView(); if(S.modal) $('#sheet').innerHTML=personSheet(S.modal); }); }
