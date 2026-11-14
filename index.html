@@ -879,7 +879,12 @@ label.f>span,div.f>span{font-weight:600}
 .kin-graph-scroll:has(.kin-fan-wrap){direction:ltr!important;overflow-x:auto!important;overflow-y:auto!important;max-width:100%;min-width:0}
 .kin-graph-scroll .kin-fan-wrap{width:max-content!important;min-width:100%!important;max-width:none!important;overflow:visible!important;direction:rtl!important}
 .kin-graph-scroll .kin-fan-wrap svg{display:block!important;max-width:none!important;margin:0!important}
-</style></head>
+</style><style id="multi-person-picker">
+#fc_persons option:checked{background:linear-gradient(var(--primary),var(--primary));color:#fff}
+#fc_persons{cursor:pointer}
+.fc-picked{display:block;font-weight:700;color:var(--primary)}
+</style>
+</head>
 <body>
 <div class="wrap" id="root"></div>
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
@@ -3005,7 +3010,7 @@ function viewFamily(){
       </section>
       <section class="fc-form-section">
         <div class="fc-step-head"><span>۳</span><div><b>افراد و مستندات</b><small>هر اطلاعاتی که به شناسایی بهتر یادگار کمک می‌کند.</small></div></div>
-        <label class="f"><span>این عکس یا یادگار مربوط به کدام افراد است؟ (امکان انتخاب چند نفر)</span><select id="fc_persons" multiple size="6" style="min-height:150px">${Object.entries(S.people||{}).filter(([,q])=>q&&!q.virtual).sort((x,y)=>full(x[1]).localeCompare(full(y[1]),'fa')).map(([k,q])=>`<option value="${esc(k)}">${esc(full(q))}</option>`).join('')}</select><small class="muted">برای انتخاب چند نفر، در رایانه کلید Ctrl و در مک کلید Command را نگه دارید. یک عکس می‌تواند به چند پروندهٔ شجره‌نامه متصل باشد.</small></label>
+        <label class="f"><span>این عکس یا یادگار مربوط به کدام افراد است؟ (امکان انتخاب چند نفر)</span><select id="fc_persons" multiple size="6" style="min-height:150px">${Object.entries(S.people||{}).filter(([,q])=>q&&!q.virtual).sort((x,y)=>full(x[1]).localeCompare(full(y[1]),'fa')).map(([k,q])=>`<option value="${esc(k)}">${esc(full(q))}</option>`).join('')}</select><small class="fc-picked muted">هنوز کسی انتخاب نشده است.</small><small class="muted">روی هر نام که بزنید به انتخاب‌ها اضافه می‌شود و با زدن دوباره برداشته می‌شود (نیازی به Ctrl نیست). یک عکس می‌تواند به چند پروندهٔ شجره‌نامه متصل باشد.</small></label>
         <label class="f"><span>نام افراد دیگر یا توضیح نسبت (اختیاری)</span><input id="fc_people" placeholder="نام افراد حاضر که هنوز در شجره‌نامه نیستند"></label>
                 <label class="f"><span>عکس، سند یا فایل پیوست</span><input id="fc_file" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,image/jpeg,image/png,image/webp,image/gif,application/pdf"><small class="muted">اختیاری · JPG، PNG، WebP، GIF یا PDF · حداکثر ۲۰ مگابایت</small></label>
       </section>
@@ -4216,6 +4221,17 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
   suppressClickUntil=0;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
  },true);
  window.addEventListener('blur',()=>{if(drag){drag.surface.classList.remove('diagram-mouse-dragging');drag=null;}});
+})();
+
+/* انتخاب چندنفره بدون Ctrl: با ماوس، هر کلیک یک نفر را اضافه یا حذف می‌کند (در گوشی رفتار پیش‌فرض لمسی حفظ می‌شود). */
+(function(){
+ const sum=sel=>{ const out=sel.parentElement&&sel.parentElement.querySelector('.fc-picked'); if(!out) return; const n=Array.from(sel.selectedOptions).map(o=>o.textContent); out.textContent=n.length?('انتخاب‌شده ('+fa(n.length)+'): '+n.join('، ')):'هنوز کسی انتخاب نشده است.'; };
+ document.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='mouse'||e.button!==0) return;
+  const o=e.target.closest&&e.target.closest('#fc_persons option'); if(!o) return;
+  e.preventDefault(); const sel=o.parentElement; sel.focus({preventScroll:true}); o.selected=!o.selected; sum(sel);
+ },true);
+ document.addEventListener('change',e=>{ if(e.target&&e.target.id==='fc_persons') sum(e.target); });
 })();
 
 /* ================= Supabase layer ================= */
