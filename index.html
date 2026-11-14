@@ -971,6 +971,22 @@ label.f>span,div.f>span{font-weight:600}
 #fc_persons{cursor:pointer}
 .fc-picked{display:block;font-weight:700;color:var(--primary)}
 </style>
+<style id="timeline-centered-layout">
+/* کارت‌های رویداد خط زمانی در مرکز صفحه */
+.tl-list{width:100%;max-width:1040px;margin-inline:auto;padding:0 10px 10px}
+.tl-row{grid-template-columns:88px 22px minmax(0,1fr);width:100%;justify-items:stretch}
+.tl-date,.tl-ic{align-self:start;text-align:center;padding-top:8px}
+.tl-txt{align-items:center;text-align:center;width:100%;min-width:0}
+.tl-txt>b,.tl-txt>small{max-width:100%;text-align:center}
+.tl-people,.tl-birth-family{margin-inline:auto}
+.tl-photo-content{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%;text-align:center}
+.tl-photo-thumb{display:block;max-width:min(100%,460px);max-height:300px;object-fit:contain;margin-inline:auto;border-radius:12px}
+@media(max-width:560px){
+ .tl-list{padding-inline:3px}
+ .tl-row{grid-template-columns:64px 18px minmax(0,1fr);gap:5px}
+ .tl-date,.tl-ic{font-size:.82rem}
+}
+</style>
 </head>
 <body>
 <div class="wrap" id="root"></div>
