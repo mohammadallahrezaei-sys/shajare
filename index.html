@@ -3469,11 +3469,21 @@ function drawArt(T,imgs){
   const GAP=Math.max(160,Math.min(250,1700/(maxD+1)));
   const BRANCH_COLORS=['#246b62','#b56b43','#557da5','#9b5877','#8a7b3e','#75649a','#3f8290','#98704d','#64834f','#9a5b4d'];
   let bi=0; const brs=[];
-  const assign=(n,ci,off)=>{n.ci=ci;n.off=off||0;n.kids.forEach(k=>assign(k,ci,off));};
+  // رنگ هر نسل از محل ازدواج جدا می‌شود: خود فرد رنگ شاخهٔ پدری/مادری را نگه می‌دارد، اما فرزندانش وارد شاخهٔ رنگی تازه می‌شوند.
+  const assign=(n,ci,off)=>{
+    n.ci=ci; n.off=off||0;
+    let childCi=ci;
+    if(n.spouses&&n.spouses.length&&n.kids.length){
+      childCi=bi++;
+      if(childCi%BRANCH_COLORS.length===ci%BRANCH_COLORS.length) childCi++;
+      brs.push({k:n,ci:childCi,married:true});
+    }
+    n.kids.forEach(k=>assign(k,childCi,off));
+  };
   const BH=branchHeads(T.roots), headSet=new Set(BH.list);
   const trunkWalk=n=>{if(headSet.has(n))return;n.ci=-1;n.kids.forEach(trunkWalk);};
   T.roots.forEach(trunkWalk);
-  BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>assign(q,bi,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
+  BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>{q.off=Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10));});bi++;});
   const bcol=n=>n.ci<0?'#76543a':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
   // چیدمان بادبزنی (تاج درخت): ریشه پایین‌وسط است و هر نسل روی یک کمانِ بالاترِ هم‌مرکز قرار می‌گیرد؛ پهنا به جای یک ردیف افقیِ بسیار بلند، میان کمان‌ها و ارتفاع پخش می‌شود.
   const NB_T=-46, NB_B=112, PADX=13, RING=190, GAPX=16;
