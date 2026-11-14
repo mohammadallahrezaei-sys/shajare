@@ -1094,35 +1094,83 @@ function researchHTML(){
  </section>`;
 }
 function familyPlacesMapHTML(){
- const coords={'بودلا':[35.53970204,47.57059851],'خودلان':[35.57583,47.52778],'زرین‌آباد':[35.59596019,47.57756835],'خسروآباد':[35.51839211,47.62154169]};
+ const known={'بودلا':[35.53970204,47.57059851],'خودلان':[35.57583,47.52778],'زرین‌آباد':[35.59596019,47.57756835],'خسروآباد':[35.51839211,47.62154169]};
  const norm=v=>vKey(tidy(String(v||''))).replace(/[يى]/g,'ی').replace(/ك/g,'ک').trim();
- const all=Object.entries(S.people||{}).filter(([id,p])=>!p.virtual);
- const placeOf=(p,k)=>tidy(String(p[k]||''));
- const rows=Object.entries(coords).map(([name,ll])=>{
-   const key=norm(name), born=[], lived=[], other=[];
-   all.forEach(([id,p])=>{
-     if(norm(placeOf(p,'birthPlace'))===key)born.push({id,p});
-     if(norm(placeOf(p,'residence'))===key)lived.push({id,p});
-     if(norm(placeOf(p,'place'))===key)other.push({id,p});
+ const places={};
+ Object.entries(S.people||{}).forEach(([id,p])=>{
+   if(p.virtual)return;
+   [['birthPlace','born'],['residence','lived'],['place','other']].forEach(([field,type])=>{
+     const name=tidy(String(p[field]||''));if(!name)return;
+     const key=norm(name);if(!places[key])places[key]={name, born:new Set(),lived:new Set(),other:new Set(),coords:known[name]||null};
+     places[key][type].add(id);
+     if(!places[key].coords){const k=Object.keys(known).find(x=>norm(x)===key);if(k)places[key].coords=known[k];}
    });
-   const people=new Map();[...born,...lived,...other].forEach(x=>people.set(x.id,x));
-   return {name,ll,born,lived,other,people:[...people.values()]};
  });
- const pts=rows.map(r=>{const x=100+(r.ll[1]-47.52)*5600,y=35+(35.61-r.ll[0])*4400;return {...r,x,y};});
- const otherPlaces={};
- all.forEach(([id,p])=>['birthPlace','residence','place'].forEach(k=>{
-   const v=placeOf(p,k);if(!v)return;
-   const match=rows.some(r=>norm(r.name)===norm(v));
-   if(!match){const key=norm(v);if(!otherPlaces[key])otherPlaces[key]={name:v,born:new Set(),lived:new Set(),other:new Set()};
-     otherPlaces[key][k==='birthPlace'?'born':k==='residence'?'lived':'other'].add(id);}
- }));
- const uniqueKnown=new Set();all.forEach(([id,p])=>{if(p.birthPlace||p.residence||p.place)uniqueKnown.add(id);});
- const otherHTML=Object.values(otherPlaces).sort((a,b)=>(b.born.size+b.lived.size+b.other.size)-(a.born.size+a.lived.size+a.other.size)).map(x=>`<div class="row" style="justify-content:space-between;gap:12px"><span>${esc(x.name)}</span><span class="small">تولد: ${fa(x.born.size)} · سکونت: ${fa(x.lived.size)}${x.other.size?' · سایر: '+fa(x.other.size):''}</span></div>`).join('');
- return `<section class="card stack"><div><span class="home-kicker">جغرافیای خاندان</span><h3>🗺️ پراکندگی بر پایهٔ اطلاعات ثبت‌شده</h3><p class="muted small">نقشه از روی پرونده‌های اشخاص ساخته می‌شود؛ شمار تولد و محل سکونتِ ثبت‌شده جداست. این اطلاعات به معنی سکونت فعلی افراد در آن آبادی‌ها نیست. با ثبت یا ویرایش پرونده‌ها، آمار به‌روزرسانی می‌شود.</p></div>
- <div class="family-map-box"><svg viewBox="0 0 760 470" role="img" aria-label="نقشه نسبی محل‌های تولد و سکونت ثبت‌شده خانواده"><rect x="8" y="8" width="744" height="454" rx="18" fill="#e8e0c8"/><path d="M40 370 Q180 300 250 330 T470 250 T720 100" fill="none" stroke="#b4c7a0" stroke-width="30" opacity=".65"/><path d="M40 100 Q210 190 360 170 T700 350" fill="none" stroke="#c9b995" stroke-width="4" stroke-dasharray="12 9"/> ${pts.map(p=>`<g><circle cx="${p.x}" cy="${p.y}" r="${Math.max(13,Math.min(34,13+p.people.length*2))}" fill="#397c69" fill-opacity=".82" stroke="#fff" stroke-width="3"/><text x="${p.x}" y="${p.y+5}" text-anchor="middle" fill="#fff" font-size="17" font-weight="bold">${p.people.length}</text><text x="${p.x}" y="${p.y-25}" text-anchor="middle" fill="#24352e" font-size="20" font-weight="bold">${p.name}</text></g>`).join('')}</svg><small>عدد داخل نشانگر: تعداد افراد یکتایی که دست‌کم یکی از محل‌های ثبت‌شده‌شان با این آبادی منطبق است؛ موقعیت‌ها نمای نسبی‌اند.</small></div>
- <div class="grid2">${rows.map(r=>`<article class="map-place-card"><b>${r.name}</b><span>تولد: ${fa(r.born.length)} نفر · سکونت ثبت‌شده: ${fa(r.lived.length)} نفر</span><small>مجموع افراد یکتا: ${fa(r.people.length)}</small><a href="https://www.google.com/maps/@${r.ll[0]},${r.ll[1]},14z" target="_blank" rel="noopener">مشاهده موقعیت ↗</a></article>`).join('')}</div>
- <details><summary>سایر محل‌های ثبت‌شده در پرونده‌ها</summary><div class="stack small">${otherHTML||'<span class="muted">محل دیگری ثبت نشده است.</span>'}</div></details>
- <p class="muted small">دارای دست‌کم یک محل ثبت‌شده: ${fa(uniqueKnown.size)} از ${fa(all.length)} پرونده. این آمار فقط از داده‌های ثبت‌شده در پرونده‌ها محاسبه می‌شود و محل‌های دیگر تا زمان تعیین مختصات در فهرست باقی می‌مانند.</p></section>`;
+ const rows=Object.values(places).sort((a,b)=>a.name.localeCompare(b.name,'fa'));
+ const mapped=rows.filter(x=>x.coords);
+ const total=new Set(rows.flatMap(x=>[...x.born,...x.lived,...x.other])).size;
+ return `<section class="card stack"><div><span class="home-kicker">جغرافیای خاندان</span><h3>🗺️ نقشه یکپارچه پراکندگی خانواده</h3><p class="muted small">تمام محل‌های تولد و سکونت ثبت‌شده در پرونده‌ها روی همین نقشه نمایش داده می‌شوند. چهار روستای اصلی نیز در کنار شهرها و محل‌های دیگر قرار دارند. آمار با تغییر پرونده‌ها به‌روز می‌شود؛ سکونت ثبت‌شده لزوماً به معنی سکونت فعلی نیست.</p></div>
+ <div id="familyPlacesMap" style="height:460px;min-height:320px;border-radius:14px;overflow:hidden;background:var(--soft,#eee)" role="region" aria-label="نقشه پراکندگی محل‌های ثبت‌شده خانواده"></div>
+ <div id="familyPlacesMapStatus" class="muted small">در حال آماده‌سازی نقشه و تعیین موقعیت محل‌های ثبت‌شده…</div>
+ <div class="small muted">تعداد محل‌های ثبت‌شده: ${fa(rows.length)} · افراد دارای حداقل یک محل: ${fa(total)} · محل‌های دارای مختصات اولیه: ${fa(mapped.length)}</div>
+ </section>`;
+}
+async function initFamilyPlacesMap(){
+ const host=$('#familyPlacesMap');if(!host||host.dataset.loading==='1')return;host.dataset.loading='1';
+ const status=$('#familyPlacesMapStatus');
+ const setStatus=t=>{const e=$('#familyPlacesMapStatus');if(e)e.textContent=t;};
+ const known={'بودلا':[35.53970204,47.57059851],'خودلان':[35.57583,47.52778],'زرین‌آباد':[35.59596019,47.57756835],'خسروآباد':[35.51839211,47.62154169]};
+ const norm=v=>vKey(tidy(String(v||''))).replace(/[يى]/g,'ی').replace(/ك/g,'ک').trim();
+ const places={};
+ Object.values(S.people||{}).forEach(p=>{
+   if(p.virtual)return;
+   [['birthPlace','تولد'],['residence','سکونت'],['place','سایر']].forEach(([field,label])=>{
+     const name=tidy(String(p[field]||''));if(!name)return;
+     const key=norm(name);if(!places[key])places[key]={name,born:0,lived:0,other:0,coords:known[name]||null};
+     if(field==='birthPlace')places[key].born++;else if(field==='residence')places[key].lived++;else places[key].other++;
+     if(!places[key].coords){const k=Object.keys(known).find(x=>norm(x)===key);if(k)places[key].coords=known[k];}
+   });
+ });
+ const rows=Object.values(places);
+ if(!rows.length){setStatus('هنوز محل تولد یا سکونتی در پرونده‌ها ثبت نشده است.');return;}
+ const loadLeaflet=()=>{
+   if(window.L)return Promise.resolve();
+   if(window.__familyLeafletPromise)return window.__familyLeafletPromise;
+   window.__familyLeafletPromise=new Promise((resolve,reject)=>{
+     if(!document.querySelector('link[data-family-leaflet]')){const l=document.createElement('link');l.rel='stylesheet';l.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';l.dataset.familyLeaflet='1';document.head.appendChild(l);}
+     const sc=document.createElement('script');sc.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc);
+   });return window.__familyLeafletPromise;
+ };
+ try{
+   await loadLeaflet();if(!$('#familyPlacesMap'))return;
+   const map=L.map('familyPlacesMap',{scrollWheelZoom:false}).setView([35.6,47.58],8);
+   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);
+   let done=0,failed=0;
+   const cacheKey='shajare_place_geocodes_v1';let cache={};try{cache=JSON.parse(localStorage.getItem(cacheKey)||'{}')||{};}catch(e){}
+   const points=[];
+   for(const p of rows){
+     let ll=p.coords||cache[norm(p.name)]||null;
+     if(!ll){
+       try{
+         const q=encodeURIComponent(p.name+', Iran');
+         const res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept-Language':'fa'}});
+         if(res.ok){const data=await res.json();if(data&&data[0]){ll=[Number(data[0].lat),Number(data[0].lon)];cache[norm(p.name)]=ll;}}
+       }catch(e){}
+       await new Promise(resolve=>setTimeout(resolve,1100));
+     }
+     if(ll&&Number.isFinite(ll[0])&&Number.isFinite(ll[1])){
+       const total=p.born+p.lived+p.other;
+       const marker=L.circleMarker(ll,{radius:Math.max(7,Math.min(19,6+Math.sqrt(total)*2)),color:'#fff',weight:2,fillColor:'#28765e',fillOpacity:.88}).addTo(map);
+       marker.bindPopup('<b>'+esc(p.name)+'</b><br>تولد: '+fa(p.born)+'<br>سکونت: '+fa(p.lived)+(p.other?'<br>سایر: '+fa(p.other):'')+'<br>مجموع ثبت‌ها: '+fa(total));
+       points.push(ll);
+     }else failed++;
+     done++;setStatus('تعیین موقعیت محل‌ها: '+fa(done)+' از '+fa(rows.length));
+   }
+   try{localStorage.setItem(cacheKey,JSON.stringify(cache));}catch(e){}
+   if(points.length){if(points.length===1)map.setView(points[0],11);else map.fitBounds(points,{padding:[24,24]});}
+   setStatus('روی نقشه '+fa(points.length)+' محل از '+fa(rows.length)+' محل ثبت‌شده نمایش داده شد.'+(failed?' '+fa(failed)+' محل به دلیل نامشخص بودن نام یا نبود نتیجه مکانی، فعلاً قابل مکان‌یابی نبود.':''));
+   setTimeout(()=>map.invalidateSize(),150);
+ }catch(e){setStatus('بارگذاری نقشه ناموفق بود؛ اتصال به سرویس نقشه یا اینترنت را بررسی کنید.');host.dataset.loading='0';}
 }
 function persistentAuditHTML(){
  const rows=S.auditRows||[];
@@ -3195,6 +3243,7 @@ function renderView(){
   v.classList.toggle('tree-page',S.tab==='tree');
   v.innerHTML=f(); if(S.familyPosts&&(familyArchiveUI.openId||familyArchiveUI.editId)) v.insertAdjacentHTML('beforeend',familyOverlayHTML());
   if(S.tab==='family') updateFamilyContributionGuide();
+  if(S.tab==='home'&&$('#familyPlacesMap')) initFamilyPlacesMap();
   if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } }
 }
 let rq=0;
