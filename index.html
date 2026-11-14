@@ -749,8 +749,8 @@ label.f>span,div.f>span{font-weight:600}
 .kin-graph-help b{color:var(--text);font-size:13px}
 .kin-graph-help span:before{content:"•";color:var(--accent);font-weight:900;margin-left:7px}
 </style><style id="root-first-tree-position">
-#artBox{scroll-behavior:smooth}
-#chartBox,.outline{scroll-behavior:smooth}
+/* اسکرول نرم روی این جعبه‌ها، درگ افقی با ماوس را خراب می‌کرد (هر حرکت، انیمیشن را از نو شروع می‌کرد). جابه‌جایی نرمِ «پیدا کردن فرد» با scrollTo و behavior:'smooth' انجام می‌شود. */
+#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap{scroll-behavior:auto!important}
 </style><style id="timeline-visual-polish">
 /* A calmer, editorial family-history timeline */
 .timeline-track{position:relative;align-items:stretch;gap:14px;padding:30px 12px 18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 5%,var(--surface2)),var(--surface2));min-height:0;scrollbar-width:thin;scrollbar-color:var(--primary) transparent}
@@ -3970,8 +3970,19 @@ document.addEventListener('click',async ev=>{
   else if(a==='focus'){
     const id=el.dataset.id;
     if(!id||!EP()[id]||EP()[id].virtual){toast('برای این نام هنوز پرونده مستقل ثبت نشده است.');return;}
-    S.focus=id; S.T=null; S.tab='tree'; S.q=''; S.code=null;
+    /* اگر فرد در «درخت اصلی» نباشد (مثلاً از خانوادهٔ همسر است)، قبلاً فیلتر بی‌صدا پاک می‌شد و کل درخت نشان داده می‌شد. */
+    const T0=buildTree(), P0=T0.P;
+    const inTree=pid=>{ let f=false; const seek=m=>{ if(!m||f) return; if(m.id===pid||m.spouses.includes(pid)){ f=true; return; } m.kids.forEach(seek); }; T0.roots.forEach(seek); return f; };
+    let target=id, note='';
+    if(!inTree(id)){
+      const rel=Object.keys(P0).find(x=>!P0[x].virtual&&(P0[x].fatherId===id||P0[x].motherId===id)&&inTree(x))
+        ||(P0[id].spl||[]).map(x=>x.id).find(x=>P0[x]&&!P0[x].virtual&&inTree(x));
+      if(!rel){ toast('این فرد در درخت اصلی نیست (احتمالاً از خانوادهٔ همسر است)، برای همین شاخه‌ای از او قابل نمایش نیست.'); return; }
+      target=rel; note='این فرد در درخت اصلی نیست؛ شاخهٔ نزدیک‌ترین بستگانش ('+full(P0[rel])+') نمایش داده شد.';
+    }
+    S.focus=target; S.T=null; S.tab='tree'; S.q=''; S.code=null;
     closeModal(); renderNav(); renderView(); window.scrollTo(0,0);
+    if(note) toast(note);
   }
   else if(a==='unfocus'){ S.focus=''; renderView(); }
   else if(a==='bkjson'){ try{ await loadFamilyPosts(); }catch(e){} lsSet('shj_lastbackup',String(Date.now())); const d=new Date(); saveBlob('shajare-backup-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.json',new Blob([backupJSON()],{type:'application/json'})); toast('پشتیبان دانلود شد'); }
