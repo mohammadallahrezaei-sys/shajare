@@ -3950,7 +3950,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='noinst'){ lsSet('shj_noinst','1'); renderView(); }
   else if(a==='bdics'){ saveBlob('tavalod-khandan.ics',new Blob([icsBirthdays()],{type:'text/calendar;charset=utf-8'})); toast('فایل تقویم دانلود شد؛ آن را باز کنید تا به تقویم گوشی اضافه شود'); }
   else if(a==='bdsend'){ const p=EP()[el.dataset.id]; if(p){ const text='تولدت مبارک '+(p.first||'')+' جان 🎂🌹\nاز طرف '+fullName()+' و خانوادهٔ الله‌رضایی'; try{ if(navigator.share){ await navigator.share({text}); } else { window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank'); } }catch(e){} } }
-  else if(a==='graphperson'){const id=el.dataset.id;if(id&&EP()[id]&&!EP()[id].virtual){S.graphMode='fan';gotoTab('relations',id);}else toast('برای این نام هنوز پرونده مستقل ثبت نشده است.');}
+  else if(a==='graphperson'){const id=el.dataset.id;if(id&&EP()[id]&&!EP()[id].virtual){S.treePerson=id;S.graphMode='fan';S.tab='relations';S.code=null;closeModal();renderNav();renderView();window.scrollTo(0,0);}else toast('برای این نام هنوز پرونده مستقل ثبت نشده است.');}
   else if(a==='treepick'){S.treePerson=el.dataset.id;renderView();}
   else if(a==='focus'){ S.focus=el.dataset.id; closeModal(); gotoTab('tree'); }
   else if(a==='unfocus'){ S.focus=''; renderView(); }
@@ -4143,7 +4143,7 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
   if(e.target.closest('button,a,input,select,textarea,[contenteditable="true"],.leaflet-control'))return;
   const surface=findSurface(e.target);if(!surface)return;
   drag={surface,id:e.pointerId,x:e.clientX,y:e.clientY,left:readX(surface),top:surface.scrollTop,moved:false};
-  try{surface.setPointerCapture(e.pointerId);}catch(_){}
+  // Do not capture the pointer on the scroll surface: SVG person clicks must retain their true target.
  },true);
  document.addEventListener('pointermove',e=>{
   if(!drag||e.pointerId!==drag.id)return;
