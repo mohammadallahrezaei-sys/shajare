@@ -1558,7 +1558,7 @@ function viewResearch(){return `<div class="stack"><section class="card"><span c
 const VAULT_BUCKET='shj-admin-vault';
 const VAULT_CATS={documents:'اسناد عمومی',legal:'اسناد حقوقی',identity:'اسناد هویتی',financial:'اسناد مالی',historical:'اسناد تاریخی',other:'سایر'};
 function vaultPath(p){return String(p||'').split('/').map(encodeURIComponent).join('/');}
-function vaultName(r){return String(r.name||'').replace(/^vault\/(?:documents|legal|identity|financial|historical|other)_\d+_/,'').replace(/_/g,' ');}
+function vaultName(r){return String(r.name||'').replace(/^(?:vault\/)?(?:documents|legal|identity|financial|historical|other)_\d+_/,'').replace(/_/g,' ');}
 function vaultRowHTML(r){
  const name=vaultName(r),size=r.metadata&&r.metadata.size?Math.round(r.metadata.size/1024)+' KB':'—';
  const date=r.created_at?new Date(r.created_at).toLocaleDateString('fa-IR'):'';
@@ -1570,7 +1570,7 @@ async function loadPrivateArchive(){
  S.vaultLoading=true;S.vaultError='';renderView();
  try{
   const rows=await sbFetch('/storage/v1/object/list/'+VAULT_BUCKET,{method:'POST',body:JSON.stringify({prefix:'vault',limit:200,offset:0,sortBy:{column:'created_at',order:'desc'}})});
-  S.vaultRows=(Array.isArray(rows)?rows:[]).filter(x=>x.name&&!x.id);
+  S.vaultRows=(Array.isArray(rows)?rows:[]).filter(x=>x.name&&x.id);
  }catch(e){S.vaultError=(e&&e.message)||'دریافت فهرست اسناد انجام نشد.';throw e;}
  finally{S.vaultLoading=false;renderView();}
 }
