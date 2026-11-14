@@ -1891,7 +1891,7 @@ function relBlock(key,label,filter,v,q){
    <label class="f"><span class="muted small">یا از لیست انتخاب کنید:</span><select id="r_${key}" data-rel="${key}">${opts(filter,sel,S.editId,true)}</select></label>
    <span class="muted small">در لیست نیست؟ اولین گزینهٔ لیست («✍️ در فهرست نیست») را بزنید و نامش را بنویسید.</span>
    <div id="r_${key}_new" ${sel==='__new'?'':'hidden'}><div class="fields">
-     <label class="f"><span>نام و نام خانوادگی ${esc(label)}</span><input type="text" id="r_${key}_n" placeholder="\${key==='father'?'مثلاً: محمد رضایی':key==='mother'?'مثلاً: فاطمه رضایی':SP_KEYS.includes(key)?(v.gender==='f'?'مثلاً: محمد رضایی':v.gender==='m'?'مثلاً: فاطمه رضایی':'نام و نام خانوادگی همسر'):'نام و نام خانوادگی'}" value="${esc(ref.name||'')}"></label>
+     <label class="f"><span>نام و نام خانوادگی ${esc(label)}</span><input type="text" id="r_${key}_n" placeholder="${key==='father'?'مثلاً: محمد رضایی':key==='mother'?'مثلاً: فاطمه رضایی':SP_KEYS.includes(key)?(v.gender==='f'?'مثلاً: محمد رضایی':v.gender==='m'?'مثلاً: فاطمه رضایی':'نام و نام خانوادگی همسر'):'نام و نام خانوادگی'}" value="${esc(ref.name||'')}"></label>
      <div class="f"><span>تاریخ تولد ${esc(label)} (اگر می‌دانید)</span>${dateW('r_'+key,{y:ref.y,m:ref.m,d:ref.d})}</div></div>
    </div></div>`;
 }
@@ -1993,7 +1993,7 @@ function personForm(){
    <div data-step="1" class="stack">
    <div class="qlab">این فرد کیست؟</div>
    <div class="fields">
-    <label class="f" ${hide(!!v.first)}><span>نام *</span><input type="text" id="f_first" placeholder="\${v.gender==='f'?'مثلاً: فاطمه':v.gender==='m'?'مثلاً: محمد':'نام کوچک فرد'}" value="${esc(v.first||'')}"></label>
+    <label class="f" ${hide(!!v.first)}><span>نام *</span><input type="text" id="f_first" placeholder="${v.gender==='f'?'مثلاً: فاطمه':v.gender==='m'?'مثلاً: محمد':'نام کوچک فرد'}" value="${esc(v.first||'')}"></label>
     <label class="f" ${hide(!!v.last)}><span>نام خانوادگی *</span><input type="text" id="f_last" value="${esc(v.last||'الله‌رضایی')}"></label>
     <div class="f" ${hide(!!v.gender)}><span>جنسیت *</span><div class="seg">
       <label><input type="radio" name="f_g" value="m" ${v.gender==='m'?'checked':''}><span>آقا</span></label>
