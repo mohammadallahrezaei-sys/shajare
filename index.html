@@ -6,6 +6,9 @@
 <title>شجره‌نامه خاندان الله‌رضایی</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#1E5B50">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="شجره‌نامه">
@@ -170,7 +173,6 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
 
 
 /* Dynamic family book pages */
-.village-photo-gallery{margin-top:22px;padding-top:14px;border-top:1px solid var(--line)}.village-telegram-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}.village-telegram-grid iframe,.village-photo-gallery>iframe{display:block;width:100%;max-width:100%;border:1px solid var(--line);border-radius:12px;background:#fff}.village-photo-gallery>iframe{max-width:560px;margin:12px auto}@media(max-width:700px){.village-telegram-grid{grid-template-columns:1fr}.village-telegram-grid iframe{height:390px}}
 .digital-book-shell{gap:14px}.digital-book-page{box-sizing:border-box;background:#fffdf7;color:#342f27;border:1px solid #ded5c2;border-radius:12px;box-shadow:0 10px 28px #20190d12;padding:clamp(16px,2.4vw,30px);width:min(100%,calc(78vh * 1.414));aspect-ratio:297 / 210;height:auto;min-height:0;max-width:1100px;margin:0 auto;line-height:1.62;overflow:hidden;position:relative}
 .digital-book-page h1,.digital-book-page h2,.digital-book-page h3{color:#314b3c}.digital-book-cover{box-sizing:border-box;height:100%;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:clamp(14px,3vw,30px);background:linear-gradient(145deg,#f5ebd5,#e5d8b9);border:7px double #9c8860;border-radius:8px}.digital-book-cover h1{font-size:clamp(2.5rem,7vw,4.5rem);margin:12px 0;color:#38513d}.digital-book-cover p{max-width:600px}.digital-book-cover .book-cover-art{font-size:clamp(2rem,7vw,4rem);padding:18px}
 .digital-book-page .digital-book-intro{max-width:none}.digital-book-page .family-village-facts article{padding:10px}.digital-book-page .family-source-map{margin:10px 0!important}.digital-book-page .family-source-map svg{max-height:55%;width:auto!important;max-width:100%;margin:auto}.digital-book-page .digital-book-entry{grid-template-columns:minmax(80px,34%) 1fr;gap:10px;padding:8px 0}.digital-book-page .digital-book-entry img{max-height:170px}.digital-book-page p{margin:.55em 0}.digital-book-page h2{font-size:1.25rem;margin:.4em 0}.digital-book-page h3{font-size:1.05rem}
@@ -181,12 +183,12 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
 .family-book-reader{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);box-shadow:0 10px 30px #172b2410}
 .family-book-reader-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 18px;background:linear-gradient(120deg,#243f38,#345c4c);color:#fff}
 .family-book-reader-head h2{margin:0;font-size:1.12rem;color:#fff}.family-book-reader-head p{margin:4px 0 0;color:#e4eee7;font-size:.84rem}
-.family-book-reader-tools{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:12px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.family-book-reader-tools{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:12px;background:var(--surface2);border-bottom:1px solid var(--line)}
 .family-book-reader-tools button{min-width:40px}.family-book-page-count{font-weight:800;min-width:92px;text-align:center;font-variant-numeric:tabular-nums}
 .family-book-frame{background:#ded8ca;padding:clamp(8px,2vw,20px);display:flex;justify-content:center;min-height:420px}
 .family-book-frame iframe{width:min(100%,1050px);height:min(78vh,1100px);min-height:600px;border:0;border-radius:8px;background:#fff;box-shadow:0 8px 28px #1c241c30}
 .family-book-empty{padding:30px 20px;text-align:center;max-width:720px;margin:auto}.family-book-empty strong{display:block;font-size:1.1rem;margin-bottom:8px}.family-book-empty p{color:var(--muted);line-height:1.9}
-.family-book-upload-note{margin:0;padding:10px 16px;background:var(--surface-2);color:var(--muted);font-size:.82rem;text-align:center}
+.family-book-upload-note{margin:0;padding:10px 16px;background:var(--surface2);color:var(--muted);font-size:.82rem;text-align:center}
 @media(max-width:640px){.family-book-reader-head{align-items:flex-start}.family-book-frame{padding:5px;min-height:360px}.family-book-frame iframe{height:72vh;min-height:480px}.family-book-reader-tools{gap:5px}.family-book-page-count{min-width:75px;font-size:.85rem}}
 
 /* Illustrated family history book layout */
@@ -360,7 +362,7 @@ textarea{min-height:110px;resize:vertical}
 .tree-roots-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .tree-roots-head h3{margin:0;font-size:1rem}
 .tree-roots-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
-.tree-root-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:right;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);color:var(--ink);cursor:pointer;min-width:0}
+.tree-root-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:right;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface2);color:var(--ink);cursor:pointer;min-width:0}
 .tree-root-chip:hover{border-color:var(--accent);transform:translateY(-1px)}
 .tree-root-chip b{overflow-wrap:anywhere}.tree-root-chip small{display:block;color:var(--muted);font-size:.76rem;margin-top:2px}
 .tree-roots-unlinked{border-top:1px dashed var(--line);padding-top:9px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -1021,7 +1023,7 @@ async function openBooklet(){
   let root=$('#bookletRoot'); if(!root){ root=document.createElement('div'); root.id='bookletRoot'; document.body.appendChild(root); }
   document.body.classList.add('printing-booklet');
   const ck=(k,l)=>`<label><input type="checkbox" data-bk="${k}" ${S.bk[k]?'checked':''}>${l}</label>`;
-  root.innerHTML=`<div class="bk-bar"><b>📚 کتابچهٔ خانوادگی</b>${tree?ck('secTree','تصویر درخت'):''}${ck('secStories','سرگذشت‌ها'+'')}${ck('secMem','خاطره‌ها')}${ck('secList','فهرست اعضا')}<span class="row" style="gap:8px;margin-inline-start:auto"><button type="button" class="btn" data-act="bkprint">🖨 چاپ / ذخیره PDF</button><button type="button" class="btn ghost" data-act="bkclose">بستن</button></span><span class="muted small" style="flex:1 1 100%">برای ساختن PDF، «چاپ» را بزنید و در پنجرهٔ چاپ مقصد را «ذخیره به‌صورت PDF» (Save as PDF) بگذارید.</span></div><div class="bk-pages">${bookletBody()}</div>`;
+  root.innerHTML=`<div class="bk-bar"><b>📚 نسخهٔ چاپی (درخت، سرگذشت‌ها، خاطره‌ها)</b>${tree?ck('secTree','تصویر درخت'):''}${ck('secStories','سرگذشت‌ها'+'')}${ck('secMem','خاطره‌ها')}${ck('secList','فهرست اعضا')}<span class="row" style="gap:8px;margin-inline-start:auto"><button type="button" class="btn" data-act="bkprint">🖨 چاپ / ذخیره PDF</button><button type="button" class="btn ghost" data-act="bkclose">بستن</button></span><span class="muted small" style="flex:1 1 100%">برای ساختن PDF، «چاپ» را بزنید و در پنجرهٔ چاپ مقصد را «ذخیره به‌صورت PDF» (Save as PDF) بگذارید.</span></div><div class="bk-pages">${bookletBody()}</div>`;
   root.scrollTop=0;
 }
 function closeBooklet(){ const r=$('#bookletRoot'); if(r) r.remove(); document.body.classList.remove('printing-booklet'); S.bk=null; }
@@ -1770,7 +1772,13 @@ function adListHTML(){
   if(!shown.length) return '<p class="muted small" style="margin:0">فردی پیدا نشد.</p>';
   return `<ul class="list">${shown.map(([id,r])=>`<li><div style="flex:1 1 200px;min-width:0"><b>${esc(full(r))}</b> <span class="muted small">${esc([gLabel(r.gender),r.bY?fa(r.bY):'',kinTag(id,r),r.dead?'درگذشته':''].filter(Boolean).join('، '))}</span></div><div class="row" style="gap:6px"><button class="btn ghost sm" data-act="person" data-id="${esc(id)}">نمایش</button><button class="btn sm" data-act="editp" data-id="${esc(id)}">ویرایش</button></div></li>`).join('')}</ul>${arr.length>shown.length?`<p class="muted small" style="margin:6px 0 0">${fa(arr.length-shown.length)} نفر دیگر هم هست؛ با جستجو پیدا کنید.</p>`:''}`;
 }
-function backupJSON(){ return JSON.stringify({app:'shajare-allahrezaei',version:2,exportedAt:new Date().toISOString(),people:S.people,memories:S.memories,pending:S.subs||{}},null,1); }
+function backupJSON(){ return JSON.stringify({app:'shajare-allahrezaei',version:3,exportedAt:new Date().toISOString(),people:S.people,memories:S.memories,pending:S.subs||{},
+  familyPosts:(S.familyPosts||[]).map(p=>({id:p.id,title:p.title,description:p.description,media_path:p.media_path,visibility:p.visibility,status:p.status,created_at:p.created_at,file_url:(p.media_path&&p.status==='approved')?CFG.url+'/storage/v1/object/public/shj-family-public/'+p.media_path.split('/').map(encodeURIComponent).join('/'):''}))},null,1); }
+function backupAgeText(){
+  const t=+lsGet('shj_lastbackup')||0; if(!t) return 'هنوز روی این دستگاه پشتیبان گرفته نشده است. پشتیبان شامل افراد، خاطره‌ها و یادگارهای موزه (متن و لینک فایل‌ها) است؛ خود فایل عکس‌ها در Supabase Storage می‌مانند.';
+  const days=Math.floor((Date.now()-t)/864e5);
+  return 'آخرین پشتیبان روی این دستگاه: '+new Date(t).toLocaleDateString('fa-IR')+(days>30?' — بیش از یک ماه گذشته؛ بهتر است پشتیبان تازه بگیرید.':'')+' · شامل یادگارهای موزه (متن و لینک فایل‌ها).';
+}
 function gedcomExport(){
   const T=buildTree(), P=T.P, ids=Object.keys(P), idx={}; ids.forEach((i,k)=>{ idx[i]=k+1; });
   const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
@@ -2209,7 +2217,7 @@ function updateFamilyContributionGuide(){
 
 const FAMILY_EDITORIAL_CONTENT={
 land:{eyebrow:'از شهرستان بیجار تا بخش چنگ‌الماس',title:'چنگ‌الماس؛ محدودهٔ جغرافیایی ریشه‌های خانواده',text:'پس از شناخت شهرستان بیجار و گروس تاریخی، به بخش چنگ‌الماس می‌رسیم؛ محدوده‌ای در شهرستان بیجار که روستاهای مورد توجه این کتابچه در آن قرار گرفته‌اند. چهار روستای بودلا، خودلان، زرین‌آباد و خسروآباد در دهستان خسروآباد و پیرامون آن، جغرافیای اصلی روایت خانوادگی ما را می‌سازند. نقشهٔ زیر بازطراحیِ نقشهٔ صفحهٔ چهارم کتابچهٔ اصلی است؛ جای نسبی روستاها و فاصله‌های هوایی مطابق همان منبع نگه داشته شده است.',stats:[['۵٫۶ کیلومتر','بودلا تا خودلان'],['۶٫۲ کیلومتر','بودلا تا زرین‌آباد'],['۵٫۱ کیلومتر','بودلا تا خسروآباد']],census:[['باباراشانی (دهستان)','۳٬۱۷۸','۲٬۸۸۶','۲٬۰۵۰'],['خسروآباد (دهستان)','۴٬۳۱۹','۳٬۷۴۱','۳٬۱۳۴'],['پیرتاج (دهستان)','۶٬۳۷۹','۵٬۹۳۷','۳٬۸۴۵'],['باباراشانی (شهر)','۴۸۱','۵۷۳','۵۰۹'],['پیرتاج (شهر)','—','—','۱٬۱۹۹'],['کل بخش','۱۴٬۳۵۷','۱۳٬۱۳۷','۱۰٬۷۳۷']],note:'آمار جمعیت بخش از سرشماری‌های ۱۳۸۵، ۱۳۹۰ و ۱۳۹۵ نقل شده است. پیرتاج پس از سرشماری ۱۳۹۰ از روستا به شهر تبدیل شد؛ بنابراین ردیف شهری آن فقط در ستون ۱۳۹۵ مقدار دارد. فاصله‌ها هوایی‌اند، نه فاصلهٔ جاده‌ای.'},
-villages:{eyebrow:'چهار ایستگاه در نقشهٔ خانواده',title:'روستاها و ردپای خانواده در هرکدام',text:'اطلاعات زیر از صفحات روستاهای کتابچهٔ اصلی بازنویسی شده است. سال سرشماری کنار هر آمار آمده تا داده‌های سال‌های متفاوت با هم اشتباه نشوند.',villages:[['بودلا','۱۸۴ نفر','دادهٔ کتابچه: ۱۳۸۵ · ۴۲ خانوار','در اسناد خانوادگی سال ۱۳۰۹ نام محل به صورت «قریهٔ بولدلا» آمده است. فرج‌الله در شجره‌نامه متولد بودلا معرفی شده و محل سکونت عزت‌الله نیز همین روستا ثبت شده است. این روستا در دهستان خسروآبادِ بخش چنگ‌الماس قرار دارد.','۳۵٫۵۳۹۷۰۲، ۴۷٫۵۷۰۵۹۹','https://www.google.com/maps/@35.53970204,47.57059851,16z/data=!3m1!1e3','برای این روستا هنوز عکس مستقیم و قابل‌انتساب پیدا نشده؛ پیوند روبه‌رو نمای ماهواره‌ای محل را باز می‌کند.'],['خودلان','۳۶۸ نفر','دادهٔ کتابچه: ۱۳۸۵ · ۸۵ خانوار','یکی از نقاط مهم در روایت خانوادگی است. در شجره‌نامه، محل سکونت نصرالله به صورت «خودلان – زرین‌آباد» ثبت شده و خدیجه عباسی خودلان نیز همسر عزت‌الله بوده است. خودلان در دهستان خسروآبادِ بخش چنگ‌الماس قرار دارد.','۳۵٫۵۷۵۸۳۰، ۴۷٫۵۲۷۷۸۰','https://www.google.com/maps/@35.57583,47.52778,16z/data=!3m1!1e3','برای این روستا هنوز عکس مستقیم و قابل‌انتساب پیدا نشده؛ پیوند روبه‌رو نمای ماهواره‌ای محل را باز می‌کند.'],['زرین‌آباد','۱۷۴ نفر','۳۵ خانوار · آمار ثبت‌شده در ایران‌گاه برای ۱۳۹۵','در اسناد خانوادگی، نام زرین‌آباد در کنار خودلان و در نشانی محل سکونت نصرالله دیده می‌شود. این روستا نیز در دهستان خسروآبادِ بخش چنگ‌الماس قرار دارد. دربارهٔ سال آمار، نسخهٔ کتابچه و پایگاه‌های برخط باید جداگانه بررسی شوند؛ ایران‌گاه رقم ۱۷۴ نفر و ۳۵ خانوار را برای ۱۳۹۵ درج کرده است.','۳۵٫۵۹۵۹۶۰، ۴۷٫۵۷۷۵۶۸','https://www.google.com/maps/@35.59596019,47.57756835,16z/data=!3m1!1e3','یک ویدئوی محلی با عنوان «روستای زرین‌آباد گروس» پیدا شده است؛ تصویر ثابت قابل‌استفاده و دارای نشانی مستقیم هنوز استخراج نشده.'],['خسروآباد','۴۳۲ نفر','دادهٔ کتابچه: ۱۳۹۵ · ۱۴۸ خانوار','یکی از آبادی‌های مهم دهستان خسروآباد در بخش چنگ‌الماس است. در نسخهٔ شجره‌نامهٔ بررسی‌شده هنوز شخص یا سندی که پیوند خانوادگی را به‌طور قطعی به این روستا وصل کند ثبت نشده است. ایران‌گاه برای سرشماری ۱۳۹۵ رقم متفاوت ۵۷۸ نفر و ۱۲۹ خانوار را گزارش می‌کند؛ تا بررسی سند آماری، هر دو رقم باید با منبع خود نگهداری شوند.','۳۵٫۵۱۸۳۹۲، ۴۷٫۶۲۱۵۴۲','https://www.google.com/maps/@35.51839211,47.62154169,16z/data=!3m1!1e3','برای این روستا هنوز عکس مستقیم و قابل‌انتساب پیدا نشده؛ پیوند روبه‌رو نمای ماهواره‌ای محل را باز می‌کند.']] ,note:'آمار بودلا، خودلان و زرین‌آباد مربوط به سرشماری ۱۳۸۵ است؛ آمار خسروآباد مربوط به ۱۳۹۵ است. دربارهٔ نسبت خانوادگی احتمالی با خسروآباد، منبع اصلی فقط پیشنهاد پرس‌وجو از بزرگ‌ترها را مطرح می‌کند.'},
+villages:{eyebrow:'چهار ایستگاه در نقشهٔ خانواده',title:'روستاها و ردپای خانواده در هرکدام',text:'اطلاعات زیر از صفحات روستاهای کتابچهٔ اصلی بازنویسی شده است. سال سرشماری کنار هر آمار آمده تا داده‌های سال‌های متفاوت با هم اشتباه نشوند.',villages:[['بودلا','۱۸۴ نفر','سرشماری ۱۳۸۵ · ۴۲ خانوار','روستای کوچک و قدیمی‌ترین نقطهٔ ثبت‌شدهٔ خانواده؛ در برگه‌های ۱۳۰۹ فرج‌الله و گلناز ساکن «قریهٔ بولدلا» نوشته شده‌اند. زادگاه فرج‌الله و محل سکونت عزت‌الله نیز بودلا ثبت شده است.'],['خودلان','۳۶۸ نفر','سرشماری ۱۳۸۵ · ۸۵ خانوار','از بودلا بزرگ‌تر است. نصرالله در شجره‌نامه با محل سکونت «خودلان – زرین‌آباد» ثبت شده؛ خدیجه عباسی خودلان نیز همسر عزت‌الله بوده است.'],['زرین‌آباد','۱۷۴ نفر','سرشماری ۱۳۸۵ · ۳۵ خانوار','کوچک‌ترین روستای این کتابچه؛ در شجره‌نامه فقط یک‌بار و در کنار خودلان، در محل سکونت نصرالله، دیده می‌شود.'],['خسروآباد','۴۳۲ نفر','سرشماری ۱۳۹۵ · ۱۴۸ خانوار','بزرگ‌ترین روستای این کتابچه و مرکز دهستان. جمعیت آن در ۱۳۸۵ حدود ۵۱۰ نفر و در ۱۳۹۰ حدود ۵۱۴ نفر بوده است؛ در نسخهٔ شجره‌نامهٔ بررسی‌شده هنوز فرد یا سندی از آن ثبت نشده است.']] ,note:'آمار بودلا، خودلان و زرین‌آباد مربوط به سرشماری ۱۳۸۵ است؛ آمار خسروآباد مربوط به ۱۳۹۵ است. دربارهٔ نسبت خانوادگی احتمالی با خسروآباد، منبع اصلی فقط پیشنهاد پرس‌وجو از بزرگ‌ترها را مطرح می‌کند.'},
 documents:{eyebrow:'ردپاهای مکتوب',title:'یک دفتر قدیمی؛ سرنخ چند نسل',text:'دو منبع اصلی کتابچه، اطلاعات شجره‌نامهٔ خانوادگی و برگه‌های ثبت‌احوال سال ۱۳۰۹ است که خانواده نگه داشته است. بخشی از دست‌خط قدیمی هنوز نیازمند بازخوانی از روی اصل سند است.',bullets:['در برگه‌های ۱۳۰۹، نام‌های فرج‌الله و گلناز و محل سکونت «قریهٔ بولدلا» (بودلا) ثبت شده است.','عبارت «بخش هفت‌الیان» و شهرستان بیجار (گروس) در شناسنامه‌ها خوانده شده، اما این خوانش قطعی نیست؛ بخش چنگ‌الماس، محل صحیح در تقسیمات منطقه است.'],note:'تصویر سند را با حفظ حریم خصوصی بارگذاری کنید؛ شماره‌ها و اطلاعات حساس افراد زنده را پیش از انتشار بپوشانید.'},
 genealogy:{eyebrow:'شش نسل در یک نگاه',title:'از نام‌های روی برگهٔ ۱۳۰۹ تا نسل امروز',text:'شجره‌نامه شش نسل را ثبت کرده است. پدر و مادر فرج‌الله (هادی و رعنا) و پدر و مادر گلناز (کاکاخان و ماه‌جهان) فقط از برگه‌های ۱۳۰۹ شناخته می‌شوند و هنوز جزئیات زندگی‌شان روشن نیست.',bullets:['فرج‌الله؛ زادگاه ثبت‌شده: بودلا؛ تاریخ تولد در شجره‌نامه ۱۲۶۹','گلناز؛ تاریخ تولد ثبت‌شده: ۷ مهر ۱۲۷۰','فرزندان ثبت‌شده: عزت‌الله (۱۳۰۰)، نصرالله (۱۳۰۵)، ملیحه و طلیعه (آذر ۱۳۰۹)'],note:'برای مشاهدهٔ پیوندها و افراد ثبت‌شده، شجره‌نامهٔ اصلی برنامه را باز کنید؛ این بخش خلاصهٔ مستندات کتابچه است.'},
 culture:{eyebrow:'زندگی روزمرهٔ نیاکان',title:'چیزهایی که باید از زبان خانواده ثبت شوند',text:'نسخهٔ فعلی کتابچه دربارهٔ رسم‌ها، گویش، پوشش، خوراک، کشاورزی و مشاغل اطلاعات کافی ارائه نمی‌کند. این فصل برای روایت‌های شفاهی و عکس‌های واقعی خانواده باز گذاشته شده است.',bullets:['نام‌های محلی و واژه‌هایی که در خانه و روستا به کار می‌رفت','کارهای فصلی، کشاورزی، دامداری و پیشه‌های قدیمی','مراسم عروسی، سوگواری، مهمانی‌ها و خوراک‌های محلی','مهاجرت‌ها، مسیر رفت‌وآمد و خاطرات خانه‌های قدیمی'],note:'هر خاطره را با نام راوی، روستا و دورهٔ تقریبی ثبت کنید تا بعدها روایت‌ها قابل مقایسه باشند.'},
@@ -2235,33 +2243,93 @@ function familyMediaUrl(post){
   return post.media_url||'';
 }
 async function loadFamilyPosts(){
-  const rows=await sbFetch('/rest/v1/shj_family_posts?select=id,title,description,media_path,visibility,status,created_at&order=created_at.desc&limit=200');
+  const rows=await sbFetch('/rest/v1/shj_family_posts?select=id,title,description,media_path,visibility,status,created_at&order=created_at.desc&limit=1000');
   const list=Array.isArray(rows)?rows:[];
-  for(const p of list){
+  await Promise.all(list.map(async p=>{
     p.media_url='';
     if(p.media_path&&!(p.status==='approved'&&p.visibility==='public')){
       try{const r=await sbFetch('/storage/v1/object/sign/shj-family-pending/'+p.media_path.split('/').map(encodeURIComponent).join('/'),{method:'POST',body:JSON.stringify({expiresIn:3600})});p.media_url=r&&r.signedURL?(String(r.signedURL).startsWith('http')?r.signedURL:CFG.url+'/storage/v1'+r.signedURL):'';}catch(e){}
     }
-  }
+  }));
   S.familyPosts=list;
   if(S.tab==='family'||S.tab==='tools'||S.tab==='admin') renderView();
 }
-async function editFamilyPost(id){
+function familyErrText(e){
+  const c=e&&e.code,m=String((e&&e.message)||'');
+  if(c===401)return 'نشست شما منقضی شده؛ دوباره وارد شوید.';
+  if(c===403||/row-level|policy/i.test(m))return 'سیاست دسترسی پایگاه داده این کار را اجازه نمی‌دهد.';
+  if(c===413||/too large|exceeded/i.test(m))return 'حجم فایل بیش از حد مجاز است.';
+  if(c===415||/mime/i.test(m))return 'نوع فایل مجاز نیست.';
+  if(/failed to fetch|network/i.test(m))return 'اتصال اینترنت برقرار نیست.';
+  return m||'خطای نامشخص؛ دوباره تلاش کنید.';
+}
+async function familyShrink(file,ext){
+  if(!['jpg','png','webp'].includes(ext)||!window.createImageBitmap)return {blob:file,ext};
+  try{
+    const bmp=await createImageBitmap(file),k=Math.min(1,1600/Math.max(bmp.width,bmp.height));
+    if(k===1&&file.size<1.5*1024*1024)return {blob:file,ext};
+    const c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);
+    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.85));
+    return blob&&blob.size<file.size?{blob,ext:'jpg'}:{blob:file,ext};
+  }catch(e){return {blob:file,ext};}
+}
+function editFamilyPost(id){
   if(!S.isAdmin)throw new Error('فقط مدیر می‌تواند یادگارها را اصلاح کند.');
-  const post=(S.familyPosts||[]).find(x=>x.id===id);if(!post)return;
-  const meta=familyMeta(post);
-  const title=prompt('عنوان یادگار را اصلاح کنید:',post.title||'');if(title===null)return;
-  const story=prompt('شرح یادگار را اصلاح کنید:',meta.story||'');if(story===null)return;
-  if(!title.trim()||!story.trim()){toast('عنوان و شرح نمی‌توانند خالی باشند.');return;}
-  meta.story=story.trim();
-  await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({title:title.trim(),description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta)})});
-  await loadFamilyPosts();toast('یادگار اصلاح شد.');
+  familyArchiveUI.editId=id;renderView();
+}
+async function saveFamilyEdit(){
+  if(!S.isAdmin)return;
+  const id=familyArchiveUI.editId,post=(S.familyPosts||[]).find(x=>x.id===id);if(!post)return;
+  const g=k=>($('#fe_'+k)?.value||'').trim(),title=g('title'),story=g('story');
+  if(!title||!story){toast('عنوان و شرح نمی‌توانند خالی باشند.');return;}
+  const meta=Object.assign(familyMeta(post),{story,section:g('section'),category:g('category'),village:g('village'),photo_year:g('year'),certainty:g('certainty'),source:g('source')});
+  await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({title,description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta)})});
+  familyArchiveUI.editId='';await loadFamilyPosts();renderView();toast('یادگار اصلاح شد.');
+}
+async function restoreFamilyPost(id){
+  if(!S.isAdmin)return;
+  await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'pending'})});
+  await loadFamilyPosts();toast('به حالت «در انتظار بررسی» برگشت (فایل پیوست پیش‌تر حذف شده است).');
+}
+function familyOverlayHTML(){
+  const eid=familyArchiveUI.editId,oid=familyArchiveUI.openId,list=S.familyPosts||[];
+  const ep=eid&&S.isAdmin?list.find(x=>x.id===eid):null;
+  if(ep){
+    const m=familyMeta(ep),opt=(o,cur)=>Object.entries(o).map(([k,v])=>`<option value="${esc(k)}" ${k===cur?'selected':''}>${esc(v)}</option>`).join('');
+    return `<div class="family-lightbox" role="dialog" aria-modal="true" data-act="familyeditclose"><div class="family-lightbox-inner" data-act="familystay" style="padding:18px;overflow:auto;display:block"><form id="familyEditForm" class="stack"><h3 style="margin:0">اصلاح یادگار</h3>
+    <label class="f"><span>عنوان</span><input id="fe_title" value="${esc(ep.title)}" maxlength="160"></label>
+    <label class="f"><span>شرح</span><textarea id="fe_story" rows="6">${esc(m.story||'')}</textarea></label>
+    <div class="grid2"><label class="f"><span>فصل</span><select id="fe_section">${opt(FAMILY_SECTION_LABELS,m.section)}</select></label><label class="f"><span>نوع</span><select id="fe_category">${opt(FAMILY_CATEGORIES,m.category)}</select></label>
+    <label class="f"><span>روستا یا محل</span><input id="fe_village" list="fe_villages" value="${esc(m.village||'')}"><datalist id="fe_villages">${FAMILY_VILLAGES.filter(v=>v!=='سایر').map(v=>`<option value="${esc(v)}">`).join('')}</datalist></label><label class="f"><span>سال یا دوره</span><input id="fe_year" value="${esc(m.photo_year||'')}"></label>
+    <label class="f"><span>میزان قطعیت</span><select id="fe_certainty">${opt(FAMILY_CERTAINTY_LABELS,m.certainty)}</select></label><label class="f"><span>منبع</span><input id="fe_source" value="${esc(m.source||'')}"></label></div>
+    <div class="row" style="gap:8px"><button class="btn" type="submit">ذخیره</button><button class="btn ghost" type="button" data-act="familyeditclose">انصراف</button></div></form></div></div>`;
+  }
+  const op=oid?list.find(x=>x.id===oid):null;
+  return op?familyLightbox(op):'';
+}
+async function removeFamilyFile(post){
+  if(!post||!post.media_path)return true;
+  const pub=post.status==='approved'&&post.visibility==='public',bucket=pub?'shj-family-public':'shj-family-pending',path=post.media_path.split('/').map(encodeURIComponent).join('/');
+  try{await sbFetch('/storage/v1/object/'+bucket+'/'+path,{method:'DELETE'});}catch(e){console.error(e);}
+  if(pub){try{const r=await fetch(CFG.url+'/storage/v1/object/public/'+bucket+'/'+path,{method:'HEAD',cache:'no-store'});return !r.ok;}catch(e){return false;}}
+  return true;
 }
 async function cancelFamilyPost(id){
   if(!S.isAdmin)throw new Error('فقط مدیر می‌تواند انتشار را لغو کند.');
-  if(!confirm('این یادگار از کتابچه و نمایش عمومی خارج شود؟'))return;
-  await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'rejected'})});
-  await loadFamilyPosts();toast('انتشار یادگار لغو شد؛ اطلاعات آن در آرشیو مدیر باقی ماند.');
+  const post=(S.familyPosts||[]).find(x=>x.id===id);if(!post)return;
+  if(!confirm('این یادگار از کتابچه خارج و فایل پیوست آن برای همیشه از فضای ذخیره‌سازی حذف شود؟'))return;
+  const ok=await removeFamilyFile(post);
+  await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'rejected',media_path:ok?null:post.media_path})});
+  await loadFamilyPosts();
+  toast(ok?'یادگار لغو و فایل آن حذف شد.':'انتشار لغو شد، اما فایل هنوز در فضای ذخیره‌سازی است؛ سیاست حذف (Storage policy) را بررسی کنید.');
+}
+async function approveFamilyPost(id){
+  if(!S.isAdmin)throw new Error('فقط مدیر می‌تواند تأیید کند.');
+  const post=(S.familyPosts||[]).find(x=>x.id===id);if(!post)return;
+  if(post.media_path)await sbFetch('/storage/v1/object/move',{method:'POST',body:JSON.stringify({bucketId:'shj-family-pending',sourceKey:post.media_path,destinationBucket:'shj-family-public',destinationKey:post.media_path})});
+  await sbFetch('/rest/v1/shj_family_posts?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'approved',visibility:'public'})});
+  await loadFamilyPosts();toast('یادگار تأیید و منتشر شد.');
 }
 function familyArchiveCard(p,admin){
   const m=familyMeta(p),img=familyMediaUrl(p),stat=p.status==='pending'?'در انتظار بررسی':p.status==='approved'?'تأییدشده':'ردشده';
@@ -2278,7 +2346,7 @@ function familyArchiveCard(p,admin){
       ${m.person_name?`<div class="small muted">👤 مرتبط با: ${esc(m.person_name)}</div>`:''}
       ${m.people_names?`<div class="small muted">همراهان عکس: ${esc(m.people_names)}</div>`:''}
       <div class="family-card-foot"><span class="muted small">${esc(stat)} · ${esc(new Date(p.created_at).toLocaleDateString('fa-IR'))}</span>
-      ${admin?`<span class="family-review"><button class="btn sm" data-act="familyedit" data-id="${esc(p.id)}">اصلاح</button><button class="btn danger sm" data-act="familycancel" data-id="${esc(p.id)}">لغو انتشار</button></span>`:''}</div>
+      ${admin&&p.status==='rejected'?`<span class="family-review"><button class="btn sm" data-act="familyrestore" data-id="${esc(p.id)}">بازگردانی به در انتظار</button></span>`:''}${admin&&p.status!=='rejected'?`<span class="family-review">${p.status==='pending'?`<button class="btn sm" data-act="familyapprove" data-id="${esc(p.id)}">تأیید انتشار</button>`:''}<button class="btn sm" data-act="familyedit" data-id="${esc(p.id)}">اصلاح</button><button class="btn danger sm" data-act="familycancel" data-id="${esc(p.id)}">${p.status==='pending'?'رد و حذف فایل':'لغو انتشار'}</button></span>`:''}</div>
     </div>
   </article>`;
 }
@@ -2314,7 +2382,7 @@ function familyBookPublicUrl(){return CFG.url+'/storage/v1/object/public/shj-fam
 function familyBookReaderHTML(){
   const url=familyBookState.url,page=familyBookState.page,zoom=familyBookState.zoom;
   return `<section class="family-book-reader" id="familyBookReader">
-    <div class="family-book-reader-head"><div><h2>📖 کتاب اصلی «ریشه‌ها»</h2><p>نسخهٔ کامل ۱۰ صفحه‌ای · نقشه‌ها و نمودارهای اصلی</p></div><span class="pill" style="background:#ffffff20;color:#fff;border-color:#ffffff35">نسخهٔ اصلی PDF</span></div>
+    <div class="family-book-reader-head"><div><h2>📖 کتاب اصلی «ریشه‌ها»</h2><p>نسخهٔ کامل ۱۰ صفحه‌ای · نقشه‌ها و نمودارهای اصلی</p></div><span class="pill" style="background:#ffffff20;color:#fff;border-color:#ffffff35">نسخهٔ آرشیوی PDF (ثابت)</span></div>
     ${url?`<div class="family-book-reader-tools">
       <button class="btn sm ghost" type="button" data-act="familybookprev" ${page<=1?'disabled':''}>صفحهٔ قبل</button>
       <span class="family-book-page-count">صفحهٔ ${fa(page)} از ۱۰</span>
@@ -2339,6 +2407,7 @@ async function uploadFamilyBook(file){
   if(!S.isAdmin)throw new Error('فقط مدیر خانواده می‌تواند کتابچه را بارگذاری کند.');
   if(!file||file.type!=='application/pdf')throw new Error('لطفاً فایل PDF کتابچه را انتخاب کنید.');
   if(file.size>20*1024*1024)throw new Error('حجم فایل نباید بیشتر از ۲۰ مگابایت باشد.');
+  if(await sniffFamilyFile(file)!=='pdf')throw new Error('این فایل PDF معتبر نیست.');
   toast('در حال بارگذاری کتابچه…');
   await sbFetch('/storage/v1/object/shj-family-public/'+FAMILY_BOOK_PATH,{method:'POST',headers:{'Content-Type':'application/pdf','x-upsert':'true'},body:file});
   familyBookState.url=familyBookPublicUrl();familyBookState.page=1;familyBookState.zoom=100;
@@ -2349,17 +2418,17 @@ function viewFamily(){
   const posts=S.familyPosts||[];
   const categoryOptions=Object.entries(FAMILY_CATEGORIES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
   const villageOptions=FAMILY_VILLAGES.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
-  const recent=posts.slice(0,6);
+  const recent=posts;
   return `<div class="stack">
     <section class="family-preface">
       <div class="book-section-label">مشارکت در تاریخ خانواده</div>
       <h2>یک عکس، سند یا خاطره را به کتابچه اضافه کنید</h2>
-      <p>قرار نیست متن تاریخی بنویسید؛ هرچه از یک عکس یا خاطره می‌دانید ساده و به زبان خودتان ثبت کنید. مطلب بلافاصله در فصل مربوط کتابچه دیده می‌شود و مدیر بعداً می‌تواند آن را اصلاح یا از انتشار خارج کند.</p>
+      <p>قرار نیست متن تاریخی بنویسید؛ هرچه از یک عکس یا خاطره می‌دانید ساده و به زبان خودتان ثبت کنید. مطلب پس از بررسی و تأیید مدیر در فصل مربوط کتابچه منتشر می‌شود.</p>
       <div class="grid2" style="margin:16px 0">
         <article class="family-step"><b>۱ · شما چه می‌کنید؟</b><p>نوع یادگار را انتخاب می‌کنید، چند مشخصه می‌نویسید و در صورت داشتن، عکس یا فایل را می‌فرستید.</p></article>
-        <article class="family-step"><b>۲ · بعد از ثبت چه می‌شود؟</b><p>یادگار بلافاصله منتشر می‌شود و در کتابچه قرار می‌گیرد؛ مدیر در صورت نیاز می‌تواند آن را اصلاح یا لغو کند.</p></article>
+        <article class="family-step"><b>۲ · بعد از ثبت چه می‌شود؟</b><p>یادگار در انتظار بررسی مدیر قرار می‌گیرد و پس از تأیید در کتابچه منتشر می‌شود.</p></article>
         <article class="family-step"><b>۳ · خروجی شما چیست؟</b><p>یک صفحه یا کارت در فصل مرتبط کتابچه، با عنوان، عکس، توضیح، نام افراد و محل/سال (هرکدام را داشته باشید).</p></article>
-        <article class="family-step"><b>۴ · کجا می‌بینید؟</b><p>پس از ثبت، مستقیماً به صفحهٔ یادگار خودتان در کتابچه منتقل می‌شوید؛ شماره و عنوان صفحه نیز مشخص است.</p></article>
+        <article class="family-step"><b>۴ · کجا می‌بینید؟</b><p>پس از تأیید مدیر، یادگار شما در همان فصل کتابچه دیده می‌شود.</p></article>
       </div>
       <div class="row" style="flex-wrap:wrap;align-items:center">
         <button class="btn" type="button" data-act="tab" data-tab="book">📖 دیدن کتابچه و خروجی نهایی</button>
@@ -2385,69 +2454,97 @@ function viewFamily(){
       </section>
       <section class="fc-form-section">
         <div class="fc-step-head"><span>۳</span><div><b>افراد و مستندات</b><small>هر اطلاعاتی که به شناسایی بهتر یادگار کمک می‌کند.</small></div></div>
-        <label class="f"><span>نام افراد مرتبط (اختیاری)</span><input id="fc_people" placeholder="مثلاً فرج‌الله، گلناز یا نام افراد داخل عکس"></label>
-        <label class="f"><span>عکس، سند یا فایل پیوست</span><input id="fc_file" type="file" accept="image/*,.pdf"><small class="muted">اختیاری · عکس قدیمی، شناسنامه، نامه، قباله یا PDF · حداکثر ۲۰ مگابایت</small></label>
+        <label class="f"><span>این یادگار به کدام عضو شجره مربوط است؟ (اختیاری)</span><select id="fc_person"><option value="">— انتخاب نشده —</option>${Object.entries(S.people||{}).filter(([,q])=>q&&!q.virtual).sort((x,y)=>full(x[1]).localeCompare(full(y[1]),'fa')).map(([k,q])=>`<option value="${esc(k)}">${esc(full(q))}</option>`).join('')}</select></label>
+        <label class="f"><span>نام افراد دیگر یا توضیح نسبت (اختیاری)</span><input id="fc_people" placeholder="مثلاً فرج‌الله، گلناز یا نام افراد داخل عکس"></label>
+        <label class="f"><span>عکس، سند یا فایل پیوست</span><input id="fc_file" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,image/jpeg,image/png,image/webp,image/gif,application/pdf"><small class="muted">اختیاری · JPG، PNG، WebP، GIF یا PDF · حداکثر ۲۰ مگابایت</small></label>
       </section>
       <section class="fc-form-section">
         <div class="fc-step-head"><span>۴</span><div><b>روایت و توضیحات</b><small>دو سه جملهٔ ساده هم برای ثبت در تاریخ خانواده ارزشمند است.</small></div></div>
         <label class="f"><span>شرح یادگار *</span><textarea id="fc_story" required rows="5" placeholder="این عکس یا سند کجا و چه زمانی تهیه شده؟ چه کسانی در آن هستند؟ این ماجرا را از چه کسی شنیده‌اید؟ هرچه می‌دانید بنویسید."></textarea><small class="muted">اگر بخشی از روایت قطعی نیست، آن را با عبارت «احتمالاً» یا «نقل شده است» مشخص کنید.</small></label>
         <label class="f"><span>راوی یا منبع اطلاعات (اختیاری)</span><input id="fc_source" placeholder="مثلاً نقل از مادربزرگ، پشت‌نویسی عکس، دفتر خانوادگی"></label>
       </section>
-      <div class="note" style="margin:0"><b>انتشار در موزهٔ خانوادگی</b><p style="margin:5px 0 0">همهٔ یادگارها بلافاصله پس از ثبت برای همهٔ بازدیدکنندگان قابل مشاهده‌اند. مدیر می‌تواند بعداً مطلب را اصلاح یا لغو انتشار کند.</p></div>
-      <button class="btn big" type="submit">ثبت و مشاهده در کتابچه</button>
-      <p class="muted small" style="margin:0">پس از ثبت، کتابچه باز می‌شود و شما را مستقیماً به صفحهٔ مطلبتان می‌برد.</p>
+      <label class="row" style="gap:8px;align-items:flex-start"><input type="checkbox" id="fc_consent" required style="margin-top:7px"><span>تأیید می‌کنم که اجازهٔ انتشار این مطلب را دارم و اگر عکس یا اطلاعات فرد زنده‌ای در آن است، رضایت او را گرفته‌ام.</span></label>
+      <div class="note" style="margin:0"><b>انتشار در موزهٔ خانوادگی</b><p style="margin:5px 0 0">هر یادگار پس از تأیید مدیر برای همهٔ بازدیدکنندگان قابل مشاهده می‌شود. تا آن زمان فایل در فضای خصوصی می‌ماند.</p></div>
+      <button class="btn big" type="submit">ثبت یادگار</button>
+      <p class="muted small" style="margin:0">مدیر مطلب را بررسی می‌کند و پس از تأیید منتشر می‌شود.</p>
     </form>
     <section class="card stack">
       <div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap"><div><h3 style="margin:0">یادگارهای ثبت‌شده</h3><p class="muted small" style="margin:4px 0 0">نمونهٔ خروجی‌ها و وضعیت بررسی آن‌ها</p></div><span class="pill">${fa(posts.length)} مورد</span></div>
-      ${recent.length?recent.map(p=>familyArchiveCard(p,S.isAdmin)).join(''):'<div class="note">هنوز یادگاری در این بخش ثبت نشده است. اولین عکس یا خاطره می‌تواند شروع این آرشیو باشد.</div>'}
+      ${recent.length?`<div class="row" style="gap:8px;flex-wrap:wrap"><input id="familySearch" type="search" placeholder="جست‌وجو در عنوان، شرح و نام‌ها…" style="flex:1 1 220px"><select id="familyCategoryFilter" aria-label="نوع"><option value="all">همهٔ انواع</option>${categoryOptions}</select><select id="familyVillageFilter" aria-label="روستا"><option value="all">همهٔ محل‌ها</option>${villageOptions}</select><button class="btn sm ghost" type="button" data-act="familyfilterclear">پاک کردن</button></div><div id="familyGallery" class="stack">${recent.map(p=>familyArchiveCard(p,S.isAdmin)).join('')}</div><div id="familyNoFilter" class="note" hidden>موردی با این فیلتر پیدا نشد.</div>`:'<div class="note">هنوز یادگاری در این بخش ثبت نشده است. اولین عکس یا خاطره می‌تواند شروع این آرشیو باشد.</div>'}
     </section>
   </div>`;
 }
 
+let familyBusy=false;
+const FAMILY_FILE_TYPES={jpg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif',pdf:'application/pdf'};
+async function sniffFamilyFile(file){
+  const b=new Uint8Array(await file.slice(0,12).arrayBuffer()),at=(i,a)=>a.every((v,k)=>b[i+k]===v);
+  if(at(0,[0xFF,0xD8,0xFF]))return 'jpg'; if(at(0,[0x89,0x50,0x4E,0x47]))return 'png'; if(at(0,[0x47,0x49,0x46,0x38]))return 'gif';
+  if(at(0,[0x52,0x49,0x46,0x46])&&at(8,[0x57,0x45,0x42,0x50]))return 'webp'; if(at(0,[0x25,0x50,0x44,0x46]))return 'pdf';
+  return null;
+}
 async function submitFamilyContribution(){
+  if(familyBusy)return;
+  if(!S.authed||!S.me||!S.me.first){toast('برای ثبت یادگار ابتدا وارد شوید و نام خود را مشخص کنید.');return;}
   const title=($('#fc_title')?.value||'').trim(),story=($('#fc_story')?.value||'').trim();
   if(!title||!story){toast('عنوان و شرح یادگار را وارد کنید.');return;}
-  const meta={story,section:$('#fc_section').value,category:$('#fc_category').value,village:($('#fc_village').value==='سایر'?($('#fc_village_other').value||'').trim():$('#fc_village').value),photo_year:($('#fc_year').value||'').trim(),person_name:($('#fc_people').value||'').trim(),source:($('#fc_source').value||'').trim(),certainty:'unverified',contributor:fullName()};
+  if(!$('#fc_consent')?.checked){toast('لطفاً تأیید انتشار را بزنید.');return;}
+  const pid=($('#fc_person')?.value||''),typed=($('#fc_people')?.value||'').trim(),yr=($('#fc_year')?.value||'').trim();
+  if(yr&&!/[0-9۰-۹٠-٩]/.test(yr)){toast('سال را با عدد بنویسید؛ مثلاً ۱۳۴۵ یا دههٔ ۱۳۲۰.');return;}
+  if($('#fc_village')?.value==='سایر'&&!($('#fc_village_other')?.value||'').trim()){toast('نام روستا یا محل را بنویسید.');return;}
+  const meta={story,person_id:pid,section:$('#fc_section').value,category:$('#fc_category').value,village:($('#fc_village').value==='سایر'?($('#fc_village_other').value||'').trim():$('#fc_village').value),photo_year:($('#fc_year').value||'').trim(),person_name:pid?full(S.people[pid]):typed,people_names:pid?typed:'',source:($('#fc_source').value||'').trim(),certainty:'unverified',consent:true,contributor:fullName()};
   const id=(crypto.randomUUID?crypto.randomUUID():('f'+Date.now()+Math.random().toString(16).slice(2)));
+  const isAdm=!!S.isAdmin,bucket=isAdm?'shj-family-public':'shj-family-pending';
   let media_path=null; const file=$('#fc_file')?.files?.[0];
+  familyBusy=true;
   try{
     if(file){
       if(file.size>20*1024*1024)throw new Error('حجم فایل نباید بیشتر از ۲۰ مگابایت باشد.');
-      const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase()||'jpg';
-      media_path='family/'+id+'.'+ext;
-      await sbFetch('/storage/v1/object/shj-family-public/'+media_path,{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream','x-upsert':'true'},body:file});
+      const ext=await sniffFamilyFile(file);
+      if(!ext)throw new Error('فقط عکس (JPG، PNG، WebP، GIF) یا PDF مجاز است.');
+      const sh=await familyShrink(file,ext);
+      media_path='family/'+id+'.'+sh.ext;
+      await sbFetch('/storage/v1/object/'+bucket+'/'+media_path,{method:'POST',headers:{'Content-Type':FAMILY_FILE_TYPES[sh.ext],'x-upsert':'false'},body:sh.blob});
     }
-    await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({id,title,description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta),media_path,visibility:'public',status:'approved'})});
+    try{
+      await sbFetch('/rest/v1/shj_family_posts',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({id,title,description:FAMILY_ARCHIVE_MARK+JSON.stringify(meta),media_path,visibility:'public',status:isAdm?'approved':'pending'})});
+    }catch(e){ if(media_path)await sbFetch('/storage/v1/object/'+bucket+'/'+media_path,{method:'DELETE'}).catch(()=>{}); throw e; }
     await loadFamilyPosts();
+    if(!isAdm){renderView();toast('یادگار ثبت شد و پس از تأیید مدیر در کتابچه منتشر می‌شود.');return;}
     S.tab='book';
     const bookPages=familyDigitalBookPages();
     const target=bookPages.findIndex(pg=>pg.html.includes(esc(title)));
     familyDigitalState.page=target>=0?target:1;
     renderView();
     toast('یادگار منتشر شد؛ صفحهٔ مربوط در کتابچه باز شد.');
-  }catch(e){console.error(e);toast('ثبت انجام نشد: '+(e.message||'دسترسی پایگاه داده یا فضای ذخیره‌سازی را بررسی کنید.'));}
+  }catch(e){console.error(e);toast('ثبت انجام نشد: '+familyErrText(e));}
+  finally{familyBusy=false;}
 }
 function familyDigitalBookPages(){
   const approved=(S.familyPosts||[]).filter(p=>p.status==='approved');
   const pages=[{title:'روی جلد',eyebrow:'میراث خانوادگی',html:`<div class="digital-book-cover"><div class="book-cover-kicker">میراث خانوادگی · نسخهٔ زنده</div><h1>ریشه‌ها</h1><p>چنگ‌الماس و روستاهای بودلا، خودلان، زرین‌آباد و خسروآباد</p><div class="book-cover-art">🌄 🏡 🌳</div><p>این کتاب با ثبت اطلاعات تازه، فصل به فصل کامل‌تر می‌شود.</p><small>آخرین بازسازی: ${new Date().toLocaleDateString('fa-IR')}</small></div>` }];
-  pages.push({title:'بیجار؛ دروازهٔ ورود به جغرافیای ریشه‌ها',eyebrow:'شهرستان بیجار · گروس تاریخی',html:`<div class="digital-book-intro"><h2>بیجار؛ سرزمین گستردهٔ آبادی‌ها و تاریخ گروس</h2><p>شهرستان بیجار در شمال‌شرق استان کردستان و در پهنهٔ تاریخی گروس قرار دارد. این شهرستان سه بخش اداری دارد و شهر بیجار مرکز شهرستان است. گروس در گذشته نامی شناخته‌شده برای این پهنهٔ تاریخی بوده و هنوز در حافظه و روایت مردم منطقه زنده است.</p><p>بیجار فقط شهر بیجار نیست؛ مجموعه‌ای از آبادی‌ها و دهستان‌هاست که هرکدام تاریخ، زبان، شیوهٔ معیشت و پیوندهای خانوادگی خود را دارند. در این کتابچه ابتدا تصویر کلی شهرستان را می‌بینیم و سپس به چنگ‌الماس و روستاهای مرتبط با خانواده می‌رسیم.</p><h3>سه بخش شهرستان بیجار</h3><div class="family-village-facts"><article><b>بخش مرکزی</b><span>دهستان‌های حومه، خورخوره، سیلتان، نجف‌آباد و سیاه‌منصور</span></article><article><b>بخش چنگ‌الماس</b><span>دهستان‌های بابارشانی، پیرتاج و خسروآباد</span></article><article><b>بخش کرانی</b><span>دهستان‌های طغامین، کرانی و گرگین</span></article></div><h3>شهرهای شهرستان و جایگاه آن‌ها</h3><div class="family-village-facts"><article><b>بخش مرکزی</b><span>بیجار · توپ‌آغاج</span></article><article><b>بخش چنگ‌الماس</b><span>بابارشانی · پیرتاج</span></article><article><b>بخش کرانی</b><span>یاسوکند</span></article></div><h3>۱۱ دهستان شهرستان</h3><div class="family-village-facts"><article><b>مرکزی</b><span>حومه · خورخوره · سیلتان · نجف‌آباد · سیاه‌منصور</span></article><article><b>چنگ‌الماس</b><span>بابارشانی · پیرتاج · خسروآباد</span></article><article><b>کرانی</b><span>طغامین · کرانی · گرگین</span></article></div><h3>فهرست روستاهای شهرستان</h3><p>در فهرست برخط ایران‌گاه ۲۵۲ مدخل روستایی برای شهرستان بیجار ثبت شده است. صفحهٔ معرفی شهرستان در همان پایگاه، ۱۳۸ آبادی در ۱۱ دهستان را گزارش می‌کند؛ به‌دلیل تفاوت دامنه و شیوهٔ شمارش این دو صفحه، این ارقام را نباید معادل یکدیگر دانست. فهرست نامی و جزئیات هر روستا از پیوند زیر قابل مشاهده است.</p><p><a href="https://irangaah.ir/villages/bijar" target="_blank" rel="noopener" style="display:inline-block;padding:10px 14px;border-radius:10px;background:var(--surface-2);font-weight:700">مشاهدهٔ فهرست کامل ۲۵۲ مدخل روستایی شهرستان بیجار ↗</a></p><h3>چهار روستای محور روایت خانوادگی</h3><div class="family-village-facts"><article><b>بودلا</b><span>قریهٔ بولدلا در اسناد خانوادگی سال ۱۳۰۹</span></article><article><b>خودلان</b><span>از محل‌های ثبت‌شده در روایت و شجرهٔ خانواده</span></article><article><b>زرین‌آباد</b><span>در کنار خودلان در نشانی محل سکونت خانوادگی</span></article><article><b>خسروآباد</b><span>مرکز دهستان خسروآباد و بخشی از محدودهٔ بررسی</span></article></div><p class="muted small">منبع ساختار تقسیمات و دهستان‌ها: معرفی شهرستان بیجار در ایران‌گاه؛ فهرست اسامی: درگاه روستاهای شهرستان بیجار در همان پایگاه. داده‌ها ممکن است با تغییرات تقسیمات کشوری به‌روزرسانی شوند.</p></div>`});
-  for(const sec of FAMILY_SECTIONS){
+  pages.push({title:'بیجار؛ دروازهٔ ورود به جغرافیای ریشه‌ها',eyebrow:'شهرستان بیجار · گروس تاریخی',html:`<div class="digital-book-intro"><h2>بیجار؛ سرزمین گستردهٔ آبادی‌ها و تاریخ گروس</h2><p>شهرستان بیجار در شمال‌شرق استان کردستان و در پهنهٔ تاریخی گروس قرار دارد. این شهرستان سه بخش اداری دارد و شهر بیجار مرکز شهرستان است. گروس در گذشته نامی شناخته‌شده برای این پهنهٔ تاریخی بوده و هنوز در حافظه و روایت مردم منطقه زنده است.</p><p>بیجار فقط شهر بیجار نیست؛ مجموعه‌ای از آبادی‌ها و دهستان‌هاست که هرکدام تاریخ، زبان، شیوهٔ معیشت و پیوندهای خانوادگی خود را دارند. در این کتابچه ابتدا تصویر کلی شهرستان را می‌بینیم و سپس به چنگ‌الماس و روستاهای مرتبط با خانواده می‌رسیم.</p><h3>سه بخش شهرستان بیجار</h3><div class="family-village-facts"><article><b>بخش مرکزی</b><span>دهستان‌های حومه، خورخوره، سیلتان، نجف‌آباد و سیاه‌منصور</span></article><article><b>بخش چنگ‌الماس</b><span>دهستان‌های بابارشانی، پیرتاج و خسروآباد</span></article><article><b>بخش کرانی</b><span>دهستان‌های طغامین، کرانی و گرگین</span></article></div><h3>شهرهای شهرستان و جایگاه آن‌ها</h3><div class="family-village-facts"><article><b>بخش مرکزی</b><span>بیجار · توپ‌آغاج</span></article><article><b>بخش چنگ‌الماس</b><span>بابارشانی · پیرتاج</span></article><article><b>بخش کرانی</b><span>یاسوکند</span></article></div><h3>۱۱ دهستان شهرستان</h3><div class="family-village-facts"><article><b>مرکزی</b><span>حومه · خورخوره · سیلتان · نجف‌آباد · سیاه‌منصور</span></article><article><b>چنگ‌الماس</b><span>بابارشانی · پیرتاج · خسروآباد</span></article><article><b>کرانی</b><span>طغامین · کرانی · گرگین</span></article></div><h3>فهرست روستاهای شهرستان</h3><p>در فهرست برخط ایران‌گاه ۲۵۲ مدخل روستایی برای شهرستان بیجار ثبت شده است. صفحهٔ معرفی شهرستان در همان پایگاه، ۱۳۸ آبادی در ۱۱ دهستان را گزارش می‌کند؛ به‌دلیل تفاوت دامنه و شیوهٔ شمارش این دو صفحه، این ارقام را نباید معادل یکدیگر دانست. فهرست نامی و جزئیات هر روستا از پیوند زیر قابل مشاهده است.</p><p><a href="https://irangaah.ir/villages/bijar" target="_blank" rel="noopener" style="display:inline-block;padding:10px 14px;border-radius:10px;background:var(--surface2);font-weight:700">مشاهدهٔ فهرست کامل ۲۵۲ مدخل روستایی شهرستان بیجار ↗</a></p><h3>چهار روستای محور روایت خانوادگی</h3><div class="family-village-facts"><article><b>بودلا</b><span>قریهٔ بولدلا در اسناد خانوادگی سال ۱۳۰۹</span></article><article><b>خودلان</b><span>از محل‌های ثبت‌شده در روایت و شجرهٔ خانواده</span></article><article><b>زرین‌آباد</b><span>در کنار خودلان در نشانی محل سکونت خانوادگی</span></article><article><b>خسروآباد</b><span>مرکز دهستان خسروآباد و بخشی از محدودهٔ بررسی</span></article></div><p class="muted small">منبع ساختار تقسیمات و دهستان‌ها: معرفی شهرستان بیجار در ایران‌گاه؛ فهرست اسامی: درگاه روستاهای شهرستان بیجار در همان پایگاه. داده‌ها ممکن است با تغییرات تقسیمات کشوری به‌روزرسانی شوند.</p></div>`});
+  const _ord=['land','villages','genealogy','documents','culture'];
+  const _secs=[..._ord.map(id=>FAMILY_SECTIONS.find(x=>x.id===id)).filter(Boolean),...FAMILY_SECTIONS.filter(x=>!_ord.includes(x.id))];
+  {const bp=pages[1],mk='<h3>فهرست روستاهای شهرستان</h3>',ix=bp.html.indexOf(mk);
+   if(ix>0){const tail='<div class="digital-book-intro">'+bp.html.slice(ix);bp.html=bp.html.slice(0,ix)+'</div>';pages.splice(2,0,{title:'بیجار · فهرست آبادی‌ها',eyebrow:bp.eyebrow,html:tail});}}
+  for(const sec of _secs){
     const base=FAMILY_EDITORIAL_CONTENT[sec.id]||{};
     const items=approved.filter(p=>familyMeta(p).section===sec.id);
     const baseHtml=`<div class="digital-book-intro"><span class="book-section-label">${esc(base.eyebrow||sec.title)}</span><h2>${esc(base.title||sec.title)}</h2><p>${esc(base.text||sec.desc)}</p>${base.stats?'<div class="family-fact-stats">'+base.stats.map(x=>'<div><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></div>').join('')+'</div>':''}${base.bullets?'<ul>'+base.bullets.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':''}</div>`;
     const satelliteHtml=sec.id==='land'?'<section class="digital-book-intro" style="margin:20px 0"><span class="book-section-label">نمای هوایی روستاها</span><h2>چهار آبادی از نگاه ماهواره</h2><p>برای دیدن بافت خانه‌ها، زمین‌های کشاورزی و جایگاه هر روستا در طبیعت اطراف، نمای ماهواره‌ای گوگل را باز کنید. این پیوندها بر پایهٔ مختصات ثبت‌شدهٔ آبادی‌ها تنظیم شده‌اند؛ برای بزرگ‌نمایی بیشتر، پس از باز شدن نقشه حالت «ماهواره‌ای» را انتخاب کنید.</p><div class="family-village-facts"><article><b>بودلا</b><span>نمای ماهواره‌ای</span><a href="https://www.google.com/maps/@35.53970204,47.57059851,16z/data=!3m1!1e3" target="_blank" rel="noopener">مشاهده در Google Maps ↗</a></article><article><b>خودلان</b><span>نمای ماهواره‌ای</span><a href="https://www.google.com/maps/@35.57583,47.52778,16z/data=!3m1!1e3" target="_blank" rel="noopener">مشاهده در Google Maps ↗</a></article><article><b>زرین‌آباد</b><span>نمای ماهواره‌ای</span><a href="https://www.google.com/maps/@35.59596019,47.57756835,16z/data=!3m1!1e3" target="_blank" rel="noopener">مشاهده در Google Maps ↗</a></article><article><b>خسروآباد</b><span>نمای ماهواره‌ای</span><a href="https://www.google.com/maps/@35.51839211,47.62154169,16z/data=!3m1!1e3" target="_blank" rel="noopener">مشاهده در Google Maps ↗</a></article></div><small class="muted">تصاویر ماهواره‌ای متعلق به Google هستند و در خود نقشه نمایش داده می‌شوند؛ این کتابچه نسخهٔ دانلودشده یا بازنشرشدهٔ تصویر را نگهداری نمی‌کند.</small></section>':'';
     const mapHtml=sec.id==='land'?`<figure class="family-source-map" style="margin:22px 0;padding:12px;border:1px solid var(--line);border-radius:16px;background:#f7f0dc"><svg viewBox="0 0 760 510" role="img" aria-label="نقشهٔ نسبی روستاهای بودلا، خودلان، زرین‌آباد و خسروآباد" style="display:block;width:100%;height:auto"><rect x="12" y="12" width="736" height="486" rx="12" fill="#ead9ad" stroke="#806b48" stroke-width="2"/>${Array.from({length:9},(_,i)=>'<path d="M '+(70+i*78)+' 45 V 465" stroke="#c8b58b" stroke-width="1"/>').join('')}${Array.from({length:6},(_,i)=>'<path d="M 45 '+(70+i*75)+' H 715" stroke="#c8b58b" stroke-width="1"/>').join('')}<path d="M 315 325 L 170 150 M 315 325 L 350 90 M 315 325 L 585 430" fill="none" stroke="#735b3b" stroke-width="3" stroke-dasharray="9 9"/><circle cx="315" cy="325" r="19" fill="none" stroke="#9e3827" stroke-width="4"/><circle cx="315" cy="325" r="8" fill="#9e3827"/><circle cx="170" cy="150" r="8" fill="#35291d"/><circle cx="350" cy="90" r="8" fill="#35291d"/><circle cx="585" cy="430" r="8" fill="#35291d"/><g fill="#38291d" font-size="22" font-weight="700" text-anchor="middle"><text x="265" y="315">بودلا</text><text x="220" y="137">خودلان</text><text x="305" y="72">زرین‌آباد</text><text x="520" y="420">خسروآباد</text></g><path d="M 680 105 L 695 48 L 710 105 L 695 92 Z" fill="#9e3827"/><text x="695" y="35" text-anchor="middle" font-size="18" fill="#38291d">شمال</text><path d="M 590 465 H 680 M 590 458 V 472 M 680 458 V 472" stroke="#38291d" stroke-width="3"/><text x="635" y="450" text-anchor="middle" font-size="16" fill="#38291d">۲ کیلومتر</text></svg><figcaption style="font-size:13px;color:#6d5c43;text-align:center;margin-top:8px">بازطراحی نقشهٔ صفحهٔ ۴ کتابچهٔ اصلی؛ نمایش نسبی موقعیت‌ها، نه نقشهٔ مسیر جاده‌ای</figcaption></figure>`:'';
     const censusHtml=base.census?`<div class="family-census-wrap" style="overflow-x:auto;margin:18px 0"><h3>جمعیت بخش چنگ‌الماس در سرشماری‌ها</h3><table class="data-table" style="width:100%;border-collapse:collapse"><thead><tr><th>ناحیه</th><th>۱۳۸۵</th><th>۱۳۹۰</th><th>۱۳۹۵</th></tr></thead><tbody>${base.census.map(r=>'<tr>'+r.map(v=>'<td style="padding:9px;border-bottom:1px solid var(--line)">'+esc(v)+'</td>').join('')+'</tr>').join('')}</tbody></table></div>`:'';
-    const noteHtml=base.note?`<p class="muted small" style="margin-top:16px;padding:12px;border-right:3px solid var(--accent);background:var(--surface-2);border-radius:8px;line-height:2">${esc(base.note)}</p>`:'';
+    const noteHtml=base.note?`<p class="muted small" style="margin-top:16px;padding:12px;border-right:3px solid var(--accent);background:var(--surface2);border-radius:8px;line-height:2">${esc(base.note)}</p>`:'';
     const pushPage=(suffix,html)=>pages.push({title:sec.title+(suffix?' · '+suffix:''),eyebrow:base.eyebrow||sec.title,html});
     pushPage('معرفی',baseHtml);
-    if(base.villages)base.villages.forEach(v=>{const villageGallery=v[0]==='خسروآباد'?'<section class="village-photo-gallery"><h3>آلبوم تصویری خسروآباد</h3><p class="muted small">تصاویر منتشرشده در کانال محلی خسروآباد ویلیج؛ شامل گلزار روستا، ورودی روستا، اجتماع اهالی و مزار روستا. برای دیدن عکس در اندازهٔ اصلی روی پست تلگرام بزنید.</p><div class="village-telegram-grid"><iframe loading="lazy" src="https://t.me/khosroabadvilage/10923?embed=1" title="گلزار روستای خسروآباد" height="420"></iframe><iframe loading="lazy" src="https://t.me/khosroabadvilage/10938?embed=1" title="ورودی روستای خسروآباد" height="420"></iframe><iframe loading="lazy" src="https://t.me/khosroabadvilage/10939?embed=1" title="جمعیت و هیئت روستای خسروآباد" height="420"></iframe><iframe loading="lazy" src="https://t.me/khosroabadvilage/10940?embed=1" title="مزار روستای خسروآباد" height="420"></iframe></div><small class="muted">منبع: <a href="https://t.me/khosroabadvilage" target="_blank" rel="noopener">کانال خسروآباد ویلیج</a>.</small></section>':v[0]==='خودلان'?'<section class="village-photo-gallery"><h3>مستند تصویری خودلان</h3><p class="muted small">پست محلی مربوط به مراسم جشن انقلاب با حضور اهالی روستای خودلان؛ تصویر و توضیح در صفحهٔ منبع قابل مشاهده است.</p><iframe loading="lazy" src="https://t.me/garosiha/9469?embed=1" title="مراسم اهالی روستای خودلان" height="420"></iframe><small class="muted">منبع: <a href="https://t.me/garosiha/9469" target="_blank" rel="noopener">کانال روستاهای بیجار گروس</a>.</small></section>':'';pushPage(v[0],'<div class="digital-book-intro"><span class="book-section-label">معرفی روستا · دهستان خسروآباد · بخش چنگ‌الماس</span><h2>'+esc(v[0])+'</h2><div class="family-village-facts"><article><b>جمعیت ثبت‌شده</b><strong>'+esc(v[1])+'</strong><span>'+esc(v[2])+'</span></article><article><b>پیوند با تاریخ خانواده</b><small>'+esc(v[3])+'</small></article><article><b>موقعیت جغرافیایی</b><span>'+esc(v[4])+'</span><a href="'+esc(v[5])+'" target="_blank" rel="noopener">مشاهدهٔ نمای ماهواره‌ای روستا ↗</a></article><article><b>وضعیت عکس</b><small>'+esc(v[6])+'</small></article></div>'+villageGallery+(v[0]==='زرین‌آباد'?'<p class="muted small">ردیابی تصویر: <a href="https://t.me/s/bijarkurdistan" target="_blank" rel="noopener">کانال بیجارکردستان</a>؛ پست ویدئویی با عنوان «روستای زرین‌آباد گروس» و اعتبار تصویری حامد زرینی.</p>':'')+'</div>');});
+    if(base.villages)pushPage('چهار روستا','<div class="digital-book-intro"><span class="book-section-label">معرفی روستاها</span><h2>'+esc(base.title||sec.title)+'</h2><div class="family-village-facts">'+base.villages.map(v=>'<article><b>'+esc(v[0])+'</b><strong>'+esc(v[1])+'</strong><span>'+esc(v[2])+'</span><small>'+esc(v[3])+'</small></article>').join('')+'</div>'+noteHtml+'</div>');
     if(mapHtml)pushPage('نقشهٔ روستاها',mapHtml);
     if(satelliteHtml)pushPage('نمای ماهواره‌ای',satelliteHtml);
     if(censusHtml)pushPage('آمار جمعیت',censusHtml);
     if(items.length){items.forEach((p,k)=>{const m=familyMeta(p),img=familyMediaUrl(p);const card=`<article class="digital-book-entry">${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:''}<div><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span><h3>${esc(p.title)}</h3><p>${esc(m.story||'')}</p><div class="muted small">${[m.village,m.photo_year,m.person_name,m.source].filter(Boolean).map(esc).join(' · ')}</div>${m.certainty?'<small>'+esc(FAMILY_CERTAINTY_LABELS[m.certainty]||'')+'</small>':''}</div></article>`;pushPage('یادگار '+(k+1),'<div class="digital-book-intro"><span class="book-section-label">یادگارهای ثبت‌شده</span><h2>'+esc(p.title)+'</h2><div class="digital-book-entries">'+card+'</div></div>');});}
-    else if(!base.villages&&!mapHtml&&!satelliteHtml&&!censusHtml)pushPage('آمادهٔ تکمیل','<div class="family-section-empty">این فصل آمادهٔ تکمیل است؛ با ثبت و تأیید عکس، سند یا روایت، مطالب به‌صورت خودکار به این فصل افزوده می‌شوند.</div>');
-    if(noteHtml){const last=pages[pages.length-1];if(last&&last.title.startsWith(sec.title+' · '))last.html+=noteHtml;else if(last&&last.title===sec.title+' · معرفی')last.html+=noteHtml;else if(last)last.html+=noteHtml;}
+    else if(!base.villages&&!mapHtml&&!satelliteHtml&&!censusHtml)pages[pages.length-1].html+='<div class="family-section-empty">این فصل آمادهٔ تکمیل است؛ با ثبت و تأیید عکس، سند یا روایت، مطالب به‌صورت خودکار به این فصل افزوده می‌شوند.</div>';
+    if(noteHtml&&!base.villages){const last=pages[pages.length-1];if(last&&last.title.startsWith(sec.title+' · '))last.html+=noteHtml;else if(last&&last.title===sec.title+' · معرفی')last.html+=noteHtml;else if(last)last.html+=noteHtml;}
   }
   pages.push({title:'گالری تاریخی بیجار و گروس',eyebrow:'آلبوم تصویری · حدود ۱۹۱۷ تا ۱۹۱۸',html:`<div class="digital-book-intro"><h2>بیجار و زندگی مردم در یک قرن پیش</h2><p>این تصاویر آرشیوی از خودِ شهر بیجار و مسیرهای پیرامون آن در دورهٔ جنگ جهانی اول هستند. آن‌ها عکس مستقیم از چهار روستای بودلا، خودلان، زرین‌آباد یا خسروآباد نیستند؛ این توضیح برای جلوگیری از اشتباه تاریخی کنار تصاویر آمده است.</p><p>هر عکس در صفحه‌ای جداگانه آمده تا تصویر و توضیحات آن کامل و خوانا دیده شود.</p></div>`});
   const galleryImages=[
@@ -2455,19 +2552,22 @@ function familyDigitalBookPages(){
     ['پاک‌کردن و بوجاری گندم در بیجار','حدود ۱۹۱۷–۱۹۱۸؛ تصویری از کار روزمره و فرآوری غلات. منبع: Australian War Memorial، شماره J01254.','https://s3-ap-southeast-2.amazonaws.com/awm-media/collection/J01254/screen/4025723.JPG','https://www.awm.gov.au/collection/C2417','بوجاری و پاک کردن گندم در حیاطی در بیجار، حدود ۱۹۱۷ تا ۱۹۱۸'],
     ['چوپان و گله در مسیر بیجار','حدود ۱۹۱۷–۱۹۱۸؛ حرکت آوارگان و دام‌ها از مسیر بیجار. منبع: Australian War Memorial، شماره J01262.','https://s3-ap-southeast-2.amazonaws.com/awm-media/collection/J01262/screen/4129882.JPG','https://www.awm.gov.au/collection/C2425','چوپان و گله‌های بز و گوسفند در مسیر بیجار، حدود ۱۹۱۷ تا ۱۹۱۸']
   ];
-  galleryImages.forEach((g,i)=>pages.push({title:'عکس تاریخی '+(i+1),eyebrow:'آلبوم تصویری بیجار · ۱۹۱۷ تا ۱۹۱۸',html:`<div class="digital-book-intro"><h2>${esc(g[0])}</h2><figure style="margin:12px 0;text-align:center"><img src="${g[2]}" alt="${esc(g[4])}" loading="lazy" style="display:block;width:100%;max-height:52%;height:auto;object-fit:contain;margin:auto;border-radius:10px"><figcaption style="font-size:.82rem;line-height:1.8;margin-top:12px">${esc(g[1])}<br><a href="${g[3]}" target="_blank" rel="noopener">مشاهدهٔ شناسنامهٔ عکس در آرشیو</a></figcaption></figure><p class="muted small" style="line-height:1.8;padding:10px;background:var(--surface-2);border-radius:8px">این تصویر از بیجار و مسیرهای پیرامون آن است، نه عکس مستند از خودِ روستاهای بودلا، خودلان، زرین‌آباد یا خسروآباد. آرشیو Australian War Memorial وضعیت مالکیت عمومی (Public Domain) را برای این عکس اعلام کرده است.</p></div>`}));
+  galleryImages.forEach((g,i)=>pages.push({title:'عکس تاریخی '+(i+1),eyebrow:'آلبوم تصویری بیجار · ۱۹۱۷ تا ۱۹۱۸',html:`<div class="digital-book-intro"><h2>${esc(g[0])}</h2><figure style="margin:12px 0;text-align:center"><img src="${g[2]}" alt="${esc(g[4])}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('p'),{className:'muted small',textContent:'تصویر اکنون در دسترس نیست؛ از پیوند آرشیو زیر ببینید.'}))" style="display:block;width:100%;max-height:52%;height:auto;object-fit:contain;margin:auto;border-radius:10px"><figcaption style="font-size:.82rem;line-height:1.8;margin-top:12px">${esc(g[1])}<br><a href="${g[3]}" target="_blank" rel="noopener">مشاهدهٔ شناسنامهٔ عکس در آرشیو</a></figcaption></figure><p class="muted small" style="line-height:1.8;padding:10px;background:var(--surface2);border-radius:8px">این تصویر از بیجار و مسیرهای پیرامون آن است، نه عکس مستند از خودِ روستاهای بودلا، خودلان، زرین‌آباد یا خسروآباد. آرشیو Australian War Memorial وضعیت مالکیت عمومی (Public Domain) را برای این عکس اعلام کرده است.</p></div>`}));
   const T=buildTree(), roots=(T.roots||[]).map(r=>{const p=T.P[r.id];return p?`<li><b>${esc(full(p))}</b> · ${fa(r.size)} نفر در شاخه</li>`:''}).join('');
   pages.push({title:'شجره و ریشه‌های زنده',eyebrow:'پیوند نسل‌ها',html:`<div class="digital-book-intro"><h2>ریشه‌های ثبت‌شده در شجره‌نامه</h2><p>این صفحه مستقیماً از رابطه‌های والد و فرزند در شجره‌نامه ساخته می‌شود؛ با ثبت افراد و اصلاح نسبت‌ها، ریشه‌ها و تعداد اعضای شاخه‌ها خودکار تغییر می‌کنند.</p><p><b>${fa(Object.keys(T.P||{}).length)}</b> فرد · <b>${fa((T.roots||[]).length)}</b> ریشهٔ شناسایی‌شده</p><ul class="digital-book-roots">${roots||'<li>هنوز ریشه‌ای ثبت نشده است.</li>'}</ul>${treeRootsOverviewHTML(T)}</div>`});
   // تصاویر آرشیوی بیجار بلافاصله پس از جلد قرار می‌گیرند؛ سپس معرفی شهرستان و فصل چنگ‌الماس می‌آید.
   const galleryIndex=pages.findIndex(p=>p.title==='گالری تاریخی بیجار و گروس');
-  if(galleryIndex>1){const galleryPages=pages.splice(galleryIndex,4);pages.splice(1,0,...galleryPages);}
+  if(galleryIndex>1){const galleryPages=pages.splice(galleryIndex,1+galleryImages.length);pages.splice(1,0,...galleryPages);}
+  {const ti=pages.findIndex(x=>x.title==='شجره و ریشه‌های زنده');
+   if(ti>=0){const [tp]=pages.splice(ti,1);const gi=pages.findIndex(x=>x.title===(FAMILY_SECTION_LABELS.genealogy||'')+' · معرفی');pages.splice(gi>=0?gi+1:pages.length,0,tp);}}
+  pages.splice(1,0,{title:'فهرست مطالب',eyebrow:'راهنمای کتاب',html:'<div class="digital-book-intro"><h2>فهرست مطالب</h2><div style="display:grid;gap:6px">'+pages.slice(1).map((x,i)=>'<button type="button" class="btn sm ghost" style="justify-content:flex-start;text-align:start" data-act="digitalbookgoto" data-i="'+(i+2)+'">'+fa(i+2)+' · '+esc(x.title)+'</button>').join('')+'</div></div>'});
   return pages;
 }
 function viewFamilyBook(){
   const pages=familyDigitalBookPages(),max=pages.length;
   familyDigitalState.page=Math.max(0,Math.min(familyDigitalState.page,max-1));
   const p=pages[familyDigitalState.page];
-  return `<div class="stack digital-book-shell"><div class="family-book-reader-head"><div><h2>📖 کتابچهٔ زندهٔ «ریشه‌ها»</h2><p>فصل‌ها و تعداد صفحات با ثبت مطالب تازه به‌روز می‌شوند.</p></div><button class="btn sm" data-act="tab" data-tab="family">＋ ثبت مطلب تازه</button></div><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>صفحهٔ قبل</button><span class="family-book-page-count">${fa(familyDigitalState.page+1)} از ${fa(max)}</span><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>صفحهٔ بعد</button><select id="digitalBookJump" aria-label="رفتن به فصل">${pages.map((x,i)=>`<option value="${i}" ${i===familyDigitalState.page?'selected':''}>${esc(x.title)}</option>`).join('')}</select></div><article class="digital-book-page"><div class="book-section-label">${esc(p.eyebrow)}</div>${p.html}</article><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>قبلی</button><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>بعدی</button><span class="muted small">با هر مطلب تأییدشده، صفحات مرتبط به‌طور خودکار تکمیل می‌شوند.</span></div></div>`;
+  return `<div class="stack digital-book-shell"><div class="family-book-reader-head"><div><h2>📖 کتابچهٔ زندهٔ «ریشه‌ها»</h2><p>نسخهٔ اصلی و همیشه‌به‌روز · فصل‌ها و تعداد صفحات با ثبت مطالب تازه به‌روز می‌شوند.</p></div><button class="btn sm" data-act="tab" data-tab="family">＋ ثبت مطلب تازه</button></div><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>صفحهٔ قبل</button><span class="family-book-page-count">${fa(familyDigitalState.page+1)} از ${fa(max)}</span><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>صفحهٔ بعد</button><select id="digitalBookJump" aria-label="رفتن به فصل">${pages.map((x,i)=>`<option value="${i}" ${i===familyDigitalState.page?'selected':''}>${esc(x.title)}</option>`).join('')}</select></div><article class="digital-book-page"><div class="book-section-label">${esc(p.eyebrow)}</div>${p.html}</article><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>قبلی</button><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>بعدی</button><span class="muted small">با هر مطلب تأییدشده، صفحات مرتبط به‌طور خودکار تکمیل می‌شوند.</span></div></div>`;
 }
 
 function viewAdmin(){
@@ -2497,7 +2597,7 @@ function viewAdmin(){
     <section class="card stack"><h3>افراد احتمالاً تکراری</h3><p class="muted small" style="margin:0">پیش از ادغام افراد مشابه، حتماً پشتیبان بگیرید و رابطه‌ها را بررسی کنید.</p><div class="stack" style="gap:10px" id="dupBox">${dupHTML()}</div></section>
   </div></details>
   <details class="admin-group"><summary>💾 پشتیبان، خروجی و ابزارهای پیشرفته</summary><div class="admin-group-body">
-    <section class="card stack"><h3>پشتیبان و خروجی</h3><p class="muted small" style="margin:0">هر چند وقت یک‌بار نسخهٔ پشتیبان را دانلود و در مکانی امن نگهداری کنید.</p><div class="row"><button type="button" class="btn" data-act="bkjson">💾 دانلود پشتیبان JSON</button><button type="button" class="btn ghost" data-act="bkged">📤 خروجی GEDCOM</button><button type="button" class="btn ghost" data-act="bkcsv">📊 خروجی CSV</button><button type="button" class="btn ghost" data-act="backup">ذخیرهٔ پشتیبان</button></div></section>
+    <section class="card stack"><h3>پشتیبان و خروجی</h3><p class="muted small" style="margin:0">هر چند وقت یک‌بار نسخهٔ پشتیبان را دانلود و در مکانی امن نگهداری کنید.</p><p class="muted small" style="margin:0">${backupAgeText()}</p><div class="row"><button type="button" class="btn" data-act="bkjson">💾 دانلود پشتیبان JSON</button><button type="button" class="btn ghost" data-act="bkged">📤 خروجی GEDCOM</button><button type="button" class="btn ghost" data-act="bkcsv">📊 خروجی CSV</button><button type="button" class="btn ghost" data-act="backup">ذخیرهٔ پشتیبان</button></div></section>
     <section class="card stack"><h3>وارد کردن از متن</h3><p class="muted small" style="margin:0">متن رمزدار SHJ1 را در این قسمت وارد کنید تا پس از بررسی به فهرست تأیید اضافه شود.</p><textarea class="code" id="impTxt" placeholder="SHJ1:…"></textarea><div class="row"><button class="btn ghost" data-act="import">افزودن به فهرست تأیید</button></div></section>
   </div></details>
   </div>`;
@@ -2967,7 +3067,7 @@ function renderView(){
   const v=$('#view'); if(!v) return;
   const f={home:viewHome,tree:viewTree,stats:viewStats,add:viewAdd,tools:viewTools,growth:viewGrowth,life:viewLife,family:viewFamily,book:viewFamilyBook,admin:viewAdmin}[S.tab]||viewHome;
   v.classList.toggle('tree-page',S.tab==='tree');
-  v.innerHTML=f();
+  v.innerHTML=f(); if(S.familyPosts&&(familyArchiveUI.openId||familyArchiveUI.editId)) v.insertAdjacentHTML('beforeend',familyOverlayHTML());
   if(S.tab==='family') updateFamilyContributionGuide();
   if(S.tab==='tree'){ if(S.mode==='art') renderArt(); else if(S.mode==='chart'){ const b=$('#chartBox'); if(b) b.scrollLeft=-(b.scrollWidth-b.clientWidth)/2; } }
 }
@@ -3158,6 +3258,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='rootfocus'){S.focus=el.dataset.id||'';renderView();}
   else if(a==='rootshowall'){S.focus='';renderView();}
   else if(a==='digitalbookprev'){familyDigitalState.page=Math.max(0,familyDigitalState.page-1);renderView();}
+  else if(a==='digitalbookgoto'){familyDigitalState.page=Math.max(0,Math.min(familyDigitalBookPages().length-1,+el.dataset.i||0));renderView();window.scrollTo(0,0);}
   else if(a==='digitalbooknext'){familyDigitalState.page=Math.min(familyDigitalBookPages().length-1,familyDigitalState.page+1);renderView();}
   else if(a==='familybookupload'){ const inp=$('#familyBookFile');if(inp)inp.click(); }
   else if(a==='familybookprev'){familyBookState.page=Math.max(1,familyBookState.page-1);renderView();$('#familyBookReader')?.scrollIntoView({behavior:'smooth',block:'start'});}
@@ -3169,6 +3270,9 @@ document.addEventListener('click',async ev=>{
   else if(a==='familyformclose'){familyArchiveUI.formOpen=false;renderView();}
   else if(a==='familyedit'){ await editFamilyPost(el.dataset.id); }
   else if(a==='familycancel'){ await cancelFamilyPost(el.dataset.id); }
+  else if(a==='familyapprove'){ await approveFamilyPost(el.dataset.id); }
+  else if(a==='familyrestore'){ await restoreFamilyPost(el.dataset.id); }
+  else if(a==='familyeditclose'){ familyArchiveUI.editId=''; renderView(); }
   else if(a==='familyopen'){ familyArchiveUI.openId=el.dataset.id; renderView(); }
   else if(a==='familyclose'){ familyArchiveUI.openId=''; renderView(); }
   else if(a==='familystay'){ return; }
@@ -3209,7 +3313,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='treepick'){S.treePerson=el.dataset.id;renderView();}
   else if(a==='focus'){ S.focus=el.dataset.id; closeModal(); gotoTab('tree'); }
   else if(a==='unfocus'){ S.focus=''; renderView(); }
-  else if(a==='bkjson'){ const d=new Date(); saveBlob('shajare-backup-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.json',new Blob([backupJSON()],{type:'application/json'})); toast('پشتیبان دانلود شد'); }
+  else if(a==='bkjson'){ try{ await loadFamilyPosts(); }catch(e){} lsSet('shj_lastbackup',String(Date.now())); const d=new Date(); saveBlob('shajare-backup-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.json',new Blob([backupJSON()],{type:'application/json'})); toast('پشتیبان دانلود شد'); }
   else if(a==='bkged'){ saveBlob('shajare-allahrezaei.ged',new Blob([gedcomExport()],{type:'text/plain;charset=utf-8'})); toast('فایل GEDCOM دانلود شد'); }
   else if(a==='unify'){ const grp=Object.fromEntries(lastGroups())[el.dataset.k], to=el.dataset.to; if(!grp) return; const ids=Object.entries(grp).filter(([sp])=>sp!==to).flatMap(([,a])=>a); if(!ids.length) return; if(!confirm('نام خانوادگی '+fa(ids.length)+' نفر به «'+to+'» تغییر کند؟')) return; histPush('نام خانوادگی ← '+to,ids.map(id=>[id,{last:S.people[id].last||''}])); for(const id of ids){ await S.db.doc('people/'+id).update({last:to}); S.people[id]=Object.assign({},S.people[id],{last:to}); } S.T=null; toast('یکدست شد'); renderView(); }
   else if(a==='bkcsv'){ saveBlob('shajare-allahrezaei.csv',new Blob([csvExport()],{type:'text/csv;charset=utf-8'})); toast('فایل اکسل (CSV) ذخیره شد'); }
@@ -3306,6 +3410,7 @@ document.addEventListener('click',async ev=>{
 document.addEventListener('submit',ev=>{
   ev.preventDefault(); const id=ev.target.id;
   if(id==='familyContributionForm') submitFamilyContribution();
+  else if(id==='familyEditForm') saveFamilyEdit().catch(e=>toast('ذخیره نشد: '+familyErrText(e)));
   else if(id==='loginForm') doLogin();
   else if(id==='pform') onPersonSubmit();
   else if(id==='marriageOnlyForm') onMarriageOnlySubmit();
@@ -3315,6 +3420,8 @@ document.addEventListener('submit',ev=>{
 });
 document.addEventListener('change',ev=>{
   if(ev.target.id==='fc_section'||ev.target.id==='fc_category') updateFamilyContributionGuide();
+  if(ev.target.id==='familyCategoryFilter'){familyArchiveUI.category=ev.target.value;familyApplyFilters();return;}
+  if(ev.target.id==='familyVillageFilter'){familyArchiveUI.village=ev.target.value;familyApplyFilters();return;}
   if(ev.target.id==='fc_village'){const wrap=$('#fc_village_other_wrap');if(wrap){wrap.hidden=ev.target.value!=='سایر';if(ev.target.value==='سایر')$('#fc_village_other')?.focus();else if($('#fc_village_other'))$('#fc_village_other').value='';}}
   if(ev.target.id==='digitalBookJump'){familyDigitalState.page=Math.max(0,Number(ev.target.value)||0);renderView();return;}
   if(ev.target.id==='familyBookFile'){const file=ev.target.files&&ev.target.files[0];if(file)uploadFamilyBook(file).catch(e=>{console.error(e);toast('بارگذاری انجام نشد: '+(e.message||'دسترسی یا فضای ذخیره‌سازی را بررسی کنید.'));});ev.target.value='';return;}
@@ -3486,30 +3593,10 @@ async function doLogin(){
 }
 
 /* ================= boot ================= */
-function makeIcon(sz){
-  const c=document.createElement('canvas'); c.width=c.height=sz; const x=c.getContext('2d'), k=sz/512;
-  const g=x.createLinearGradient(0,0,sz,sz); g.addColorStop(0,'#2a7a6a'); g.addColorStop(1,'#14463d'); x.fillStyle=g;
-  x.beginPath(); if(x.roundRect) x.roundRect(0,0,sz,sz,sz*.22); else x.rect(0,0,sz,sz); x.fill();
-  x.strokeStyle='#fff'; x.lineWidth=26*k; x.lineCap='round'; x.lineJoin='round'; x.beginPath();
-  const P=(a,b)=>[a*k,b*k];
-  x.moveTo(...P(256,440)); x.lineTo(...P(256,250));
-  x.moveTo(...P(256,250)); x.bezierCurveTo(...P(256,170),...P(130,180),...P(130,80));
-  x.moveTo(...P(256,250)); x.bezierCurveTo(...P(256,170),...P(382,180),...P(382,80));
-  x.moveTo(...P(256,340)); x.bezierCurveTo(...P(256,290),...P(180,290),...P(180,225));
-  x.moveTo(...P(256,340)); x.bezierCurveTo(...P(256,290),...P(332,290),...P(332,225)); x.stroke();
-  x.fillStyle='#d9a441'; [[130,80],[382,80],[180,225],[332,225]].forEach(([a,b])=>{ x.beginPath(); x.arc(a*k,b*k,34*k,0,7); x.fill(); });
-  return c.toDataURL('image/png');
+function registerSW(){
+  try{ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')) navigator.serviceWorker.register('sw.js').catch(()=>{}); }catch(e){}
 }
-function setupManifest(){
-  try{
-    const i192=makeIcon(192), i512=makeIcon(512), base=location.href.split('#')[0];
-    const add=(rel,href,extra)=>{ const l=document.createElement('link'); l.rel=rel; l.href=href; if(extra) l.type=extra; document.head.appendChild(l); };
-    add('icon',i192,'image/png'); add('apple-touch-icon',makeIcon(180));
-    const man={name:'شجره‌نامه خاندان الله‌رضایی',short_name:'شجره‌نامه',lang:'fa',dir:'rtl',start_url:base,scope:base.replace(/[^/]*$/,''),display:'standalone',background_color:'#F1F5F3',theme_color:'#1E5B50',icons:[{src:i192,sizes:'192x192',type:'image/png'},{src:i512,sizes:'512x512',type:'image/png',purpose:'any'}]};
-    add('manifest',URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'})));
-  }catch(e){}
-}
-async function boot(){ setTimeout(setupManifest,600);
+async function boot(){ setTimeout(registerSW,600);
   if(lsGet('shj_login_flow_version')!==LOGIN_FLOW_VERSION){ lsSet('shj_sess',''); lsSet(SESSION_KEY,''); lsSet('shj_me',''); lsSet('shj_myid',''); lsSet('shj_mynew',''); kv.del('col:people'); kv.del('col:memories'); lsSet('shj_login_flow_version',LOGIN_FLOW_VERSION); }
   render();
   if(!sbReady()){ S.gate=true; S.ready=true; render(); return; }
