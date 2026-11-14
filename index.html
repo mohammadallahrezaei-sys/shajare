@@ -4163,7 +4163,7 @@ async function doLogin(){
 
 /* ================= boot ================= */
 function registerSW(){
-  try{ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')) navigator.serviceWorker.register('sw.js').catch(()=>{}); }catch(e){}
+  try{ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')) navigator.serviceWorker.register('sw.js?v=shj-v2').catch(()=>{}); }catch(e){}
 }
 async function boot(){ setTimeout(registerSW,600);
   if(lsGet('shj_login_flow_version')!==LOGIN_FLOW_VERSION){ lsSet('shj_sess',''); lsSet(SESSION_KEY,''); lsSet('shj_me',''); lsSet('shj_myid',''); lsSet('shj_mynew',''); kv.del('col:people'); kv.del('col:memories'); lsSet('shj_login_flow_version',LOGIN_FLOW_VERSION); }
