@@ -987,6 +987,46 @@ label.f>span,div.f>span{font-weight:600}
  .tl-date,.tl-ic{font-size:.82rem}
 }
 </style>
+<style id="timeline-card-elegance">
+/* طراحی یکدست و ظریف کارت‌های رویداد */
+.tl-dec{overflow:hidden;border:1px solid color-mix(in srgb,var(--line) 75%,var(--primary));border-radius:18px;background:linear-gradient(145deg,color-mix(in srgb,var(--primary) 3%,var(--surface)),var(--surface));box-shadow:0 5px 18px #00000008;margin:12px 0;transition:border-color .2s,box-shadow .2s}
+.tl-dec[open]{border-color:color-mix(in srgb,var(--primary) 28%,var(--line));box-shadow:0 8px 24px #0000000c}
+.tl-dec>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;cursor:pointer;list-style:none;background:color-mix(in srgb,var(--primary) 5%,var(--surface));font-weight:800}
+.tl-dec>summary::-webkit-details-marker{display:none}
+.tl-dec>summary:after{content:"⌄";font-size:19px;color:var(--primary);transition:transform .2s}
+.tl-dec[open]>summary:after{transform:rotate(180deg)}
+.tl-list{gap:10px;padding:12px 14px 16px}
+.tl-row{position:relative;display:grid;align-items:center;gap:10px;margin:0;padding:16px 14px;border:1px solid var(--line);border-right:4px solid color-mix(in srgb,var(--primary) 45%,var(--line));border-radius:15px;background:var(--surface);box-shadow:0 2px 9px #00000007;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.tl-row:hover{transform:translateY(-2px);background:var(--surface);box-shadow:0 8px 20px #00000010;border-color:color-mix(in srgb,var(--primary) 35%,var(--line))}
+.tl-row:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 45%,transparent);outline-offset:2px}
+.tl-date{display:inline-flex;justify-content:center;align-items:center;justify-self:center;min-width:68px;padding:6px 9px;border-radius:10px;background:color-mix(in srgb,var(--primary) 9%,var(--surface2));color:var(--primary);font-size:.84rem;font-weight:850;font-variant-numeric:tabular-nums}
+.tl-ic{display:grid;place-items:center;justify-self:center;width:34px;height:34px;border-radius:50%;background:color-mix(in srgb,var(--primary) 9%,var(--surface2));font-size:17px}
+.tl-txt{gap:9px}
+.tl-txt>b{font-size:1rem;line-height:1.8;font-weight:850}
+.tl-txt>small{line-height:1.8}
+.tl-row--birth{border-right-color:var(--accent);background:linear-gradient(115deg,color-mix(in srgb,var(--accent) 3%,var(--surface)),var(--surface) 45%)}
+.tl-row--birth .tl-ic{background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--accent)}
+.tl-row--birth .tl-date{background:color-mix(in srgb,var(--accent) 11%,var(--surface2));color:var(--accent)}
+.tl-row--marriage{border-right-color:var(--female);background:linear-gradient(115deg,color-mix(in srgb,var(--female) 4%,var(--surface)),var(--surface) 45%)}
+.tl-row--marriage .tl-ic,.tl-row--marriage .tl-date{background:color-mix(in srgb,var(--female) 10%,var(--surface2));color:var(--female)}
+.tl-row--death{border-right-color:color-mix(in srgb,var(--muted) 65%,var(--line))}
+.tl-row--death .tl-ic{color:var(--muted)}
+.tl-row--photo{border-right-color:var(--accent)}
+.tl-people,.tl-birth-family{box-shadow:0 3px 12px #00000008}
+.tl-couple{padding:12px 16px}
+.tl-birth-family{padding:12px 14px 14px}
+.tl-photo-thumb{border:1px solid var(--line);box-shadow:0 4px 12px #00000012}
+@media(max-width:560px){
+ .tl-dec{border-radius:14px;margin:9px 0}
+ .tl-dec>summary{padding:12px 13px}
+ .tl-list{padding:9px 7px 12px;gap:8px}
+ .tl-row{padding:12px 8px;gap:6px;border-radius:12px}
+ .tl-date{min-width:0;padding:5px 6px;font-size:.76rem}
+ .tl-ic{width:29px;height:29px;font-size:15px}
+ .tl-txt>b{font-size:.94rem}
+}
+@media(prefers-reduced-motion:reduce){.tl-row,.tl-dec>summary:after{transition:none}.tl-row:hover{transform:none}}
+</style>
 </head>
 <body>
 <div class="wrap" id="root"></div>
