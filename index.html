@@ -849,6 +849,16 @@ label.f>span,div.f>span{font-weight:600}
 .diagram-mouse-dragging{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important;}
 .diagram-mouse-dragging *{user-select:none!important;-webkit-user-select:none!important;}
 </style>
+<style id="kinship-relations-expanded">
+.kin-relations-expanded{width:100%;min-width:max-content;gap:20px;padding:8px 12px}
+.kin-rel-group{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%;position:relative;padding:10px 0}
+.kin-rel-group:before{content:"";position:absolute;top:0;left:50%;height:9px;border-left:2px solid var(--line)}
+.kin-rel-group .kin-level-nodes{flex-wrap:wrap;max-width:min(100%,1100px);gap:12px}
+.kin-rel-generation{border-bottom:1px dashed var(--line)}
+.kin-rel-center{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 20px;border:2px solid var(--primary);border-radius:18px;background:var(--surface)}
+.kin-rel-center>.kin-node{background:color-mix(in srgb,var(--primary) 8%,var(--surface2));border-color:var(--primary)}
+.kin-rel-note{max-width:760px;text-align:center;margin:4px auto}
+</style>
 </head>
 <body>
 <div class="wrap" id="root"></div>
@@ -1657,12 +1667,25 @@ function treeAdvancedHTML(){
  const spouses=x=>{const a=(P[x]?.spl||[]).map(q=>q.id).filter(q=>P[q]);ids.forEach(q=>{if((P[q].spl||[]).some(z=>z.id===x)&&!a.includes(q))a.push(q);});return a;};
  const node=x=>{const p=P[x];if(!p)return '';const info=[gLabel(p.gender),p.bY?'تولد '+fa(p.bY):'',p.dead?'درگذشته':'',placeInfo(p),p.job||'',p.note||''].filter(Boolean).join(' | ');if(p.virtual)return '<div class="kin-node kin-name-only" data-preview="'+esc(full(p)+' | فقط نام فرزند ثبت شده است')+'"><div class="kin-person"><span class="kin-avatar person-placeholder person-placeholder--unknown">'+personSilhouette('')+'</span><b>'+esc(full(p))+'</b><small>نام فرزند ثبت‌شده</small></div></div>';return '<div class="kin-node" data-preview="'+esc(full(p)+' | '+info)+'"><button type="button" class="kin-person" data-act="person" data-id="'+esc(x)+'">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="">':'<span class="kin-avatar person-placeholder person-placeholder--'+(p.gender==='m'?'male':p.gender==='f'?'female':'unknown')+'">'+personSilhouette(p.gender)+'</span>')+'<b>'+esc(full(p))+'</b><small>'+esc(p.bY?fa(p.bY):'سال نامشخص')+'</small></button><div class="kin-actions"><button type="button" data-act="treeadd" data-id="'+esc(x)+'" data-role="child">+ فرزند</button><button type="button" data-act="treeadd" data-id="'+esc(x)+'" data-role="spouse">+ همسر</button><button type="button" data-act="treeadd" data-id="'+esc(x)+'" data-role="father">+ پدر</button><button type="button" data-act="treeadd" data-id="'+esc(x)+'" data-role="mother">+ مادر</button></div></div>';};
  if(!person)return '<section class="card stack">'+picker+'<p class="muted small">برای مشاهده نمودار، یک فرد را انتخاب کنید.</p></section>';
- const levels=(start,fn,max=8)=>{let rows=[[start]],seen=new Set([start]);for(let d=0;d<max;d++){const next=[...new Set(rows[rows.length-1].flatMap(fn))].filter(x=>!seen.has(x));next.forEach(x=>seen.add(x));if(!next.length)break;rows.push(next);}return rows;};
+ const levels=(start,fn,max=30)=>{let rows=[[start]],seen=new Set([start]);for(let d=0;d<max;d++){const next=[...new Set(rows[rows.length-1].flatMap(fn))].filter(x=>!seen.has(x));next.forEach(x=>seen.add(x));if(!next.length)break;rows.push(next);}return rows;};
  const up=levels(id,parents),down=levels(id,kids);let graph='';
  if(mode==='ancestor')graph=up.map((r,i)=>'<div class="kin-level"><span class="kin-level-label">'+(i?'نسل '+fa(i)+' بالاتر':'فرد انتخاب‌شده')+'</span><div class="kin-level-nodes">'+r.map(node).join('')+'</div></div>').join('');
  else if(mode==='descendant')graph=down.map((r,i)=>'<div class="kin-level"><span class="kin-level-label">'+(i?'نسل '+fa(i)+' پایین‌تر':'فرد انتخاب‌شده')+'</span><div class="kin-level-nodes">'+r.map(node).join('')+'</div></div>').join('');
  else if(mode==='hourglass')graph=up.slice(1).reverse().map((r,i)=>'<div class="kin-level"><span class="kin-level-label">نیاکان · نسل '+fa(up.length-1-i)+'</span><div class="kin-level-nodes">'+r.map(node).join('')+'</div></div>').join('')+'<div class="kin-level kin-center"><span class="kin-level-label">فرد مرکزی</span><div class="kin-level-nodes">'+node(id)+'</div></div>'+down.slice(1).map((r,i)=>'<div class="kin-level"><span class="kin-level-label">نوادگان · نسل '+fa(i+1)+'</span><div class="kin-level-nodes">'+r.map(node).join('')+'</div></div>').join('');
- else if(mode==='relations'){const rel=[...new Set([...parents(id),...spouses(id),...kids(id),...ids.filter(x=>x!==id&&((P[x].fatherId&&P[x].fatherId===P[id].fatherId)||(P[x].motherId&&P[x].motherId===P[id].motherId)))])];graph='<div class="kin-relations"><div class="kin-rel-center">'+node(id)+'</div><div class="kin-level-nodes">'+rel.map(node).join('')+'</div></div>';}
+ else if(mode==='relations'){
+  const siblings=ids.filter(x=>x!==id&&((P[x].fatherId&&P[x].fatherId===P[id].fatherId)||(P[x].motherId&&P[x].motherId===P[id].motherId)));
+  const upRows=up.slice(1).reverse(),downRows=down.slice(1);
+  const section=(label,people,cls='')=>people.length?'<div class="kin-rel-group '+cls+'"><span class="kin-level-label">'+label+'</span><div class="kin-level-nodes">'+people.map(node).join('')+'</div></div>':'';
+  const generations=(rows,label,reverse=false)=>rows.map((r,i)=>section(label+' · نسل '+fa(reverse?rows.length-i:i+1),r,'kin-rel-generation')).join('');
+  graph='<div class="kin-relations kin-relations-expanded">'+
+   generations(upRows,'نیاکان',true)+
+   '<div class="kin-rel-center"><span class="kin-level-label">فرد انتخاب‌شده</span>'+node(id)+'</div>'+
+   section('همسران',spouses(id),'kin-rel-spouses')+
+   section('خواهران و برادران',siblings,'kin-rel-siblings')+
+   generations(downRows,'فرزندان و نوادگان')+
+   '<p class="muted small kin-rel-note">نمودار بر پایه نسبت‌هایی ساخته می‌شود که در پرونده افراد ثبت شده‌اند؛ انتخاب هر فرد، او را به مرکز نمودار تبدیل می‌کند.</p>'+
+  '</div>';
+ }
  else {
   const rings=up.slice(1),childRings=down.slice(1),allRings=[...rings,...childRings],colors=['#dbeafe','#c7d2fe','#bfdbfe','#a7f3d0','#fde68a','#fbcfe8','#ddd6fe','#bae6fd'],stepRadius=78,innerRadius=76,maxDepth=Math.max(rings.length,childRings.length),outerRadius=innerRadius+Math.max(0,maxDepth-1)*stepRadius+72,cx=outerRadius+30,cy=outerRadius+30,svgW=cx*2,svgH=cy+outerRadius+30;let fanParts='';
   const polar=(r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
