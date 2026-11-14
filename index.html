@@ -3463,20 +3463,20 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=34, CW=164, MARGIN=70, TOP=150, SIBLING_GAP=14, ROOT_GAP=30;
+  const P=T.P, R=34, CW=172, MARGIN=82, TOP=158, SIBLING_GAP=22, ROOT_GAP=42;
   // عمق بیشتر خانواده، فاصله عمودی نسل‌ها را به‌صورت پویا فشرده می‌کند.
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   const GAP=Math.max(160,Math.min(250,1700/(maxD+1)));
-  const BRANCH_COLORS=['#527f72','#a4774e','#6686a4','#a36578','#8b8957','#81709a','#b17b4c','#4c8990','#8b725f','#718b65'];
+  const BRANCH_COLORS=['#246b62','#b56b43','#557da5','#9b5877','#8a7b3e','#75649a','#3f8290','#98704d','#64834f','#9a5b4d'];
   let bi=0; const brs=[];
   const assign=(n,ci,off)=>{n.ci=ci;n.off=off||0;n.kids.forEach(k=>assign(k,ci,off));};
   const BH=branchHeads(T.roots), headSet=new Set(BH.list);
   const trunkWalk=n=>{if(headSet.has(n))return;n.ci=-1;n.kids.forEach(trunkWalk);};
   T.roots.forEach(trunkWalk);
   BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>assign(q,bi,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
-  const bcol=n=>n.ci<0?'#806044':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
+  const bcol=n=>n.ci<0?'#76543a':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
   // چیدمان بادبزنی (تاج درخت): ریشه پایین‌وسط است و هر نسل روی یک کمانِ بالاترِ هم‌مرکز قرار می‌گیرد؛ پهنا به جای یک ردیف افقیِ بسیار بلند، میان کمان‌ها و ارتفاع پخش می‌شود.
-  const NB_T=-46, NB_B=112, PADX=8, RING=172, GAPX=10;
+  const NB_T=-46, NB_B=112, PADX=13, RING=190, GAPX=16;
   const SPAN=Math.min(3.0,Math.max(1.5,T.nodes.length/32));
   const markLeaves=n=>{
     n.cw=(1+n.spouses.length)*CW; n.zz=0;
@@ -3488,11 +3488,11 @@ function drawArt(T,imgs){
   const wOf=n=>{ const own=n.cw*0.8+GAPX; n.wt=Math.max(own, n.kids.reduce((a,k)=>a+wOf(k),0)); if(!n.kids.length) n.wt=n.cw*0.62+GAPX; return n.wt; };
   const rootsW=T.roots.reduce((a,r)=>a+wOf(r),0)+20*Math.max(0,T.roots.length-1);
   const alloc=(n,u0)=>{ // مرکز بازه را برای n نگه می‌دارد و فرزندان را از راست به چپ پشت‌سرهم می‌چیند
-    const kidsW=n.kids.reduce((a,k)=>a+k.wt,0); let u=u0+(n.wt-kidsW)/2;
-    n.kids.forEach(k=>{ k.par=n; alloc(k,u); u+=k.wt; });
+    const kidsW=n.kids.reduce((a,k)=>a+k.wt,0)+SIBLING_GAP*Math.max(0,n.kids.length-1); let u=u0+(n.wt-kidsW)/2;
+    n.kids.forEach((k,i)=>{ k.par=n; alloc(k,u); u+=k.wt+(i<n.kids.length-1?SIBLING_GAP:0); });
     n.u=u0+n.wt/2;
   };
-  {let u=0; T.roots.forEach(r=>{alloc(r,u);u+=r.wt+20;});}
+  {let u=0; T.roots.forEach((r,i)=>{alloc(r,u);u+=r.wt+(i<T.roots.length-1?ROOT_GAP:0);});}
   const thOf=n=>SPAN*(0.5-n.u/rootsW);
   const levels=[]; T.nodes.forEach(n=>{(levels[n.depth]=levels[n.depth]||[]).push(n);});
   const placed=[];
@@ -3558,7 +3558,7 @@ function drawArt(T,imgs){
       const len=Math.hypot(x4-x1,y4-y1), h=Math.max(30,len*.42);
       const dkx=Math.sin(k.th),dky=-Math.cos(k.th);
       const x2=x1+dpx*h,y2=y1+dpy*h,x3=x4-dkx*h*.6,y3=y4-dky*h*.6+ (y4-y1<0?0:0);
-      const width=Math.max(4,Math.min(16,3.6+Math.sqrt(k.size||1)*1.9));
+      const width=Math.max(4.5,Math.min(23,3.8+Math.sqrt(k.size||1)*2.35));
       const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);};
       strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
     });
