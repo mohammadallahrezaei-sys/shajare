@@ -2104,7 +2104,7 @@ function familyLightbox(post){
   if(!post)return '';
   const m=familyMeta(post),img=familyMediaUrl(post);
   return `<div class="family-lightbox" role="dialog" aria-modal="true" aria-label="نمایش یادگار خانوادگی" data-act="familyclose">
-    <div class="family-lightbox-inner" onclick="event.stopPropagation()">
+    <div class="family-lightbox-inner" data-act="familystay">
       <button class="family-lightbox-close" type="button" data-act="familyclose" aria-label="بستن">×</button>
       <div class="family-lightbox-photo">${img?`<img src="${esc(img)}" alt="${esc(post.title)}">`:'<div style="font-size:5rem">📜</div>'}</div>
       <div class="family-lightbox-info"><div class="family-tags"><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span>${m.village?`<span class="family-tag">${esc(m.village)}</span>`:''}${m.photo_year?`<span class="family-tag">${esc(m.photo_year)}</span>`:''}</div>
@@ -2894,6 +2894,7 @@ document.addEventListener('click',async ev=>{
   else if(a==='familyreject'){ await moderateFamilyPost(el.dataset.id,false); }
   else if(a==='familyopen'){ familyArchiveUI.openId=el.dataset.id; renderView(); }
   else if(a==='familyclose'){ familyArchiveUI.openId=''; renderView(); }
+  else if(a==='familystay'){ return; }
   else if(a==='familyfilterclear'){ familyArchiveUI.q='';familyArchiveUI.category='all';familyArchiveUI.village='all';renderView(); }
   else if(a==='growthpin'){ await verifyGrowthPin(); }
   else if(a==='growthlock'){ sessionStorage.removeItem('shj_parent_token'); sessionStorage.removeItem('shj_parent_exp'); S.growthRows=[]; S.growthChild=''; renderView(); }
