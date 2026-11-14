@@ -4315,33 +4315,58 @@ boot();
  .home-shortcuts-compact .home-shortcut{min-height:64px}
 }
 .ancestor-portrait-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:20px 0}.ancestor-portrait-card{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:var(--surface2);break-inside:avoid}.ancestor-portrait-card>img{display:block;width:100%;height:190px;object-fit:cover;background:#eee}.ancestor-portrait-placeholder{height:150px;display:grid;place-items:center;font-size:42px;background:var(--surface2)}.ancestor-portrait-caption{padding:10px 12px;display:grid;gap:4px}.ancestor-portrait-caption b{font-size:15px}.ancestor-portrait-caption span,.ancestor-portrait-caption small{color:var(--muted);font-size:12px}.ancestor-portrait-caption p{font-size:13px;line-height:1.8;margin:4px 0 0}@media(max-width:600px){.ancestor-portrait-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ancestor-portrait-card>img{height:135px}.ancestor-portrait-caption{padding:8px}.ancestor-portrait-caption p{font-size:12px}}</style>
+<style id="mouse-drag-pan-fix">
+/* Drag the actual scroll viewport, not just the element under the pointer. */
+#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track{cursor:grab;overscroll-behavior:contain}
+.mouse-pan-active{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.mouse-pan-active *{user-select:none!important;-webkit-user-select:none!important}
+.mouse-pan-active img,.mouse-pan-active canvas,.mouse-pan-active svg{-webkit-user-drag:none;user-drag:none}
+</style>
 <script id="mouse-drag-pan-fix">
 (()=>{
  const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track';
- let drag=null,suppressClick=false;
+ let drag=null,suppressClick=false,clearClickTimer=0;
+ const findViewport=target=>{
+  const candidates=[];
+  let n=target;
+  while(n&&n!==document.body){
+   if(n.matches&&n.matches(selector))candidates.push(n);
+   n=n.parentElement;
+  }
+  return candidates.find(el=>el.scrollWidth>el.clientWidth+2||el.scrollHeight>el.clientHeight+2)||candidates[0]||null;
+ };
  document.addEventListener('pointerdown',e=>{
-  if(e.pointerType!=='mouse'||e.button!==0)return;
-  const el=e.target.closest(selector);if(!el||el.closest('.leaflet-container'))return;
+  if(e.pointerType!=='mouse'||e.button!==0||e.target.closest('button,a,input,select,textarea,[contenteditable="true"],.leaflet-container'))return;
+  const el=findViewport(e.target);
+  if(!el)return;
   drag={el,x:e.clientX,y:e.clientY,left:el.scrollLeft,top:el.scrollTop,moved:false};
  },true);
  document.addEventListener('pointermove',e=>{
   if(!drag)return;
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
-  if(!drag.moved&&Math.hypot(dx,dy)<5)return;
-  drag.moved=true;drag.el.classList.add('is-mouse-panning');
-  drag.el.scrollLeft=drag.left-dx;drag.el.scrollTop=drag.top-dy;
+  if(!drag.moved&&Math.hypot(dx,dy)<4)return;
+  if(!drag.moved){drag.moved=true;drag.el.classList.add('mouse-pan-active');}
+  drag.el.scrollLeft=drag.left-dx;
+  drag.el.scrollTop=drag.top-dy;
   e.preventDefault();
  },{capture:true,passive:false});
  const finish=()=>{
   if(!drag)return;
-  if(drag.moved){suppressClick=true;setTimeout(()=>{suppressClick=false;},0);}
-  drag.el.classList.remove('is-mouse-panning');drag=null;
+  const el=drag.el;
+  if(drag.moved){
+   suppressClick=true;
+   clearTimeout(clearClickTimer);
+   clearClickTimer=setTimeout(()=>{suppressClick=false;},500);
+  }
+  el.classList.remove('mouse-pan-active');
+  drag=null;
  };
  document.addEventListener('pointerup',finish,true);
  document.addEventListener('pointercancel',finish,true);
  document.addEventListener('click',e=>{
   if(!suppressClick)return;
-  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();suppressClick=false;
+  suppressClick=false;clearTimeout(clearClickTimer);
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
  },true);
  window.addEventListener('blur',finish);
 })();
