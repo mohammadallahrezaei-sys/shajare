@@ -953,7 +953,7 @@ function viewHome(){
       <div class="home-welcome-person">${me?avatar(me):`<span class="home-profile-fallback">${esc((S.me.first||'؟').trim()[0]||'؟')}</span>`}
         <div><h2>خوش آمدی، ${esc(S.me.first)} جان</h2><p>${me?'پروندهٔ خانوادگی شما آماده است؛ می‌توانید خاطرات و اطلاعاتتان را کامل کنید.':'به خانهٔ خاطره‌ها و ریشه‌های خانواده خوش آمدید.'}</p></div>
       </div>
-      <div class="home-hero-actions"><button class="btn big" data-act="tab" data-tab="tree">🌳 دیدن شجره‌نامه</button><button class="btn home-hero-secondary big" data-act="addme">${mid?'تکمیل پرونده من':'ثبت اطلاعات خودم'}</button></div>
+      <div class="home-hero-actions"><button class="btn big" data-act="tab" data-tab="tree">🌳 دیدن شجره‌نامه</button><button class="btn big home-hero-secondary" data-act="tab" data-tab="family">🏛️ ثبت اطلاعات موزه</button><button class="btn home-hero-secondary big" data-act="addme">${mid?'تکمیل پرونده من':'ثبت اطلاعات خودم'}</button></div>
     </div>
     <div class="home-hero-note"><span>یک خانواده،</span><b>هزاران خاطره</b></div>
   </section>
@@ -2156,7 +2156,7 @@ function viewFamily(){
   const imageCount=approved.filter(p=>p.media_path).length;
   const opened=familyArchiveUI.openId?posts.find(p=>p.id===familyArchiveUI.openId):null;
   const categoryOptions=Object.entries(FAMILY_CATEGORIES).map(([k,v])=>`<option value="${k}" ${familyArchiveUI.category===k?'selected':''}>${v}</option>`).join('');
-  const villageOptions=FAMILY_VILLAGES.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  const knownVillages=[...new Set([...FAMILY_VILLAGES,...posts.map(p=>familyMeta(p).village).filter(Boolean)])];\n  const villageOptions=knownVillages.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
   const sectionCards=FAMILY_SECTIONS.map(sec=>{
     const items=approved.filter(p=>familyMeta(p).section===sec.id),n=items.length;
     return `<section class="family-section-card" id="family-section-${sec.id}">
@@ -2181,9 +2181,9 @@ function viewFamily(){
             <label class="f"><span>فصل مرتبط *</span><select id="fp_section" required>${FAMILY_SECTIONS.map(x=>`<option value="${x.id}" ${familyArchiveUI.section===x.id?'selected':''}>${x.title}</option>`).join('')}</select></label><p class="note wide" id="fp_section_hint" style="margin:0">${esc((FAMILY_SECTIONS.find(x=>x.id===familyArchiveUI.section)||FAMILY_SECTIONS[2]).prompt)}</p>
             <label class="f"><span>عنوان مطلب *</span><input id="fp_title" maxlength="120" required placeholder="مثلاً: روایت خانهٔ قدیمی فرج‌الله در بودلا"></label>
             <label class="f"><span>نوع محتوا</span><select id="fp_category">${categoryOptions}</select></label>
-            <label class="f"><span>روستا یا محل مرتبط</span><select id="fp_village"><option value="">انتخاب محل</option>${villageOptions}</select></label>
+            <label class="f"><span>نام روستا یا محل مرتبط</span><input id="fp_village" list="fp_village_options" maxlength="80" placeholder="نام روستا را انتخاب کنید یا بنویسید"><datalist id="fp_village_options">${villageOptions}</datalist><small class="muted">اگر روستا در فهرست نیست، نام آن را بنویسید؛ پس از تأیید مطلب، به فهرست روستاهای کتابخانه اضافه می‌شود.</small></label>
             <label class="f"><span>سال یا دورهٔ تقریبی</span><input id="fp_year" type="text" maxlength="30" placeholder="مثلاً ۱۳۴۵ یا حدود دههٔ ۱۳۳۰"></label>
-            <label class="f"><span>فرد مرتبط در شجره‌نامه</span><select id="fp_person"><option value="">بدون اتصال به فرد مشخص</option>${linkedOptions}</select></label>
+            <label class="f"><span>فرد مرتبط در شجره‌نامه</span><select id="fp_person"><option value="">بدون اتصال به فرد مشخص</option>${linkedOptions}</select><small class="muted">برای پیوند دادن تاریخچهٔ این روستا به شاخهٔ خانوادگی، فرد مرتبط را انتخاب کنید.</small></label>
             <label class="f"><span>افراد دیگر مرتبط (اختیاری)</span><input id="fp_people" maxlength="250" placeholder="نام افراد، با ویرگول جدا کنید"></label>
             <label class="f"><span>وضعیت اعتبار اطلاعات</span><select id="fp_certainty"><option value="unverified">نیازمند بررسی</option><option value="oral">روایت شفاهی خانواده</option><option value="document">دارای سند یا مدرک</option><option value="verified">بررسی و تأیید شده</option></select></label>
             <label class="f wide"><span>منبع یا گویندهٔ اطلاعات</span><input id="fp_source" maxlength="250" placeholder="مثلاً دفتر ثبت ۱۳۰۹، نام بزرگ‌تر خانواده، پشت عکس یا سند"></label>
@@ -2198,7 +2198,7 @@ function viewFamily(){
     </details>
     ${pending.length?`<section class="stack"><h3>📥 مطالب در انتظار بررسی مدیر</h3><div class="family-gallery">${pending.map(p=>familyArchiveCard(p,true)).join('')}</div></section>`:''}
     <section class="stack"><div class="family-gallery-head"><div><h3>📚 همهٔ مطالب تأییدشده</h3><p class="muted small" style="margin:2px 0 0">جست‌وجو و فیلتر در فصل‌ها و یادگارهای ثبت‌شده</p></div><span class="pill">${fa(approved.length)} مورد</span></div>
-      <div class="family-filters"><input id="familySearch" type="text" placeholder="جست‌وجو در نام‌ها، خاطرات، سندها و مکان‌ها…" value="${esc(familyArchiveUI.q)}"><select id="familyCategory"><option value="all">همهٔ انواع محتوا</option>${categoryOptions}</select><select id="familyVillage"><option value="all">همهٔ روستاها</option>${villageOptions}</select></div>
+      <div class="family-filters"><input id="familySearch" type="text" placeholder="جست‌وجو در نام‌ها، خاطرات، سندها و مکان‌ها…" value="${esc(familyArchiveUI.q)}"><select id="familyCategory"><option value="all">همهٔ انواع محتوا</option>${categoryOptions}</select><select id="familyVillage"><option value="all">همهٔ روستاها</option>${[...new Set([...FAMILY_VILLAGES,...approved.map(p=>familyMeta(p).village).filter(Boolean)])].map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('')}</select></div>
       ${approved.length?`<div class="family-gallery" id="familyGallery">${approved.map(p=>familyArchiveCard(p,false)).join('')}</div><div id="familyNoFilter" class="family-empty" hidden>با این فیلترها مطلبی پیدا نشد.</div>`:'<div class="family-empty">هنوز مطلب تأییدشده‌ای ثبت نشده است؛ از یکی از فصل‌های بالا شروع کنید.</div>'}
     </section>
     ${opened?familyLightbox(opened):''}
