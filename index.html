@@ -1567,7 +1567,7 @@ function vaultPersonLabel(r){const id=vaultPersonId(r),p=EP()[id]||S.people[id];
 function vaultRowHTML(r){
  const name=vaultName(r),size=r.metadata&&r.metadata.size?Math.round(r.metadata.size/1024)+' KB':'—';
  const date=r.created_at?new Date(r.created_at).toLocaleDateString('fa-IR'):'';
- const path=r._legacy?'vault/'+r.name:'vault/'+r.name;
+ const path=r._legacy?'vault/'+String(r.name||'').split('/').slice(1).join('/'):'vault/'+r.name;
  return '<article class="card" style="padding:11px;background:var(--bg)"><b style="overflow-wrap:anywhere">'+esc(name)+'</b><div class="muted small">'+esc(vaultPersonLabel(r))+' · '+esc(vaultCategoryLabel(r))+' · '+esc(size)+' · '+esc(date)+'</div><div class="row" style="margin-top:8px"><button type="button" class="btn sm" data-act="vaultdownload" data-path="'+esc(path)+'" data-name="'+esc(name)+'">⬇ دریافت</button><button type="button" class="btn ghost sm" data-act="vaultdelete" data-path="'+esc(path)+'" data-name="'+esc(name)+'">حذف</button></div></article>';
 }
 async function loadPrivateArchive(){
