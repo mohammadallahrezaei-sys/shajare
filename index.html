@@ -1139,7 +1139,7 @@ function smartCenterHTML(){
     item('🖼️','عکس بدون افراد شناسایی‌شده',a.noSource.length,'تصاویر آرشیوی که هنوز به هیچ پرونده‌ای متصل نیستند',[])
   ];
   const timeline=`<div class="smart-center-foot"><span class="muted small">رویدادهای زندگی در صفحه مستقل خط زمانی نمایش داده می‌شوند.</span><button class="btn ghost sm" type="button" data-act="tab" data-tab="timeline">مشاهده خط زمانی خانواده</button></div>`;
-  return `<section class="smart-center card stack"><div class="smart-center-head"><div><span class="home-kicker">مرکز هوشمندی خانواده</span><h3>سلامت و تکمیل شجره‌نامه</h3><p class="muted small">بررسی خودکار داده‌های ثبت‌شده؛ موارد نامعلوم الزاماً خطا نیستند.</p></div><div class="smart-score"><b>${fa(avg)}٪</b><small>میانگین تکمیل</small></div></div><div class="cmpbar"><div style="width:${avg}%"></div></div><div class="smart-alert-grid">${rows.join('')}</div>${timeline}<div class="smart-center-foot"><button class="btn sm" type="button" data-act="tab" data-tab="stats">گزارش کامل تکمیل پرونده‌ها</button><button class="btn ghost sm" type="button" data-act="tab" data-tab="family">مدیریت عکس‌ها و اسناد</button></div></section>`;
+  return `<section class="smart-center card stack"><div class="smart-center-head"><div><span class="home-kicker">بازبینی اسناد و اطلاعات خانوادگی</span><h3>سامان‌دهی و تکمیل اطلاعات تاریخی</h3><p class="muted small">بررسی خودکار داده‌های ثبت‌شده؛ موارد نامعلوم الزاماً خطا نیستند.</p></div><div class="smart-score"><b>${fa(avg)}٪</b><small>میانگین تکمیل</small></div></div><div class="cmpbar"><div style="width:${avg}%"></div></div><div class="smart-alert-grid">${rows.join('')}</div>${timeline}<div class="smart-center-foot"><button class="btn sm" type="button" data-act="tab" data-tab="stats">گزارش کامل تکمیل پرونده‌ها</button><button class="btn ghost sm" type="button" data-act="tab" data-tab="family">مدیریت عکس‌ها و اسناد</button></div></section>`;
 }
 
 // ---------- مرکز تحقیقات تاریخی خانواده ----------
@@ -1260,7 +1260,7 @@ function viewRelations(){
 }
 function viewTimeline(){return `<div class="stack"><section class="card"><span class="home-kicker">تاریخ خانواده</span><h2>خط زمانی رویدادهای خانوادگی</h2><p class="muted small">تولد، درگذشت، ازدواج و خاطرات دارای تاریخ در یک نمای مستقل گردآوری شده‌اند.</p></section>${familyTimelineHTML()}</div>`;}
 function viewMap(){return `<div class="stack"><section class="card"><span class="home-kicker">جغرافیای خانواده</span><h2>نقشه‌های خانوادگی و تاریخی</h2><p class="muted small">نقشه پراکندگی محل‌های تولد و سکونت، و نقشه مسیر زندگی و لایه‌های تاریخی در این بخش قرار دارند.</p></section>${familyPlacesMapHTML()}${kinMapHTML()}</div>`;}
-function viewSmart(){return `<div class="stack"><section class="card"><span class="home-kicker">بررسی کیفیت داده‌ها</span><h2>مرکز هوشمندی خانواده</h2><p class="muted small">یافتن پرونده‌های ناقص، موارد ناسازگار و عکس‌های بدون پیوند؛ موارد پیشنهادی را پیش از اصلاح بررسی کنید.</p></section>${smartCenterHTML()}</div>`;}
+function viewSmart(){return `<div class="stack"><section class="card"><span class="home-kicker">بازبینی اطلاعات خانوادگی</span><h2>بازبینی اسناد و اطلاعات خانوادگی</h2><p class="muted small">مرور پرونده‌های ناقص، ناسازگاری‌های احتمالی و عکس‌های پیوندنخورده برای تکمیل و سامان‌دهی تاریخ خانواده.</p></section>${smartCenterHTML()}</div>`;}
 function viewResearch(){return `<div class="stack"><section class="card"><span class="home-kicker">پژوهش و مستندسازی</span><h2>تحقیقات تاریخی خانواده</h2><p class="muted small">پرسش‌ها، سرنخ‌ها و نتیجه بررسی‌های تاریخی در این صفحه نگهداری می‌شوند.</p></section>${researchHTML()}</div>`;}
 function viewAudit(){if(!S.isAdmin)return `<section class="card"><p>این بخش فقط برای مدیر در دسترس است.</p></section>`;return `<div class="stack"><section class="card"><span class="home-kicker">سوابق مدیریتی</span><h2>تاریخچه تغییرات پرونده‌ها</h2><p class="muted small">ثبت و مرور تغییرات انجام‌شده روی پرونده اشخاص.</p></section>${persistentAuditHTML()}</div>`;}
 function viewHome(){
@@ -3378,7 +3378,7 @@ async function onPhotoPicked(file){
 
 /* ================= render ================= */
 const LOGO='<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M20 36V20M20 20C20 13 10 14 10 6M20 20C20 13 30 14 30 6M20 27C20 23 14 23 14 18M20 27C20 23 26 23 26 18"/><circle cx="10" cy="6" r="2.2" fill="var(--accent)" stroke="none"/><circle cx="30" cy="6" r="2.2" fill="var(--accent)" stroke="none"/></svg>';
-const TABS=[['home','خانه'],['tree','شجره‌نامه'],['relations','کاوش روابط'],['timeline','خط زمانی'],['map','نقشه خانواده'],['smart','مرکز هوشمندی'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['family','ثبت در موزه'],['book','کتابچهٔ ریشه‌ها']];
+const TABS=[['home','خانه'],['tree','شجره‌نامه'],['relations','کاوش روابط'],['timeline','خط زمانی'],['map','نقشه خانواده'],['smart','بازبینی اسناد'],['stats','گزارش و آمار'],['add','ثبت اطلاعات'],['family','ثبت در موزه'],['book','کتابچهٔ ریشه‌ها']];
 
 function loginCandidates(first,last){
   const f=nn(first).replace(/\s/g,''), l=famKey(last); if(!f||!l) return [];
