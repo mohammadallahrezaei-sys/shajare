@@ -1557,12 +1557,13 @@ function viewResearch(){return `<div class="stack"><section class="card"><span c
 
 const VAULT_BUCKET='shj-admin-vault';
 const VAULT_CATS={documents:'اسناد عمومی',legal:'اسناد حقوقی',identity:'اسناد هویتی',financial:'اسناد مالی',historical:'اسناد تاریخی',other:'سایر'};
+const VAULT_MAGIC='SHJV1\n';
+const VAULT_KDF_ITERATIONS=310000;
 function vaultPath(p){return String(p||'').split('/').map(encodeURIComponent).join('/');}
-
 function vaultPersonId(r){return String(r.name||'').split('/')[0]||'';}
 function vaultFilePart(r){return String(r.name||'').split('/').slice(1).join('/');}
-function vaultName(r){const file=vaultFilePart(r)||String(r.name||'');return file.replace(/^\\d+_(?:documents|legal|identity|financial|historical|other)_/,'').split('__')[0].replace(/_/g,' ');}
-function vaultCategoryLabel(r){const m=vaultFilePart(r).match(/^\\d+_(documents|legal|identity|financial|historical|other)_/);return m?VAULT_CATS[m[1]]:'سایر';}
+function vaultName(r){const file=vaultFilePart(r)||String(r.name||'');return file.replace(/^\d+_(?:documents|legal|identity|financial|historical|other)_/,'').split('__')[0].replace(/_/g,' ');}
+function vaultCategoryLabel(r){const m=vaultFilePart(r).match(/^\d+_(documents|legal|identity|financial|historical|other)_/);return m?VAULT_CATS[m[1]]:'سایر';}
 function vaultPersonLabel(r){const id=vaultPersonId(r),p=EP()[id]||S.people[id];return p?full(p):(id==='legacy'?'بدون انتساب به فرد':'فرد حذف‌شده یا نامشخص');}
 function vaultRowHTML(r){
  const name=vaultName(r),size=r.metadata&&r.metadata.size?Math.round(r.metadata.size/1024)+' KB':'—';
@@ -1582,7 +1583,6 @@ async function loadPrivateArchive(){
  }catch(e){S.vaultError=(e&&e.message)||'دریافت فهرست اسناد انجام نشد.';throw e;}
  finally{S.vaultLoading=false;renderView();}
 }
-
 function viewPrivateArchive(){
  if(!S.isAdmin)return '<section class="card"><h2>بایگانی محرمانه</h2><p class="note bad">این بخش فقط برای مدیر در دسترس است.</p></section>';
  const people=Object.entries(S.people||{}).filter(([id,p])=>p&&!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
@@ -1590,7 +1590,32 @@ function viewPrivateArchive(){
  const filterOptions='<option value="">همه افراد</option>'+people.map(([id,p])=>'<option value="'+esc(id)+'" '+(S.vaultFilterPerson===id?'selected':'')+'>'+esc(full(p))+'</option>').join('');
  const rows=(S.vaultRows||[]).filter(r=>!S.vaultFilterPerson||vaultPersonId(r)===S.vaultFilterPerson);
  const list=rows.map(vaultRowHTML).join('');
- return '<div class="stack"><section class="card stack"><div class="row" style="justify-content:space-between"><div><span class="home-kicker">فضای خصوصی مدیر</span><h2>🗄️ بایگانی اسناد افراد</h2></div><span class="pill adm">فقط مدیر</span></div><p class="muted small">هر سند به پرونده یک فرد متصل می‌شود؛ نام سند را خودت تعیین می‌کنی، مثلاً شناسنامه، کارت ملی یا آگهی ترحیم.</p><div class="note warn small">مخزن خصوصی است و دسترسی در سطح سرور فقط به حساب مدیر داده شده است. سقف حجم هر فایل ۵۰ مگابایت است.</div><label class="f"><span>۱. انتخاب فرد</span><select id="vaultPerson">'+options+'</select></label><label class="f"><span>۲. عنوان سند</span><input id="vaultDocTitle" type="text" maxlength="100" placeholder="مثلاً شناسنامه، آگهی ترحیم، سند ازدواج…" value="'+esc(S.vaultDocTitle||'')+'"></label><label class="f"><span>۳. نوع سند</span><select id="vaultCategory">'+Object.entries(VAULT_CATS).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')+'</select></label><input id="vaultFiles" type="file" multiple hidden accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"><button type="button" class="btn big" data-act="vaultpick" '+(S.vaultBusy?'disabled':'')+'>📤 انتخاب و بارگذاری سند</button>'+(S.vaultBusy?'<p class="muted small">در حال بارگذاری…</p>':'')+'</section><section class="card stack"><div class="row" style="justify-content:space-between"><h3>اسناد بایگانی‌شده</h3><button type="button" class="btn ghost sm" data-act="vaultrefresh">↻ به‌روزرسانی</button></div><label class="f"><span>نمایش اسناد مربوط به</span><select id="vaultFilterPerson">'+filterOptions+'</select></label>'+(S.vaultError?'<div class="note bad">'+esc(S.vaultError)+'</div>':'')+(S.vaultLoading?'<p class="muted">در حال دریافت فهرست…</p>':(list||'<p class="muted small">برای این انتخاب سندی ثبت نشده است.</p>'))+'<p class="muted small">نمایش '+fa(rows.length)+' سند</p></section></div>';
+ return '<div class="stack"><section class="card stack"><div class="row" style="justify-content:space-between"><div><span class="home-kicker">فضای خصوصی مدیر</span><h2>🗄️ بایگانی اسناد افراد</h2></div><span class="pill adm">فقط مدیر</span></div><p class="muted small">هر سند به پرونده یک فرد متصل می‌شود؛ نام سند را خودت تعیین می‌کنی، مثلاً شناسنامه، کارت ملی یا آگهی ترحیم.</p><div class="note warn small">از این پس فایل‌های تازه پیش از ارسال با AES‑256‑GCM در مرورگر رمزنگاری می‌شوند. اسناد قدیمی خودکار رمزنگاری نشده‌اند. رمز عبور را خارج از این سامانه و در جای امن نگهداری کن؛ فراموشی آن به معنی از دست رفتن همیشگی امکان بازیابی فایل‌های جدید است. سقف حجم هر فایل ۵۰ مگابایت است.</div><label class="f"><span>۱. انتخاب فرد</span><select id="vaultPerson">'+options+'</select></label><label class="f"><span>۲. عنوان سند</span><input id="vaultDocTitle" type="text" maxlength="100" placeholder="مثلاً شناسنامه، آگهی ترحیم، سند ازدواج…" value="'+esc(S.vaultDocTitle||'')+'"></label><label class="f"><span>۳. نوع سند</span><select id="vaultCategory">'+Object.entries(VAULT_CATS).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')+'</select></label><input id="vaultFiles" type="file" multiple hidden accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"><button type="button" class="btn big" data-act="vaultpick" '+(S.vaultBusy?'disabled':'')+'>🔐 انتخاب و رمزنگاری و بارگذاری سند</button>'+(S.vaultBusy?'<p class="muted small">در حال رمزنگاری و بارگذاری…</p>':'')+'</section><section class="card stack"><div class="row" style="justify-content:space-between"><h3>اسناد بایگانی‌شده</h3><button type="button" class="btn ghost sm" data-act="vaultrefresh">↻ به‌روزرسانی</button></div><label class="f"><span>نمایش اسناد مربوط به</span><select id="vaultFilterPerson">'+filterOptions+'</select></label>'+(S.vaultError?'<div class="note bad">'+esc(S.vaultError)+'</div>':'')+(S.vaultLoading?'<p class="muted">در حال دریافت فهرست…</p>':(list||'<p class="muted small">برای این انتخاب سندی ثبت نشده است.</p>'))+'<p class="muted small">نمایش '+fa(rows.length)+' سند</p></section></div>';
+}
+function vaultB64(bytes){let s='';for(let i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);return btoa(s);}
+function vaultUnB64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
+async function vaultKey(pass,salt){
+ const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:VAULT_KDF_ITERATIONS,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function vaultEncryptFile(file,pass){
+ if(!crypto||!crypto.subtle)throw new Error('مرورگر از رمزنگاری امن پشتیبانی نمی‌کند؛ از مرورگر به‌روز و اتصال HTTPS استفاده کن.');
+ const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await vaultKey(pass,salt);
+ const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,await file.arrayBuffer());
+ const header=new TextEncoder().encode(JSON.stringify({v:1,name:file.name,mime:file.type||'application/octet-stream',salt:vaultB64(salt),iv:vaultB64(iv),iterations:VAULT_KDF_ITERATIONS}));
+ return new Blob([VAULT_MAGIC,header,new Uint8Array([10]),encrypted],{type:'application/octet-stream'});
+}
+async function vaultDecryptBlob(blob,pass){
+ const data=new Uint8Array(await blob.arrayBuffer()),magic=new TextEncoder().encode(VAULT_MAGIC);
+ if(data.length<magic.length||magic.some((v,i)=>data[i]!==v))return {blob,name:''};
+ let split=magic.length;while(split<data.length&&data[split]!==10)split++;
+ if(split>=data.length)throw new Error('ساختار فایل رمزنگاری‌شده معتبر نیست.');
+ const meta=JSON.parse(new TextDecoder().decode(data.slice(magic.length,split)));
+ if(meta.v!==1||!meta.salt||!meta.iv||!meta.iterations)throw new Error('نسخه یا اطلاعات رمزنگاری فایل معتبر نیست.');
+ const key=await vaultKey(pass,vaultUnB64(meta.salt));
+ let plain;try{plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:vaultUnB64(meta.iv)},key,data.slice(split+1));}
+ catch(_){throw new Error('رمز عبور نادرست است یا فایل آسیب دیده است.');}
+ return {blob:new Blob([plain],{type:meta.mime||'application/octet-stream'}),name:meta.name||'document'};
 }
 async function downloadVaultFile(path,name){
  if(!S.isAdmin)throw new Error('دسترسی غیرمجاز');
@@ -1598,13 +1623,25 @@ async function downloadVaultFile(path,name){
  const go=()=>fetch(url,{headers:{apikey:CFG.key,Authorization:'Bearer '+SB.tok}});
  let r=await go();if(r.status===401&&SB.refresh){await sbRefresh();r=await go();}
  if(!r.ok)throw new Error('دریافت سند انجام نشد ('+r.status+')');
- const blob=await r.blob(),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'document';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
+ let blob=await r.blob(),fileName=name||'document';
+ const pass=window.prompt('برای بازکردن سند، رمز عبور رمزنگاری را وارد کن. برای اسناد قدیمیِ رمزنگاری‌نشده، لغو را بزن و دریافت مستقیم را انتخاب کن.');
+ if(pass===null)return;
+ if(pass!==''){
+  const out=await vaultDecryptBlob(blob,pass);
+  if(out.name){blob=out.blob;fileName=out.name;}
+ }
+ const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=fileName;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
 }
-
 async function uploadVaultFiles(files,personId,title,category){
  if(!S.isAdmin)throw new Error('دسترسی غیرمجاز');
  if(!personId||!(EP()[personId]||S.people[personId]))throw new Error('ابتدا فرد موردنظر را انتخاب کن.');
  if(!String(title||'').trim())throw new Error('عنوان سند را وارد کن.');
+ const pass=window.prompt('یک رمز عبور قوی برای رمزنگاری اسناد وارد کن (حداقل ۱۲ نویسه). آن را در جای امن نگهداری کن؛ امکان بازیابی رمز فراموش‌شده وجود ندارد.');
+ if(pass===null)return;
+ if(pass.length<12)throw new Error('رمز عبور باید حداقل ۱۲ نویسه داشته باشد.');
+ const confirmPass=window.prompt('برای اطمینان، همان رمز عبور را دوباره وارد کن.');
+ if(confirmPass===null)return;
+ if(pass!==confirmPass)throw new Error('دو رمز عبور یکسان نیستند.');
  S.vaultBusy=true;S.vaultError='';renderView();let ok=0,failed=[];
  for(const file of files){
   try{
@@ -1612,10 +1649,11 @@ async function uploadVaultFiles(files,personId,title,category){
    const clean=String(file.name||'document').split('/').join('_').split('\\').join('_').replaceAll(' ','_').slice(0,100);
    const label=String(title).trim().replace(/[\\/:*?"<>|]/g,'_').replaceAll(' ','_').slice(0,80);
    const path='vault/'+personId+'/'+Date.now()+'_'+category+'_'+label+'__'+clean;
-   await sbFetch('/storage/v1/object/'+VAULT_BUCKET+'/'+vaultPath(path),{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file});ok++;
+   const encrypted=await vaultEncryptFile(file,pass);
+   await sbFetch('/storage/v1/object/'+VAULT_BUCKET+'/'+vaultPath(path),{method:'POST',headers:{'Content-Type':'application/octet-stream','x-upsert':'false'},body:encrypted});ok++;
   }catch(e){failed.push((file.name||'فایل')+': '+((e&&e.message)||'خطا'));}
  }
- S.vaultBusy=false;await loadPrivateArchive();toast(ok+' سند بارگذاری شد'+(failed.length?'؛ '+failed.length+' مورد ناموفق بود':''));if(failed.length){S.vaultError=failed.join(' | ');renderView();}
+ S.vaultBusy=false;await loadPrivateArchive();toast(ok+' سند رمزنگاری و بارگذاری شد'+(failed.length?'؛ '+failed.length+' مورد ناموفق بود':''));if(failed.length){S.vaultError=failed.join(' | ');renderView();}
 }
 document.addEventListener('change',async ev=>{
  if(ev.target&&ev.target.id==='vaultPerson'){S.vaultPerson=ev.target.value||'';}
