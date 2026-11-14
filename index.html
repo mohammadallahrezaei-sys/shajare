@@ -2547,15 +2547,19 @@ function familyDigitalBookPages(){
     if(mapHtml)pushPage('نقشهٔ روستاها',mapHtml);
     if(satelliteHtml)pushPage('نمای ماهواره‌ای',satelliteHtml);
     if(censusHtml)pushPage('آمار جمعیت',censusHtml);
-    const sectionItems=items.filter(p=>familyMeta(p).category!=='portrait');
+    const sectionItems=items.filter(p=>!familyAlbumPostIds.has(p.id));
     if(sectionItems.length){sectionItems.forEach((p,k)=>{const m=familyMeta(p),img=familyMediaUrl(p);const card=`<article class="digital-book-entry">${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:''}<div><span class="family-tag">${esc(FAMILY_CATEGORIES[m.category]||'یادگار خانوادگی')}</span><h3>${esc(p.title)}</h3><p>${esc(m.story||'')}</p><div class="muted small">${[m.village,m.photo_year,m.person_name,m.source].filter(Boolean).map(esc).join(' · ')}</div>${m.certainty?'<small>'+esc(FAMILY_CERTAINTY_LABELS[m.certainty]||'')+'</small>':''}</div></article>`;pushPage('یادگار '+(k+1),'<div class="digital-book-intro"><span class="book-section-label">یادگارهای ثبت‌شده</span><h2>'+esc(p.title)+'</h2><div class="digital-book-entries">'+card+'</div></div>');});}
     else if(!items.length&&!base.villages&&!mapHtml&&!satelliteHtml&&!censusHtml)pages[pages.length-1].html+='<div class="family-section-empty">این فصل آمادهٔ تکمیل است؛ با ثبت و تأیید عکس، سند یا روایت، مطالب به‌صورت خودکار به این فصل افزوده می‌شوند.</div>';
     if(noteHtml&&!base.villages){const last=pages[pages.length-1];if(last&&last.title.startsWith(sec.title+' · '))last.html+=noteHtml;else if(last&&last.title===sec.title+' · معرفی')last.html+=noteHtml;else if(last)last.html+=noteHtml;}
   }
-  const ancestorPortraits=approved.filter(p=>familyMeta(p).category==='portrait');
-  if(ancestorPortraits.length){
-    const portraitCards=ancestorPortraits.map(p=>{const m=familyMeta(p),img=familyMediaUrl(p);return `<article class="ancestor-portrait-card">${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:'<div class="ancestor-portrait-placeholder">🖼️</div>'}<div class="ancestor-portrait-caption"><b>${esc(p.title)}</b>${m.person_name?`<span>${esc(m.person_name)}</span>`:''}<small>${[m.village,m.photo_year].filter(Boolean).map(esc).join(' · ')}</small>${m.story?`<p>${esc(m.story)}</p>`:''}</div></article>`;}).join('');
-    pages.push({title:'چهره‌های نسل‌های گذشته',eyebrow:'آلبوم خانوادگی · بزرگان و نیاکان',html:`<div class="digital-book-intro"><span class="book-section-label">آلبوم چهره‌ها</span><h2>چهره‌های نسل‌های گذشته</h2><p>عکس‌های قدیمی پدربزرگ‌ها، مادربزرگ‌ها و دیگر بزرگان خانواده در این صفحه کنار هم نگهداری می‌شوند. با تأیید هر عکس تازه، آلبوم به‌صورت خودکار کامل‌تر می‌شود.</p><div class="ancestor-portrait-gallery">${portraitCards}</div></div>`});
+  const familyAlbumPosts=approved.filter(p=>{
+    const m=familyMeta(p),isImage=/\\.(jpe?g|png|webp|gif|avif)$/i.test(String(p.media_path||''));
+    return isImage&&(m.category==='portrait'||!!m.person_id||!!m.person_name||['ceremony','daily'].includes(m.category));
+  });
+  const familyAlbumPostIds=new Set(familyAlbumPosts.map(p=>p.id));
+  if(familyAlbumPosts.length){
+    const portraitCards=familyAlbumPosts.map(p=>{const m=familyMeta(p),img=familyMediaUrl(p);return `<article class="ancestor-portrait-card">${img?`<img src="${esc(img)}" alt="${esc(p.title)}" loading="lazy">`:'<div class="ancestor-portrait-placeholder">🖼️</div>'}<div class="ancestor-portrait-caption"><b>${esc(p.title)}</b>${m.person_name?`<span>${esc(m.person_name)}</span>`:''}<small>${[m.village,m.photo_year].filter(Boolean).map(esc).join(' · ')}</small>${m.story?`<p>${esc(m.story)}</p>`:''}</div></article>`;}).join('');
+    pages.push({title:'آلبوم چهره‌ها و خاطرات خانوادگی',eyebrow:'آلبوم تصویری · اشخاص و نسل‌ها',html:`<div class="digital-book-intro"><span class="book-section-label">آلبوم اشخاص</span><h2>آلبوم چهره‌ها و خاطرات خانوادگی</h2><p>عکس‌های اشخاص، پرتره‌ها، تصاویر خانوادگی و عکس‌های مراسم و زندگی روزمره که به افراد خانواده مربوط‌اند، در این آلبوم کنار هم نمایش داده می‌شوند.</p><div class="ancestor-portrait-gallery">${portraitCards}</div></div>`});
   }
   const T=buildTree(), roots=(T.roots||[]).map(r=>{const p=T.P[r.id];return p?`<li><b>${esc(full(p))}</b> · ${fa(r.size)} نفر در شاخه</li>`:''}).join('');
   pages.push({title:'شجره و ریشه‌های زنده',eyebrow:'پیوند نسل‌ها',html:`<div class="digital-book-intro"><h2>ریشه‌های ثبت‌شده در شجره‌نامه</h2><p>این صفحه مستقیماً از رابطه‌های والد و فرزند در شجره‌نامه ساخته می‌شود؛ با ثبت افراد و اصلاح نسبت‌ها، ریشه‌ها و تعداد اعضای شاخه‌ها خودکار تغییر می‌کنند.</p><p><b>${fa(Object.keys(T.P||{}).length)}</b> فرد · <b>${fa((T.roots||[]).length)}</b> ریشهٔ شناسایی‌شده</p><ul class="digital-book-roots">${roots||'<li>هنوز ریشه‌ای ثبت نشده است.</li>'}</ul>${treeRootsOverviewHTML(T)}</div>`});
