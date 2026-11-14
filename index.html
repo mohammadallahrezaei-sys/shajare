@@ -3463,10 +3463,10 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=34, CW=164, MARGIN=70, TOP=150, SIBLING_GAP=26, ROOT_GAP=48;
+  const P=T.P, R=34, CW=164, MARGIN=70, TOP=150, SIBLING_GAP=14, ROOT_GAP=30;
   // عمق بیشتر خانواده، فاصله عمودی نسل‌ها را به‌صورت پویا فشرده می‌کند.
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
-  const GAP=Math.max(105,Math.min(250,1700/(maxD+1)));
+  const GAP=Math.max(160,Math.min(250,1700/(maxD+1)));
   const BRANCH_COLORS=['#527f72','#a4774e','#6686a4','#a36578','#8b8957','#81709a','#b17b4c','#4c8990','#8b725f','#718b65'];
   let bi=0; const brs=[];
   const assign=(n,ci,off)=>{n.ci=ci;n.off=off||0;n.kids.forEach(k=>assign(k,ci,off));};
@@ -3475,39 +3475,49 @@ function drawArt(T,imgs){
   T.roots.forEach(trunkWalk);
   BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>assign(q,bi,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
   const bcol=n=>n.ci<0?'#806044':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
-  // فرزندانِ بدون همسر و بدون فرزند (پشت‌سر‌هم، به ترتیب سال تولد از راست به چپ) روی چند ردیف نزدیک به هم چیده می‌شوند تا درخت عریض نشود.
-  const LANE=66, TIER=165, STACK_MIN=4; let extraTiers=0;
-  const stackable=k=>!k.kids.length&&!k.spouses.length;
-  const unitsOf=n=>{
-    const out=[]; let run=[];
-    const flush=()=>{
-      if(run.length>=STACK_MIN){const rows=run.length<=6?2:run.length<=10?3:4;out.push({leaves:run,rows,aw:(run.length-1)*LANE+96});extraTiers=Math.max(extraTiers,rows-1);}
-      else run.forEach(k=>out.push({k,aw:k.aw}));
-      run=[];
-    };
-    n.kids.forEach(k=>{ if(stackable(k)) run.push(k); else { flush(); out.push({k,aw:k.aw}); } });
-    flush(); return out;
+  // چیدمان بادبزنی (تاج درخت): ریشه پایین‌وسط است و هر نسل روی یک کمانِ بالاترِ هم‌مرکز قرار می‌گیرد؛ پهنا به جای یک ردیف افقیِ بسیار بلند، میان کمان‌ها و ارتفاع پخش می‌شود.
+  const NB_T=-46, NB_B=112, PADX=8, RING=172, GAPX=10;
+  const SPAN=Math.min(3.0,Math.max(1.5,T.nodes.length/32));
+  const markLeaves=n=>{
+    n.cw=(1+n.spouses.length)*CW; n.zz=0;
+    let run=[]; const flush=()=>{ if(run.length>=3) run.forEach((k,i)=>{k.zz=i%2?1:0;k.inRun=true;}); run=[]; };
+    n.kids.forEach(k=>{ if(!k.kids.length&&!k.spouses.length) run.push(k); else flush(); });
+    flush(); n.kids.forEach(markLeaves);
   };
-  const lay=n=>{n.cw=(1+n.spouses.length)*CW;n.kids.forEach(lay);n.units=unitsOf(n);n.kw=n.units.reduce((a,u)=>a+u.aw,0)+SIBLING_GAP*Math.max(0,n.units.length-1);n.aw=Math.max(n.kw,n.cw+40);};
-  T.roots.forEach(lay);
-  // Siblings sit at subtly different heights, like a natural branching tree, not on rigid generation-wide rows.
-  const rowOffsetFor=i=>[0,48,-48,96,-96][i%5]; // الگوی تکرارشونده؛ برای خانواده‌های پرفرزند ارتفاع بی‌نهایت زیاد نمی‌شود
-  const stagger=n=>{n.kids.forEach((k,i)=>{k.rowOffset=n.kids.length>1?rowOffsetFor(i):0;stagger(k);});};
-  T.roots.forEach(n=>{n.rowOffset=0;stagger(n);});
-  // Each sibling group receives real horizontal breathing room; the parent stays centered over that group.
-  const put=(n,left)=>{n.cx=left+n.aw/2;let x=left+(n.aw-n.kw)/2+n.kw;
-    n.units.forEach(u=>{
-      if(u.k) put(u.k,x-u.k.aw);
-      else u.leaves.forEach((k,i)=>{k.cx=x-48-i*LANE;k.rowOffset=-(i%u.rows)*TIER;});
-      x-=u.aw+SIBLING_GAP;
-    });};
-  const content=T.roots.reduce((a,r)=>a+r.aw,0)+ROOT_GAP*Math.max(0,T.roots.length-1);
+  T.roots.forEach(markLeaves);
+  const wOf=n=>{ const own=n.cw*0.8+GAPX; n.wt=Math.max(own, n.kids.reduce((a,k)=>a+wOf(k),0)); if(!n.kids.length) n.wt=n.cw*0.62+GAPX; return n.wt; };
+  const rootsW=T.roots.reduce((a,r)=>a+wOf(r),0)+20*Math.max(0,T.roots.length-1);
+  const alloc=(n,u0)=>{ // مرکز بازه را برای n نگه می‌دارد و فرزندان را از راست به چپ پشت‌سرهم می‌چیند
+    const kidsW=n.kids.reduce((a,k)=>a+k.wt,0); let u=u0+(n.wt-kidsW)/2;
+    n.kids.forEach(k=>{ k.par=n; alloc(k,u); u+=k.wt; });
+    n.u=u0+n.wt/2;
+  };
+  {let u=0; T.roots.forEach(r=>{alloc(r,u);u+=r.wt+20;});}
+  const thOf=n=>SPAN*(0.5-n.u/rootsW);
+  const levels=[]; T.nodes.forEach(n=>{(levels[n.depth]=levels[n.depth]||[]).push(n);});
+  const placed=[];
+  const hit=(a,b)=>Math.abs(a.x-b.x)<(a.cw+b.cw)/2+PADX&&Math.abs(a.y-b.y)<(NB_B-NB_T)+4;
+  const setPos=(n,r)=>{ n.r=r; n.th=thOf(n); n.x=r*Math.sin(n.th); n.y=-r*Math.cos(n.th); };
+  const ringR={}; let base=T.roots.length>1?260:0;
+  for(let d=1;d<levels.length;d++){
+    const L=levels[d]; if(!L) continue;
+    if(d>1) base+=RING;
+    ringR[d]=base;
+    L.slice().sort((a,b)=>a.u-b.u).forEach(n=>{
+      let r=Math.max(base,n.par?n.par.r+RING:0);
+      for(let it=0;it<600;it++){ setPos(n,r); if(!placed.some(m=>hit(n,m)))break; r+=20; }
+      placed.push(n);
+    });
+  }
+  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  T.nodes.forEach(n=>{minX=Math.min(minX,n.x-n.cw/2);maxX=Math.max(maxX,n.x+n.cw/2);minY=Math.min(minY,n.y+NB_T);maxY=Math.max(maxY,n.y+NB_B);});
+  const content=maxX-minX;
   const W=Math.max(1500,content+MARGIN*2);
-  let x=W-(W-content)/2;T.roots.forEach(r=>{put(r,x-r.aw);x-=r.aw+ROOT_GAP;});
-  const genY=d=>TOP+extraTiers*TIER+(maxD-d)*GAP+R+28;
-  const cyOf=n=>genY(n.depth)+(n.rowOffset||0);
-  const lowest=Math.max.apply(null,T.nodes.map(n=>cyOf(n)));
-  const groundY=lowest+R+95, H=groundY+100;
+  const SX=(W-content)/2-minX, SY=TOP+60-minY;
+  T.nodes.forEach(n=>{n.cx=n.x+SX;n.cyv=n.y+SY;});
+  const ROOTX=T.roots.length===1?T.roots[0].cx:W/2, ROOTY=SY;
+  const cyOf=n=>n.cyv;
+  const groundY=maxY+SY+40, H=groundY+100;
   // Keep the complete bitmap below browser canvas dimension limits, even for very wide generations.
   const sc=Math.min(1.5,Math.sqrt(40e6/(W*H)),12000/Math.max(W,H));
   const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(W*sc));cv.height=Math.max(1,Math.round(H*sc));
@@ -3540,32 +3550,18 @@ function drawArt(T,imgs){
   const branch=n=>{
     const px=n.cx,py=cyOf(n),kids=n.kids;
     if(!kids.length)return;
-    if(kids.length===1){
-      const k=kids[0],kx=k.cx,ky=cyOf(k),dx=kx-px,dy=ky-py;
-      const x1=px,y1=py+R*.88,x4=kx,y4=ky-R*.88;
-      const bend=dx===0?0:Math.sign(dx)*Math.min(42,Math.abs(dx)*.12);
-      const x2=px+dx*.20+bend,y2=py+dy*.34,x3=kx-dx*.16+bend*.45,y3=py+dy*.72;
-      const width=Math.max(4.5,Math.min(15,4+Math.sqrt(k.size||1)*1.9));
+    const dpx=Math.sin(n.th),dpy=-Math.cos(n.th);
+    kids.forEach((k,ki)=>{
+      const kx=k.cx,ky=cyOf(k);
+      // شاخه از بالای والد (پشت مدالیون) رشد می‌کند و با مماس شعاعی به فرزند می‌رسد؛ مثل دوشاخه‌شدن واقعی، نه خط راهنما.
+      const x1=px,y1=py-R*.3,x4=kx,y4=ky+R*.5;
+      const len=Math.hypot(x4-x1,y4-y1), h=Math.max(30,len*.42);
+      const dkx=Math.sin(k.th),dky=-Math.cos(k.th);
+      const x2=x1+dpx*h,y2=y1+dpy*h,x3=x4-dkx*h*.6,y3=y4-dky*h*.6+ (y4-y1<0?0:0);
+      const width=Math.max(4,Math.min(16,3.6+Math.sqrt(k.size||1)*1.9));
       const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);};
       strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
-    }else{
-      const childTop=Math.min(...kids.map(k=>cyOf(k)-R*.9));
-      const busY=py+Math.max(58,Math.min(112,(childTop-(py+R))*.42));
-      const xs=kids.map(k=>k.cx),lo=Math.min(...xs),hi=Math.max(...xs);
-      const trunkWidth=Math.max(6,Math.min(16,5+Math.sqrt(kids.length)*2.1));
-      const trunk=()=>{c.moveTo(px,py+R*.88);c.bezierCurveTo(px,py+R+28,px,busY-22,px,busY);};
-      strokeWood(trunk,bcol(n),trunkWidth);
-      const bar=()=>{c.moveTo(lo,busY);c.bezierCurveTo(lo+(hi-lo)*.28,busY+3,lo+(hi-lo)*.72,busY+3,hi,busY);};
-      strokeWood(bar,'#9b7953',Math.max(4,trunkWidth*.68));
-      kids.forEach(k=>{
-        const kx=k.cx,ky=cyOf(k),dx=kx-px,x1=kx,y1=busY,x4=kx,y4=ky-R*.88;
-        const sway=Math.sign(dx||((k.id.length%2)?1:-1))*Math.min(28,Math.abs(dx)*.10);
-        const x2=kx+sway,y2=busY+(y4-busY)*.34,x3=kx-sway*.35,y3=busY+(y4-busY)*.72;
-        const width=Math.max(4.2,Math.min(13,3.8+Math.sqrt(k.size||1)*1.75));
-        const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);};
-        strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
-      });
-    }
+    });
     kids.forEach(branch);
   };
   T.roots.forEach(branch);
@@ -3679,14 +3675,6 @@ function drawArt(T,imgs){
     n.kids.forEach(drawNodes);
   };
   T.roots.forEach(drawNodes);
-  // Quiet generation labels on the far edge make the hierarchy easier to scan.
-  for(let d=1;d<=maxD;d++){
-    const sample=T.nodes.find(n=>n.depth===d);if(!sample)continue;
-    const yy=cyOf(sample);
-    c.fillStyle='rgba(100,87,65,.68)';c.font='500 14px Vazirmatn, Tahoma, sans-serif';c.textAlign='right';
-    c.fillText('نسل '+fa(maxD-d+1),W-42,yy);
-    c.textAlign='center';
-  }
   // Branch key, kept small and low-contrast.
   if(brs.length){
     c.font='500 15px Vazirmatn, Tahoma, sans-serif';let lx=W-150,ly=H-40;
