@@ -3463,7 +3463,7 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=34, CW=172, MARGIN=82, TOP=158, SIBLING_GAP=36, ROOT_GAP=60;
+  const P=T.P, R=34, CW=172, MARGIN=110, TOP=158, SIBLING_GAP=92, ROOT_GAP=120;
   // عمق بیشتر خانواده، فاصله عمودی نسل‌ها را به‌صورت پویا فشرده می‌کند.
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
   const GAP=Math.max(160,Math.min(250,1700/(maxD+1)));
@@ -3487,7 +3487,7 @@ function drawArt(T,imgs){
   BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>setOff(q,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
   const bcol=n=>n.ci<0?'#76543a':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
   // چیدمان بادبزنی (تاج درخت): ریشه پایین‌وسط است و هر نسل روی یک کمانِ بالاترِ هم‌مرکز قرار می‌گیرد؛ پهنا به جای یک ردیف افقیِ بسیار بلند، میان کمان‌ها و ارتفاع پخش می‌شود.
-  const NB_T=-46, NB_B=112, PADX=19, RING=220, GAPX=24;
+  const NB_T=-46, NB_B=112, PADX=38, RING=300, GAPX=44;
   const SPAN=Math.min(3.0,Math.max(1.5,T.nodes.length/32));
   const markLeaves=n=>{
     n.cw=(1+n.spouses.length)*CW; n.zz=0;
@@ -3516,7 +3516,7 @@ function drawArt(T,imgs){
     ringR[d]=base;
     L.slice().sort((a,b)=>a.u-b.u).forEach(n=>{
       let r=Math.max(base,n.par?n.par.r+RING:0);
-      for(let it=0;it<600;it++){ setPos(n,r); if(!placed.some(m=>hit(n,m)))break; r+=20; }
+      for(let it=0;it<600;it++){ setPos(n,r); if(!placed.some(m=>hit(n,m)))break; r+=28; }
       placed.push(n);
     });
   }
