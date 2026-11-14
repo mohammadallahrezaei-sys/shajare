@@ -3463,9 +3463,11 @@ function locatePerson(id){
   toast('همین‌جاست: '+full(S.T&&S.T.P?S.T.P[id]:EP()[id])); return true;
 }
 function drawArt(T,imgs){
-  const P=T.P, R=34, CW=164, GAP=330, MARGIN=110, TOP=190, SIBLING_GAP=52, ROOT_GAP=84;
-  const BRANCH_COLORS=['#527f72','#a4774e','#6686a4','#a36578','#8b8957','#81709a','#b17b4c','#4c8990','#8b725f','#718b65'];
+  const P=T.P, R=34, CW=164, MARGIN=70, TOP=150, SIBLING_GAP=38, ROOT_GAP=58;
+  // عمق بیشتر خانواده، فاصله عمودی نسل‌ها را به‌صورت پویا فشرده می‌کند.
   let maxD=1; T.nodes.forEach(n=>{if(n.depth>maxD)maxD=n.depth;});
+  const GAP=Math.max(105,Math.min(250,1700/(maxD+1)));
+  const BRANCH_COLORS=['#527f72','#a4774e','#6686a4','#a36578','#8b8957','#81709a','#b17b4c','#4c8990','#8b725f','#718b65'];
   let bi=0; const brs=[];
   const assign=(n,ci,off)=>{n.ci=ci;n.off=off||0;n.kids.forEach(k=>assign(k,ci,off));};
   const BH=branchHeads(T.roots), headSet=new Set(BH.list);
@@ -3692,9 +3694,17 @@ async function renderArt(){
   const box=$('#artBox'); if(!box) return; const tok=++S.artTok;
   let cv; try{ cv=await makeArt(); }catch(e){ box.innerHTML='<div class="wait">کشیدن درخت انجام نشد. نمای نمودار یا فهرستی را امتحان کنید.</div>'; return; }
   if(tok!==S.artTok||!$('#artBox')) return;
-  S.artCanvas=cv; const natural=cv.width; const base=Math.max(300,box.clientWidth||natural);
-  if(!S.artZoomUser){ const tile=138*base/cv.__W; S.artZoom=Math.max(2,Math.round(112/tile*4)/4); }   // موبایل: اولویت با خوانایی چهره‌ها؛ حرکت افقی برای دیدن شاخه‌ها
-  cv.style.width=Math.round(base*S.artZoom)+'px'; cv.style.height='auto';
+  S.artCanvas=cv;
+  const base=Math.max(300,box.clientWidth||cv.width);
+  const availableH=Math.max(260,box.clientHeight||Math.round(window.innerHeight*.72));
+  // Fit the complete tree inside both viewport dimensions; never force a minimum zoom.
+  if(!S.artZoomUser){
+    const fit=Math.min(1,(base-28)/cv.width,(availableH-28)/cv.height);
+    S.artZoom=Math.max(.12,fit);
+  }
+  cv.style.width=Math.max(1,Math.round(cv.width*S.artZoom))+'px';
+  cv.style.height='auto';
+  cv.style.marginInline='auto';
   box.innerHTML=''; box.appendChild(cv);
   const hitAt=e=>{ const r=cv.getBoundingClientRect(); if(!r.width) return null; const x=(e.clientX-r.left)/r.width*cv.__W, y=(e.clientY-r.top)/r.height*cv.__H; const hs=cv.__hits||[]; for(let i=hs.length-1;i>=0;i--){ const h=hs[i]; if(x>=h.x1&&x<=h.x2&&y>=h.y1&&y<=h.y2) return h; } return null; };
   cv.addEventListener('click',e=>{ if(cv.__noclick){ cv.__noclick=false; return; } const h=hitAt(e); if(h) openModal(h.id); });
@@ -4351,9 +4361,9 @@ document.addEventListener('click',async ev=>{
   else if(a==='treeadd'){const id=el.dataset.id,role=el.dataset.role,p=EP()[id];if(!p)return;const labels={father:'پدر',mother:'مادر',child:'فرزند',spouse:'همسر'};if(S.isAdmin){S.treeAddDraft={id,role,label:labels[role]||'عضو جدید'};renderView();}else{S.editSub=null;S.editId=null;S.missingOnly=false;S.addTab='person';S.prefill=null;resetPhoto('');if(role==='child')S.prefill={first:'',last:p.last||'الله‌رضایی',fatherId:p.gender==='m'?id:'',motherId:p.gender==='f'?id:''};else if(role==='spouse')S.prefill={first:'',last:p.last||'الله‌رضایی',gender:p.gender==='m'?'f':'m',spouses:[{id,ref:{},st:'current'}]};else{S.editId=id;}gotoTab('add');if(role==='father'||role==='mother')setTimeout(()=>setStep(2),80);}}
   else if(a==='zoom'){ setZoom(S.zoom+(+el.dataset.d)); }
   else if(a==='zoomreset'){ setZoom(1); }
-  else if(a==='artfit'){ S.artZoomUser=true; S.artZoom=1; const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.max(300,box.clientWidth)+'px'; } }
+  else if(a==='artfit'){ S.artZoomUser=false; renderArt(); }
   else if(a==='artauto'){ S.artZoomUser=false; renderArt(); }
-  else if(a==='artzoom'){ S.artZoomUser=true; S.artZoom=Math.max(.25,S.artZoom+(+el.dataset.d)); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(Math.max(300,box.clientWidth)*S.artZoom)+'px'; } }
+  else if(a==='artzoom'){ S.artZoomUser=true; S.artZoom=Math.max(.12,Math.min(3,S.artZoom+(+el.dataset.d))); const cv=S.artCanvas, box=$('#artBox'); if(cv&&box&&cv.parentElement===box){ cv.style.width=Math.round(cv.width*S.artZoom)+'px'; } }
   else if(a==='savepng') saveArt('png');
   else if(a==='savepdf') saveArt('pdf');
   else if(a==='addnew'){ S.editSub=null; S.editId=null; S.prefill=null; S.missingOnly=false; resetPhoto(''); S.addTab='person'; gotoTab('add'); }
