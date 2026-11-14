@@ -809,6 +809,26 @@ label.f>span,div.f>span{font-weight:600}
  .tl-parents .timeline-person img,.tl-parents .timeline-person .timeline-avatar{width:50px;height:50px}
  .tl-child .timeline-person--child img,.tl-child .timeline-person--child .timeline-avatar{width:78px;height:78px}
 }
+
+/* تأکید بصری روی نوزاد/فرد متولدشده و کوچک‌سازی والدین */
+.tl-birth-family{gap:2px;padding:8px 10px 12px}
+.tl-parents{gap:18px;opacity:.82}
+.tl-parents .timeline-parent{flex:0 1 76px;max-width:76px}
+.tl-parents .timeline-person img,.tl-parents .timeline-person .timeline-avatar{width:42px;height:42px;border-width:1.5px}
+.tl-parents .timeline-person small{font-size:9px;font-weight:650;color:var(--muted);line-height:1.4}
+.tl-family-link{height:13px;opacity:.7}
+.tl-child .timeline-person--child{flex:0 1 150px;max-width:150px}
+.tl-child .timeline-person--child img,.tl-child .timeline-person--child .timeline-avatar{width:116px;height:116px;border-radius:25px;border:4px solid var(--accent);box-shadow:0 7px 20px color-mix(in srgb,var(--accent) 30%,transparent)}
+.tl-child .timeline-person--child small{font-size:14px;font-weight:900;color:var(--ink);margin-top:2px}
+.tl-row--birth .tl-txt>b{font-size:1.08em;font-weight:850}
+@media(max-width:560px){
+ .tl-parents{gap:10px}
+ .tl-parents .timeline-parent{flex-basis:66px;max-width:66px}
+ .tl-parents .timeline-person img,.tl-parents .timeline-person .timeline-avatar{width:36px;height:36px}
+ .tl-parents .timeline-person small{font-size:8px}
+ .tl-child .timeline-person--child img,.tl-child .timeline-person--child .timeline-avatar{width:98px;height:98px}
+ .tl-child .timeline-person--child small{font-size:13px}
+}
 </style><style id="timeline-archive-photos">
 .timeline-legend--photo{color:var(--accent)}
 .tl-row--photo{background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
