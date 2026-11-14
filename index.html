@@ -621,6 +621,16 @@ label.f>span,div.f>span{font-weight:600}
 .fc-guide strong{display:block;font-size:.9rem;margin-bottom:2px}
 .fc-guide p{margin:0}
 @media(max-width:600px){.fc-guide{font-size:.82rem;padding:9px 10px}}
+
+/* Clear, guided contribution form */
+#familyContributionForm{gap:18px;padding:clamp(16px,3vw,28px);border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--elev-1,0 8px 24px #173b3010)}
+#familyContributionForm>div:first-child{padding-bottom:13px;border-bottom:1px solid var(--line)}
+.fc-form-section{display:grid;gap:14px;padding:16px;border:1px solid var(--line);border-radius:15px;background:var(--surface2)}
+.fc-step-head{display:flex;align-items:center;gap:11px}.fc-step-head>span{display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:11px;background:var(--primary);color:#fff;font-weight:900}.fc-step-head b{display:block;font-size:1rem}.fc-step-head small{display:block;color:var(--muted);font-size:.78rem;margin-top:2px}
+.fc-form-section .grid2{gap:14px}.fc-form-section .f{min-width:0}.fc-form-section input,.fc-form-section select,.fc-form-section textarea{width:100%;min-height:46px;border-radius:10px}.fc-form-section textarea{min-height:125px;line-height:2}
+.fc-form-section .fc-guide{min-height:0;background:var(--surface);border-radius:10px}.fc-extra-field{margin-top:10px;padding:12px;border:1px dashed var(--primary);border-radius:10px;background:var(--surface)}.fc-extra-field[hidden]{display:none}
+#familyContributionForm>button{min-height:52px;border-radius:13px;font-size:1rem}
+@media(max-width:650px){.fc-form-section{padding:12px}.fc-form-section .grid2{grid-template-columns:1fr}#familyContributionForm{padding:13px}}
 </style>
 </head>
 <body>
@@ -2321,16 +2331,30 @@ function viewFamily(){
     <form id="familyContributionForm" class="card stack">
       <div><div class="book-section-label">فرم سادهٔ ثبت</div><h3 style="margin:4px 0">چه چیزی می‌خواهید به خانواده یادآوری کنید؟</h3><p class="muted small" style="margin:0">فیلدهای ستاره‌دار ضروری‌اند؛ اگر سال یا نام افراد را نمی‌دانید، خالی بگذارید.</p></div>
       <label class="f"><span>۱. یک عنوان کوتاه بنویسید *</span><input id="fc_title" required maxlength="160" placeholder="مثلاً: عکس عروسی پدربزرگ در بودلا"></label>
-      <div class="grid2">
-        <div class="f fc-select-group"><label for="fc_section">۲. این یادگار به کدام موضوع مربوط است؟</label><select id="fc_section">${FAMILY_SECTIONS.map(x=>`<option value="${x.id}">${esc(x.title)}</option>`).join('')}</select><div id="fc_section_guide" class="fc-guide" aria-live="polite"></div></div>
-        <div class="f fc-select-group"><label for="fc_category">۳. چه چیزی ثبت می‌کنید؟</label><select id="fc_category">${categoryOptions}</select><div id="fc_category_guide" class="fc-guide" aria-live="polite"></div></div>
-        <label class="f"><span>مربوط به کدام روستا یا محل است؟</span><select id="fc_village"><option value="">اگر نمی‌دانید، انتخاب نکنید</option>${villageOptions}</select></label>
-        <label class="f"><span>حدوداً مربوط به چه سالی است؟</span><input id="fc_year" inputmode="numeric" placeholder="مثلاً ۱۳۴۵ یا نامشخص"></label>
-      </div>
-      <label class="f"><span>نام افراد داخل عکس یا مرتبط با خاطره</span><input id="fc_people" placeholder="مثلاً فرج‌الله، گلناز؛ در صورت اطلاع"></label>
-      <label class="f"><span>عکس یا سند را اضافه کنید</span><input id="fc_file" type="file" accept="image/*,.pdf"><small class="muted">اختیاری · عکس قدیمی، شناسنامه، نامه، قباله یا فایل PDF · حداکثر ۲۰ مگابایت</small></label>
-      <label class="f"><span>۴. توضیح کوتاه؛ چه چیزی درباره‌اش می‌دانید؟ *</span><textarea id="fc_story" required rows="4" placeholder="مثلاً این عکس در خانهٔ قدیمی بودلا گرفته شده. افراد داخل عکس ... هستند. این خاطره را از ... شنیده‌ام."></textarea><small class="muted">حتی دو سه جمله کافی است. اگر چیزی را مطمئن نیستید، بنویسید «حدسی است».</small></label>
-      <label class="f"><span>نام راوی یا منبع (اختیاری)</span><input id="fc_source" placeholder="مثلاً: نقل از مادربزرگ، پشت‌نویسی عکس، دفتر خانوادگی"></label>
+      <section class="fc-form-section">
+        <div class="fc-step-head"><span>۱</span><div><b>جایگاه یادگار در کتابچه</b><small>این اطلاعات مشخص می‌کند مطلب در کدام فصل قرار بگیرد.</small></div></div>
+        <div class="grid2">
+          <div class="f fc-select-group"><label for="fc_section">فصل مرتبط با یادگار</label><select id="fc_section">${FAMILY_SECTIONS.map(x=>`<option value="${x.id}">${x.icon} ${esc(x.title)}</option>`).join('')}</select><div id="fc_section_guide" class="fc-guide" aria-live="polite"></div></div>
+          <div class="f fc-select-group"><label for="fc_category">نوع چیزی که ثبت می‌کنید</label><select id="fc_category">${categoryOptions}</select><div id="fc_category_guide" class="fc-guide" aria-live="polite"></div></div>
+        </div>
+      </section>
+      <section class="fc-form-section">
+        <div class="fc-step-head"><span>۲</span><div><b>مکان و زمان</b><small>اگر محل یا سال دقیق را نمی‌دانید، می‌توانید تقریبی بنویسید.</small></div></div>
+        <div class="grid2">
+          <div class="f"><label for="fc_village">روستا یا محل مربوط</label><select id="fc_village"><option value="">انتخاب محل (اختیاری)</option>${villageOptions}</select><div id="fc_village_other_wrap" class="fc-extra-field" hidden><label for="fc_village_other">نام روستا یا محل را بنویسید</label><input id="fc_village_other" maxlength="100" placeholder="نام آبادی، شهر یا محل دیگر"></div></div>
+          <label class="f"><span>سال یا دورهٔ تقریبی</span><input id="fc_year" inputmode="numeric" placeholder="مثلاً ۱۳۴۵ یا حدود دههٔ ۱۳۲۰"></label>
+        </div>
+      </section>
+      <section class="fc-form-section">
+        <div class="fc-step-head"><span>۳</span><div><b>افراد و مستندات</b><small>هر اطلاعاتی که به شناسایی بهتر یادگار کمک می‌کند.</small></div></div>
+        <label class="f"><span>نام افراد مرتبط (اختیاری)</span><input id="fc_people" placeholder="مثلاً فرج‌الله، گلناز یا نام افراد داخل عکس"></label>
+        <label class="f"><span>عکس، سند یا فایل پیوست</span><input id="fc_file" type="file" accept="image/*,.pdf"><small class="muted">اختیاری · عکس قدیمی، شناسنامه، نامه، قباله یا PDF · حداکثر ۲۰ مگابایت</small></label>
+      </section>
+      <section class="fc-form-section">
+        <div class="fc-step-head"><span>۴</span><div><b>روایت و توضیحات</b><small>دو سه جملهٔ ساده هم برای ثبت در تاریخ خانواده ارزشمند است.</small></div></div>
+        <label class="f"><span>شرح یادگار *</span><textarea id="fc_story" required rows="5" placeholder="این عکس یا سند کجا و چه زمانی تهیه شده؟ چه کسانی در آن هستند؟ این ماجرا را از چه کسی شنیده‌اید؟ هرچه می‌دانید بنویسید."></textarea><small class="muted">اگر بخشی از روایت قطعی نیست، آن را با عبارت «احتمالاً» یا «نقل شده است» مشخص کنید.</small></label>
+        <label class="f"><span>راوی یا منبع اطلاعات (اختیاری)</span><input id="fc_source" placeholder="مثلاً نقل از مادربزرگ، پشت‌نویسی عکس، دفتر خانوادگی"></label>
+      </section>
       <div class="note" style="margin:0"><b>انتشار در موزهٔ خانوادگی</b><p style="margin:5px 0 0">همهٔ یادگارهای تأییدشده در کتابچه و موزه برای همهٔ بازدیدکنندگان قابل مشاهده خواهند بود؛ دیگر نیازی به انتخاب سطح دسترسی نیست.</p></div>
       <button class="btn big" type="submit">ثبت یادگار و ارسال برای بررسی</button>
       <p class="muted small" style="margin:0">پس از ثبت، پیام نتیجه نمایش داده می‌شود و وضعیت یادگار در همین صفحه قابل پیگیری است. انتشار در کتابچه فقط بعد از تأیید مدیر انجام می‌شود.</p>
@@ -2345,7 +2369,7 @@ function viewFamily(){
 async function submitFamilyContribution(){
   const title=($('#fc_title')?.value||'').trim(),story=($('#fc_story')?.value||'').trim();
   if(!title||!story){toast('عنوان و شرح یادگار را وارد کنید.');return;}
-  const meta={story,section:$('#fc_section').value,category:$('#fc_category').value,village:$('#fc_village').value,photo_year:($('#fc_year').value||'').trim(),person_name:($('#fc_people').value||'').trim(),source:($('#fc_source').value||'').trim(),certainty:'unverified',contributor:fullName()};
+  const meta={story,section:$('#fc_section').value,category:$('#fc_category').value,village:($('#fc_village').value==='سایر'?($('#fc_village_other').value||'').trim():$('#fc_village').value),photo_year:($('#fc_year').value||'').trim(),person_name:($('#fc_people').value||'').trim(),source:($('#fc_source').value||'').trim(),certainty:'unverified',contributor:fullName()};
   const id=(crypto.randomUUID?crypto.randomUUID():('f'+Date.now()+Math.random().toString(16).slice(2)));
   let media_path=null; const file=$('#fc_file')?.files?.[0];
   try{
@@ -3247,6 +3271,7 @@ document.addEventListener('submit',ev=>{
 });
 document.addEventListener('change',ev=>{
   if(ev.target.id==='fc_section'||ev.target.id==='fc_category') updateFamilyContributionGuide();
+  if(ev.target.id==='fc_village'){const wrap=$('#fc_village_other_wrap');if(wrap){wrap.hidden=ev.target.value!=='سایر';if(ev.target.value==='سایر')$('#fc_village_other')?.focus();else if($('#fc_village_other'))$('#fc_village_other').value='';}}
   if(ev.target.id==='digitalBookJump'){familyDigitalState.page=Math.max(0,Number(ev.target.value)||0);renderView();return;}
   if(ev.target.id==='familyBookFile'){const file=ev.target.files&&ev.target.files[0];if(file)uploadFamilyBook(file).catch(e=>{console.error(e);toast('بارگذاری انجام نشد: '+(e.message||'دسترسی یا فضای ذخیره‌سازی را بررسی کنید.'));});ev.target.value='';return;}
   if(ev.target.id==='fp_section'){familyArchiveUI.section=ev.target.value;const sec=FAMILY_SECTIONS.find(x=>x.id===ev.target.value);const hint=$('#fp_section_hint');if(hint&&sec)hint.textContent=sec.prompt;const lab=$('#familyComposeSection');if(lab&&sec)lab.textContent=sec.title;return;} if(ev.target.id==='treePerson'){S.treePerson=ev.target.value;renderView();return;} if(ev.target.id==='familyCategory'){familyArchiveUI.category=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='familyVillage'){familyArchiveUI.village=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
