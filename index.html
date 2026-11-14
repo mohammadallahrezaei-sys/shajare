@@ -1425,7 +1425,7 @@ async function initKinMap(){
   if(points.length>1){kinMapRoute=L.polyline(points,{color:'#7c3aed',weight:4,dashArray:'7 7'}).addTo(map);map.fitBounds(kinMapRoute.getBounds(),{padding:[25,25]});}
   else if(points.length===1)map.setView(points[0],11);
   else status('برای این فرد هنوز مکان قابل مکان‌یابی ثبت نشده است.');
-  if(points.length)status('مسیر از '+fa(points.length)+' مکان ثبت‌شده برای '+full(p)+' رسم شد. ترتیب مسیر بر اساس تولد، سکونت و سایر محل‌های ثبت‌شده است و لزوماً ترتیب تاریخی دقیق نیست.');
+  if(points.length)status('مسیر از '+fa(points.length)+' مکان ثبت‌شده برای '+full(p)+' رسم شد. رویدادهای دارای سال بر اساس تاریخ مرتب شده‌اند؛ محل‌های سکونت و سایر مکان‌های بدون تاریخ در انتها قرار می‌گیرند.');
   applyKinMapOverlay();
   setTimeout(()=>map.invalidateSize(),150);
  }catch(e){status('بارگذاری نقشه ناموفق بود؛ اتصال اینترنت یا سرویس نقشه را بررسی کنید.');host.dataset.loading='0';}
