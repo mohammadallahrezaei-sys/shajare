@@ -1930,7 +1930,7 @@ function personForm(){
     <button class="btn big" type="submit" id="pSubmit" hidden>مرور و تأیید اطلاعات</button></div>
   </form>`;
 }
-const KINDS={memory:['خاطره','یک خاطرهٔ شاخص از او…'],trait:['ویژگی','مثلاً: بسیار مهمان‌نواز و خوش‌قول بود…'],quote:['جمله‌ای از او','جمله‌ای که زیاد می‌گفت یا درباره‌اش می‌گویند…']};
+const KINDS={memory:['خاطره','یک خاطرهٔ شاخص از او…'],trait:['ویژگی','مثلاً: بسیار مهمان‌نواز و خوش‌قول بود…'],quote:['جمله‌ای از او','جمله‌ای که زیاد می‌گفت یا درباره‌اش می‌گویند…'],event:['رویداد زندگی','مهاجرت، جابه‌جایی، سفر، کار، تحصیل یا رویداد مهم…']};
 function memoryForm(){
   const arr=Object.entries(pendingItems()).sort((a,b)=>full(a[1].p).localeCompare(full(b[1].p),'fa'));
   return `<form id="mform" class="card stack" autocomplete="off">
@@ -3489,7 +3489,8 @@ async function onMemorySubmit(){
   const pid=val('#m_person'), text=val('#m_text'), kind=(document.querySelector('input[name=m_kind]:checked')||{}).value||'memory';
   if(!pid){ toast('فرد مورد نظر را انتخاب کنید'); return; }
   if(!text){ toast('متن را بنویسید'); return; }
-  const eventYear=Math.max(0,Math.min(1600,parseInt(val('#m_eventYear')||'0',10)||0)),eventPlace=val('#m_eventPlace');
+  const yearText=val('#m_eventYear').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  const eventYear=Math.max(0,Math.min(1600,parseInt(yearText||'0',10)||0)),eventPlace=val('#m_eventPlace');
   const payload={personId:pid,text,kind,author:S.isAdmin?fullName():'',eventYear,eventPlace};
   const btn=$('#mform button[type=submit]'); btn.disabled=true;
   try{
