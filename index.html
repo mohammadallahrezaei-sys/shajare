@@ -2156,7 +2156,8 @@ function viewFamily(){
   const imageCount=approved.filter(p=>p.media_path).length;
   const opened=familyArchiveUI.openId?posts.find(p=>p.id===familyArchiveUI.openId):null;
   const categoryOptions=Object.entries(FAMILY_CATEGORIES).map(([k,v])=>`<option value="${k}" ${familyArchiveUI.category===k?'selected':''}>${v}</option>`).join('');
-  const knownVillages=[...new Set([...FAMILY_VILLAGES,...posts.map(p=>familyMeta(p).village).filter(Boolean)])];\n  const villageOptions=knownVillages.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  const knownVillages=[...new Set([...FAMILY_VILLAGES,...posts.map(p=>familyMeta(p).village).filter(Boolean)])];
+  const villageOptions=knownVillages.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
   const sectionCards=FAMILY_SECTIONS.map(sec=>{
     const items=approved.filter(p=>familyMeta(p).section===sec.id),n=items.length;
     return `<section class="family-section-card" id="family-section-${sec.id}">
