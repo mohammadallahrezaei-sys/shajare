@@ -1572,10 +1572,20 @@ function relInner(){
 function relCardHTML(){ return `<section class="card relcard stack" id="relCard">${relInner()}</section>`; }
 function viewT(){
   const T=buildTree(); if(!S.focus) return T;
-  const n=T.nodes.find(x=>x.id===S.focus)||T.nodes.find(x=>x.spouses.includes(S.focus));
+  // Search the actual hierarchy (including spouse identities) so filtering
+  // does not depend on the flattened node cache being perfectly synchronized.
+  let n=null;
+  const seek=m=>{
+    if(!m||n)return;
+    if(m.id===S.focus||m.spouses.includes(S.focus)){n=m;return;}
+    m.kids.forEach(seek);
+  };
+  T.roots.forEach(seek);
   if(!n){ S.focus=''; return T; }
-  const d0=n.depth-1, cl=m=>Object.assign({},m,{depth:m.depth-d0,kids:m.kids.map(cl)}), root=cl(n), flat=[], w=m=>{ flat.push(m); m.kids.forEach(w); }; w(root);
-  return Object.assign({},T,{roots:[root],nodes:flat,focusTitle:'شجره‌نامه شاخهٔ '+full(T.P[n.id]),focusCount:n.set.size});
+  const d0=n.depth-1;
+  const cl=m=>Object.assign({},m,{depth:m.depth-d0,kids:m.kids.map(cl)});
+  const root=cl(n),flat=[],w=m=>{flat.push(m);m.kids.forEach(w);};w(root);
+  return Object.assign({},T,{roots:[root],nodes:flat,focusTitle:'شجره‌نامه شاخهٔ '+full(T.P[n.id]),focusCount:n.set?n.set.size:flat.reduce((v,x)=>v+1+x.spouses.length,0)});
 }
 
 function treePersonOptions(){const P=EP();return Object.entries(P).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa')).map(([id,p])=>`<option value="${esc(id)}" ${S.treePerson===id?'selected':''}>${esc(full(p))}${p.bY?' · '+fa(p.bY):''}</option>`).join('');}
@@ -4143,16 +4153,21 @@ window.addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=se
 
 /* Mouse drag navigation for genealogy canvases and charts. */
 (function(){
- const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap';
+ const selector='#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track';
  let drag=null,suppressClickUntil=0;
+ // Pick the nearest ancestor that really owns scrollable content, not merely
+ // the nearest element carrying a diagram class. This matters for nested fan charts.
  const findSurface=target=>{
-  let n=target,fan=null;
-  while(n&&n!==document.body){
-   if(n.matches&&n.matches('.kin-fan-wrap'))fan=n;
-   if(n.matches&&n.matches('#artBox,#chartBox,.outline,.kin-graph-scroll'))return n;
+  let n=target,first=null,best=null;
+  while(n&&n!==document.body&&n!==document.documentElement){
+   if(n.matches&&n.matches(selector)){
+    if(!first)first=n;
+    const sx=n.scrollWidth>n.clientWidth+2,sy=n.scrollHeight>n.clientHeight+2;
+    if(sx||sy){best=n;break;}
+   }
    n=n.parentElement;
   }
-  return fan;
+  return best||first;
  };
  const readX=el=>el.scrollLeft;
  const writeX=(el,x)=>{el.scrollLeft=x;};
