@@ -1383,7 +1383,7 @@ function persistentAuditHTML(){
 
 function viewRelations(){
  const root=mainFamilyRootId();if(root&&!S.treePerson)S.treePerson=root;
- return `<div class="stack"><section class="card"><span class="home-kicker">ابزارهای تخصصی شجره‌نامه</span><h2>کاوش در نیاکان، نوادگان و روابط</h2><p class="muted small">با ورود به این بخش، نمودار از ریشهٔ اصلی خانواده آغاز می‌شود. سپس می‌توانید هر فرد دیگری را انتخاب کنید.</p></section>${treeAdvancedHTML()}</div>`;
+ return `<div class="stack"><section class="card"><span class="home-kicker">نمایش‌های گوناگون یک نمودار</span><h2>نمودار بادبزنی خانواده</h2><p class="muted small">این بخش یک نمودار واحد دارد؛ با انتخاب فیلترهای زیر، همان نمودار را به شکل نیاکان، نوادگان، ساعت‌شنی یا روابط نزدیک ببینید. فرد انتخاب‌شده در همه حالت‌ها مرکز بررسی است.</p></section>${treeAdvancedHTML()}</div>`;
 }
 function viewTimeline(){return `<div class="stack"><section class="card"><span class="home-kicker">تاریخ خانواده</span><h2>خط زمانی رویدادهای خانوادگی</h2><p class="muted small">تولد، درگذشت، ازدواج و خاطرات دارای تاریخ در یک نمای مستقل گردآوری شده‌اند.</p></section>${familyTimelineHTML()}</div>`;}
 function viewMap(){return `<div class="stack"><section class="card"><span class="home-kicker">جغرافیای خانواده</span><h2>نقشه‌های خانوادگی و تاریخی</h2><p class="muted small">نقشه پراکندگی محل‌های تولد و سکونت، و نقشه مسیر زندگی و لایه‌های تاریخی در این بخش قرار دارند.</p></section>${familyPlacesMapHTML()}${kinMapHTML()}</div>`;}
@@ -1659,7 +1659,7 @@ function applyKinMapOverlay(){
 
 function treeAdvancedHTML(){
  const P=EP(),ids=Object.keys(P),realIds=ids.filter(i=>!P[i].virtual),mainRoot=(buildTree().roots||[])[0]?.id||'',id=S.treePerson&&P[S.treePerson]&&!P[S.treePerson].virtual?S.treePerson:(mainRoot||realIds[0]||''),person=P[id];
- const modes=[['ancestor','نیاکان'],['descendant','نوادگان'],['hourglass','ساعت شنی'],['relations','روابط'],['fan','بادبزنی']];
+ const modes=[['fan','همه نسل‌ها'],['ancestor','فقط نیاکان'],['descendant','فقط نوادگان'],['hourglass','ساعت‌شنی'],['relations','روابط نزدیک']];
  const picker='<label class="f"><span>فرد مرکزی نمودار</span><select id="treePerson" class="tree-person-select"><option value="">انتخاب فرد</option>'+realIds.slice().sort((a,b)=>full(P[a]).localeCompare(full(P[b]),'fa')).map(i=>'<option value="'+esc(i)+'" '+(i===id?'selected':'')+'>'+esc(full(P[i]))+'</option>').join('')+'</select></label>';
  const mode=S.graphMode||'fan';
  const kids=x=>ids.filter(i=>P[i].fatherId===x||P[i].motherId===x).sort((a,b)=>(P[a].bY||9999)-(P[b].bY||9999));
@@ -1695,7 +1695,7 @@ function treeAdvancedHTML(){
  }
  const addDraft=S.treeAddDraft;
  const addForm=addDraft?'<section class="card stack"><b>افزودن '+esc(addDraft.label)+' برای '+esc(full(P[addDraft.id]||{}))+'</b><div class="fields"><label class="f"><span>نام</span><input id="treeAddFirst" maxlength="80" placeholder="نام کوچک"></label><label class="f"><span>نام خانوادگی</span><input id="treeAddLast" maxlength="100" value="'+esc((P[addDraft.id]&&P[addDraft.id].last)||'الله‌رضایی')+'"></label><label class="f"><span>جنسیت</span><select id="treeAddGender"><option value="m" '+(addDraft.role==='father'||(addDraft.role==='spouse'&&P[addDraft.id]?.gender==='f')?'selected':'')+'>آقا</option><option value="f" '+(addDraft.role==='mother'||(addDraft.role==='spouse'&&P[addDraft.id]?.gender==='m')?'selected':'')+'>خانم</option></select></label><label class="f"><span>سال تولد (اختیاری)</span><input id="treeAddYear" type="number" min="1" max="1600"></label></div><div class="row"><button type="button" class="btn sm" data-act="treeaddsave">ثبت و اتصال در نمودار</button><button type="button" class="btn ghost sm" data-act="treeaddcancel">انصراف</button></div><p class="muted small">این عملیات برای مدیر، پرونده جدید را ایجاد و رابطه را هم‌زمان ذخیره می‌کند. برای سایر اعضا، فرم پیشنهاد ثبت اطلاعات باز می‌شود تا تأیید مدیر انجام شود.</p></section>':'';
- return addForm+'<section class="card stack"><div class="row" style="justify-content:space-between"><h3>🌳 نمودار تعاملی شجره‌نامه</h3><span class="muted small">پیش‌نمایش با نگه‌داشتن ماوس</span></div>'+picker+'<div class="kin-modebar">'+modes.map(([k,l])=>'<button type="button" class="btn sm '+(mode===k?'':'ghost')+'" data-act="graphmode" data-mode="'+k+'">'+l+'</button>').join('')+'</div><div class="kin-graph-scroll"><div class="kin-graph">'+graph+'</div></div><div class="kin-graph-help"><b>راهنمای تعامل</b><span>روی نام هر فرد در نمودار بادبزنی بزنید تا همان شخص مرکز نمودار شود و بتوانید نیاکان، نوادگان، ساعت‌شنی و روابط او را ببینید.</span><span>برای مشاهده پرونده و اطلاعات فرد، از شجره‌نامه اصلی روی کارت او بزنید؛ در پرونده هم میانبر نمودارهای تعاملی در دسترس است.</span><span>نام‌های ثبت‌شده بدون پرونده مستقل فقط نمایشی هستند و تا زمان ایجاد پرونده، نمودار مستقل ندارند.</span></div></section>';
+ return addForm+'<section class="card stack"><div class="row" style="justify-content:space-between"><h3>🌳 نمودار بادبزنی و فیلترهای نمایش</h3><span class="muted small">یک نمودار، چند شیوه نمایش</span></div>'+picker+'<div class="small muted">حالت نمایش نمودار</div><div class="kin-modebar">'+modes.map(([k,l])=>'<button type="button" class="btn sm '+(mode===k?'':'ghost')+'" data-act="graphmode" data-mode="'+k+'">'+l+'</button>').join('')+'</div><div class="kin-graph-scroll"><div class="kin-graph">'+graph+'</div></div><div class="kin-graph-help"><b>راهنمای تعامل</b><span>با انتخاب هر فیلتر، فقط شیوه نمایش همین نمودار عوض می‌شود؛ اطلاعات و ارتباطات افراد حذف یا جابه‌جا نمی‌شوند.</span><span>برای مشاهده پرونده و اطلاعات فرد، از شجره‌نامه اصلی روی کارت او بزنید؛ در پرونده هم میانبر نمودارهای تعاملی در دسترس است.</span><span>نام‌های ثبت‌شده بدون پرونده مستقل فقط نمایشی هستند و تا زمان ایجاد پرونده، نمودار مستقل ندارند.</span></div></section>';
 }
 function familyTimelineHTML(){
  const P=EP(),ids=Object.keys(P).filter(i=>!P[i].virtual),selected=S.timelinePerson||'',scope=S.timelineScope||'all',place=S.timelinePlace||'';
@@ -3557,7 +3557,7 @@ const SVG_ICONS={
 function svgi(n){ return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'+(SVG_ICONS[n]||'')+'</svg>'; }
 const NAV_GROUPS=[
   {key:'home',label:'خانه',ico:'home',tabs:[['home','خانه']]},
-  {key:'tree',label:'شجره‌نامه',ico:'tree',tabs:[['tree','درخت'],['relations','روابط'],['timeline','خط زمانی'],['map','نقشه']]},
+  {key:'tree',label:'شجره‌نامه',ico:'tree',tabs:[['tree','درخت اصلی'],['relations','بادبزنی'],['timeline','خط زمانی'],['map','نقشه']]},
   {key:'family',label:'موزه',ico:'museum',tabs:[['family','موزه']]},
   {key:'add',label:'ثبت اطلاعات',ico:'add',tabs:[['add','ثبت اطلاعات']]},
   {key:'reports',label:'گزارش‌ها',ico:'reports',tabs:[['stats','آمار'],['smart','بازبینی اسناد'],['book','کتابچه']]}
