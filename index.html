@@ -3487,8 +3487,8 @@ function drawArt(T,imgs){
   BH.list.forEach(k=>{brs.push({k,ci:bi});assign(k,bi,0);k.kids.forEach((q,i)=>setOff(q,Math.max(-18,Math.min(18,(i-(k.kids.length-1)/2)*10))));bi++;});
   const bcol=n=>n.ci<0?'#76543a':BRANCH_COLORS[n.ci%BRANCH_COLORS.length];
   // چیدمان بادبزنی (تاج درخت): ریشه پایین‌وسط است و هر نسل روی یک کمانِ بالاترِ هم‌مرکز قرار می‌گیرد؛ پهنا به جای یک ردیف افقیِ بسیار بلند، میان کمان‌ها و ارتفاع پخش می‌شود.
-  const NB_T=-46, NB_B=112, PADX=38, RING=300, GAPX=44;
-  const SPAN=Math.min(3.0,Math.max(1.5,T.nodes.length/32));
+  // چیدمان نسل‌به‌نسل: هر نسل یک ردیف افقی است و هر خانواده بازهٔ افقی اختصاصی دارد؛ پس کارت‌ها و شاخه‌ها هرگز روی هم نمی‌افتند.
+  const NB_T=-46, NB_B=112, ROW=340, ZZ=178, SIB=40, RUNW=118;
   const markLeaves=n=>{
     n.cw=(1+n.spouses.length)*CW; n.zz=0;
     let run=[]; const flush=()=>{ if(run.length>=3) run.forEach((k,i)=>{k.zz=i%2?1:0;k.inRun=true;}); run=[]; };
@@ -3496,30 +3496,19 @@ function drawArt(T,imgs){
     flush(); n.kids.forEach(markLeaves);
   };
   T.roots.forEach(markLeaves);
-  const wOf=n=>{ const own=n.cw*0.8+GAPX; n.wt=Math.max(own, n.kids.reduce((a,k)=>a+wOf(k),0)+SIBLING_GAP*Math.max(0,n.kids.length-1)); if(!n.kids.length) n.wt=n.cw*0.62+GAPX; return n.wt; };
-  const rootsW=T.roots.reduce((a,r)=>a+wOf(r),0)+ROOT_GAP*Math.max(0,T.roots.length-1);
-  const alloc=(n,u0)=>{ // مرکز بازه را برای n نگه می‌دارد و فرزندان را از راست به چپ پشت‌سرهم می‌چیند
-    const kidsW=n.kids.reduce((a,k)=>a+k.wt,0)+SIBLING_GAP*Math.max(0,n.kids.length-1); let u=u0+(n.wt-kidsW)/2;
-    n.kids.forEach((k,i)=>{ k.par=n; alloc(k,u); u+=k.wt+(i<n.kids.length-1?SIBLING_GAP:0); });
+  T.roots.forEach(markLeaves);
+  const sg=(a,b)=>(a.inRun&&b.inRun)?0:SIB;
+  const kidsW=n=>n.kids.reduce((s,k,i)=>s+k.wt+(i?sg(n.kids[i-1],k):0),0);
+  const wOf=n=>{ n.kids.forEach(wOf); n.wt=n.kids.length?Math.max(n.cw+28,kidsW(n)):(n.inRun?RUNW:n.cw+28); return n.wt; };
+  T.roots.forEach(wOf);
+  const rootsW=T.roots.reduce((a,r)=>a+r.wt,0)+ROOT_GAP*Math.max(0,T.roots.length-1);
+  const alloc=(n,u0)=>{
+    let u=u0+(n.wt-kidsW(n))/2;
+    n.kids.forEach((k,i)=>{ if(i) u+=sg(n.kids[i-1],k); k.par=n; alloc(k,u); u+=k.wt; });
     n.u=u0+n.wt/2;
   };
   {let u=0; T.roots.forEach((r,i)=>{alloc(r,u);u+=r.wt+(i<T.roots.length-1?ROOT_GAP:0);});}
-  const thOf=n=>SPAN*(0.5-n.u/rootsW);
-  const levels=[]; T.nodes.forEach(n=>{(levels[n.depth]=levels[n.depth]||[]).push(n);});
-  const placed=[];
-  const hit=(a,b)=>Math.abs(a.x-b.x)<(a.cw+b.cw)/2+PADX&&Math.abs(a.y-b.y)<(NB_B-NB_T)+4;
-  const setPos=(n,r)=>{ n.r=r; n.th=thOf(n); n.x=r*Math.sin(n.th); n.y=-r*Math.cos(n.th); };
-  const ringR={}; let base=T.roots.length>1?260:0;
-  for(let d=1;d<levels.length;d++){
-    const L=levels[d]; if(!L) continue;
-    if(d>1) base+=RING;
-    ringR[d]=base;
-    L.slice().sort((a,b)=>a.u-b.u).forEach(n=>{
-      let r=Math.max(base,n.par?n.par.r+RING:0);
-      for(let it=0;it<600;it++){ setPos(n,r); if(!placed.some(m=>hit(n,m)))break; r+=28; }
-      placed.push(n);
-    });
-  }
+  T.nodes.forEach(n=>{ n.th=0; n.r=0; n.x=rootsW/2-n.u; n.y=-(n.depth-1)*ROW-((n.inRun&&n.zz)?ZZ:0); });
   let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
   T.nodes.forEach(n=>{minX=Math.min(minX,n.x-n.cw/2);maxX=Math.max(maxX,n.x+n.cw/2);minY=Math.min(minY,n.y+NB_T);maxY=Math.max(maxY,n.y+NB_B);});
   const content=maxX-minX;
@@ -3559,21 +3548,17 @@ function drawArt(T,imgs){
     c.restore();
   };
   const branch=n=>{
-    const px=n.cx,py=cyOf(n),kids=n.kids;
+    const py=cyOf(n),kids=n.kids;
     if(!kids.length)return;
-    const dpx=Math.sin(n.th),dpy=-Math.cos(n.th);
-    kids.forEach((k,ki)=>{
-      const kx=k.cx,ky=cyOf(k);
-      // شاخه از بالای والد (پشت مدالیون) رشد می‌کند و با مماس شعاعی به فرزند می‌رسد؛ مثل دوشاخه‌شدن واقعی، نه خط راهنما.
-      // اتصال شاخه از لبهٔ مدالیون والد تا لبهٔ مدالیون فرزند؛ مسیر زیر کارت‌ها پنهان نمی‌ماند.
-      const dx=kx-px,dy=ky-py,dist=Math.max(1,Math.hypot(dx,dy)),ux=dx/dist,uy=dy/dist;
-      const x1=px+ux*(R+7),y1=py+uy*(R+7),x4=kx-ux*(R+7),y4=ky-uy*(R+7);
-      const len=Math.hypot(x4-x1,y4-y1),h=Math.max(30,len*.42);
-      const dkx=Math.sin(k.th),dky=-Math.cos(k.th);
-      const x2=x1+dpx*h,y2=y1+dpy*h,x3=x4-dkx*h*.6,y3=y4-dky*h*.6;
-      const width=Math.max(4.5,Math.min(23,3.8+Math.sqrt(k.size||1)*2.35));
-      const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x2,y2,x3,y3,x4,y4);};
-      strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2,y2,x3,y3,x4,y4,width});
+    // شاخه از نقطهٔ پیوند زوج (یا بالای مدالیون فرد مجرد) شروع می‌شود
+    const x1=n.cx, y1=n.spouses.length?py-2:py-R-9;
+    const top=py-ROW+NB_B, yb=top+(y1-top)*.45, h=(y1-yb)*.5;
+    kids.forEach(k=>{
+      // انتهای شاخه به کارت خود فرزند (نه همسرش) وصل می‌شود و زیر کارت پنهان می‌ماند
+      const x4=k.cx+(k.spouses.length+1)*CW/2-CW/2, y4=cyOf(k)+R+30;
+      const width=Math.max(4.5,Math.min(21,3.8+Math.sqrt(k.size||1)*2.1));
+      const draw=()=>{c.moveTo(x1,y1);c.bezierCurveTo(x1,y1-h,x4,yb+h,x4,yb);c.lineTo(x4,y4);};
+      strokeWood(draw,bcol(k),width);branchPaths.push({n:k,x1,y1,x2:x1,y2:y1-h,x3:x4,y3:yb+h,x4,y4:yb,width});
     });
     kids.forEach(branch);
   };
