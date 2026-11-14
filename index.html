@@ -751,6 +751,38 @@ label.f>span,div.f>span{font-weight:600}
 </style><style id="root-first-tree-position">
 #artBox{scroll-behavior:smooth}
 #chartBox,.outline{scroll-behavior:smooth}
+</style><style id="timeline-visual-polish">
+/* A calmer, editorial family-history timeline */
+.timeline-track{position:relative;align-items:stretch;gap:14px;padding:30px 12px 18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 5%,var(--surface2)),var(--surface2));min-height:0;scrollbar-width:thin;scrollbar-color:var(--primary) transparent}
+.timeline-track:before{content:"";position:absolute;top:18px;right:0;left:0;height:2px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--primary) 45%,var(--line)),transparent)}
+.timeline-event{position:relative;flex:0 0 190px;overflow:visible;border:1px solid color-mix(in srgb,var(--line) 82%,var(--primary));border-radius:15px;background:var(--surface);padding:12px 11px 13px;text-align:center;gap:7px;box-shadow:0 3px 12px #0000000a;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.timeline-event:hover{transform:translateY(-5px);border-color:var(--primary);box-shadow:0 10px 24px #00000016;z-index:3}
+.timeline-event:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 55%,transparent);outline-offset:3px}
+.timeline-event i{top:-19px;right:calc(50% - 6px);width:12px;height:12px;border:3px solid var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 50%,var(--line));background:var(--primary)}
+.timeline-event>b{align-self:center;display:inline-flex;align-items:center;justify-content:center;min-width:72px;padding:5px 12px;border-radius:999px;background:color-mix(in srgb,var(--primary) 10%,var(--surface));color:var(--primary);font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.timeline-event>span{font-size:12px;font-weight:800;letter-spacing:.1px}
+.timeline-event>small{font-size:11px;line-height:1.5}
+.timeline-event--marriage{background:linear-gradient(155deg,color-mix(in srgb,var(--primary) 9%,var(--surface)),var(--surface) 68%);border-color:color-mix(in srgb,var(--primary) 35%,var(--line))}
+.timeline-event--marriage i{background:var(--primary)}
+.timeline-people{min-height:102px;align-items:center;padding:5px 0 8px;gap:7px}
+.timeline-person{gap:6px}
+.timeline-person img,.timeline-avatar{width:54px;height:54px;border:2px solid color-mix(in srgb,var(--primary) 28%,var(--line));box-shadow:0 3px 9px #00000012}
+.timeline-person small{font-size:10px;line-height:1.5;font-weight:650}
+.timeline-link{height:2px;flex-basis:15px;margin-top:25px;background:color-mix(in srgb,var(--primary) 60%,var(--line))}
+.timeline-event--birth{background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 12%,var(--surface)),var(--surface) 65%);border:1px solid color-mix(in srgb,var(--accent) 55%,var(--line));min-height:260px;flex-basis:210px}
+.timeline-event--birth i{background:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 42%,var(--line))}
+.timeline-birth-family{min-height:178px;padding:7px 0 10px;justify-content:flex-start}
+.timeline-parents{gap:20px}
+.timeline-parents .timeline-person img,.timeline-parents .timeline-person .timeline-avatar{width:42px;height:42px;border-width:2px}
+.timeline-family-link{height:22px;width:2px;background:color-mix(in srgb,var(--accent) 75%,var(--line))}
+.timeline-family-link:after{border-color:var(--accent)}
+.timeline-person--child img,.timeline-person--child .timeline-avatar{width:104px;height:104px;border-radius:23px;border:4px solid var(--accent);box-shadow:0 7px 18px color-mix(in srgb,var(--accent) 25%,transparent);font-size:36px}
+.timeline-person--child small{font-size:12px;line-height:1.4;font-weight:850}
+.timeline-event--birth>span{color:color-mix(in srgb,var(--accent) 75%,var(--ink))}
+.timeline-person-photo{height:105px;border-radius:11px;box-shadow:0 3px 10px #00000012}
+.timeline-filters{padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface2)}
+@media(max-width:600px){.timeline-track{padding:28px 9px 13px;gap:10px}.timeline-event{flex-basis:174px;padding:10px 9px}.timeline-event--birth{flex-basis:194px;min-height:250px}.timeline-person--child img,.timeline-person--child .timeline-avatar{width:92px;height:92px}.timeline-parents{gap:12px}}
+@media(prefers-reduced-motion:reduce){.timeline-event{transition:none}.timeline-event:hover{transform:none}}
 </style></head>
 <body>
 <div class="wrap" id="root"></div>
