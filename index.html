@@ -2363,6 +2363,9 @@ function familyDigitalBookPages(){
 </div><p class="muted small" style="line-height:2;padding:12px;background:var(--surface-2);border-radius:10px">هر سه عکس در آرشیو Australian War Memorial با وضعیت مالکیت عمومی (Public Domain) معرفی شده‌اند. تصاویر برای آشنایی با تاریخ و فضای منطقه‌اند و نباید به‌عنوان عکس مستند از روستاهای خاندان معرفی شوند.</p>`});
   const T=buildTree(), roots=(T.roots||[]).map(r=>{const p=T.P[r.id];return p?`<li><b>${esc(full(p))}</b> · ${fa(r.size)} نفر در شاخه</li>`:''}).join('');
   pages.push({title:'شجره و ریشه‌های زنده',eyebrow:'پیوند نسل‌ها',html:`<div class="digital-book-intro"><h2>ریشه‌های ثبت‌شده در شجره‌نامه</h2><p>این صفحه مستقیماً از رابطه‌های والد و فرزند در شجره‌نامه ساخته می‌شود؛ با ثبت افراد و اصلاح نسبت‌ها، ریشه‌ها و تعداد اعضای شاخه‌ها خودکار تغییر می‌کنند.</p><p><b>${fa(Object.keys(T.P||{}).length)}</b> فرد · <b>${fa((T.roots||[]).length)}</b> ریشهٔ شناسایی‌شده</p><ul class="digital-book-roots">${roots||'<li>هنوز ریشه‌ای ثبت نشده است.</li>'}</ul>${treeRootsOverviewHTML(T)}</div>`});
+  // گالری تاریخی پس از جلد و پیش از فصل‌های محتوایی قرار می‌گیرد.
+  const galleryIndex=pages.findIndex(p=>p.title==='گالری تاریخی بیجار و گروس');
+  if(galleryIndex>1){const gallery=pages.splice(galleryIndex,1)[0];pages.splice(1,0,gallery);}
   return pages;
 }
 function viewFamilyBook(){
