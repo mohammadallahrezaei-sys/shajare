@@ -751,6 +751,17 @@ label.f>span,div.f>span{font-weight:600}
 </style><style id="root-first-tree-position">
 /* اسکرول نرم روی این جعبه‌ها، درگ افقی با ماوس را خراب می‌کرد (هر حرکت، انیمیشن را از نو شروع می‌کرد). جابه‌جایی نرمِ «پیدا کردن فرد» با scrollTo و behavior:'smooth' انجام می‌شود. */
 #artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap{scroll-behavior:auto!important}
+</style><style id="timeline-vertical">
+.tl-dec{border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.tl-dec>summary{cursor:pointer;padding:12px 14px;font-weight:800;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;list-style:none}
+.tl-dec>summary::-webkit-details-marker{display:none}
+.tl-list{display:grid;padding:0 6px 6px}
+.tl-row{display:grid;grid-template-columns:96px 22px 1fr;gap:8px;align-items:start;text-align:start;width:100%;border:0;border-top:1px solid var(--line);background:none;padding:10px 8px;cursor:pointer;color:inherit;font:inherit}
+.tl-row:hover{background:color-mix(in srgb,var(--primary) 7%,transparent)}
+.tl-date{font-weight:700;font-size:.85rem;color:var(--muted)}
+.tl-txt{display:grid;gap:2px}.tl-txt small{font-size:.78rem}
+.tl-row--birth .tl-ic{color:var(--accent)}.tl-row--marriage .tl-ic{color:var(--primary)}
+@media(max-width:480px){.tl-row{grid-template-columns:78px 20px 1fr}}
 </style><style id="timeline-visual-polish">
 /* A calmer, editorial family-history timeline */
 .timeline-track{position:relative;align-items:stretch;gap:14px;padding:30px 12px 18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 5%,var(--surface2)),var(--surface2));min-height:0;scrollbar-width:thin;scrollbar-color:var(--primary) transparent}
@@ -860,7 +871,7 @@ label.f>span,div.f>span{font-weight:600}
 .kin-rel-note{max-width:760px;text-align:center;margin:4px auto}
 </style>
 <style id="mouse-drag-pan-fix">
-#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap{scrollbar-width:none!important;-ms-overflow-style:none!important;cursor:grab!important;touch-action:none;overscroll-behavior:contain}
+#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap{scrollbar-width:none!important;-ms-overflow-style:none!important;cursor:grab!important;touch-action:pan-x pan-y;overscroll-behavior:contain}
 #artBox::-webkit-scrollbar,#chartBox::-webkit-scrollbar,.outline::-webkit-scrollbar,.kin-graph-scroll::-webkit-scrollbar,.kin-fan-wrap::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 #artBox.diagram-mouse-dragging,#chartBox.diagram-mouse-dragging,.outline.diagram-mouse-dragging,.kin-graph-scroll.diagram-mouse-dragging,.kin-fan-wrap.diagram-mouse-dragging{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
 .diagram-mouse-dragging *{user-select:none!important;-webkit-user-select:none!important}
@@ -1355,45 +1366,32 @@ async function initFamilyPlacesMap(){
  });
  const rows=Object.values(places);
  if(!rows.length){setStatus('هنوز محل تولد یا سکونتی در پرونده‌ها ثبت نشده است.');return;}
- const loadLeaflet=()=>{
-   if(window.L)return Promise.resolve();
-   if(window.__familyLeafletPromise)return window.__familyLeafletPromise;
-   window.__familyLeafletPromise=new Promise((resolve,reject)=>{
-     if(!document.querySelector('link[data-family-leaflet]')){const l=document.createElement('link');l.rel='stylesheet';l.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';l.dataset.familyLeaflet='1';document.head.appendChild(l);}
-     const sc=document.createElement('script');sc.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc);
-   });return window.__familyLeafletPromise;
- };
+ const loadLeaflet=()=>ensureLeaflet();
  try{
    await loadLeaflet();if(!$('#familyPlacesMap'))return;
    const map=L.map('familyPlacesMap',{scrollWheelZoom:false}).setView([35.6,47.58],8);
    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);
+   const gB=L.layerGroup().addTo(map),gL=L.layerGroup().addTo(map),gO=L.layerGroup().addTo(map);
+   L.control.layers(null,{'🟠 محل تولد':gB,'🔵 محل سکونت':gL,'⚪ سایر محل‌ها':gO},{collapsed:false}).addTo(map);
    let done=0,failed=0;
    const cacheKey='shajare_place_geocodes_v1';let cache={};try{cache=JSON.parse(localStorage.getItem(cacheKey)||'{}')||{};}catch(e){}
    const points=[];
    for(const p of rows){
-     let ll=p.coords||cache[norm(p.name)]||null;
-     if(!ll){
-       try{
-         const q=encodeURIComponent(p.name+', Iran');
-         const res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept-Language':'fa'}});
-         if(res.ok){const data=await res.json();if(data&&data[0]){ll=[Number(data[0].lat),Number(data[0].lon)];cache[norm(p.name)]=ll;}}
-       }catch(e){}
-       await new Promise(resolve=>setTimeout(resolve,1100));
-     }
+     let ll=p.coords||await geoLookup(p.name);
      if(ll&&Number.isFinite(ll[0])&&Number.isFinite(ll[1])){
        const total=p.born.length+p.lived.length+p.other.length;
        const radius=n=>Math.max(7,Math.min(17,6+Math.sqrt(n)*2));
        const namesHTML=(arr)=>arr.length?'<div style="max-height:180px;overflow:auto;margin-top:6px"><ol style="margin:4px 18px 4px 0;padding:0">'+arr.slice().sort((a,b)=>a.localeCompare(b,'fa')).map(n=>'<li style="padding:2px 0">'+esc(n)+'</li>').join('')+'</ol></div>':'<span>موردی ثبت نشده</span>';
        const summary='<hr><b>'+esc(p.name)+'</b><br>تولد: '+fa(p.born.length)+' نفر<br>سکونت: '+fa(p.lived.length)+' نفر'+(p.other.length?'<br>سایر: '+fa(p.other.length)+' نفر':'')+'<br>مجموع ثبت‌ها: '+fa(total);
        // با کلیک روی هر نشانگر، فهرست نام‌های همان دسته نمایش داده می‌شود.
-       if(p.born.length){const m=L.circleMarker([ll[0],ll[1]-0.00045],{radius:radius(p.born.length),color:'#fff',weight:2,fillColor:'#d97706',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · محل تولد</b><br>تعداد: '+fa(p.born.length)+namesHTML(p.born)+summary,{maxWidth:300});}
-       if(p.lived.length){const m=L.circleMarker([ll[0],ll[1]+0.00045],{radius:radius(p.lived.length),color:'#fff',weight:2,fillColor:'#2563eb',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · محل سکونت</b><br>تعداد: '+fa(p.lived.length)+namesHTML(p.lived)+summary,{maxWidth:300});}
-       if(p.other.length){const m=L.circleMarker([ll[0]+0.00055,ll[1]],{radius:radius(p.other.length),color:'#fff',weight:2,fillColor:'#64748b',fillOpacity:.92}).addTo(map);m.bindPopup('<b>'+esc(p.name)+' · سایر محل‌ها</b><br>تعداد: '+fa(p.other.length)+namesHTML(p.other)+summary,{maxWidth:300});}
+       if(p.born.length){const m=L.circleMarker([ll[0],ll[1]-0.00045],{radius:radius(p.born.length),color:'#fff',weight:2,fillColor:'#d97706',fillOpacity:.92}).addTo(gB);m.bindPopup('<b>'+esc(p.name)+' · محل تولد</b><br>تعداد: '+fa(p.born.length)+namesHTML(p.born)+summary,{maxWidth:300});}
+       if(p.lived.length){const m=L.circleMarker([ll[0],ll[1]+0.00045],{radius:radius(p.lived.length),color:'#fff',weight:2,fillColor:'#2563eb',fillOpacity:.92}).addTo(gL);m.bindPopup('<b>'+esc(p.name)+' · محل سکونت</b><br>تعداد: '+fa(p.lived.length)+namesHTML(p.lived)+summary,{maxWidth:300});}
+       if(p.other.length){const m=L.circleMarker([ll[0]+0.00055,ll[1]],{radius:radius(p.other.length),color:'#fff',weight:2,fillColor:'#64748b',fillOpacity:.92}).addTo(gO);m.bindPopup('<b>'+esc(p.name)+' · سایر محل‌ها</b><br>تعداد: '+fa(p.other.length)+namesHTML(p.other)+summary,{maxWidth:300});}
        points.push(ll);
      }else failed++;
      done++;setStatus('تعیین موقعیت محل‌ها: '+fa(done)+' از '+fa(rows.length));
    }
-   try{localStorage.setItem(cacheKey,JSON.stringify(cache));}catch(e){}
+   
    if(points.length){if(points.length===1)map.setView(points[0],11);else map.fitBounds(points,{padding:[24,24]});}
    setStatus('روی نقشه '+fa(points.length)+' محل از '+fa(rows.length)+' محل ثبت‌شده نمایش داده شد.'+(failed?' '+fa(failed)+' محل به دلیل نامشخص بودن نام یا نبود نتیجه مکانی، فعلاً قابل مکان‌یابی نبود.':''));
    setTimeout(()=>map.invalidateSize(),150);
@@ -1425,6 +1423,7 @@ function viewHome(){
     else { const rid=mainFamilyRootId(), rp=rid&&(EP()[rid]||S.people[rid]); if(rp) heroMoment=mk(rid,rp,'ریشهٔ خاندان',rp.bY?'متولد '+fa(rp.bY):''); } }
   const quick=(ic,title,desc,act,tab)=>`<button class="home-shortcut" type="button" data-act="${act}" ${tab?`data-tab="${tab}"`:''}><span>${ic}</span><b>${title}</b><small>${desc}</small><i>←</i></button>`;
   return `<div class="stack home-dashboard">
+    ${backupDueHTML()}
     <section class="home-hero home-hero-clean">
       <div class="home-hero-copy">
         <span class="home-kicker">خانهٔ خاندان الله‌رضایی</span>
@@ -1651,11 +1650,37 @@ function kinMapHTML(){
  const P=EP(),ids=Object.keys(P).filter(i=>!P[i].virtual),id=S.kinMapPerson||'';
  return '<section class="card stack"><div class="row" style="justify-content:space-between"><h3>🗺️ نقشه مسیر زندگی و نقشه تاریخی</h3><span class="muted small">OpenStreetMap</span></div><div class="timeline-filters"><label class="f"><span>فرد برای نمایش مسیر</span><select id="kinMapPerson"><option value="">انتخاب فرد</option>'+ids.slice().sort((a,b)=>full(P[a]).localeCompare(full(P[b]),'fa')).map(i=>'<option value="'+esc(i)+'" '+(i===id?'selected':'')+'>'+esc(full(P[i]))+'</option>').join('')+'</select></label><label class="f"><span>جست‌وجوی مکان</span><input id="kinMapSearch" placeholder="نام روستا، شهر یا منطقه"></label><div class="f" style="justify-content:end"><span> </span><button type="button" class="btn sm" data-act="kinmapsearch">جست‌وجو روی نقشه</button></div></div><div id="kinMap" style="height:420px;min-height:320px;border-radius:13px;overflow:hidden;background:var(--surface2)"></div><div class="row" style="gap:8px;flex-wrap:wrap"><span class="muted small">زمان نقشه تاریخی:</span><input id="kinMapYear" type="range" min="1200" max="1450" step="1" value="'+(+(S.kinMapYear||1400))+'" style="flex:1;min-width:160px"><b id="kinMapYearLabel">'+fa(S.kinMapYear||1400)+'</b></div><details class="stack"><summary>افزودن لایه نقشه‌های تاریخی (تصویر زمین‌مرجع)</summary><p class="muted small">لینک مستقیم تصویر نقشه قدیمی و محدوده جغرافیایی آن را وارد کنید. برای هم‌ترازی درست، مختصات گوشه‌ها باید از منبع معتبر نقشه به دست آمده باشد. می‌توانید چند نقشه از دوره‌های مختلف اضافه کنید؛ اسلایدر فقط نقشه‌های معتبر برای سال انتخاب‌شده را نشان می‌دهد.</p><div class="fields"><label class="f wide"><span>آدرس مستقیم تصویر نقشه (HTTPS)</span><input id="kinMapImageUrl" type="url" placeholder="https://…/historical-map.jpg"></label><label class="f"><span>عرض جغرافیایی جنوب</span><input id="kinMapSouth" type="number" step="any" placeholder="35.4"></label><label class="f"><span>طول جغرافیایی غرب</span><input id="kinMapWest" type="number" step="any" placeholder="47.3"></label><label class="f"><span>عرض جغرافیایی شمال</span><input id="kinMapNorth" type="number" step="any" placeholder="35.8"></label><label class="f"><span>طول جغرافیایی شرق</span><input id="kinMapEast" type="number" step="any" placeholder="47.8"></label><label class="f"><span>سال آغاز اعتبار نقشه</span><input id="kinMapFrom" type="number" placeholder="1300"></label><label class="f"><span>سال پایان اعتبار نقشه</span><input id="kinMapTo" type="number" placeholder="1350"></label></div><div class="row" style="gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" data-act="kinmapoverlay">افزودن نقشه به آرشیو زمانی</button><button type="button" class="btn ghost sm" data-act="kinmapremove">حذف آخرین نقشه</button><span class="muted small">تعداد نقشه‌های ذخیره‌شده: '+fa((S.kinMapImages||[]).length)+'</span></div></details><div id="kinMapStatus" class="muted small">برای نمایش مسیر، یک فرد انتخاب کنید. مسیر فقط از مکان‌های ثبت‌شده ساخته می‌شود.</div></section>';
 }
+/* ---------- نقشه: بارگذار و مکان‌یاب مشترک برای هر دو نقشه ---------- */
+const GEO_KEY='shajare_place_geocodes_v1', GEO_KNOWN={'بودلا':[35.53970204,47.57059851],'خودلان':[35.57583,47.52778],'زرین‌آباد':[35.59596019,47.57756835],'خسروآباد':[35.51839211,47.62154169]};
+let __geoLast=0, __geoCache=null;
+function geoNorm(v){ return vKey(tidy(String(v||''))).replace(/[يى]/g,'ی').replace(/ك/g,'ک').trim(); }
+function geoCache(){ if(!__geoCache){ try{ __geoCache=JSON.parse(localStorage.getItem(GEO_KEY)||'{}')||{}; }catch(e){ __geoCache={}; } } return __geoCache; }
+function geoSave(){ try{ localStorage.setItem(GEO_KEY,JSON.stringify(__geoCache||{})); }catch(e){} }
+async function geoLookup(name){
+  const k=geoNorm(name); if(!k) return null; const c=geoCache();
+  const kn=Object.keys(GEO_KNOWN).find(x=>geoNorm(x)===k); if(kn) return GEO_KNOWN[kn];
+  const hit=c[k]; if(Array.isArray(hit)) return hit;
+  if(hit&&hit.miss&&Date.now()-hit.miss<7*864e5) return null;
+  const wait=1100-(Date.now()-__geoLast); if(wait>0) await new Promise(r=>setTimeout(r,wait)); __geoLast=Date.now();
+  try{ const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(String(name)+', Iran'),{headers:{'Accept-Language':'fa'}});
+    if(r.ok){ const d=await r.json(); if(d&&d[0]&&Number.isFinite(+d[0].lat)&&Number.isFinite(+d[0].lon)){ const ll=[+d[0].lat,+d[0].lon]; c[k]=ll; geoSave(); return ll; } c[k]={miss:Date.now()}; geoSave(); }
+  }catch(e){}
+  return null;
+}
+function ensureLeaflet(){
+  if(window.L) return Promise.resolve();
+  if(window.__familyLeafletPromise) return window.__familyLeafletPromise;
+  window.__familyLeafletPromise=new Promise((resolve,reject)=>{
+    if(!document.querySelector('link[data-family-leaflet]')){ const l=document.createElement('link'); l.rel='stylesheet'; l.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; l.integrity='sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='; l.crossOrigin=''; l.dataset.familyLeaflet='1'; document.head.appendChild(l); }
+    const sc=document.createElement('script'); sc.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; sc.integrity='sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='; sc.crossOrigin=''; sc.onload=resolve; sc.onerror=()=>{ window.__familyLeafletPromise=null; reject(new Error('leaflet')); }; document.head.appendChild(sc);
+  });
+  return window.__familyLeafletPromise;
+}
 async function initKinMap(){
  const host=$('#kinMap');if(!host||host.dataset.loading==='1')return;host.dataset.loading='1';
  const status=t=>{const e=$('#kinMapStatus');if(e)e.textContent=t;};
  try{
-  if(!window.L){if(!window.__familyLeafletPromise)window.__familyLeafletPromise=new Promise((resolve,reject)=>{if(!document.querySelector('link[data-family-leaflet]')){const l=document.createElement('link');l.rel='stylesheet';l.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';l.dataset.familyLeaflet='1';document.head.appendChild(l);}const sc=document.createElement('script');sc.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc);});await window.__familyLeafletPromise;}
+  await ensureLeaflet();
   if(!$('#kinMap'))return;
   if(kinMapInstance){try{kinMapInstance.remove();}catch(e){}}kinMapOverlays=[];kinMapMarkers=[];kinMapRoute=null;
   if(!Array.isArray(S.kinMapImages)||!S.kinMapImages.length){try{const saved=JSON.parse(lsGet('shj_kin_map_images_v1')||'[]')||[];if(saved.length)S.kinMapImages=saved;else if(!Array.isArray(S.kinMapImages))S.kinMapImages=[];}catch(e){S.kinMapImages=[];}}
@@ -1672,10 +1697,10 @@ async function initKinMap(){
   if(p.residence)journey.push({label:'سکونت',name:p.residence,year:0});if(p.place)journey.push({label:'سایر محل',name:p.place,year:0});
   journey.sort((a,b)=>(a.year||99999)-(b.year||99999));
   const places=journey.filter((x,i,a)=>i===0||norm(a[i-1].name)!==norm(x.name));const points=[];
-  for(const item of places){const label=item.label,name=item.name;let ll=known[name]||cache[norm(name)];if(!ll){try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(name+', Iran'),{headers:{'Accept-Language':'fa'}});const d=r.ok?await r.json():[];if(d[0]){ll=[+d[0].lat,+d[0].lon];cache[norm(name)]=ll;}}catch(e){}}
-   if(ll&&Number.isFinite(ll[0])&&Number.isFinite(ll[1])){points.push(ll);const m=L.marker(ll).addTo(map).bindPopup('<b>'+esc(label)+(item.year?' · '+fa(item.year):'')+'</b><br>'+esc(name)+'<br>'+esc(full(p))+(item.desc?'<br>'+esc(item.desc):''));kinMapMarkers.push(m);}await new Promise(r=>setTimeout(r,1050));
+  for(const item of places){const label=item.label,name=item.name;let ll=await geoLookup(name);
+   if(ll&&Number.isFinite(ll[0])&&Number.isFinite(ll[1])){points.push(ll);const m=L.marker(ll).addTo(map).bindPopup('<b>'+esc(label)+(item.year?' · '+fa(item.year):'')+'</b><br>'+esc(name)+'<br>'+esc(full(p))+(item.desc?'<br>'+esc(item.desc):''));kinMapMarkers.push(m);}
   }
-  try{localStorage.setItem('shajare_place_geocodes_v1',JSON.stringify(cache));}catch(e){}
+  
   if(points.length>1){kinMapRoute=L.polyline(points,{color:'#7c3aed',weight:4,dashArray:'7 7'}).addTo(map);map.fitBounds(kinMapRoute.getBounds(),{padding:[25,25]});}
   else if(points.length===1)map.setView(points[0],11);
   else status('برای این فرد هنوز مکان قابل مکان‌یابی ثبت نشده است.');
@@ -1733,24 +1758,33 @@ function treeAdvancedHTML(){
  return addForm+'<section class="card stack"><div class="row" style="justify-content:space-between"><h3>🌳 نمودار بادبزنی و فیلترهای نمایش</h3><span class="muted small">یک نمودار، چند شیوه نمایش</span></div>'+picker+'<div class="small muted">حالت نمایش نمودار</div><div class="kin-modebar">'+modes.map(([k,l])=>'<button type="button" class="btn sm '+(mode===k?'':'ghost')+'" data-act="graphmode" data-mode="'+k+'">'+l+'</button>').join('')+'</div><div class="kin-graph-scroll"><div class="kin-graph">'+graph+'</div></div><div class="kin-graph-help"><b>راهنمای تعامل</b><span>با انتخاب هر فیلتر، فقط شیوه نمایش همین نمودار عوض می‌شود؛ اطلاعات و ارتباطات افراد حذف یا جابه‌جا نمی‌شوند.</span><span>برای مشاهده پرونده و اطلاعات فرد، از شجره‌نامه اصلی روی کارت او بزنید؛ در پرونده هم میانبر نمودارهای تعاملی در دسترس است.</span><span>نام‌های ثبت‌شده بدون پرونده مستقل فقط نمایشی هستند و تا زمان ایجاد پرونده، نمودار مستقل ندارند.</span></div></section>';
 }
 function familyTimelineHTML(){
- const P=EP(),ids=Object.keys(P).filter(i=>!P[i].virtual),selected=S.timelinePerson||'',scope=S.timelineScope||'all',place=S.timelinePlace||'';
+ const P=EP(),ids=Object.keys(P).filter(i=>!P[i].virtual),selected=S.timelinePerson||'',scope=S.timelineScope||(selected?'family':'all'),place=S.timelinePlace||'';
  const ancestors=id=>{const out=new Set(),q=[id];while(q.length){const x=q.shift();[P[x]?.fatherId,P[x]?.motherId].filter(Boolean).forEach(y=>{if(P[y]&&!out.has(y)){out.add(y);q.push(y);}});}return out;};
  const descendants=id=>{const out=new Set(),q=[id];while(q.length){const x=q.shift();ids.filter(i=>P[i].fatherId===x||P[i].motherId===x).forEach(y=>{if(!out.has(y)){out.add(y);q.push(y);}});}return out;};
  let allowed=null;if(selected&&scope==='person')allowed=new Set([selected]);else if(selected&&scope==='ancestors')allowed=ancestors(selected);else if(selected&&scope==='descendants')allowed=descendants(selected);else if(selected&&scope==='family'){allowed=ancestors(selected);descendants(selected).forEach(x=>allowed.add(x));allowed.add(selected);}
  const events=[],addEvent=e=>{if(!place||e.loc===place)events.push(e);};
  ids.forEach(id=>{const p=P[id];if(allowed&&!allowed.has(id))return;const loc=p.birthPlace||p.residence||p.place||'';
- if(p.bY){const parents=[p.fatherId,p.motherId].filter(x=>x&&P[x]&&!P[x].virtual);addEvent({y:+p.bY,id,label:'تولد',desc:'تولد '+full(p),loc:p.birthPlace||loc,type:'birth',people:[...parents,id]});}
- if(p.dead&&p.dY)addEvent({y:+p.dY,id,label:'درگذشت',type:'death',desc:'درگذشت '+full(p),loc:p.residence||loc});
+ if(p.bY){const parents=[p.fatherId,p.motherId].filter(x=>x&&P[x]&&!P[x].virtual);addEvent({y:+p.bY,m:+p.bM||0,d:+p.bD||0,id,label:'تولد',desc:'تولد '+full(p),loc:p.birthPlace||loc,type:'birth',people:[...parents,id]});}
+ if(p.dead&&p.dY)addEvent({y:+p.dY,m:+p.dM||0,d:+p.dD||0,id,label:'درگذشت',type:'death',desc:'درگذشت '+full(p),loc:p.residence||loc});
  Object.values(S.memories||{}).filter(m=>m.personId===id&&+m.eventYear>0).forEach(m=>addEvent({y:+m.eventYear,id,label:(KINDS[m.kind]&&KINDS[m.kind][0])||'خاطره',desc:m.text||'رویداد ثبت‌شده',loc:m.eventPlace||loc,type:'memory'}));
  });
- const couples=new Set();ids.forEach(id=>{const p=P[id];(p.spl||[]).forEach(sp=>{if(!P[sp.id]||sp.id===id)return;const pair=[id,sp.id].sort(),key=pair.join('|');if(couples.has(key))return;couples.add(key);const other=(P[sp.id].spl||[]).find(x=>x.id===id);const dt=sp.dt||other?.dt;if(!dt)return;const y=+(dt.aroosi?.y||0);if(!y)return;if(allowed&&!allowed.has(id)&&!allowed.has(sp.id))return;addEvent({y,id,label:'ازدواج',desc:'ازدواج · '+full(P[pair[0]])+' و '+full(P[pair[1]]),loc:p.residence||p.place||P[sp.id].residence||P[sp.id].place||'',type:'marriage',people:pair});});});
- const years=events.map(e=>e.y),min=years.length?Math.min(...years):0,max=years.length?Math.max(...years):0,zoom=Math.max(1,Math.min(4,+S.timelineZoom||1)),shown=events.sort((a,b)=>a.y-b.y||a.desc.localeCompare(b.desc,'fa')).slice(0,500);
+ const couples=new Set();ids.forEach(id=>{const p=P[id];(p.spl||[]).forEach(sp=>{if(!P[sp.id]||sp.id===id)return;const pair=[id,sp.id].sort(),key=pair.join('|');if(couples.has(key))return;couples.add(key);const other=(P[sp.id].spl||[]).find(x=>x.id===id);const dt=sp.dt||other?.dt||((+sp.my||+other?.my)?{aroosi:{y:+(sp.my||other.my)}}:null);if(!dt)return;if(allowed&&!allowed.has(id)&&!allowed.has(sp.id))return;[['nishan','نشان'],['aghd','عقد'],['aroosi','عروسی']].forEach(([k,lb])=>{const dd=dt[k];if(!dd||!+dd.y)return;addEvent({y:+dd.y,m:+dd.m||0,d:+dd.d||0,id,label:lb,desc:lb+' · '+full(P[pair[0]])+' و '+full(P[pair[1]]),loc:p.residence||p.place||P[sp.id].residence||P[sp.id].place||'',type:'marriage',people:pair});});});});
+ const years=events.map(e=>e.y),min=years.length?Math.min(...years):0,max=years.length?Math.max(...years):0,zoom=Math.max(1,Math.min(4,+S.timelineZoom||1)),shown=events.sort((a,b)=>a.y-b.y||(a.m||0)-(b.m||0)||(a.d||0)-(b.d||0)||a.desc.localeCompare(b.desc,'fa')).slice(0,500);
  const locations=[...new Set(ids.flatMap(i=>[P[i].birthPlace,P[i].residence,P[i].place]).concat(Object.values(S.memories||{}).map(m=>m.eventPlace)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
  const personHTML=(id,cls='')=>{const p=P[id];if(!p)return '';const nm=esc(full(p)),gender=p.gender==='m'?'male':p.gender==='f'?'female':'unknown',silhouette=personSilhouette(p.gender);return '<span class="timeline-person '+cls+'" title="'+nm+'">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="'+nm+'" loading="lazy">':'<b class="timeline-avatar timeline-avatar--'+gender+'" role="img" aria-label="'+(gender==='male'?'تصویر جایگزین مرد':gender==='female'?'تصویر جایگزین زن':'تصویر جایگزین')+'">'+silhouette+'</b>')+(cls==='timeline-parent'?'<small class="timeline-parent-name">'+nm+'</small>':'<small>'+nm+'</small>')+'</span>';};
  const peopleHTML=e=>e.type==='birth'?'<div class="timeline-birth-family"><div class="timeline-child">'+personHTML(e.people[e.people.length-1],'timeline-person--child')+'</div><i class="timeline-family-link timeline-family-link--parents" aria-hidden="true"></i><div class="timeline-parents">'+e.people.slice(0,-1).map(id=>personHTML(id,'timeline-parent')).join('')+'</div></div>':'<div class="timeline-people timeline-couple">'+e.people.map(id=>personHTML(id)).join('')+'</div>';
  const eventKinds={birth:{icon:'✦',name:'تولد'},marriage:{icon:'♥',name:'ازدواج'},death:{icon:'🕊️',name:'درگذشت'},memory:{icon:'▤',name:'خاطره و رویداد'}};
  const eventKind=e=>eventKinds[e.type]||eventKinds.memory;
- return '<section class="card stack"><div class="row" style="justify-content:space-between"><h3>⏳ خط زمانی تاریخی خانواده</h3><span class="muted small">'+fa(events.length)+' رویداد</span></div><div class="timeline-filters"><label class="f"><span>فرد</span><select id="timelinePerson"><option value="">همه افراد</option>'+ids.slice().sort((a,b)=>full(P[a]).localeCompare(full(P[b]),'fa')).map(i=>'<option value="'+esc(i)+'" '+(selected===i?'selected':'')+'>'+esc(full(P[i]))+'</option>').join('')+'</select></label><label class="f"><span>دامنه</span><select id="timelineScope"><option value="all">همه خانواده</option><option value="person" '+(scope==='person'?'selected':'')+'>فقط همین فرد</option><option value="ancestors" '+(scope==='ancestors'?'selected':'')+'>نیاکان</option><option value="descendants" '+(scope==='descendants'?'selected':'')+'>نوادگان</option><option value="family" '+(scope==='family'?'selected':'')+'>شاخه خانوادگی</option></select></label><label class="f"><span>محل</span><select id="timelinePlace"><option value="">همه مکان‌ها</option>'+locations.map(x=>'<option '+(place===x?'selected':'')+' value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label></div><div class="timeline-legend"><span class="timeline-legend--birth">✦ تولد</span><span class="timeline-legend--marriage">♥ ازدواج</span><span class="timeline-legend--death">🕊️ درگذشت</span><span class="timeline-legend--memory">▤ خاطره و رویداد</span></div><div class="row" style="justify-content:flex-end;gap:6px"><span class="muted small">بزرگ‌نمایی زمانی</span><button class="btn ghost sm" data-act="timelinezoom" data-d="-1">−</button><b>'+fa(zoom)+'×</b><button class="btn ghost sm" data-act="timelinezoom" data-d="1">+</button></div><div class="timeline-track" style="width:100%;min-width:0">'+shown.map(e=>'<button type="button" class="timeline-event '+('timeline-event--'+(e.type||'memory'))+'" style="flex-basis:'+Math.round(190*zoom)+'px" data-act="person" data-id="'+esc(e.id)+'" title="'+esc(e.desc+(e.loc?' · '+e.loc:''))+'">'+'<span class="timeline-kind"><i aria-hidden="true">'+eventKind(e).icon+'</i>'+eventKind(e).name+'</span>'+(e.people?peopleHTML(e):(P[e.id]?.photo?'<img class="timeline-person-photo" src="'+esc(P[e.id].photo)+'" alt="'+esc(full(P[e.id]))+'" loading="lazy">':''))+'<b>'+fa(e.y)+'</b><i class="timeline-point" aria-hidden="true">'+eventKind(e).icon+'</i><span>'+esc(e.label)+'</span>'+(e.people?'':'<small>'+esc(full(P[e.id]))+'</small>')+'</button>').join('')+'</div><p class="muted small">بازه رویدادهای موجود: '+(events.length?fa(min)+' تا '+fa(max):'—')+'. رویدادها از تولد، درگذشت، تاریخ‌های ازدواج و خاطراتی که سال و محل وقوع برایشان ثبت شده ساخته می‌شوند.</p></section>';
+ const tlDate=e=>e.m?(e.d?fa(e.d)+' ':'')+MONTHS[e.m-1]+' '+fa(e.y):fa(e.y);
+ const tlGroups={};shown.forEach(e=>{const dc=Math.floor(e.y/10)*10;(tlGroups[dc]=tlGroups[dc]||[]).push(e);});
+ const tlOpen=events.length<=80;
+ const tlHTML=Object.keys(tlGroups).sort((a,b)=>a-b).map(dc=>{const g=tlGroups[dc],cnt=t=>g.filter(e=>e.type===t).length;
+  return '<details class="tl-dec" '+(tlOpen?'open':'')+'><summary><span>دهه '+fa(dc)+'</span><span class="muted small">'+fa(g.length)+' رویداد'+(cnt('birth')?' · '+fa(cnt('birth'))+' تولد':'')+(cnt('marriage')?' · '+fa(cnt('marriage'))+' ازدواج':'')+(cnt('death')?' · '+fa(cnt('death'))+' درگذشت':'')+'</span></summary><div class="tl-list">'+g.map(e=>{const ageOf=i=>{const b=P[i]&&+P[i].bY;return b&&e.y>=b?e.y-b:null;};let age='';
+   if(e.type==='death'||e.type==='memory'){const a=ageOf(e.id);if(a!=null)age='در '+fa(a)+' سالگی';}
+   else if(e.type==='marriage'){const t=(e.people||[]).map(i=>{const a=ageOf(i);return a!=null?esc(P[i].first||'')+' '+fa(a)+' ساله':'';}).filter(Boolean);if(t.length)age='سن: '+t.join(' و ');}
+   else if(e.type==='birth'){const t=(e.people||[]).slice(0,-1).map(i=>{const a=ageOf(i);return a!=null&&a>0?(i===P[e.id].fatherId?'پدر':'مادر')+' '+fa(a)+' ساله':'';}).filter(Boolean);if(t.length)age='سن والدین: '+t.join('، ');}
+   return '<button type="button" class="tl-row tl-row--'+(e.type||'memory')+'" data-act="person" data-id="'+esc(e.id)+'"><span class="tl-date">'+tlDate(e)+'</span><span class="tl-ic" aria-hidden="true">'+eventKind(e).icon+'</span><span class="tl-txt"><b>'+esc(e.desc)+'</b>'+(e.loc?'<small class="muted">'+esc(e.loc)+'</small>':'')+(age?'<small class="muted">'+age+'</small>':'')+'</span></button>';}).join('')+'</div></details>';}).join('');
+ return '<section class="card stack"><div class="row" style="justify-content:space-between"><h3>⏳ خط زمانی تاریخی خانواده</h3><span class="muted small">'+fa(events.length)+' رویداد</span></div><div class="timeline-filters"><label class="f"><span>فرد</span><select id="timelinePerson"><option value="">همه افراد</option>'+ids.slice().sort((a,b)=>full(P[a]).localeCompare(full(P[b]),'fa')).map(i=>'<option value="'+esc(i)+'" '+(selected===i?'selected':'')+'>'+esc(full(P[i]))+'</option>').join('')+'</select></label><label class="f"><span>دامنه</span><select id="timelineScope" '+(selected?'':'disabled')+'><option value="all" '+(scope==='all'?'selected':'')+'>همه خانواده</option><option value="person" '+(scope==='person'?'selected':'')+'>فقط همین فرد</option><option value="ancestors" '+(scope==='ancestors'?'selected':'')+'>نیاکان</option><option value="descendants" '+(scope==='descendants'?'selected':'')+'>نوادگان</option><option value="family" '+(scope==='family'?'selected':'')+'>شاخه خانوادگی</option></select>'+(selected?'':'<small class="muted">اول یک فرد را انتخاب کنید</small>')+'</label><label class="f"><span>محل</span><select id="timelinePlace"><option value="">همه مکان‌ها</option>'+locations.map(x=>'<option '+(place===x?'selected':'')+' value="'+esc(x)+'">'+esc(x)+'</option>').join('')+'</select></label></div><div class="timeline-legend"><span class="timeline-legend--birth">✦ تولد</span><span class="timeline-legend--marriage">♥ ازدواج</span><span class="timeline-legend--death">🕊️ درگذشت</span><span class="timeline-legend--memory">▤ خاطره و رویداد</span></div>'+(tlHTML||'<p class="muted">رویدادی برای نمایش نیست.</p>')+'<p class="muted small">بازه رویدادهای موجود: '+(events.length?fa(min)+' تا '+fa(max):'—')+'. رویدادها از تولد، درگذشت، تاریخ نشان و عقد و عروسی و خاطرات ثبت‌شده ساخته می‌شوند.'+(events.length>500?' <b>فقط '+fa(500)+' رویداد اول از '+fa(events.length)+' نمایش داده شد؛ با فیلتر فرد یا محل فهرست را محدودتر کنید.</b>':'')+'</p></section>';
 }
 
 function viewTree(){
@@ -2681,11 +2715,12 @@ async function redeemInvite(){
   toast('رمز شخصی شما فعال شد.'); await loginPersonal(me,v.pw);
 }
 async function saveLife(){
-  const pid=S.lifePerson, kind=val('#lf_kind'), date=jParse('#lf_date'), title=val('#lf_title'), body=val('#lf_body'), vis=val('#lf_vis'), unlockRaw=val('#lf_unlock'), unlock=unlockRaw?jParse('#lf_unlock'):'', file=$('#lf_file')?.files?.[0]||null;
+  let pid=S.lifePerson, kind=val('#lf_kind'), date=jParse('#lf_date'), title=val('#lf_title'), body=val('#lf_body'), vis=val('#lf_vis'), unlockRaw=val('#lf_unlock'), unlock=unlockRaw?jParse('#lf_unlock'):'', file=$('#lf_file')?.files?.[0]||null;
   if(!date){toast('تاریخ شمسی را به شکل ۱۴۰۵/۰۱/۱۵ وارد کنید.');return;} if(unlockRaw&&!unlock){toast('تاریخ باز شدن نامه معتبر نیست (مثل ۱۴۰۵/۰۱/۱۵).');return;} if(!pid||!title){toast('عنوان را وارد کنید.');return;}
   if(kind==='letter'&&!body){toast('متن نامه را بنویسید.');return;}
   if(file&&(!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size>10*1024*1024)){toast('فقط عکس JPG، PNG یا WebP تا ۱۰ مگابایت پذیرفته می‌شود.');return;}
   const paths=[];
+  if(file){ const e0=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg'; const sh=await familyShrink(file,e0); file=sh.blob; }
   if(file){
     const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg', mp=pid+'/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;
     const h={apikey:CFG.key,Authorization:'Bearer '+SB.tok,'Content-Type':file.type,'x-upsert':'false'}, t=sessionStorage.getItem('shj_parent_token'); if(t) h['x-shj-parent-token']=t;
@@ -2808,11 +2843,11 @@ function familyErrText(e){
 async function familyShrink(file,ext){
   if(!['jpg','png','webp'].includes(ext)||!window.createImageBitmap)return {blob:file,ext};
   try{
-    const bmp=await createImageBitmap(file),k=Math.min(1,1600/Math.max(bmp.width,bmp.height));
-    if(k===1&&file.size<1.5*1024*1024)return {blob:file,ext};
+    const bmp=await createImageBitmap(file),k=Math.min(1,1400/Math.max(bmp.width,bmp.height));
+    if(k===1&&file.size<350*1024)return {blob:file,ext};
     const c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
     const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);
-    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.85));
+    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.72));
     return blob&&blob.size<file.size?{blob,ext:'jpg'}:{blob:file,ext};
   }catch(e){return {blob:file,ext};}
 }
@@ -3132,13 +3167,19 @@ function viewFamilyBook(){
   return `<div class="stack digital-book-shell"><div class="family-book-reader-head"><div><h2>📖 کتابچهٔ زندهٔ «ریشه‌ها»</h2><p>نسخهٔ اصلی و همیشه‌به‌روز · فصل‌ها و تعداد صفحات با ثبت مطالب تازه به‌روز می‌شوند.</p></div><button class="btn sm" data-act="tab" data-tab="family">＋ ثبت مطلب تازه</button></div><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>صفحهٔ قبل</button><span class="family-book-page-count">${fa(familyDigitalState.page+1)} از ${fa(max)}</span><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>صفحهٔ بعد</button><select id="digitalBookJump" aria-label="رفتن به فصل">${pages.map((x,i)=>`<option value="${i}" ${i===familyDigitalState.page?'selected':''}>${esc(x.title)}</option>`).join('')}</select></div><article class="digital-book-page"><div class="book-section-label">${esc(p.eyebrow)}</div>${p.html}</article><div class="family-book-reader-tools"><button class="btn sm ghost" data-act="digitalbookprev" ${familyDigitalState.page===0?'disabled':''}>قبلی</button><button class="btn sm ghost" data-act="digitalbooknext" ${familyDigitalState.page>=max-1?'disabled':''}>بعدی</button><span class="muted small">با هر مطلب تأییدشده، صفحات مرتبط به‌طور خودکار تکمیل می‌شوند.</span></div></div>`;
 }
 
+function backupDueHTML(){
+  if(!S.isAdmin) return '';
+  const t=+lsGet('shj_lastbackup')||0, sn=+lsGet('shj_bk_snooze')||0, days=t?Math.floor((Date.now()-t)/864e5):null;
+  if((t&&days<30)||(sn&&Date.now()-sn<3*864e5)) return '';
+  return `<section class="card stack" style="border:2px solid #d9a441"><h3>🔔 یادآوری پشتیبان‌گیری</h3><p class="muted small" style="margin:0">${t?'آخرین پشتیبان روی این دستگاه '+fa(days)+' روز پیش گرفته شده است.':'تا حالا روی این دستگاه پشتیبانی دانلود نشده است.'} پیشنهاد می‌شود ماهی یک بار پشتیبان بگیرید و در جای امن نگه دارید.</p><div class="row"><button type="button" class="btn" data-act="bkjson">⬇️ دانلود پشتیبان</button><button type="button" class="btn ghost sm" data-act="bksnooze">سه روز بعد یادآوری کن</button></div></section>`;
+}
 function viewAdmin(){
   if(!S.isAdmin) return '<div class="note bad">این بخش فقط برای مدیر است.</div>';
   const pl=pendingList(), fposts=(S.familyPosts||[]);
   const nG=lastGroups().length+['place','job'].reduce((t,k)=>t+Object.values(valGroups(k)).filter(v=>Object.keys(v).length>1).length,0);
   const parents=Object.entries(S.people).filter(([id,p])=>!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
   const real=parents.length, pendingTotal=pl.length+fposts.length+(S.claims||[]).length+(S.reports||[]).length;
-  return `<div class="stack">
+  return `<div class="stack">${backupDueHTML()}
   <section class="card stack"><div class="row" style="justify-content:space-between"><div><h2>🧭 میزکار مدیریت</h2><p class="muted small" style="margin:0">برای خلوت ماندن صفحه، هر بخش را فقط هنگام نیاز باز کنید.</p></div><span class="pill adm">مدیر</span></div>
   <div class="admin-overview"><div class="kpi"><b>${fa(real)}</b><span>پروندهٔ اعضا</span></div><div class="kpi"><b>${fa(pendingTotal)}</b><span>موارد نیازمند بررسی</span></div><div class="kpi"><b>${fa(nG)}</b><span>گروه نیازمند یکسان‌سازی</span></div><div class="kpi"><b>${fa(fposts.length)}</b><span>یادگارهای موزه</span></div></div>
   <p class="small muted" style="margin:0">${pendingTotal?'ابتدا بخش «بررسی و تأیید» را باز کنید.':'در حال حاضر مورد فوری برای بررسی ندارید.'}</p></section>
@@ -3151,6 +3192,8 @@ function viewAdmin(){
     <section class="card stack"><h3>جستجو و مدیریت پرونده‌ها</h3><p class="muted small" style="margin:0">پروندهٔ هر فرد را جستجو کنید و اطلاعات، روابط خانوادگی و دفتر زندگی را مدیریت کنید.</p><input type="search" id="adq" placeholder="🔍 جستجوی نام…" value="${esc(S.adq||'')}" autocomplete="off"><div id="adList">${adListHTML()}</div></section>
     <section class="card stack"><h3>دعوت و مدیریت رمز شخصی</h3><p class="muted small" style="margin:0">کد دعوت فقط برای احراز هویت اولیه است. عضو پس از فعال‌سازی رمز شخصی خودش را انتخاب و مدیریت می‌کند.</p><div style="max-height:360px;overflow:auto;display:grid;gap:7px">${parents.map(([id,p])=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>${esc(full(p))}</span><span class="row"><button class="btn sm" data-act="makeinvite" data-id="${esc(id)}">ساخت کد دعوت</button><button class="btn ghost sm" data-act="revokeparent" data-id="${esc(id)}">لغو دسترسی</button></span></div>`).join('')}</div></section>
   </div></details>
+  <details class="admin-group"><summary>💾 حجم اطلاعات و عکس‌ها</summary><div class="admin-group-body">${photoStatsHTML()}</div></details>
+  <details class="admin-group"><summary>📈 آمار مراجعه اعضا</summary><div class="admin-group-body">${visitStatsHTML()}</div></details>
   <details class="admin-group"><summary>📊 کیفیت اطلاعات و گزارش‌ها</summary><div class="admin-group-body">${qualityHTML()}${histHTML()}${treeWarnHTML()}</div></details>
   <details class="admin-group"><summary>🧹 اصلاح و یکسان‌سازی اطلاعات <span class="pill">${fa(nG)}</span></summary><div class="admin-group-body">
     <section class="card stack"><h3>اصلاح همه یکجا</h3>${nG?`<p class="muted small" style="margin:0">${fa(nG)} گروه املای ناهمسان پیدا شد. قبل از اجرا، نسخهٔ پشتیبان بگیرید.</p><button type="button" class="btn" data-act="unifyall" data-w="all">✨ اصلاح همه یکجا</button>`:'<p class="muted small" style="margin:0">نام‌ها، شهرها و شغل‌ها یکدست هستند ✅</p>'}</section>
@@ -3494,7 +3537,7 @@ async function saveArt(kind){
 }
 
 /* ================= photo standardisation ================= */
-const PW=240, PH=320;
+const PW=192, PH=256;
 async function toBitmap(file){
   try{ return await createImageBitmap(file,{imageOrientation:'from-image'}); }
   catch(e){ const url=URL.createObjectURL(file); const im=await loadImg(url); if(!im) throw new Error('bad image'); return im; }
@@ -3517,7 +3560,7 @@ async function standardPhoto(file){
     for(let i=0;i<a.length;i+=4) hist[Math.round(.299*a[i]+.587*a[i+1]+.114*a[i+2])]++;
     const tot=PW*PH; let acc=0,lo=0,hi=255; for(let i=0;i<256;i++){ acc+=hist[i]; if(acc>tot*.01){lo=i;break;} } acc=0; for(let i=255;i>=0;i--){ acc+=hist[i]; if(acc>tot*.01){hi=i;break;} }
     if(hi-lo>40){ const sc=255/(hi-lo), mix=.6; for(let i=0;i<a.length;i+=4) for(let j=0;j<3;j++){ const v=(a[i+j]-lo)*sc; a[i+j]=Math.max(0,Math.min(255,a[i+j]*(1-mix)+v*mix)); } o.putImageData(d,0,0); } }catch(e){}
-  return {data:out.toDataURL('image/jpeg',.78),mode};
+  return {data:out.toDataURL('image/jpeg',.7),mode};
 }
 
 function autoLevels(o){
@@ -3562,7 +3605,7 @@ async function cropPhoto(file){
     bg.querySelector('#cno').onclick=()=>done(null);
     bg.querySelector('#cok').onclick=()=>{
       const out=document.createElement('canvas'); out.width=PW; out.height=PH; const o=out.getContext('2d');
-      draw(o,PW/VW,PW,PH); autoLevels(o); done(out.toDataURL('image/jpeg',.82));
+      draw(o,PW/VW,PW,PH); autoLevels(o); done(out.toDataURL('image/jpeg',.72));
     };
   });
 }
@@ -3694,8 +3737,52 @@ function positionGenealogyRoot(){
  };
  requestAnimationFrame(()=>requestAnimationFrame(place));
 }
+/* ---------- آمار مراجعه (ثبت ناشناس‌نشده؛ فقط مدیر می‌بیند) ---------- */
+const VISIT_SID=(()=>{ let v=null; try{ v=sessionStorage.getItem('shj_sid'); }catch(e){} if(!v){ v=Math.random().toString(36).slice(2)+Date.now().toString(36); try{ sessionStorage.setItem('shj_sid',v); }catch(e){} } return v; })();
+let __lastTracked='', __trackOff=false;
+function trackView(){
+  if(__trackOff||!S.authed||!S.me||S.isAdmin||S.tab===__lastTracked) return;
+  const first=!__lastTracked; __lastTracked=S.tab;
+  sbFetch('/rest/v1/rpc/shj_log_visit',{method:'POST',body:JSON.stringify({p_sid:VISIT_SID,p_who:((S.me.first||'')+' '+(S.me.last||'')).trim().slice(0,80),p_tab:String(S.tab).slice(0,40),p_kind:first?'open':'view'})}).catch(e=>{ if(e&&(e.code===404||e.code===400||e.code===401||e.code===403)) __trackOff=true; });
+}
+function photoStatsHTML(){
+  const L=Object.values(S.people).filter(p=>p.photo&&String(p.photo).startsWith('data:')), bytes=L.reduce((t,p)=>t+p.photo.length,0), big=L.filter(p=>p.photo.length>14000).length;
+  const all=Object.values(S.people).reduce((t,p)=>t+JSON.stringify(p).length,0), kb=n=>fa(Math.round(n/1024))+' کیلوبایت';
+  return `<section class="card stack"><h3>💾 حجم اطلاعات و عکس‌ها</h3><div class="facts"><div class="fact"><b>${fa(L.length)}</b><span>عکس پرونده‌ها</span></div><div class="fact"><b>${kb(bytes)}</b><span>حجم کل عکس‌ها</span></div><div class="fact"><b>${fa(all?Math.round(bytes/all*100):0)}٪</b><span>سهم عکس از کل اطلاعات اعضا</span></div><div class="fact"><b>${fa(big)}</b><span>عکس قابل کوچک‌تر شدن</span></div></div>
+  <p class="muted small" style="margin:0">عکس‌های جدید از الان کوچک‌تر ذخیره می‌شوند (۱۹۲×۲۵۶) و عکس‌ها و پیوست‌های بارگذاری‌شده هم قبل از ارسال فشرده می‌شوند. برای عکس‌های قبلی دکمهٔ زیر را بزنید. قبل از شروع، پشتیبان خودکار دانلود می‌شود و کار برگشت‌پذیر نیست.</p>
+  <div class="row"><button type="button" class="btn" data-act="photoslim" ${big?'':'disabled'}>🗜️ کوچک کردن عکس‌های قبلی</button></div></section>`;
+}
+function visitStatsHTML(){
+  const rows=S.visitRows, days=S.visitDays||30;
+  const head=`<section class="card stack"><h3>📈 آمار مراجعه</h3><p class="muted small" style="margin:0">مراجعه‌های اعضا از زمانی شمرده می‌شود که ثبت مراجعه فعال شده باشد. مراجعه‌های خود مدیر شمرده نمی‌شود.</p><div class="row" style="gap:8px;align-items:end"><label class="f"><span>بازه</span><select id="visitDays">${[7,30,90,365].map(d=>`<option value="${d}" ${d===days?'selected':''}>${fa(d)} روز اخیر</option>`).join('')}</select></label><button type="button" class="btn sm" data-act="visitload">${rows?'به‌روزرسانی':'نمایش آمار'}</button></div>`;
+  if(!rows) return head+'</section>';
+  if(!rows.length) return head+'<p class="muted small" style="margin:0">در این بازه هنوز مراجعه‌ای ثبت نشده است.</p></section>';
+  const bar=(v,max,c)=>`<div style="flex:1;min-width:40px;height:8px;background:var(--line);border-radius:4px;overflow:hidden"><div style="width:${max?Math.round(v/max*100):0}%;height:100%;background:${c||'var(--primary)'}"></div></div>`;
+  const dk=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(), fd=d=>new Date(d).toLocaleDateString('fa-IR-u-ca-persian');
+  const people={}, tabP={}, tabV={}, wd=[0,0,0,0,0,0,0], tod=[0,0,0,0,0], byDay={}; let opens=0;
+  rows.forEach(r=>{ const d=new Date(r.at), who=(r.who||'نامشخص').trim()||'نامشخص', k=nn(who);
+    const p=people[k]||(people[k]={name:who,sids:new Set(),days:new Set(),last:0}); p.sids.add(r.sid); p.days.add(dk(d)); p.last=Math.max(p.last,+d);
+    (tabP[r.tab]=tabP[r.tab]||new Set()).add(k); tabV[r.tab]=(tabV[r.tab]||0)+1;
+    if(r.kind==='open'){ opens++; wd[(d.getDay()+1)%7]++; const h=d.getHours(); tod[h<5?0:h<11?1:h<16?2:h<20?3:4]++; byDay[dk(d)]=(byDay[dk(d)]||0)+1; } });
+  const plist=Object.values(people), nV=plist.length, ret=plist.filter(p=>p.days.size>=2).length, once=plist.filter(p=>p.days.size<2).length;
+  const tabs=[]; navGroups().forEach(g=>g.tabs.forEach(([k,l])=>{ if(k!=='admin'&&k!=='audit'&&!tabs.some(x=>x[0]===k)) tabs.push([k,l]); }));
+  const tr=tabs.map(([k,l])=>({k,l,n:tabP[k]?tabP[k].size:0,v:tabV[k]||0})).sort((a,b)=>b.n-a.n||b.v-a.v);
+  const zero=tr.filter(t=>!t.n), low=tr.slice().reverse().filter(t=>t.n).slice(0,3), top=tr.slice(0,3).filter(t=>t.n);
+  const WD=['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'], TD=['بامداد (۰–۵)','صبح (۵–۱۱)','ظهر (۱۱–۱۶)','عصر (۱۶–۲۰)','شب (۲۰–۲۴)'];
+  const mw=Math.max(...wd,1), mt=Math.max(...tod,1);
+  const d14=[]; for(let i=13;i>=0;i--){ const d=new Date(Date.now()-i*864e5); d14.push([fd(d),byDay[dk(d)]||0]); } const m14=Math.max(...d14.map(x=>x[1]),1);
+  const row=(l,v,mx,t,c)=>`<div class="row" style="gap:8px;align-items:center;flex-wrap:nowrap"><span class="small" style="flex:0 0 110px">${l}</span>${bar(v,mx,c)}<b class="small" style="flex:0 0 auto">${t}</b></div>`;
+  return head+`
+   <div class="facts" style="margin-top:6px"><div class="fact"><b>${fa(opens)}</b><span>تعداد مراجعه (باز کردن برنامه)</span></div><div class="fact"><b>${fa(nV)}</b><span>نفرِ متفاوت</span></div><div class="fact"><b>${fa(ret)} (${fa(nV?Math.round(ret/nV*100):0)}٪)</b><span>در بیش از یک روز برگشته‌اند</span></div><div class="fact"><b>${fa(once)}</b><span>فقط یک روز آمده‌اند</span></div></div>
+   <h4 style="margin:10px 0 4px">مراجعهٔ ۱۴ روز اخیر</h4><div style="display:flex;align-items:flex-end;gap:3px;height:60px">${d14.map(([k,v])=>`<div title="${esc(k)}: ${fa(v)}" style="flex:1;background:var(--primary);height:${Math.max(3,Math.round(v/m14*100))}%;border-radius:3px 3px 0 0"></div>`).join('')}</div>
+   <h4 style="margin:10px 0 4px">چه روزها و چه ساعت‌هایی می‌آیند</h4>${wd.map((v,i)=>row(WD[i],v,mw,fa(v),'#2563eb')).join('')}<div style="height:6px"></div>${tod.map((v,i)=>row(TD[i],v,mt,fa(v),'#d97706')).join('')}
+   <h4 style="margin:10px 0 4px">بخش‌ها: چند نفر دیده‌اند</h4>${tr.map(t=>row(esc(t.l),t.n,nV,fa(t.n)+' نفر',t.n?'var(--primary)':'#94a3b8')).join('')}
+   <div class="note" style="margin-top:6px">${top.length?`<b>پربازدیدترین:</b> ${top.map(t=>esc(t.l)).join('، ')}. `:''}${zero.length?`<b>تا حالا هیچ‌کس ندیده:</b> ${zero.map(t=>esc(t.l)).join('، ')}. `:''}${low.length?`<b>کم‌بازدیدترین بین دیده‌شده‌ها:</b> ${low.map(t=>esc(t.l)).join('، ')}.`:''} ${nV&&ret/nV<.4?'کمتر از ۴۰٪ افراد دوباره برگشته‌اند؛ برای جذب بیشتر، یادآوری تولد و سالگرد یا یک محتوای تازه (خاطره، عکس) می‌تواند کمک کند.':''}</div>
+   <h4 style="margin:10px 0 4px">افراد (بیشترین مراجعه)</h4><ul class="list">${plist.sort((a,b)=>b.days.size-a.days.size||b.sids.size-a.sids.size).slice(0,30).map(p=>`<li><div style="flex:1 1 200px;min-width:0"><b>${esc(p.name)}</b> <span class="muted small">${fa(p.sids.size)} بار آمده · ${fa(p.days.size)} روز · آخرین: ${esc(fd(p.last))}</span></div>${p.days.size>=2?'<span class="chip">برمی‌گردد</span>':''}</li>`).join('')}</ul>${plist.length>30?`<p class="muted small" style="margin:0">${fa(plist.length-30)} نفر دیگر هم هست.</p>`:''}</section>`;
+}
 function renderView(){
   if(S.tab==='research') S.tab='home';
+  trackView();
   const v=$('#view'); if(!v) return;
   const f={home:viewHome,tree:viewTree,relations:viewRelations,timeline:viewTimeline,map:viewMap,smart:viewSmart,research:viewResearch,audit:viewAudit,stats:viewStats,add:viewAdd,tools:viewTools,growth:viewGrowth,life:viewLife,family:viewFamily,book:viewFamilyBook,admin:viewAdmin}[S.tab]||viewHome;
   v.classList.toggle('tree-page',S.tab==='tree');
@@ -3990,6 +4077,16 @@ document.addEventListener('click',async ev=>{
     if(note) toast(note);
   }
   else if(a==='unfocus'){ S.focus=''; renderView(); }
+  else if(a==='photoslim'){
+    const ids=Object.keys(S.people).filter(i=>{ const ph=S.people[i].photo; return ph&&String(ph).startsWith('data:')&&ph.length>14000; }); if(!ids.length){ toast('عکسی برای کوچک کردن نیست'); return; }
+    if(!confirm('عکس '+fa(ids.length)+' نفر کوچک‌تر شود؟ قبل از شروع یک فایل پشتیبان دانلود می‌شود و این کار برگشت‌پذیر نیست.')) return;
+    try{ saveBlob('shajare-backup-before-photos-'+Date.now()+'.json',new Blob([backupJSON()],{type:'application/json'})); lsSet('shj_lastbackup',String(Date.now())); }catch(e){}
+    const shrink=url=>new Promise(res=>{ const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=192; c.height=256; const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,192,256); const k=Math.max(192/im.width,256/im.height), w=im.width*k, h=im.height*k; x.drawImage(im,(192-w)/2,(256-h)/2,w,h); res(c.toDataURL('image/jpeg',.7)); }; im.onerror=()=>res(null); im.src=url; });
+    let saved=0, done=0;
+    for(const id of ids){ const old=S.people[id].photo, nw=await shrink(old); if(nw&&nw.length<old.length){ try{ await S.db.doc('people/'+id).update({photo:nw}); S.people[id]=Object.assign({},S.people[id],{photo:nw}); saved+=old.length-nw.length; }catch(e){} } done++; if(done%5===0) toast('در حال کوچک کردن: '+fa(done)+' از '+fa(ids.length)); }
+    S.T=null; toast('انجام شد؛ حدود '+fa(Math.round(saved/1024))+' کیلوبایت کمتر شد'); renderView(); }
+  else if(a==='visitload'){ const d=+($('#visitDays')||{}).value||30; try{ const r=await sbFetch('/rest/v1/rpc/shj_list_visits',{method:'POST',body:JSON.stringify({p_days:d})}); S.visitRows=Array.isArray(r)?r:[]; S.visitDays=d; renderView(); }catch(e){ toast((e&&(e.code===404||e.code===400))?'جدول آمار هنوز ساخته نشده؛ فایل visits.sql را در Supabase اجرا کنید':'خواندن آمار ناموفق بود'); } }
+  else if(a==='bksnooze'){ lsSet('shj_bk_snooze',String(Date.now())); renderView(); }
   else if(a==='bkjson'){ try{ await loadFamilyPosts(); }catch(e){} lsSet('shj_lastbackup',String(Date.now())); const d=new Date(); saveBlob('shajare-backup-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.json',new Blob([backupJSON()],{type:'application/json'})); toast('پشتیبان دانلود شد'); }
   else if(a==='bkged'){ saveBlob('shajare-allahrezaei.ged',new Blob([gedcomExport()],{type:'text/plain;charset=utf-8'})); toast('فایل GEDCOM دانلود شد'); }
   else if(a==='unify'){ const grp=Object.fromEntries(lastGroups())[el.dataset.k], to=el.dataset.to; if(!grp) return; const ids=Object.entries(grp).filter(([sp])=>sp!==to).flatMap(([,a])=>a); if(!ids.length) return; if(!confirm('نام خانوادگی '+fa(ids.length)+' نفر به «'+to+'» تغییر کند؟')) return; histPush('نام خانوادگی ← '+to,ids.map(id=>[id,{last:S.people[id].last||''}])); for(const id of ids){ await S.db.doc('people/'+id).update({last:to}); S.people[id]=Object.assign({},S.people[id],{last:to}); } S.T=null; toast('یکدست شد'); renderView(); }
@@ -4008,7 +4105,7 @@ document.addEventListener('click',async ev=>{
     if(w==='all'||w==='vals') ['place','job'].forEach(kind=>Object.values(valGroups(kind)).filter(v=>Object.keys(v).length>1).forEach(v=>{ const to=top(v); Object.values(v).forEach(arr=>arr.forEach(([id,f])=>add(id,f,to))); }));
     const ids=Object.keys(todo); if(!ids.length){ toast('چیزی برای تغییر نبود'); return; }
     if(!confirm('اطلاعات '+fa(ids.length)+' نفر یکدست شود؟ (در هر گروه، پرتکرارترین املا انتخاب می‌شود) پیش از اصلاح، یک فایل پشتیبان خودکار دانلود می‌شود.')) return;
-    try{ saveBlob('shajare-backup-before-fix-'+Date.now()+'.json',new Blob([backupJSON()],{type:'application/json'})); }catch(e){}
+    try{ saveBlob('shajare-backup-before-fix-'+Date.now()+'.json',new Blob([backupJSON()],{type:'application/json'})); lsSet('shj_lastbackup',String(Date.now())); }catch(e){}
     histPush('اصلاح همه یکجا',ids.map(id=>[id,pickF(S.people[id],Object.keys(todo[id]))]));
     for(const id of ids){ await S.db.doc('people/'+id).update(todo[id]); S.people[id]=Object.assign({},S.people[id],todo[id]); }
     S.T=null; toast('همه یکدست شد'); renderView();
@@ -4430,12 +4527,6 @@ boot();
  .home-shortcuts-compact .home-shortcut{min-height:64px}
 }
 .ancestor-portrait-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:20px 0}.ancestor-portrait-card{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:var(--surface2);break-inside:avoid}.ancestor-portrait-card>img{display:block;width:100%;height:190px;object-fit:cover;background:#eee}.ancestor-portrait-placeholder{height:150px;display:grid;place-items:center;font-size:42px;background:var(--surface2)}.ancestor-portrait-caption{padding:10px 12px;display:grid;gap:4px}.ancestor-portrait-caption b{font-size:15px}.ancestor-portrait-caption span,.ancestor-portrait-caption small{color:var(--muted);font-size:12px}.ancestor-portrait-caption p{font-size:13px;line-height:1.8;margin:4px 0 0}@media(max-width:600px){.ancestor-portrait-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ancestor-portrait-card>img{height:135px}.ancestor-portrait-caption{padding:8px}.ancestor-portrait-caption p{font-size:12px}}</style>
-<style id="mouse-drag-pan-fix">
-/* Drag the actual scroll viewport, not just the element under the pointer. */
-#artBox,#chartBox,.outline,.kin-graph-scroll,.kin-fan-wrap,.family-map-box,.timeline-track{cursor:grab;overscroll-behavior:contain}
-.mouse-pan-active{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
-.mouse-pan-active *{user-select:none!important;-webkit-user-select:none!important}
-.mouse-pan-active img,.mouse-pan-active canvas,.mouse-pan-active svg{-webkit-user-drag:none;user-drag:none}
-</style>
+
 </body>
 </html>
