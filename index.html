@@ -169,6 +169,18 @@ option[value="__new"]{font-weight:700;color:var(--accent)}
 }
 
 
+/* Original 10-page family booklet reader */
+.family-book-reader{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);box-shadow:0 10px 30px #172b2410}
+.family-book-reader-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 18px;background:linear-gradient(120deg,#243f38,#345c4c);color:#fff}
+.family-book-reader-head h2{margin:0;font-size:1.12rem;color:#fff}.family-book-reader-head p{margin:4px 0 0;color:#e4eee7;font-size:.84rem}
+.family-book-reader-tools{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:12px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.family-book-reader-tools button{min-width:40px}.family-book-page-count{font-weight:800;min-width:92px;text-align:center;font-variant-numeric:tabular-nums}
+.family-book-frame{background:#ded8ca;padding:clamp(8px,2vw,20px);display:flex;justify-content:center;min-height:420px}
+.family-book-frame iframe{width:min(100%,1050px);height:min(78vh,1100px);min-height:600px;border:0;border-radius:8px;background:#fff;box-shadow:0 8px 28px #1c241c30}
+.family-book-empty{padding:30px 20px;text-align:center;max-width:720px;margin:auto}.family-book-empty strong{display:block;font-size:1.1rem;margin-bottom:8px}.family-book-empty p{color:var(--muted);line-height:1.9}
+.family-book-upload-note{margin:0;padding:10px 16px;background:var(--surface-2);color:var(--muted);font-size:.82rem;text-align:center}
+@media(max-width:640px){.family-book-reader-head{align-items:flex-start}.family-book-frame{padding:5px;min-height:360px}.family-book-frame iframe{height:72vh;min-height:480px}.family-book-reader-tools{gap:5px}.family-book-page-count{min-width:75px;font-size:.85rem}}
+
 /* Illustrated family history book layout */
 .family-book-cover{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(220px,.75fr);gap:0;border-radius:20px;overflow:hidden;background:#efe5ca;border:1px solid #b6a27a;box-shadow:0 16px 42px #4b39201b;color:#342c20}
 .book-cover-frame{padding:clamp(18px,3vw,34px);border:7px double #a58c5d;margin:12px;position:relative;background:#f8f3e7;text-align:center}
@@ -2084,6 +2096,8 @@ async function approveLife(id){
 
 /* ---------- موزه زنده خاندان الله‌رضایی ---------- */
 const FAMILY_ARCHIVE_MARK='SHJ_ARCHIVE_V1:';
+const familyBookState={url:'',page:1,zoom:100};
+const FAMILY_BOOK_PATH='roots-book/roots.pdf';
 const FAMILY_CATEGORIES={portrait:'چهره‌ها و بزرگان',village:'روستا و زادگاه',ceremony:'مراسم و دورهمی',documents:'اسناد و دست‌نوشته‌ها',daily:'زندگی روزمره',other:'سایر یادگارها'};
 const FAMILY_VILLAGES=['بودلا','خودلان','زرین‌آباد','خسروآباد','چنگ‌الماس','سایر'];
 const FAMILY_SECTIONS=[
@@ -2181,6 +2195,41 @@ function familyApplyFilters(){
   });
   const no=$('#familyNoFilter');const cards=[...document.querySelectorAll('[data-family-card]')];if(no)no.hidden=!cards.length||cards.some(c=>!c.hidden);
 }
+function familyBookPublicUrl(){return CFG.url+'/storage/v1/object/public/shj-family-public/'+FAMILY_BOOK_PATH;}
+function familyBookReaderHTML(){
+  const url=familyBookState.url,page=familyBookState.page,zoom=familyBookState.zoom;
+  return `<section class="family-book-reader" id="familyBookReader">
+    <div class="family-book-reader-head"><div><h2>📖 کتاب اصلی «ریشه‌ها»</h2><p>نسخهٔ کامل ۱۰ صفحه‌ای · نقشه‌ها و نمودارهای اصلی</p></div><span class="pill" style="background:#ffffff20;color:#fff;border-color:#ffffff35">نسخهٔ اصلی PDF</span></div>
+    ${url?`<div class="family-book-reader-tools">
+      <button class="btn sm ghost" type="button" data-act="familybookprev" ${page<=1?'disabled':''}>صفحهٔ قبل</button>
+      <span class="family-book-page-count">صفحهٔ ${fa(page)} از ۱۰</span>
+      <button class="btn sm ghost" type="button" data-act="familybooknext" ${page>=10?'disabled':''}>صفحهٔ بعد</button>
+      <span class="muted small">بزرگ‌نمایی</span>
+      <button class="btn sm ghost" type="button" data-act="familybookzoomout" ${zoom<=70?'disabled':''}>−</button>
+      <span class="small" style="min-width:42px;text-align:center">${zoom}٪</span>
+      <button class="btn sm ghost" type="button" data-act="familybookzoomin" ${zoom>=160?'disabled':''}>＋</button>
+      <a class="btn sm" href="${esc(url)}" target="_blank" rel="noopener">بازکردن PDF</a>
+    </div><div class="family-book-frame"><iframe title="کتابچهٔ اصلی ریشه‌ها، صفحهٔ ${page}" src="${esc(url)}#page=${page}&zoom=${zoom}" loading="lazy"></iframe></div>`:
+    `<div class="family-book-empty"><div style="font-size:2.5rem">📚</div><strong>فایل اصلی کتابچه هنوز به آرشیو سایت منتقل نشده است.</strong><p>برای نمایش صفحات واقعی، مدیر خانواده باید فایل PDF ده‌صفحه‌ای را یک‌بار از همین قسمت بارگذاری کند. پس از بارگذاری، همهٔ اعضا می‌توانند صفحات را ورق بزنند و بزرگ‌نمایی کنند.</p>${S.isAdmin?`<button class="btn big" type="button" data-act="familybookupload">بارگذاری PDF اصلی کتابچه</button><input id="familyBookFile" type="file" accept="application/pdf,.pdf" hidden><p class="small muted">فایل روی فضای ذخیره‌سازی عمومی کتابخانهٔ خانواده قرار می‌گیرد تا برای اعضا قابل مشاهده باشد.</p>`:`<span class="pill">در انتظار بارگذاری مدیر</span>`}</div>`}
+    ${url?'<p class="family-book-upload-note">برای جابه‌جایی بین صفحات از دکمه‌های بالا استفاده کنید؛ در صورت پشتیبانی مرورگر، ابزارهای داخلی PDF نیز فعال‌اند.</p>':''}
+  </section>`;
+}
+async function loadFamilyBook(){
+  const url=familyBookPublicUrl();
+  try{const r=await fetch(url,{method:'HEAD',cache:'no-store'});familyBookState.url=r.ok?url:'';}
+  catch(e){familyBookState.url='';}
+  if(S.tab==='family')renderView();
+}
+async function uploadFamilyBook(file){
+  if(!S.isAdmin)throw new Error('فقط مدیر خانواده می‌تواند کتابچه را بارگذاری کند.');
+  if(!file||file.type!=='application/pdf')throw new Error('لطفاً فایل PDF کتابچه را انتخاب کنید.');
+  if(file.size>20*1024*1024)throw new Error('حجم فایل نباید بیشتر از ۲۰ مگابایت باشد.');
+  toast('در حال بارگذاری کتابچه…');
+  await sbFetch('/storage/v1/object/shj-family-public/'+FAMILY_BOOK_PATH,{method:'POST',headers:{'Content-Type':'application/pdf','x-upsert':'true'},body:file});
+  familyBookState.url=familyBookPublicUrl();familyBookState.page=1;familyBookState.zoom=100;
+  renderView();const box=$('#familyBookReader');if(box)box.scrollIntoView({behavior:'smooth',block:'start'});
+  toast('کتابچه با موفقیت در آرشیو خانواده قرار گرفت.');
+}
 function viewFamily(){
   const posts=S.familyPosts||[],approved=posts.filter(p=>p.status==='approved'),pending=S.isAdmin?posts.filter(p=>p.status==='pending'):[];
   const allPeople=Object.entries(S.people||{}).filter(([id,p])=>!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
@@ -2204,6 +2253,7 @@ function viewFamily(){
     </section>`;
   }).join('');
   return `<div class="stack">
+    ${familyBookReaderHTML()}
     <section class="family-book-cover"><div class="book-cover-frame"><div class="book-cover-kicker">میراث خانوادگی · دفتر نخست</div><div class="book-cover-title">ریشه‌ها</div><div class="book-cover-subtitle">چنگ‌الماس و روستاهای بودلا، خودلان، زرین‌آباد و خسروآباد</div>
       <div class="book-cover-art"><svg viewBox="0 0 900 330" role="img" aria-label="تصویرسازی تزئینی از روستا و کوهستان"><rect width="900" height="330" fill="#f1e4bf"/><circle cx="720" cy="78" r="37" fill="#a75d43"/><path d="M0 190 Q140 105 270 175 T520 160 T900 150 V330 H0Z" fill="#c7b27e"/><path d="M0 225 Q180 160 340 218 T640 205 T900 190 V330 H0Z" fill="#9b9565"/><path d="M0 285 Q180 260 340 282 T650 270 T900 278 V330 H0Z" fill="#777b55"/><path d="M0 298 Q180 270 360 296 T700 287 T900 294" fill="none" stroke="#536c70" stroke-width="5"/><g fill="#efe2c4" stroke="#594936" stroke-width="5"><path d="M100 235h94v54h-94z M88 235l59-34 59 34z"/><path d="M280 220h90v57h-90z M268 220l57-33 57 33z"/><path d="M465 242h110v48H465z M452 242l68-36 68 36z"/><path d="M675 225h100v58H675z M662 225l63-35 63 35z"/></g><g fill="#455d42"><path d="M225 280q-22-50 0-102q23 51 0 102z M410 288q-25-58 0-118q25 60 0 118z M615 282q-20-48 0-98q20 50 0 98z M830 286q-24-56 0-112q24 56 0 112z"/></g></svg></div>
       <div class="book-cover-caption">روایتی زنده از ریشه‌ها، آدم‌ها و آبادی‌ها · تصویرسازی تزئینی، نه عکس واقعی</div><div class="book-cover-footer"><span>گردآوری اولیه: آبان ۱۴۰۵</span><span>نسخهٔ خانوادگی و در حال تکمیل</span></div></div>
@@ -2952,7 +3002,12 @@ document.addEventListener('click',async ev=>{
   if(el===null){ if(ev.target.id==='modal') closeModal(); if(!ev.target.closest('.search')){ const r=$('#qres'); if(r) r.hidden=true; } return; }
   const a=el.dataset.act;
   try{
-  if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||(el.dataset.tab==='admin'&&S.isAdmin)) await loadFamilyPosts(); }
+  if(a==='tab'){ gotoTab(el.dataset.tab); if(S.isAdmin&&(el.dataset.tab==='admin'||el.dataset.tab==='tools')) loadClaims().catch(()=>{}); if(el.dataset.tab==='tools') await openTool(S.tool||'life'); if(el.dataset.tab==='growth'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ const first=growthChildren()[0]; if(first){S.growthChild=first[0]; await loadGrowth();} } if(el.dataset.tab==='life'&&(S.isAdmin||sessionStorage.getItem('shj_parent_token'))){ S.lifePerson=''; const pp=lifePeople(); if(pp[0]){S.lifePerson=pp[0][0]; await loadLife();} } if(el.dataset.tab==='family'||(el.dataset.tab==='admin'&&S.isAdmin)){ await loadFamilyPosts(); if(el.dataset.tab==='family') await loadFamilyBook(); } }
+  else if(a==='familybookupload'){ const inp=$('#familyBookFile');if(inp)inp.click(); }
+  else if(a==='familybookprev'){familyBookState.page=Math.max(1,familyBookState.page-1);renderView();$('#familyBookReader')?.scrollIntoView({behavior:'smooth',block:'start'});}
+  else if(a==='familybooknext'){familyBookState.page=Math.min(10,familyBookState.page+1);renderView();$('#familyBookReader')?.scrollIntoView({behavior:'smooth',block:'start'});}
+  else if(a==='familybookzoomout'){familyBookState.zoom=Math.max(70,familyBookState.zoom-10);renderView();}
+  else if(a==='familybookzoomin'){familyBookState.zoom=Math.min(160,familyBookState.zoom+10);renderView();}
   else if(a==='familyadd'){ familyArchiveUI.section=el.dataset.section||'documents';familyArchiveUI.formOpen=true;renderView();setTimeout(()=>{const c=$('#familyCompose');if(c)c.scrollIntoView({behavior:'smooth',block:'center'});const t=$('#fp_title');if(t)t.focus();},80); }
   else if(a==='familysectionfilter'){ familyArchiveUI.section=el.dataset.section||'all';familyArchiveUI.q='';familyArchiveUI.category='all';familyArchiveUI.village='all';const f=$('#familySearch');if(f)f.value='';familyApplyFilters();const g=$('#familyGallery');if(g)g.scrollIntoView({behavior:'smooth',block:'start'}); }
   else if(a==='familyformclose'){familyArchiveUI.formOpen=false;renderView();}
@@ -3102,6 +3157,7 @@ document.addEventListener('submit',ev=>{
   else if(id==='familyPostForm') submitFamilyPost().catch(e=>{console.error(e);toast('ارسال انجام نشد؛ اتصال یا دسترسی بارگذاری عکس را بررسی کنید.');});
 });
 document.addEventListener('change',ev=>{
+  if(ev.target.id==='familyBookFile'){const file=ev.target.files&&ev.target.files[0];if(file)uploadFamilyBook(file).catch(e=>{console.error(e);toast('بارگذاری انجام نشد: '+(e.message||'دسترسی یا فضای ذخیره‌سازی را بررسی کنید.'));});ev.target.value='';return;}
   if(ev.target.id==='fp_section'){familyArchiveUI.section=ev.target.value;const sec=FAMILY_SECTIONS.find(x=>x.id===ev.target.value);const hint=$('#fp_section_hint');if(hint&&sec)hint.textContent=sec.prompt;const lab=$('#familyComposeSection');if(lab&&sec)lab.textContent=sec.title;return;} if(ev.target.id==='treePerson'){S.treePerson=ev.target.value;renderView();return;} if(ev.target.id==='familyCategory'){familyArchiveUI.category=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='familyVillage'){familyArchiveUI.village=ev.target.value;familyApplyFilters();return;} if(ev.target.id==='lf_kind'){ const box=$('#lifePrompts'); if(box) box.innerHTML=lifePromptButtons(ev.target.value); } if(ev.target.id==='lifePerson'){S.lifePerson=ev.target.value;loadLife().catch(()=>toast('دریافت دفتر انجام نشد.'));return;} if(ev.target.id==='lifeKind'){S.lifeKind=ev.target.value;renderView();return;} if(ev.target.id==='growthChild'){ S.growthChild=ev.target.value; S.growthRows=[]; loadGrowth().catch(e=>toast('دریافت سوابق انجام نشد.')); } });
 document.addEventListener('input',ev=>{
   const id=ev.target.id;
