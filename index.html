@@ -1099,7 +1099,7 @@ const S={
   mode:lsGet('shj_mode2')||(window.innerWidth<760?'outline':'art'),
   addTab:'person',editId:null,marriageOnly:false,memFor:'',dup:false,code:null,confirm:null,modal:null,q:'',famSort:'members',famQ:'',zoom:1,artZoom:1,artTok:0,
   editSub:null,adq:'',famSel:{},cacheSig:null,hadCache:false,offline:false,cmpF:'all',bk:null,focus:'',relA:'',relB:'',relOpen:false,photo:'',photoDirty:false,photoMsg:'',prefill:null,missingOnly:false,T:null,artCanvas:null,growthChild:'',growthRows:[],growthBusy:false,familyPosts:[],graphMode:'fan',treePerson:'',timelinePerson:'',timelineScope:'all',timelinePlace:'',timelineZoom:1,treeAddDraft:null,kinMapPerson:'',kinMapYear:1400,kinMapImages:[],kinMapLayersLoaded:false,
-  vaultRows:[],vaultLoading:false,vaultBusy:false,vaultError:''
+  vaultRows:[],vaultLoading:false,vaultBusy:false,vaultError:'',vaultPerson:'',vaultDocTitle:'',vaultFilterPerson:''
 };
 const fullName=()=>S.me?(S.me.first+' '+S.me.last).trim():'';
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>{t.hidden=true},3800);}
@@ -1558,13 +1558,17 @@ function viewResearch(){return `<div class="stack"><section class="card"><span c
 const VAULT_BUCKET='shj-admin-vault';
 const VAULT_CATS={documents:'اسناد عمومی',legal:'اسناد حقوقی',identity:'اسناد هویتی',financial:'اسناد مالی',historical:'اسناد تاریخی',other:'سایر'};
 function vaultPath(p){return String(p||'').split('/').map(encodeURIComponent).join('/');}
-function vaultName(r){return String(r.name||'').replace(/^(?:vault\/)?(?:documents|legal|identity|financial|historical|other)_\d+_/,'').replace(/_/g,' ');}
-function vaultCategoryLabel(r){const m=String(r.name||'').match(/^(documents|legal|identity|financial|historical|other)_/);return m?VAULT_CATS[m[1]]:'سایر';}
+
+function vaultPersonId(r){return String(r.name||'').split('/')[0]||'';}
+function vaultFilePart(r){return String(r.name||'').split('/').slice(1).join('/');}
+function vaultName(r){const file=vaultFilePart(r)||String(r.name||'');return file.replace(/^\\d+_/,'').replace(/\\.[^.]+$/,'').replace(/_/g,' ');}
+function vaultCategoryLabel(r){const m=vaultFilePart(r).match(/^\\d+_(documents|legal|identity|financial|historical|other)_/);return m?VAULT_CATS[m[1]]:'سایر';}
+function vaultPersonLabel(r){const id=vaultPersonId(r),p=EP()[id]||S.people[id];return p?full(p):(id==='legacy'?'بدون انتساب به فرد':'فرد حذف‌شده یا نامشخص');}
 function vaultRowHTML(r){
  const name=vaultName(r),size=r.metadata&&r.metadata.size?Math.round(r.metadata.size/1024)+' KB':'—';
  const date=r.created_at?new Date(r.created_at).toLocaleDateString('fa-IR'):'';
  const path='vault/'+r.name;
- return '<article class="card" style="padding:11px;background:var(--bg)"><b style="overflow-wrap:anywhere">'+esc(name)+'</b><div class="muted small">'+esc(vaultCategoryLabel(r))+' · '+esc(size)+' · '+esc(date)+'</div><div class="row" style="margin-top:8px"><button type="button" class="btn sm" data-act="vaultdownload" data-path="'+esc(path)+'" data-name="'+esc(name)+'">⬇ دریافت</button><button type="button" class="btn ghost sm" data-act="vaultdelete" data-path="'+esc(path)+'" data-name="'+esc(name)+'">حذف</button></div></article>';
+ return '<article class="card" style="padding:11px;background:var(--bg)"><b style="overflow-wrap:anywhere">'+esc(name)+'</b><div class="muted small">'+esc(vaultPersonLabel(r))+' · '+esc(vaultCategoryLabel(r))+' · '+esc(size)+' · '+esc(date)+'</div><div class="row" style="margin-top:8px"><button type="button" class="btn sm" data-act="vaultdownload" data-path="'+esc(path)+'" data-name="'+esc(name)+'">⬇ دریافت</button><button type="button" class="btn ghost sm" data-act="vaultdelete" data-path="'+esc(path)+'" data-name="'+esc(name)+'">حذف</button></div></article>';
 }
 async function loadPrivateArchive(){
  if(!S.isAdmin)throw new Error('دسترسی فقط برای مدیر مجاز است.');
@@ -1575,10 +1579,15 @@ async function loadPrivateArchive(){
  }catch(e){S.vaultError=(e&&e.message)||'دریافت فهرست اسناد انجام نشد.';throw e;}
  finally{S.vaultLoading=false;renderView();}
 }
+
 function viewPrivateArchive(){
  if(!S.isAdmin)return '<section class="card"><h2>بایگانی محرمانه</h2><p class="note bad">این بخش فقط برای مدیر در دسترس است.</p></section>';
- const list=(S.vaultRows||[]).map(vaultRowHTML).join('');
- return '<div class="stack"><section class="card stack"><div class="row" style="justify-content:space-between"><div><span class="home-kicker">فضای خصوصی مدیر</span><h2>🗄️ بایگانی محرمانه</h2></div><span class="pill adm">فقط مدیر</span></div><p class="muted small">اسناد این بخش در مخزن خصوصی ذخیره می‌شوند. دسترسی در سطح سرور فقط به حساب مدیر داده شده است؛ اعضای خانواده امکان مشاهده یا دریافت آن‌ها را ندارند.</p><div class="note warn small">حداکثر حجم هر فایل ۵۰ مگابایت است. اسناد بسیار حساس را فقط در صورت ضرورت بارگذاری کنید.</div><label class="f"><span>دسته‌بندی سند</span><select id="vaultCategory">'+Object.entries(VAULT_CATS).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')+'</select></label><input id="vaultFiles" type="file" multiple hidden accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"><button type="button" class="btn big" data-act="vaultpick" '+(S.vaultBusy?'disabled':'')+'>📤 انتخاب و بارگذاری سند</button>'+(S.vaultBusy?'<p class="muted small">در حال بارگذاری…</p>':'')+'</section><section class="card stack"><div class="row" style="justify-content:space-between"><h3>اسناد بایگانی‌شده</h3><button type="button" class="btn ghost sm" data-act="vaultrefresh">↻ به‌روزرسانی</button></div>'+(S.vaultError?'<div class="note bad">'+esc(S.vaultError)+'</div>':'')+(S.vaultLoading?'<p class="muted">در حال دریافت فهرست…</p>':(list||'<p class="muted small">هنوز سندی ثبت نشده است.</p>'))+'<p class="muted small">نمایش '+fa((S.vaultRows||[]).length)+' سند اخیر</p></section></div>';
+ const people=Object.entries(S.people||{}).filter(([id,p])=>p&&!p.virtual).sort((a,b)=>full(a[1]).localeCompare(full(b[1]),'fa'));
+ const options='<option value="">— انتخاب فرد —</option>'+people.map(([id,p])=>'<option value="'+esc(id)+'" '+(S.vaultPerson===id?'selected':'')+'>'+esc(full(p))+'</option>').join('');
+ const filterOptions='<option value="">همه افراد</option>'+people.map(([id,p])=>'<option value="'+esc(id)+'" '+(S.vaultFilterPerson===id?'selected':'')+'>'+esc(full(p))+'</option>').join('');
+ const rows=(S.vaultRows||[]).filter(r=>!S.vaultFilterPerson||vaultPersonId(r)===S.vaultFilterPerson);
+ const list=rows.map(vaultRowHTML).join('');
+ return '<div class="stack"><section class="card stack"><div class="row" style="justify-content:space-between"><div><span class="home-kicker">فضای خصوصی مدیر</span><h2>🗄️ بایگانی اسناد افراد</h2></div><span class="pill adm">فقط مدیر</span></div><p class="muted small">هر سند به پرونده یک فرد متصل می‌شود؛ نام سند را خودت تعیین می‌کنی، مثلاً شناسنامه، کارت ملی یا آگهی ترحیم.</p><div class="note warn small">مخزن خصوصی است و دسترسی در سطح سرور فقط به حساب مدیر داده شده است. سقف حجم هر فایل ۵۰ مگابایت است.</div><label class="f"><span>۱. انتخاب فرد</span><select id="vaultPerson">'+options+'</select></label><label class="f"><span>۲. عنوان سند</span><input id="vaultDocTitle" type="text" maxlength="100" placeholder="مثلاً شناسنامه، آگهی ترحیم، سند ازدواج…" value="'+esc(S.vaultDocTitle||'')+'"></label><label class="f"><span>۳. نوع سند</span><select id="vaultCategory">'+Object.entries(VAULT_CATS).map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')+'</select></label><input id="vaultFiles" type="file" multiple hidden accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"><button type="button" class="btn big" data-act="vaultpick" '+(S.vaultBusy?'disabled':'')+'>📤 انتخاب و بارگذاری سند</button>'+(S.vaultBusy?'<p class="muted small">در حال بارگذاری…</p>':'')+'</section><section class="card stack"><div class="row" style="justify-content:space-between"><h3>اسناد بایگانی‌شده</h3><button type="button" class="btn ghost sm" data-act="vaultrefresh">↻ به‌روزرسانی</button></div><label class="f"><span>نمایش اسناد مربوط به</span><select id="vaultFilterPerson">'+filterOptions+'</select></label>'+(S.vaultError?'<div class="note bad">'+esc(S.vaultError)+'</div>':'')+(S.vaultLoading?'<p class="muted">در حال دریافت فهرست…</p>':(list||'<p class="muted small">برای این انتخاب سندی ثبت نشده است.</p>'))+'<p class="muted small">نمایش '+fa(rows.length)+' سند</p></section></div>';
 }
 async function downloadVaultFile(path,name){
  if(!S.isAdmin)throw new Error('دسترسی غیرمجاز');
@@ -1588,24 +1597,32 @@ async function downloadVaultFile(path,name){
  if(!r.ok)throw new Error('دریافت سند انجام نشد ('+r.status+')');
  const blob=await r.blob(),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name||'document';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
 }
-async function uploadVaultFiles(files,category){
+
+async function uploadVaultFiles(files,personId,title,category){
  if(!S.isAdmin)throw new Error('دسترسی غیرمجاز');
+ if(!personId||!(EP()[personId]||S.people[personId]))throw new Error('ابتدا فرد موردنظر را انتخاب کن.');
+ if(!String(title||'').trim())throw new Error('عنوان سند را وارد کن.');
  S.vaultBusy=true;S.vaultError='';renderView();let ok=0,failed=[];
  for(const file of files){
   try{
    if(file.size>52428800)throw new Error('حجم فایل بیش از ۵۰ مگابایت است');
-   const clean=String(file.name||'document').split('/').join('_').split('\\').join('_').replaceAll(' ','_').slice(0,150);
-   const path='vault/'+category+'_'+Date.now()+'_'+clean;
+   const clean=String(file.name||'document').split('/').join('_').split('\\').join('_').replaceAll(' ','_').slice(0,100);
+   const label=String(title).trim().replace(/[\\/:*?"<>|]/g,'_').replaceAll(' ','_').slice(0,80);
+   const path='vault/'+personId+'/'+Date.now()+'_'+category+'_'+label+'_'+clean;
    await sbFetch('/storage/v1/object/'+VAULT_BUCKET+'/'+vaultPath(path),{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file});ok++;
   }catch(e){failed.push((file.name||'فایل')+': '+((e&&e.message)||'خطا'));}
  }
- S.vaultBusy=false;await loadPrivateArchive();toast(ok+' فایل بارگذاری شد'+(failed.length?'؛ '+failed.length+' فایل ناموفق بود':''));if(failed.length){S.vaultError=failed.join(' | ');renderView();}
+ S.vaultBusy=false;await loadPrivateArchive();toast(ok+' سند بارگذاری شد'+(failed.length?'؛ '+failed.length+' مورد ناموفق بود':''));if(failed.length){S.vaultError=failed.join(' | ');renderView();}
 }
 document.addEventListener('change',async ev=>{
+ if(ev.target&&ev.target.id==='vaultPerson'){S.vaultPerson=ev.target.value||'';}
+ if(ev.target&&ev.target.id==='vaultFilterPerson'){S.vaultFilterPerson=ev.target.value||'';renderView();}
+ if(ev.target&&ev.target.id==='vaultDocTitle'){S.vaultDocTitle=ev.target.value||'';}
  if(ev.target&&ev.target.id==='vaultFiles'){
   const files=Array.from(ev.target.files||[]);if(!files.length)return;
-  const category=$('#vaultCategory')?.value||'other';
-  try{await uploadVaultFiles(files,VAULT_CATS[category]?category:'other');}catch(e){S.vaultBusy=false;S.vaultError=(e&&e.message)||'بارگذاری ناموفق بود';renderView();}
+  const category=$('#vaultCategory')?.value||'other',personId=$('#vaultPerson')?.value||'',title=$('#vaultDocTitle')?.value||'';
+  S.vaultPerson=personId;S.vaultDocTitle=title;
+  try{await uploadVaultFiles(files,personId,title,VAULT_CATS[category]?category:'other');}catch(e){S.vaultBusy=false;S.vaultError=(e&&e.message)||'بارگذاری ناموفق بود';renderView();}
  }
 });
 
